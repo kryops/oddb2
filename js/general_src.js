@@ -295,12 +295,6 @@ $(document).ready(function(){
 				page_load(type, false, $(this).data('link'), acttab, false);
 			}
 		}
-		
-		// Tooltip deaktivieren
-		if(tooltip) {
-			$('#tooltip').hide();
-			tooltip = false;
-		}
 	}).on('mouseup', '.link', function(e){
 		// mittlere Maustaste abfangen
 		if(e.which == 2) {
@@ -957,6 +951,12 @@ function page_load(type, name, addr, el, post) {
 				}
 			});
 		}
+	}
+	
+	// Tooltip deaktivieren
+	if(tooltip) {
+		$('#tooltip').hide();
+		tooltip = false;
 	}
 }
 
@@ -2487,7 +2487,6 @@ function form_send(f, addr, r) {
 			$('input[type=button], input[type=submit]', f).removeAttr('disabled');
 		}
 	});
-	
 	
 	// normalen Submit verhindern
 	return false;
