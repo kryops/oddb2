@@ -419,6 +419,24 @@ else if(isset($_FILES['import'])) {
 			myrigatesSprung = 0
 	") OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
 	
+	
+	// Galaxien aktualisieren
+	query("
+		UPDATE
+			".PREFIX."galaxien
+		SET
+			galaxienSysScanned = (
+				SELECT
+					COUNT(*)
+				FROM
+					".PREFIX."systeme
+				WHERE
+					systemeUpdate > 0
+					AND systeme_galaxienID = galaxienID
+			)
+	") OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
+	
+	
 	/*
 	// DEBUG
 	echo count($queries);
