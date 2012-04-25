@@ -1,0 +1,10 @@
+#admin-headline {
+	position:absolute;
+	top:36px;
+	left:200px;
+	font-size:28px;
+}
+
+.hl1buttons > div:first-child, .fhlfavs {
+	display:none !important;
+}

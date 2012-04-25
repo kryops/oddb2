@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet href="chrome://global/skin/" type="text/css"?>
+<!DOCTYPE prefwindow SYSTEM "chrome://oddbtool/locale/options.dtd">
+<prefwindow id="oddbtool-preferences" xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul" title="Einstellungen">
+  <prefpane id="pane1" label="" style="width:300px">
+    <preferences>
+      <preference id="pref1" name="extensions.oddbtool.url" type="string"/>
+      <preference id="pref2" name="extensions.oddbtool.fow" type="bool"/>
+      <preference id="pref3" name="extensions.oddbtool.auto" type="bool"/>
+      <preference id="pref4" name="extensions.oddbtool.settings" type="bool"/>
+    </preferences>
+    <label control="prefurl">Adresse der ODDB mit abschließendem /</label>
+	<textbox id="prefurl" preference="pref1"/>
+	
+	<checkbox id="preffow" preference="pref2" label="FoW in der Systemansicht ausgleichen"/>
+	<checkbox id="prefauto" preference="pref3" label="Quelltext automatisch parsen"/>
+	<checkbox id="prefprivate" preference="pref4" label="Sitter und Einstellungen auch parsen"/>
+  </prefpane>
+</prefwindow>

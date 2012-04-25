@@ -1,0 +1,6 @@
+content   oddbtool                 chrome/content/
+skin      oddbtool   classic/1.0   chrome/skin/
+locale    oddbtool   de-DE         chrome/locale/de-DE/
+
+
+overlay   chrome://browser/content/browser.xul   chrome://oddbtool/content/ff-overlay.xul

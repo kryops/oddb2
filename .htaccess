@@ -1,0 +1,14 @@
+<ifmodule mod_deflate.c>  
+AddOutputFilterByType DEFLATE text/html text/plain text/xml application/xml application/xhtml+xml text/javascript text/css application/x-javascript  
+BrowserMatch ^Mozilla/4 gzip-only-text/html  
+BrowserMatch ^Mozilla/4.0[678] no-gzip  
+BrowserMatch bMSIE !no-gzip !gzip-only-text/html  
+SetEnvIf User-Agent ".*MSIE.*" nokeepalive ssl-unclean-shutdown downgrade-1.0 force-response-1.0  
+</ifmodule>
+
+<ifModule mod_expires.c>
+  ExpiresActive On
+  ExpiresDefault "access plus 172800 seconds"
+</ifModule>
+
+AddType application/x-xpinstall .xpi

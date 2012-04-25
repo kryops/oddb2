@@ -1,0 +1,59 @@
+﻿<!DOCTYPE html>
+<html lang="de">
+<head>
+	<meta charset="utf-8" />
+	<title>ODDB Tool-Einstellungen</title>
+	<link rel="stylesheet" type="text/css" href="css/options.css" />
+	<link rel="shortcut icon" href="img/icon48.png" />
+</head>
+<body>
+
+<img src="img/icon128.png" alt="" id="logo" />
+
+<h1>ODDB Tool-Einstellungen</h1>
+
+<form action="#">
+
+<table class="formtable">
+<tr>
+	<td>
+		Adresse der ODDB
+		<br />
+		<span class="small hint">(mit abschlie&szlig;endem /)</span>
+	</td>
+	<td>
+		<input type="text" name="url" id="url" />
+	</td>
+</tr>
+<tr>
+	<td colspan="2" class="left">
+		<input type="checkbox" name="fow" id="fow" /> 
+		<label for="fow">FoW in der Systemansicht ausgleichen</label>
+	</td>
+</tr>
+<tr>
+	<td colspan="2" class="left">
+		<input type="checkbox" name="auto" id="auto" /> 
+		<label for="auto">Quelltext automatisch parsen</label>
+	</td>
+</tr>
+<tr>
+	<td colspan="2" class="left">
+		<input type="checkbox" name="settings" id="settings" /> 
+		<label for="settings">Einstellungen und Sitter auch parsen</label>
+	</td>
+</tr>
+<tr>
+	<td colspan="2" class="center">
+		<input type="submit" value="Einstellungen speichern" />
+	</td>
+</tr>
+</table>
+
+</form>
+
+<script type="text/javascript" src="js/jquery.js"></script>
+<script type="text/javascript" src="js/options.js"></script>
+
+</body>
+</html>

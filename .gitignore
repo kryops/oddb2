@@ -1,0 +1,6 @@
+*~
+__devel
+.settings
+Thumbs.db
+config/*
+admin/cache/*

@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<RDF xmlns="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:em="http://www.mozilla.org/2004/em-rdf#">
+  <Description about="urn:mozilla:install-manifest">
+    <em:id>{1e77c780-1d5b-11df-8a39-0800200c9a66}</em:id>
+    <em:type>2</em:type>
+    
+	<em:name>ODDB Tool</em:name>
+    <em:version>1.1.3</em:version>
+    <em:creator>Kryops</em:creator>
+    <em:contributor></em:contributor>
+    <em:description>Das Firefox-Addon für die ODDB V2</em:description>
+    
+	<em:aboutURL>chrome://oddbtool/content/about.xul</em:aboutURL>
+    <em:optionsURL>chrome://oddbtool/content/options.xul</em:optionsURL>
+	<em:iconURL>chrome://oddbtool/skin/icon.png</em:iconURL>
+	
+	<em:targetApplication>
+		<!-- Firefox -->
+      <Description>
+        <em:id>{ec8030f7-c20a-464f-9b0e-13a3a9e97384}</em:id>
+        <em:minVersion>2.0.0</em:minVersion>
+        <em:maxVersion>19.9</em:maxVersion>
+      </Description>
+    </em:targetApplication>
+	
+	<!-- Fennec / Firefox Mobile -->
+	<!-- nicht in dieser Version
+	<em:targetApplication>
+	  
+	  <Description>
+		<em:id>{a23983c0-fd0e-11dc-95ff-0800200c9a66}</em:id>
+		<em:minVersion>4.0</em:minVersion>
+		<em:maxVersion>19.9</em:maxVersion>
+	  </Description>
+	</em:targetApplication>
+	-->
+	
+  </Description>
+</RDF>

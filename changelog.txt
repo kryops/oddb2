@@ -1,0 +1,579 @@
+xx.05.2012 - V2.1.4
+-------------------
+* ODDB Tool für Chrome offiziell eingebunden
+* "Schiffe hierher schicken"-Link im FoW
+* Unterstützung von PHP5.4
+
+
+
+06.04.2012 - V2.1.3
+-------------------
+* Erkennung von Bergbauschiffen (Flottenübersicht, Orbit)
+* Erkennung von Terraformern (Planetenübersicht, Orbit)
+* Suchfilter "Bergbau" und "Terraformer"
+* In der Allianzübersicht wird angezeigt, welche Allianzen Lux-Allianzen sind
+* Die Flottenübersicht kann nun alle 2 Minuten eingescannt werden
+
+
+22.03.2012 - V2.1.2
+-------------------
+* Suchfilter "Lux ohne NPC"
+* Bugfixes bei der Inhaberverschleierung
+* Bugfixes bei der Erkennung von gelöschten Spielern
+* ODDB Tool 1.1.2
+
+
+
+12.03.2012 - V2.1.1
+-------------------
+* Änderungen am Parser
+  - Erkennung des Inhabers von verschleierten Planeten beim Scan
+  - der DB-Parser lädt nun nicht mehr alle Grafiken im Quelltext
+* Änderungen am FoW
+  - bessere Hervorhebung verschleierter Planeten
+  - neuer benutzerdefinierter FoW-Filter für Lux- und Altrassenplaneten
+* ODDB Tool V1.1.1b
+  - aktuelles System reservieren im FoW
+  - erster Test der Unterstützung von Firefox Mobile (ungetestet!)
+  - parst nun nicht mehr auf pre.omega-day.com
+* Bugfix beim Einstellen des Werftbedarfs
+
+
+
+04.03.2012 - V2.1 [R9]
+----------------------
+* Anpassungen an Omega-Day Runde 9
+  - Planeten mit verschleierten Inhabern
+  - neue Planeten eingetragen
+  - Status HAK in NAP umbenannt
+
+* Komplett überarbeiteter Parser auf DOM-Basis
+
+* Änderungen an der Suchfunktion
+  - neuer Gebäude-Suchfilter
+  - neuer Suchfilter "System-Scan"
+  - neuer Suchfilter "Summe der Resswerte"
+  - Andere Darstellung des Filters "Planetentyp"
+
+* Änderungen am FoW
+  - neuer Bereich "Ressplaneten"
+  - benutzerdefinierte Einträge nun immer nur außerhalb des Systems
+
+* Änderungen bei Myrigates und Sprunggeneratoren
+  - Sprunggeneratoren werden jetzt nach 4 Wochen ohne Scan automatisch gelöscht
+
+* Änderungen am Installer
+  - Einstellungen für Caching, IPBan und Flooding
+  - Die MySQL-Tabellen aller Instanzen einer Installation müssen nun in der gleichen MySQL-Datenbank liegen
+  - Der Server-Administrator kann nun seine Kontaktdaten ins Impressum eintragen
+
+* Änderungen am Administrations- und Verwaltungsbereich
+  - Die meisten MySQL-, Caching- und Sicherheitseinstellungen können nur noch global eingestellt werden
+  - Die Funktion "Spielerprofile einlesen" ist in den Import/Export-Bereich gewandert
+
+* interne Änderungen an der Datei- und MySQL-Struktur
+  - mehrere Instanzen benutzen jetzt den gleichen Spieler- und Allianzpool
+    sowie die gleiche ban- und flooding-Tabelle
+  - Upgrade auf jQuery v1.7.1 und jQueryUI 1.8.17
+
+* Kleinere Änderungen
+  - Orbits können jetzt alle 30 Sekunden eingescannt werden
+  - Systemreservierung beim Planeten-Scouten
+  - Logout nun auch möglich, wenn man gesperrt ist
+  - Anzeige des Planetenkommentars in der Tradogateliste
+  - uvm.
+
+
+
+03.01.2012 - V2.0.2
+-------------------
+* Änderungen am Parser durch OD-Update
+* der Ressvorrat in der DB-Systemansicht wird jetzt auch ohne vollen Scan angezeigt
+* Fixes beim Benutzen der DB unter IPv6
+
+
+
+18.12.2011 - V2.0.1
+-------------------
+* Bugfix: Probleme beim Parsen der Bevölkerung in Systemen
+* Bugfix: die Karte zeigte Galaxie 0 an, wenn man noch keine eigenen Systeme eingescannt hatte
+* User mit der Berechtigung zum Ändern von Ressplanet, Bunker und Werft können jetzt auch den Werftbedarf
+  von Planeten anderer Spieler bearbeiten
+
+
+
+23.11.2011 - V2.0.0 final
+-------------------------
+* Unterstützung des englischen OD
+* ODDB Tool V1.0.0
+* Ressplaneten können nun auch nach gesamtem Ressvorrat gefiltert werden
+* neuer Suchfilter "kolonisierbar": frei, keine Natives, keine laufenden Aktionen
+* Bugfix: Datumsangaben sollten jetzt auch bei Zeitumstellungen richtig angezeigt werden
+* Bugfix: Der Parser verarbeitet jetzt auch Quelltexte, in denen manche Zahlen Kommas als Tausendertrennzeichen haben
+* Bugfix: Die Chronik im Startmenü funktioniert wieder
+* Bugfixes bei der Invasionsübersicht
+* Bugfixes und kleine Änderungen bei der Installationsroutine
+* Bugfixes beim Datenbankabgleich
+
+
+
+16.10.2011 - V2.0.0rc2
+----------------------
+* Erweiterung der Suche
+  - Suchfilter Punkte
+  - Suchspalte Punkte
+  - Sortierung nach Punkten
+* Bugfix bei der Auswahl der Suchspalten
+
+
+
+01.10.2011 - V2.0.0rc1-3
+------------------------
+* Bugfix: Übertragen von Myrigates und Sprunggeneratoren beim Reparieren von fehlgeschlagenen Verschmelzungen 
+* Bugfixes und Verbesserungen bei der Raid- und Toxxfunktion
+  - der Orbiterfilter war standardmäßig aktiv
+  - Allianzlose werden nun auch angezeigt
+  - als Lux werden nun alle Planeten von Altrassenspielern angezeigt
+  - berücksichtigt nun den Status "in Ruhe lassen" und "Antitoxxpakt"
+
+
+
+24.09.2011 - V2.0.0rc1
+----------------------
+* Import/Export-Funktionen (= Datenbankabgleich)
+* Die Kommandopunkte für Orbiter sowie Schiffe im Basar werden nun korrekt erfasst
+* Bugfix: Beim Verschmelzen von Galaxien werden Routen in diesen Galaxien nun ebenfalls angepasst
+* Ugrade auf die jQuery-Bibliothek v1.6.4
+* Änderungen der Code-Struktur
+* neues ODDB Tool v1.0.0rc1
+
+
+
+15.09.2011 - V2.0.0beta19
+-------------------------
+* Neuer Allianz-Status "Antitoxxpakt"
+* Das Raid- und Toxxtool hat nun einen Orbiter-Filter
+* Invasionen usw. können nun markiert werden, um nur einen Teil einer Route/Liste hinzuzufügen
+* Die Native-Anzahl an einem Planeten kann nun nicht mehr erhöht werden, wenn sie einmal eingescannt wurde
+* Neues ODDB Tool V1.0.0beta19
+  - Anpassungen des Parsers an OD-Änderungen
+  - Die Urlaubsmodus-Anzeige ist nun zuverlässiger bei erstmals eingescannten sichtbaren Systemen
+
+
+
+06.09.2011 - V2.0.0beta18
+-------------------------
+* Erweiterung des Verwaltungsbereichs
+  - Änderung der Rechtelevel
+  - Logfile
+  - Grundeinstellungen der Instanz
+* die Suchfunktion kann jetzt nach System-Scan sortiert werden
+* Anzeige der Planetenpunkte in der Planetenansicht
+* neues ODDB Tool V1.0.0beta18
+  - Parser-Anpassungen durch OD-Update
+  - Parser-Fehlermeldungen öffnen ab jetzt kein Popup mehr
+
+
+
+24.08.2011 - V2.0.0beta17
+-------------------------
+* Änderung der Toxxfunktion: Speichert jetzt den Zeitpunkt, zu dem der Planet wieder voll ist
+* Anpassung: Myrigates können nur noch mit HAK benutzt werden
+* bei Besatzungen wird jetzt der Besatzer erfasst
+* Verbesserungen bei veralteten Allysystemen, wenn gar kein Planet mehr der Ally gehört
+* Bugfix: Risse werden wieder korrekt eingescannt
+* Bugfix: der gesamte Ressvorrat eines Planeten wurde nur bis 4.294.967.295 berechnet
+
+
+
+14.08.2011 - V2.0.0beta16
+-------------------------
+* Ressplaneten-Bereich
+* Werft-Bereich
+* Masseninva-Koordinator
+* Erweiterung der Suche
+  - Sortierung nun auch durch Klick auf viele Spalten möglich
+  - Filter nach Entfernungsbereich
+* neue FoW-Einstellung "nicht gescannte Scoutziele immer zuerst anzeigen"
+* Änderungen am Layout
+  - aktive Menüpunkte werden jetzt hervorgehoben
+  - auf dem iPhone/iPad scrollt die Fensterleiste hoffentlich nicht mehr mit
+  - Verbesserungen bei Monitoren mit geringer Höhe
+* Bugfixes am Parser
+  - die Sitter werden jetzt korrekt eingescannt, wenn man Spieler mit gleicher IP eingetragen hat
+* neues ODDB Tool V1.0.0beta16
+  - Planetenkommentare können direkt in OD geändert werden
+  - bei deaktiviertem Autoparser gibt es nun einen Parsen-Link statt des Kontextmenüs
+  - Firefox-Menüeintrag unter "Extras" entfernt
+
+
+
+04.07.2011 - V2.0.0beta15
+-------------------------
+* Zielpunkt von Sprunggeneratoren entfernt (springen immer zum Gate oder nebendran)
+* Bugfix: Myrigates und Sprunggeneratoren wurden nicht immer entfernt, wenn ihr Planet gelöscht wurde
+* Upgrade auf die jQuery-Bibliohek V1.6.2
+* neues ODDB Tool V1.0.0beta15
+
+
+
+24.06.2011 - V2.0.0beta14
+-------------------------
+* Erfassung von Sprunggeneratoren
+* Bugfix: Beim Verschmelzen von Galaxien werden Myrigates nun mit verschmolzen
+* Aktualisierte Systeme und Planeten werden nur noch zur Highscore dazugezählt, wenn sie älter als einen Tag waren
+* neues ODDB Tool V1.0.0beta14
+
+
+
+13.06.2011 - V2.0.0beta13
+-------------------------
+* Galaxienkarte
+* Anzeige aller Rechtelevel unter "Spieler"
+
+
+
+08.06.2011 - V2.0.0beta12
+-------------------------
+* Änderungen am Parser / neues ODDB Tool V1.0.0beta13
+  - Anpassungen durch Änderungen des OD-Quellcodes
+  - der Inhaber wird jetzt im Orbit erfasst -> hoffentlich keine Umod-Bugs mehr
+  - Bugfix beim Ändern der Einstellungen des ODDB Tools im Firefox 4
+* Erweiterung des Invasionsbereichs
+  - können jetzt nach Entfernung zum Gate oder einem beliebigen Punkt sortiert werden
+  - können zu Routen hinzugefügt werden
+* Planetenkategorie-Icons haben nun den Ressvorrat des Planeten als Tooltip
+* Bugfix bei der "schnellster Weg"-Funktion: Sprung zum Gate wird jetzt auch von nicht-HAK-Myrigates berechnet
+* Umstellung auf die HTML5 History-API in Firefox 4, Chrome und Safari (Adressen ohne #)
+* Code der DB weitgehend auf valides HTML5 umgeschrieben
+* Upgrade auf die jQuery-Bibliothek v1.6.1
+
+
+
+02.06.2011 - V2.0.0beta11
+-------------------------
+* Erweiterung der Routen-Hinzufüge-Funktion
+  - maximale Anzahl Planeten, die eine Route enthalten darf
+  - Raid- und Toxx-Filter
+  - Allianz-Status
+* Routen-Expresserstellung
+
+
+
+08.05.2011 - V2.0.0beta10
+-------------------------
+* Speicherung von Natives
+* Reservierung der Planeten im Raid- und Toxxtool
+* Filter im Raid- und Toxxtool können jetzt zu den Favoriten hinzugefügt werden
+* Bugfix: Raumdocks werden nun auch als Orbiter erkannt (gilt nur für neu eingescannte Planeten)
+
+
+
+29.04.2011 - V2.0.0beta9
+------------------------
+* Routenfunktion inkl. Einbindung in den FoW und die Suchfunktion
+* die Raid- und Toxxfunktion wurden zusammengelegt
+* Erweiterung der Suchfunktion
+  - geraidet vor mehr als x Tagen
+  - getoxxt vor mehr als x Tagen
+  - Suche nach Kommentar
+* mehrere Scoutziele im FoW einstellbar
+* Bugfixes beim Einschränken der Sichtbarkeit bestimmter Allianzen
+* Bugfix beim Parsen der Flottensteuer
+* Bugfix beim Parsen von Planeten, wenn das Vermögen im Minus ist
+
+
+
+09.04.2011 - ODDB Tool V1.0.0beta10
+-----------------------------------
+* Invasionen im Orbit werden wieder erfasst
+* Planeten werden bei aktiviertem Autoparser nun automatisch als getoxxt markiert
+
+
+
+02.04.2011 - V2.0.0beta8
+------------------------
+* ODDB Tool V1.0.0beta9
+  - Versuch, die memory leaks zu entfernen
+  - Bugfixes beim FoW-Ausgleich von Planeten ohne Scan
+* Bugfixes in der DB-internen Systemansicht
+
+
+
+25.03.2011 - V2.0.0beta7
+------------------------
+* Fixes am Parser
+  - Resonationen im Orbit werden wieder erfasst
+  - Änderungen beim Parsen der Schiffszahl in der Flottenübersicht
+* neues ODDB Tool V1.0.0beta8
+  - beim Klick auf das Logo öffnet sich das Einstellungsfenster
+
+
+08.03.2011 - V2.0.0beta6
+------------------------
+* Flugzeiten-Matrix unter "Strecken"
+* Erweiterungen der Raid- und Toxxfunktion (Sektor, Kategorie)
+
+
+05.03.2011 - V2.0.0beta5
+------------------------
+* Raid- und Toxxfunktion
+* neues ODDB Tool V1.0.0beta6
+  - das automatische Parsen von Einstellungen und Sittern muss nun erst erlaubt werden
+* Änderungen an der Planetenkategorisierungsfunktion
+* auf der Übersichtsseite bei "gerade online" werden die Spieler der eigenen Allianz nun
+  unabhängig von den Berechtigungen angezeigt
+* zahlreiche Bugfixes
+
+
+26.02.2011 - V2.0.0beta4
+------------------------
+* Funktion zum Einlesen von allen Spielerprofilen
+* Bugfix: Allianzfilter funktioniert auch bei Kolonisationen
+* Bugfix beim Scan der Sitterzugänge
+* neues ODDB Tool V1.0.0beta5
+  - laufende Kolonisationen im Orbit wurden nicht angezeigt, wenn das System in einem neuen Tab geöffnet wurde
+  - das Optionsmenü im FoW öffnet sich nun erst beim Draufklicken
+  - Bugfix: Erfassung von Vermögen, Einnahmen und Forschungspunkten funktionierte nicht mehr
+
+
+20.02.2011 - V2.0.0beta3
+------------------------
+* neue Übersichtsseite
+
+
+15.02.2011 - V2.0.0beta2
+------------------------
+* Bugfixes bei der Entfernungsberechnung von Systemen, wenn Systeme und Planeten mit derselben ID
+  vorhanden sind
+* Bugfix bei der Anzeige von Fremdaktionen und Kolonisationen
+* Bugfix: Fehlermeldung beim Scan von Planetenübersichten mit 0 Planeten entfernt
+* Bugfix: Antrieb-Direkteingabe in der Suchfunktion
+* neues ODDB Tool V1.0.0beta2
+  - Bugfix: bei laufender Kolo im System wurde der FoW nicht mehr angezeigt
+  - Bugfix: Kommentare wurden nur bei eingescannten Planeten angezeigt
+
+
+12.02.2011 - V2.0.0beta1
+------------------------
+* Änderungen für Runde 8
+  - Meta überall entfernt bzw. ausgeblendet
+  - Suche nach Rassen, Anzeige der Rasse in FoW, Systemansicht und Suchfunktion
+* Planeten scouten-Funktion
+* Bugfixes und Änderungen am FoW
+  - Der Allianz-Status wird im FoW nun auch angezeigt, wenn die Galaxie noch nicht eingetragen ist
+    oder der Spieler keine Anzeigeberechtigung für das System hat
+  - die Tabelle wird nun auch angezeigt, wenn man keine Anzeigeberechtigung hat (außer Galaxiesperre)
+  - die Anzeige von Invas etc. im FoW richtet sich nun nach den Invasionsberechtigungen
+  - toxxen, raiden, Orbiter und Ress löschen direkt aus OD heraus möglich
+* Erweiterungen, Bugfixes und Änderungen an der DB-internen Systemansicht
+* beim Scan von Systemen in der DB werden jetzt gleich die nächsten Scoutziele mit angezeigt
+* Bugfix: Besatzungen wurden beim Scan des Orbits nicht korrekt gelöscht
+* Bugfix beim Scan der Planetenansicht, wenn man auf OD ohne www oder .de unterwegs ist
+* Bugfix: Die Anzeige der offenen Invasionen wird jetzt sofort aktualisiert, wenn man eine Invasion
+  einscannt oder ihren Status ändert
+* Bugfixes und Veränderungen im userspezifischen Berechtigungssystem
+* "parseerror 0"-Fehlermeldung entfernt
+* Design-Änderungen für Netbooks und Bildschirme mit geringer Auflösung
+* neues ODDB Tool v1.0.0beta1
+* Umzug auf oddb.kryops.de
+
+-- Bekannte Probleme
+
+* Es gibt Systeme und Planeten mit der gleichen ID, was Probleme bei der Streckenberechnung verursacht.
+  Bei gleichen IDs werden immer die Koordinaten des Planeten mit dieser ID verwendet, auch wenn dann Start-
+  und Zielpunkt in unterschiedlichen Galaxien liegen.
+  Workaround für Systeme: vor die System-ID "sys" eingeben, also z.B. "sys1234"
+
+
+
+
+09.01.2011 - V2.0.0dev15
+------------------------
+* Erweiterung des Invasionsbereichs
+  - Fremdaktionen und Kolonisationen
+  - Invasionsarchiv
+  - veraltete Planetenübersichten
+* hat ein Spieler keine Planeten mehr, werden alle eingetragenen Planeten des Spielers automatisch auf unbekannt gesetzt
+* Verbesserungen der Schnellzugriffsleiste bei der Namens- und Tageingabe
+* bei der Inaktivensuche werden nun auch Meta und Status des Spielers angezeigt
+* Bugfix: Kolonisationen werden nun nicht mehr beim Scan der Planetenübersicht ins Archiv verschoben
+* Bugfix: Kolonisationen haben nie ein Opfer, auch wenn der Planet in der DB noch als besetzt eingetragen ist
+* Bugfix bei Kommentaren mit Zeilenumbrüchen im FoW
+
+
+19.12.2010 - V2.0.0dev14
+------------------------
+* überarbeitete Invasionsliste
+* Invasionen innerhalb einer Ally werden automatisch als freundlich eingetragen
+* Besatzungen bei nicht angemeldeten Spielern werden jetzt auch eingetragen
+* Änderungen am FoW und neues ODDB Tool V1.0.0dev9
+  - in der Tabelle werden jetzt nur noch befreundete Myrigates angezeigt
+  - es werden nun auch Besatzungen angezeigt
+  - veraltete Ally-Systeme werden nun auch in Sitterzugängen richtig ausgegeben
+  - bei Planetenkommentaren wird ein Icon in der Systemansicht angezeigt
+  - Anzeige im Tooltip, wenn der Planet innerhalb der letzten 7 Tage geraidet oder getoxxt wurde
+  - Verbesserung der Kompatibilität mit dem OD Helper und dem db.moz.plugin
+  - das ODDB Tool funktioniert jetzt auch, wenn man unter omega-day.de eingeloggt ist
+* Änderungen am Parser
+  - Bugfix beim Scan der Flottenübersicht, wenn man 0 Schiffe hat
+  - Bugfix bei unsichtbaren Systemen mit Genesis-Planeten
+  - Bugfix beim Scan von Orbits, in denen gerade ein Genesis-Projekt abgebrochen wird
+  - wenn eine Inva, Resonation oder Genesis an einem besetzten Planeten läuft, wird nun diese
+    anstatt der Besatzung eingetragen
+* Erweiterung der Planetenansicht
+  - Funktion "Orbiter löschen"
+  - Funktion "Ress auf 0 setzten"
+* Änderungen an der Kategorisierungsfunktion (gilt nur für neu eingescannte Planeten)
+  - Ressplanis bekommen jetzt eher die Kategorie ihres Resstyps als die Kategorie "Umsatzfabrik"
+* Bugfix bei der Spaltenauswahl der Suchfunktion
+* kleinere Änderungen an der Spieler-Einstellungs-Tabelle
+* Upgrade auf die jQuery-Bibliothek v1.4.4
+* Test der Werbeeinblendungen
+
+
+05.11.2010 - V2.0.0dev13
+------------------------
+* erweiterte Auswahl beim Allianz-Status in der Suchfunktion
+* erster Versuch, den Parser UMTS-kompatibel zu machen
+* neues ODDB Tool V1.0.0dev8
+* Upgrade auf die jQuery-Bibliothek v1.4.3
+
+
+01.11.2010 - V2.0.0dev12
+------------------------
+* Bugfix: Mainscreens können wieder eingescannt werden
+* Fixes, weil Risse in der Systemansicht nicht mehr angezeigt werden
+* bessere Erkennung von Allianzen, die sich aufgelöst haben
+
+
+23.10.2010 - V2.0.0dev11
+------------------------
+* wahrscheinlich aufgelöste Allianzen werden in der Allianzübersicht jetzt ausgegraut (Status nicht neutral)
+  bzw ganz ausgeblendet (Status neutral)
+* Bugfix: Die Großraumwerft wird als Werftgebäude erkannt
+* Bugfix: ID des Produktionszentrums berichtigt
+* Bugfix: Scanprotektoren werden nun als Orbiter eingestuft
+* Spieler Rebellion (ID 2) eingefügt
+* ODDB Tool V1.0.0dev7
+
+
+19.10.2010 - V2.0.0dev10
+------------------------
+* Statistikbereich
+* Gate- und Myrigateliste
+* Rechtelevel
+* Bugfixes bei mehreren Sichtbarkeitsberechtigungen (da wird es noch einige Bugs geben, bitte melden!)
+
+
+07.10.2010 - V2.0.0dev9
+-----------------------
+* Fixes nach erneuten OD-Interfaceänderungen
+* Erweiterungen des Parsers: Kommandopunkte und Forschungspunkte werden gespeichert
+* Erweiterungen des FoW
+  - bei den benutzerdefinierten Einträgen können jetzt wahlweise nur Planeten außerhalb des Systems angezeigt werden
+  - der Urlaubsmodus wird im FoW angezeigt
+* Registrierungsverwaltung
+* Militärisches Zentrum hinzugefügt, zusätzliche Suchmöglichkeit nach Planeten mit militärischem Zentrum
+* fehlgeschlagene oder falsche Verschmelzungen können nun durch erneutes Scannen der Mainscreens rückgängig gemacht werden
+* besseres Logging beim Löschen von Planeten und Systemen durch Scans
+* Bugfix: Invasionen wurden beim Scannen der Planetenübersicht nicht erkannt
+* Bugfixes beim FoW-Ausgleich mit dem db.moz.plugin oder dem OD Helper
+* Bugfix bei der Planetenansicht
+* kleinere Bugfixes bei den Streckenberechnungen
+* ODDB Tool V1.0.0dev6
+
+
+24.09.2010 - V2.0.0dev8
+-----------------------
+* neues ODDB Tool V1.0.0dev5
+  - Fixes nach erneuten Interfaceänderungen in OD
+  - die Sitter können wieder eingescannt werden
+  - neue Versionen können nun direkt aus OD heraus installiert werden
+* die Inaktivensuche blendet jetzt Spieler im Urlaubsmodus aus
+* neue Gebäude hinzugefügt
+* Verbesserungen an der Kategorisierungsfunktion
+* Bugfix: Darstellungsfehler beim IE und Google Chrome
+
+
+
+15.09.2010 - V2.0.0dev7
+-----------------------
+* Hotfixes für das neue OD-Interface, müssen noch nachgebessert werden
+* neue ODDB Tool-Version 1.0.0dev4
+* Bugfix: Beim erneuten Einscannen eines Mainscreens wurde die Gate-Entfernung nicht richtig berechnet
+* Bugfixes beim FoW
+
+
+06.09.2010 - V2.0.0dev6
+-----------------------
+* Invasionen etc. werden im FoW jetzt mit Aggressor und Ende angezeigt
+* neue ODDB Tool-Version 1.0.0dev3
+  - Bugfix mit den doppelten Status-Klammern
+  - Versuch, den Speicherverbrauch zu verringern
+* Die Scan-Mindestintervalle wurden geändert
+  - verdeckte Systeme, Einstellungen und Flottenübersicht: 10 Minuten
+  - sichtbare Systeme und Planetenübersicht: 2 Minuten
+  - Orbit: 2 Minuten
+* Bugfix: Der Allianzstatus wird im FoW jetzt auch bei verdeckten Systemen angezeigt
+* Bugfix: Freie Planeten wurden in der FoW-Tabelle als unbekannt angezeigt
+* Bugfix: Der Flooding-Schutz wurde im FoW als "nicht eingeloggt" angezeigt
+
+
+29.08.2010 - V2.0.0dev5
+-----------------------
+* Allianzübersicht mit Status-Einstellung (jetzt für jede angemeldete Ally getrennt)
+* Allianz-Stati haben jetzt wieder Farben
+* bei der Namenseingabe über die Schnellzugriffsleiste (Spieler, Ally, Meta) werden jetzt Vorschläge angezeigt,
+  falls es mehrere ähnliche Namen gibt
+
+
+21.08.2010 - V2.0.0dev4
+-----------------------
+* Erweiterung des Spieler-Bereichs
+  - Sitterliste
+  - Einstellungen und Vermögen
+  - kürzliche Allianzwechsel
+  - Inaktivensuche
+* man kann nun auch beim eigenen Account die Sitterpflicht bearbeiten
+* Bugfix: Probleme mit Sonderzeichen bei der automatischen Profilaktualisierung
+* Bugfix: die Kategorisierungsfunktion erkennt jetzt auch Mindcenter als Fabrikgebäude
+
+
+15.08.2010 - V2.0.0dev3
+-----------------------
+* Allianzfilter bei der Spielerübersicht
+* Bugfix im Loginsystem
+
+
+
+13.08.2010 - V2.0.0-dev2
+------------------------
+* Anzeige der angemeldeten Spieler mit Userverwaltungs-Funktionen
+* ODDB Tool V1.0.0dev2
+  - Bugfix: negative Resswerte von Planeten
+  - Bugfix: zumindest die meisten Sonderzeichen in Usernamen und Allytags sollten nun richtig angezeigt werden
+* neue Berechtigungen
+  - maximales Rechtelevel, das vergeben werden kann
+  - einzelne Userberechtigungen ändern
+* das Gatesystem hat jetzt unabhängig der Planetenposition des Gates die Gate-Entfernung 0 (gilt nur für neue Galaxien)
+* kleinere Verbesserungen bei der Einteilung von Planeten in Ressplanet, Werft und Bunker
+* die Galaxieverschmelzung muss jetzt erst bestätigt werden
+* In der DB-Systemansicht gibt es jetzt einen Link "System in OD öffnen"
+* der neue 28er wurde zur Suche hinzugefügt
+
+
+
+03.08.2010 - V2.0.0-dev1
+------------------------
+* erster Upload
+  verfügbare Funktionen
+  - Registrierung und Login
+  - Einscannen
+  - Anzeige von Systemen, Planeten, Spielern, Allianzen und Metas
+  - Planetensuche
+  - Scoutfunktionen
+  - Streckenberechnungen
+  - Einstellungen
+  - Galaxieverwaltung
+  - ODDB Tool V1.0.0dev1

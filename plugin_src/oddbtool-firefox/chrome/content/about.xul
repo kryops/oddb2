@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?xml-stylesheet href="chrome://global/skin/" type="text/css"?>
+
+<!DOCTYPE dialog SYSTEM "chrome://oddbtool/locale/about.dtd">
+
+<dialog title="Über ODDB Tool" orient="vertical" autostretch="always" onload="sizeToContent()" buttons="accept" xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+  <groupbox align="center" orient="horizontal" style="padding:10px">
+    <vbox>
+      <text value="ODDB Tool" style="font-weight: bold; font-size: x-large;"/>
+      <separator class="thin"/>
+      <text value="Created By" style="font-weight: bold;"/>
+      <text value="Michael Strobel aka Kryops"/>
+      <separator class="thin" style="height:15px"/>
+      <text value="http://www.kryops.de" style="color:blue;cursor:pointer" onclick="window.opener.opener.gBrowser.selectedTab = window.opener.opener.gBrowser.addTab('http://www.kryops.de/')" />
+    </vbox>
+  </groupbox>
+</dialog>
