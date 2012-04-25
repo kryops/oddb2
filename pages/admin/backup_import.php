@@ -1,7 +1,7 @@
 <?php
 /**
- * pages/admin/backup_export.php
- * Verwaltung -> Import/Export -> exportieren
+ * pages/admin/backup_import.php
+ * Verwaltung -> Import/Export -> importieren
  */
 
 // Sicherheitsabfrage
