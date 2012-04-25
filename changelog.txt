@@ -2,6 +2,7 @@ xx.05.2012 - V2.1.4
 -------------------
 * ODDB Tool für Chrome offiziell eingebunden
 * "Schiffe hierher schicken"-Link im FoW
+* Bugfix: Galaxiestatistik wird beim DB-Abgleich aktualisiert
 * Unterstützung von PHP5.4
 
 
