@@ -570,11 +570,6 @@ else {
 			$content .= '</span> &nbsp; &nbsp;
 			<input type="checkbox" name="mg"'.(isset($_GET['mg']) ? ' checked="checked"' : '').' /> <span class="togglecheckbox" data-name="mg">Myrigate</span> &nbsp; &nbsp;';
 			
-			/*
-			<input type="checkbox" name="rh"'.(isset($_GET['rh']) ? ' checked="checked"' : '').' /> <span class="togglecheckbox" data-name="rh">Ratshalle</span> &nbsp; &nbsp;
-			<input type="checkbox" name="mz"'.(isset($_GET['mz']) ? ' checked="checked"' : '').' /> <span class="togglecheckbox" data-name="mz">Milit&auml;risches Zentrum</span> &nbsp; &nbsp;
-			*/
-			
 			$content .= '
 			Orbiter 
 			<select name="o" size="1">
@@ -617,18 +612,13 @@ else {
 			<input type="checkbox" name="we"'.(isset($_GET['we']) ? ' checked="checked"' : '').' /> <span class="togglecheckbox" data-name="we">Werft</span> &nbsp; &nbsp;
 			<input type="checkbox" name="bu"'.(isset($_GET['bu']) ? ' checked="checked"' : '').' /> <span class="togglecheckbox" data-name="bu">Bunker</span> 
 			&nbsp; &nbsp; 
-			Bergbau 
+			Bergbau / Terraformer
 			<select name="bb" size="1">
 				<option value="">egal</option>
-				<option value="1"'.((isset($_GET['bb']) AND $_GET['bb'] == 1) ? ' selected="selected"' : '').'>ja</option>
-				<option value="2"'.((isset($_GET['bb']) AND $_GET['bb'] == 2) ? ' selected="selected"' : '').'>nein</option>
-			</select>
-			&nbsp; &nbsp; 
-			Terraformer 
-			<select name="tf" size="1">
-				<option value="">egal</option>
-				<option value="1"'.((isset($_GET['tf']) AND $_GET['tf'] == 1) ? ' selected="selected"' : '').'>ja</option>
-				<option value="2"'.((isset($_GET['tf']) AND $_GET['tf'] == 2) ? ' selected="selected"' : '').'>nein</option>
+				<option value="1"'.((isset($_GET['bb']) AND $_GET['bb'] == 1) ? ' selected="selected"' : '').'>eins von beiden</option>
+				<option value="2"'.((isset($_GET['bb']) AND $_GET['bb'] == 2) ? ' selected="selected"' : '').'>keins von beiden</option>
+				<option value="3"'.((isset($_GET['bb']) AND $_GET['bb'] == 3) ? ' selected="selected"' : '').'>Bergbau</option>
+				<option value="4"'.((isset($_GET['bb']) AND $_GET['bb'] == 4) ? ' selected="selected"' : '').'>Terraformer</option>
 			</select>
 			
 			<br />
@@ -1263,11 +1253,23 @@ else {
 			}
 			// Bergbau
 			if(isset($_GET['bb']) AND $user->rechte['fremdinvakolos']) {
-				$conds[] = "schiffeBergbau IS ".($_GET['bb'] == 1 ? "NOT" : "")." NULL";
-			}
-			// Terraformer
-			if(isset($_GET['tf']) AND $user->rechte['fremdinvakolos']) {
-				$conds[] = "schiffeTerraformer IS ".($_GET['tf'] == 1 ? "NOT" : "")." NULL";
+				// BBS oder TF
+				if($_GET['bb'] == 1) {
+					$conds[] = "(schiffeBergbau IS NOT NULL OR schiffeTerraformer IS NOT NULL)";
+				}
+				// keins
+				else if($_GET['bb'] == 2) {
+					$conds[] = "schiffeBergbau IS NULL";
+					$conds[] = "schiffeTerraformer IS NULL";
+				}
+				// BBS
+				else if($_GET['bb'] == 3) {
+					$conds[] = "schiffeBergbau IS NOT NULL";
+				}
+				// TF
+				else {
+					$conds[] = "schiffeTerraformer IS NOT NULL";
+				}
 			}
 			// Summe aller Resswerte
 			if(isset($_GET['rw'])) {
