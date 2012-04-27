@@ -317,11 +317,7 @@ oddbtool.fow = function(page, data) {
 							}
 							
 							// Gebäude auf dem Planet
-							/* ;background-color:black;background-image:url('+oddbtool.prefs.url+'img/planeten/'+data['pl'][i]['typ']+'.jpg)
-							*/
 							content += '<a class="oddbtoollink" href="index.php?op=planet&index='+data['pl'][i]['id']+'" onmouseover="dlt(\''+tooltip+'\', \''+data['pl'][i]['name']+':\')" onmouseout="nd()"><table border="0 cellpadding="0" cellspacing="0" class="oddbtoolplanet" style="cursor:pointer;left:'+x+'px;top:'+y+'px"><tr><td style="background-position:-'+oddbtool.geb[gpl[36]]+'px 0px"></td><td style="background-position:-'+oddbtool.geb[gpl[35]]+'px 0px"></td><td style="background-position:-'+oddbtool.geb[gpl[29]]+'px 0px"></td><td style="background-position:-'+oddbtool.geb[gpl[23]]+'px 0px"></td><td style="background-position:-'+oddbtool.geb[gpl[30]]+'px 0px"></td><td style="background-position:-'+oddbtool.geb[gpl[34]]+'px 0px"></td></tr><tr><td style="background-position:-'+oddbtool.geb[gpl[32]]+'px 0px"></td><td style="background-position:-'+oddbtool.geb[gpl[24]]+'px 0px"></td><td style="background-position:-'+oddbtool.geb[gpl[18]]+'px 0px"></td><td style="background-position:-'+oddbtool.geb[gpl[10]]+'px 0px"></td><td style="background-position:-'+oddbtool.geb[gpl[19]]+'px 0px"></td><td style="background-position:-'+oddbtool.geb[gpl[25]]+'px 0px"></td></tr><tr><td style="background-position:-'+oddbtool.geb[gpl[28]]+'px 0px"></td><td style="background-position:-'+oddbtool.geb[gpl[14]]+'px 0px"></td><td style="background-position:-'+oddbtool.geb[gpl[6]]+'px 0px"></td><td style="background-position:-'+oddbtool.geb[gpl[2]]+'px 0px"></td><td style="background-position:-'+oddbtool.geb[gpl[7]]+'px 0px"></td><td style="background-position:-'+oddbtool.geb[gpl[15]]+'px 0px"></td></tr><tr><td style="background-position:-'+oddbtool.geb[gpl[22]]+'px 0px"></td><td style="background-position:-'+oddbtool.geb[gpl[13]]+'px 0px"></td><td style="background-position:-'+oddbtool.geb[gpl[5]]+'px 0px"></td><td style="background-position:-'+oddbtool.geb[gpl[1]]+'px 0px"></td><td style="background-position:-'+oddbtool.geb[gpl[3]]+'px 0px"></td><td style="background-position:-'+oddbtool.geb[gpl[11]]+'px 0px"></td></tr><tr><td style="background-position:-'+oddbtool.geb[gpl[31]]+'px 0px"></td><td style="background-position:-'+oddbtool.geb[gpl[17]]+'px 0px"></td><td style="background-position:-'+oddbtool.geb[gpl[9]]+'px 0px"></td><td style="background-position:-'+oddbtool.geb[gpl[4]]+'px 0px"></td><td style="background-position:-'+oddbtool.geb[gpl[8]]+'px 0px"></td><td style="background-position:-'+oddbtool.geb[gpl[16]]+'px 0px"></td></tr><tr><td style="background-position:-'+oddbtool.geb[gpl[33]]+'px 0px"></td><td style="background-position:-'+oddbtool.geb[gpl[27]]+'px 0px"></td><td style="background-position:-'+oddbtool.geb[gpl[21]]+'px 0px"></td><td style="background-position:-'+oddbtool.geb[gpl[12]]+'px 0px"></td><td style="background-position:-'+oddbtool.geb[gpl[20]]+'px 0px"></td><td style="background-position:-'+oddbtool.geb[gpl[26]]+'px 0px"></td></tr><tr><td colspan="6" style="background-image:none;text-align:center;font-size:11px;padding-bottom:3px;padding-top:3px">'+data['pl'][i]['scan']+data['pl'][i]['comment']+'</td></tr></table></a>';
-							
-							//$('body',page).append(content);
 							
 							// Gebäude im Orbit
 							y -= 32;
@@ -330,9 +326,6 @@ oddbtool.fow = function(page, data) {
 						}
 						else {
 							// Planet-Overlay ohne Scan
-							/*
-							;background-color:black;background-image:url('+oddbtool.prefs.url+'img/planeten/'+data['pl'][i]['typ']+'.jpg)
-							*/
 							content += '<a class="oddbtoollink" href="index.php?op=planet&index='+data['pl'][i]['id']+'" onmouseover="dlt(\''+tooltip+'\', \''+data['pl'][i]['name']+':\')" onmouseout="nd()"><table border="0 cellpadding="0" cellspacing="0" class="oddbtoolplanet" style="cursor:pointer;left:'+x+'px;top:'+y+'px"><tr><td style="height:90px;background-image:none"></td></tr><tr><td style="background-image:none;text-align:center;font-size:11px;padding-bottom:3px">'+data['pl'][i]['comment']+'</td></tr></table></a>';
 						}
 					}
@@ -399,8 +392,8 @@ oddbtool.fow = function(page, data) {
 					
 					// Menü DB-Aktionen
 					if($(pl).text() != '' && $(pl).find('rechte').text() == 1) {
-						x = xbase + i*xadd + 80;
-						y = ybase + i*yadd + 100;
+						x = xbase + i*xadd + 85;
+						y = ybase + i*yadd + 110;
 						
 						content += '<div id="oddbtoolmenu'+data['pl'][i]['id']+'" class="oddbtoolmenu" style="top:'+(y+15)+'px;left:'+(x-130)+'px;display:none"><a href="'+oddbtool.prefs.url+'index.php?p=show_planet&id='+data['pl'][i]['id']+'" target="_blank">in der DB &ouml;ffnen</a><a href="javascript:void(0)" onclick="var kf = document.getElementById(\'oddbtoolkommentar\'); kf.style.left = \''+(x-130)+'px\'; kf.style.top = \''+(y-5)+'px\'; kf.style.display=\'block\'; document.getElementById(\'oddbtoolkiframe\').src=\''+oddbtool.prefs.url+'index.php?p=show_planet&id='+data['pl'][i]['id']+'&sp=kommentar_editgame\';">Kommentar &auml;ndern</a>';
 						if(toxxrechte) {
