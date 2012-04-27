@@ -302,6 +302,10 @@ else if($_GET['sp'] == 'removebbstf') {
 	if(!isset($_GET['id'])) {
 		$tmpl->content = '<span class="error">Fehler!</span>';
 	}
+	// Berechtigung
+	if(!$user->rechte['fremdinvakolos']) {
+		$tmpl->content = '<span class="error">Keine Berechtigung!</span>';
+	}
 	// alles OK
 	else {
 		// Daten sichern
