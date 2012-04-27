@@ -5,6 +5,7 @@
  * - Einteilung in Ressplanet, Werft und Bunker ändern
  * - Orbiter löschen
  * - Ress auf 0 setzen
+ * - Bergbau und Terraformer entfernen
  */
 
 // Sicherheitsabfrage
@@ -293,6 +294,34 @@ else if($_GET['sp'] == 'ress_del') {
 	
 	// Ausgabe
 	$tmpl->content = '<i>Ress auf 0 gesetzt</i>';
+}
+
+// Bergbauschiffe und Terraformer entfernen
+else if($_GET['sp'] == 'removebbstf') {
+	// Daten vorhanden?
+	if(!isset($_GET['id'])) {
+		$tmpl->content = '<span class="error">Fehler!</span>';
+	}
+	// alles OK
+	else {
+		// Daten sichern
+		$_GET['id'] = (int)$_GET['id'];
+		
+		query("
+			DELETE FROM
+				".PREFIX."planeten_schiffe
+			WHERE
+				schiffe_planetenID = ".$_GET['id']."
+		") OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
+		
+		// Log-Eintrag
+		if($config['logging'] >= 2) {
+			insertlog(12, 'entfernt Bergbauschiffe und Terraformer bei '.$_GET['id']);
+		}
+		
+		// Ausgabe
+		$tmpl->content = '<i>entfernt</i>';
+	}
 }
 
 

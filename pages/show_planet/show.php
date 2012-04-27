@@ -249,14 +249,18 @@ if($data['schiffeBergbau'] !== NULL AND $user->rechte['fremdinvakolos']) {
 	$tmpl->content .= '
 	<div class="fcbox center small2">
 		An diesem Planeten l&auml;uft ein Bergbauvorgang
+		&nbsp;
+		<span><a class="hint" onclick="ajaxcall(\'index.php?p=show_planet&sp=removebbstf&id='.$data['planetenID'].'&ajax\', this.parentNode, false, false)">[entfernen]</a></span>
 	</div>';
 }
 
-// Bergbau
+// Terraformer
 if($data['schiffeTerraformer']  AND $user->rechte['fremdinvakolos']) {
 	$tmpl->content .= '
 	<div class="fcbox center small2">
 		An diesem Planeten l&auml;uft ein Terraformer
+		&nbsp;
+		<span><a class="hint" onclick="ajaxcall(\'index.php?p=show_planet&sp=removebbstf&id='.$data['planetenID'].'&ajax\', this.parentNode, false, false)">[entfernen]</a></span>
 	</div>';
 }
 

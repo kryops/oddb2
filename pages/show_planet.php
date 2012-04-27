@@ -20,6 +20,7 @@ $pages = array(
 	'typ'=>true,
 	'orbiter_del'=>true,
 	'ress_del'=>true,
+	'removebbstf'=>true
 );
 
 // default-Unterseite definieren
@@ -228,6 +229,11 @@ else if($_GET['sp'] == 'orbiter_del') {
 
 // Ress auf 0 setzen
 else if($_GET['sp'] == 'ress_del') {
+	include './pages/show_planet/actions.php';
+}
+
+// Bergbau und Terraformer löschen
+else if($_GET['sp'] == 'removebbstf') {
 	include './pages/show_planet/actions.php';
 }
 
