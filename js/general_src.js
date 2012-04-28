@@ -2906,6 +2906,7 @@ function quelltext(f, r) {
 							// Workaround: Unbewohnbare Planis Größe 2
 							if(pl[i]['groesse'] == '') {
 								pl[i]['groesse'] = 2;
+								pl[i]['bev'] = 0;
 							}
 						}
 					}
@@ -2976,6 +2977,7 @@ function quelltext(f, r) {
 						// Workaround: Unbewohnbare Planis Größe 2
 						if(pl[i]['groesse'] == '') {
 							pl[i]['groesse'] = 2;
+							pl[i]['bev'] = 0;
 						}
 						
 						data = $(data[3]);
