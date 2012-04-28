@@ -30,6 +30,7 @@ foreach($_POST['pl'] as $key=>$data) {
 		$_POST['pl'][$key]['inhaber'] = (int)$data['inhaber'];
 		$_POST['pl'][$key]['allianz'] = (int)$data['allianz'];
 		if(isset($data['mgate'])) $_POST['pl'][$key]['mgate'] = (int)$data['mgate'];
+		if(isset($data['riss'])) $_POST['pl'][$key]['riss'] = (int)$data['riss'];
 		
 		// Allianz hinzufügen
 		// freie Planeten: Allianz -1
@@ -192,6 +193,7 @@ else {
 						planetenRWFluor = ".$pldata['fluor'].",
 						planetenBevoelkerung = ".$pldata['bev'].",
 						planetenMyrigate = ".(isset($pldata['mgate']) ? $pldata['mgate'] : '0').",
+						planetenRiss = ".(isset($pldata['riss']) ? $pldata['riss'] : '0').",
 						planetenHistory = 1
 				") OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
 				
@@ -303,6 +305,7 @@ else {
 							planetenRWFluor = ".$pldata['fluor'].",
 							planetenBevoelkerung = ".$pldata['bev'].",
 							planetenMyrigate = ".(isset($pldata['mgate']) ? $pldata['mgate'] : '0').",
+							planetenRiss = ".(isset($pldata['riss']) ? $pldata['riss'] : '0').",
 							planetenHistory = 1
 					") OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
 					
@@ -389,7 +392,8 @@ else {
 							planetenBevoelkerung = ".$pldata['bev'].",
 							".$his."
 							".(($pldata['inhaber'] != 0) ? "planetenNatives = 0," : "")."
-							planetenMyrigate = ".(isset($pldata['mgate']) ? $pldata['mgate'] : ($pl[$pldata['id']]['planetenMyrigate'] == 2 ? '2' : '0'))."
+							planetenMyrigate = ".(isset($pldata['mgate']) ? $pldata['mgate'] : ($pl[$pldata['id']]['planetenMyrigate'] == 2 ? '2' : '0')).",
+							planetenRiss = ".(isset($pldata['riss']) ? $pldata['riss'] : '0')."
 						WHERE
 							planetenID = ".$pldata['id']."
 					") OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
@@ -458,6 +462,24 @@ else {
 								planetenRiss = 0
 							WHERE
 								planetenID = ".$pl[$pldata['id']]['planetenMyrigate']."
+						") OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
+					}
+					
+					// Riss entfernt oder geändert -> altes Myrigate entfernen
+					if((!isset($pldata['riss']) AND $pl[$pldata['id']]['planetenRiss']) OR (isset($pldata['riss']) AND $pldata['riss'] != $pl[$pldata['id']]['planetenRiss'])) {
+						query("
+							DELETE FROM ".PREFIX."myrigates
+							WHERE
+								myrigates_planetenID = ".$pl[$pldata['id']]['planetenRiss']."
+						") OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
+						
+						// Riss des Ziels löschen
+						query("
+							UPDATE ".PREFIX."planeten
+							SET
+								planetenMyrigate = 0
+							WHERE
+								planetenID = ".$pl[$pldata['id']]['planetenRiss']."
 						") OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
 					}
 				}
