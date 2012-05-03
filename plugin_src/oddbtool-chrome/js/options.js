@@ -6,8 +6,14 @@ $(document).ready(function() {
 	var prefs = {
 		"url": "http://oddb.kryops.de/",
 		"fow": true,
-		"auto": true,
-		"settings": false
+		"auto_poview": true,
+		"auto_planet": true,
+		"auto_sysun": true,
+		"auto_system": true,
+		"auto_orbit": true,
+		"auto_floview": true,
+		"auto_sitter": false,
+		"auto_einst": false
 	};
 	
 	if(localStorage['oddbtool']) {
@@ -16,15 +22,12 @@ $(document).ready(function() {
 	
 	$('#url').val(prefs.url);
 	
-	if(prefs.fow) {
-		$('#fow').prop('checked', true);
+	for(var i in prefs) {
+		if(i != "url" && prefs[i]) {
+			$('#'+i).prop('checked', true);
+		}
 	}
-	if(prefs.auto) {
-		$('#auto').prop('checked', true);
-	}
-	if(prefs.settings) {
-		$('#settings').prop('checked', true);
-	}
+	
 	
 	/*
 	 * Einstellungen speichern
@@ -34,13 +37,43 @@ $(document).ready(function() {
 		var newprefs = {};
 		
 		newprefs['url'] = $('#url').val();
-		newprefs['fow'] = Boolean($('#fow:checked').length);
-		newprefs['auto'] = Boolean($('#auto:checked').length);
-		newprefs['settings'] = Boolean($('#settings:checked').length);
 		
+		// Slash an die Adresse hängen
+		if(newprefs['url'].lastIndexOf('/') != newprefs['url'].length-1) {
+			newprefs['url'] += '/';
+		}
+		
+		// http ergänzen
+		if(newprefs['url'].indexOf('://') == -1) {
+			newprefs['url'] = 'http://'+newprefs['url'];
+		}
+		
+		// Checkbox-Einstellungen übernehmen
+		var boolprefs = [
+			"fow",
+			"auto_poview",
+			"auto_planet",
+			"auto_sysun",
+			"auto_system",
+			"auto_orbit",
+			"auto_floview",
+			"auto_sitter",
+			"auto_einst"
+		];
+		
+		var p;
+		
+		for(var i in boolprefs) {
+			p = boolprefs[i];
+			newprefs[p] = Boolean($('#'+p+':checked').length);
+		}
+		
+		
+		// speichern
 		localStorage['oddbtool'] = JSON.stringify(newprefs);
 		
 		
+		// Einstellungen schließen
 		e.preventDefault();
 		
 		window.close();
