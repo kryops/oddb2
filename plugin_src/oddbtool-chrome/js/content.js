@@ -102,6 +102,10 @@
 		'Lux':'lux'
 	},
 	
+	// Sonderzeichen im FoW ersetzen
+	charmap_search: ['&amp;#92', '&amp;#47', '&amp;', '', '', '', '\\\'', '', '', '', ''],
+	charmap_replace: ['\\', '/', '&', '&dagger;', '&bull;', '´', '\'', '˜', '”', '™', '€'],
+	
 	/**
 	 * Seite laden 
 	 */
