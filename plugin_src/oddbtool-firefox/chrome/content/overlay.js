@@ -8,6 +8,8 @@ var oddbtool = {
 	 * Version
 	 */
 	version: '1.1.3',
+	
+	
 	jqueryload: false,
 	jQuery: false,
 	
@@ -133,8 +135,14 @@ var oddbtool = {
 		oddbtool.prefs = {
 			url: prefManager.getCharPref('extensions.oddbtool.url'),
 			fow: prefManager.getBoolPref('extensions.oddbtool.fow'),
-			auto: prefManager.getBoolPref('extensions.oddbtool.auto'),
-			settings: prefManager.getBoolPref('extensions.oddbtool.settings')
+			auto_poview: prefManager.getBoolPref('extensions.oddbtool.auto_poview'),
+			auto_planet: prefManager.getBoolPref('extensions.oddbtool.auto_planet'),
+			auto_system: prefManager.getBoolPref('extensions.oddbtool.auto_system'),
+			auto_orbit: prefManager.getBoolPref('extensions.oddbtool.auto_orbit'),
+			auto_floview: prefManager.getBoolPref('extensions.oddbtool.auto_floview'),
+			auto_sitter: prefManager.getBoolPref('extensions.oddbtool.auto_sitter'),
+			auto_einst: prefManager.getBoolPref('extensions.oddbtool.auto_einst'),
+			auto_toxx: prefManager.getBoolPref('extensions.oddbtool.auto_toxx'),
 		}
 	},
 	
@@ -261,45 +269,36 @@ var oddbtool = {
 		return false;
 	},
 	
+	
+	/**
+	 * Adress-Muster, deren Seiten geparst werden können
+	 */
+	parserRegex: {
+		system: /\?op=system&sys=\d+(|&galx=\d+)$/,
+		poview: /\?op=planlist$/,
+		planet: /\?op=planet&index=\d+/,
+		orbit: /\?op=orbit&index=\d+$/,
+		einst: /\?op=settings$/,
+		sitter: /\?op=sitter$/,
+		floview: /\?op=fleet$/,
+		toxx: /\?op=orbit&index=\d+&bioatack=1$/
+	},
+	
 	/**
 	 * ist die aktuelle Seite eine Seite, die geparst werden kann?
 	 * @param url String
 	 * @return bool
 	 */
 	isParsePage: function(url) {
-		var regex_sys = /\?op=system&sys=\d+(|&galx=\d+)$/;
-		var regex_planov = /\?op=planlist$/;
-		var regex_plani = /\?op=planet&index=\d+/;
-		var regex_orbit = /\?op=orbit&index=\d+$/;
-		var regex_einstellungen = /\?op=settings$/;
-		var regex_sitter = /\?op=sitter$/;
-		var regex_flov = /\?op=fleet$/;
-		var regex_toxx = /\?op=orbit&index=\d+&bioatack=1$/;
 		
 		// geeignete Seite
-		if(regex_sys.exec(url) != null || regex_planov.exec(url) != null || regex_plani.exec(url) != null || regex_orbit.exec(url) != null || regex_einstellungen.exec(url) != null || regex_sitter.exec(url) != null || regex_flov.exec(url) != null || regex_toxx.exec(url) != null) {
-			return true;
+		for(var i in oddbtool.parserRegex) {
+			if(oddbtool.parserRegex[i].exec(url) != null) {
+				return true;
+			}
 		}
 		
 		// ungeeignete Seite
-		return false;
-	},
-	
-	/**
-	 * ist die aktuelle Seite die Einstellungs- oder Sitterseite?
-	 * @param url String
-	 * @return bool
-	 */
-	isSettingsPage: function(url) {
-		var regex_einstellungen = /\?op=settings$/;
-		var regex_sitter = /\?op=sitter$/;
-		
-		// Einstellungen oder Sitter
-		if(regex_einstellungen.exec(url) != null || regex_sitter.exec(url) != null) {
-			return true;
-		}
-		
-		// andere Seite
 		return false;
 	},
 	
@@ -309,10 +308,9 @@ var oddbtool = {
 	 * @return bool
 	 */
 	isToxxPage: function(url) {
-		var regex_toxx = /\?op=orbit&index=(\d+)&bioatack=1$/;
 		
-		// Einstellungen oder Sitter
-		if(regex_toxx.exec(url) != null) {
+		// Toxx-Seite
+		if(oddbtool.parserRegex.toxx.exec(url) != null) {
 			return true;
 		}
 		
@@ -329,7 +327,9 @@ var oddbtool = {
 		var url = page.location;
 		
 		// handelt es sich um eine OD-Seite?
-		if(!oddbtool.isODPage(url)) return false;
+		if(!oddbtool.isODPage(url)) {
+			return false;
+		}
 		
 		// FoW, Parser und jQuery laden
 		if(!oddbtool.scriptsloaded) {
@@ -378,7 +378,9 @@ var oddbtool = {
 			oddbtool.scriptsloaded = true;
 		}
 		// handelt es sich um eine Seite, die geparst werden kann?
-		if(!oddbtool.isParsePage(url)) return false;
+		if(!oddbtool.isParsePage(url)) {
+			return false;
+		}
 		
 		
 		// Einstellungen neu laden
@@ -445,21 +447,34 @@ var oddbtool = {
 		var regex_sys = /\?op=system&sys=(\d+)/;
 		if(oddbtool.prefs.fow && regex_sys.exec(url) != null) {
 			// Seite parsen
-			data = oddbtool.parsePage(page);
-			oddbtool.fow(page, data);
+			var data2 = oddbtool.parsePage(page);
+			
+			// Daten für Autoparser kopieren
+			data = oddbtool.jQuery.extend(true, {}, data2);
+			
+			oddbtool.fow(page, data2);
 		}
 		
 		// Autoparser
-		if(oddbtool.prefs.auto) {
-			window.setTimeout(
-				function() {
-					oddbtool.parser(page, false);
-				},
-				200
-			);
-		}
-		else {
-			$('#oddbtoolwin',page).append('<a href="javascript:void(0)" id="oddbtoolparselink">[Seite parsen]</a>');
+		for(var i in oddbtool.parserRegex) {
+		
+			if(oddbtool.parserRegex[i].exec(url) != null) {
+				
+				if(typeof(oddbtool.prefs["auto_"+i]) != 'undefined' && oddbtool.prefs["auto_"+i]) {
+					window.setTimeout(
+						function() {
+							oddbtool.parser(page, data);
+						},
+						200
+					);
+				}
+				else {
+					$('#oddbtoolwin',page).append('<a href="javascript:void(0)" id="oddbtoolparselink">[Seite parsen]</a>');
+				}
+				
+				
+				return true;
+			}
 		}
 	},
 	
@@ -483,7 +498,7 @@ var oddbtool = {
 					getoxxt = getoxxt.replace(/\./g, '');
 				}
 				else {
-					alert('Konnte getoxxt-Summe nicht ermitteln!');
+					$('#oddbtoolwin',page).append('<span style="color:red">Konnte Getoxxt-Summe nicht ermitteln!</span><br>');
 					return false;
 				}
 				

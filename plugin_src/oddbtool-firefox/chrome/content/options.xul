@@ -6,14 +6,26 @@
     <preferences>
       <preference id="pref1" name="extensions.oddbtool.url" type="string"/>
       <preference id="pref2" name="extensions.oddbtool.fow" type="bool"/>
-      <preference id="pref3" name="extensions.oddbtool.auto" type="bool"/>
-      <preference id="pref4" name="extensions.oddbtool.settings" type="bool"/>
+      <preference id="pref3" name="extensions.oddbtool.auto_poview" type="bool"/>
+      <preference id="pref4" name="extensions.oddbtool.auto_planet" type="bool"/>
+      <preference id="pref5" name="extensions.oddbtool.auto_system" type="bool"/>
+      <preference id="pref6" name="extensions.oddbtool.auto_orbit" type="bool"/>
+      <preference id="pref7" name="extensions.oddbtool.auto_floview" type="bool"/>
+      <preference id="pref8" name="extensions.oddbtool.auto_sitter" type="bool"/>
+      <preference id="pref9" name="extensions.oddbtool.auto_einst" type="bool"/>
+      <preference id="pref10" name="extensions.oddbtool.auto_toxx" type="bool"/>
     </preferences>
     <label control="prefurl">Adresse der ODDB mit abschließendem /</label>
 	<textbox id="prefurl" preference="pref1"/>
 	
 	<checkbox id="preffow" preference="pref2" label="FoW in der Systemansicht ausgleichen"/>
-	<checkbox id="prefauto" preference="pref3" label="Quelltext automatisch parsen"/>
-	<checkbox id="prefprivate" preference="pref4" label="Sitter und Einstellungen auch parsen"/>
+	<checkbox id="prefauto_poview" preference="pref3" label="Planetenübersicht automatisch parsen"/>
+	<checkbox id="prefauto_planet" preference="pref4" label="Planetenansicht/scan automatisch parsen"/>
+	<checkbox id="prefauto_system" preference="pref5" label="Systeme automatisch parsen"/>
+	<checkbox id="prefauto_orbit" preference="pref6" label="Orbits automatisch parsen"/>
+	<checkbox id="prefauto_floview" preference="pref7" label="Flottenübersicht automatisch parsen"/>
+	<checkbox id="prefauto_sitter" preference="pref8" label="Sitterliste automatisch parsen"/>
+	<checkbox id="prefauto_einst" preference="pref9" label="Einstellungen automatisch parsen"/>
+	<checkbox id="prefauto_toxx" preference="pref10" label="Planeten automatisch als getoxxt markieren"/>
   </prefpane>
 </prefwindow>

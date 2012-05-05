@@ -1,10 +1,10 @@
 /**
  * Quelltext einer Seite parsen und abschicken
  * @param page Seite
- * @param data2 geparste Daten @see oddbtool.parsePage()
+ * @param pdata geparste Daten @see oddbtool.parsePage()
  * @param manual bool manuell aufgerufen
  */
-oddbtool.parser = function(page, data2, manual) {
+oddbtool.parser = function(page, pdata, manual) {
 	
 	// automatisch aufgerufen
 	if(typeof(manual) == 'undefined') {
@@ -16,17 +16,15 @@ oddbtool.parser = function(page, data2, manual) {
 		page = gBrowser.contentDocument
 		var url = page.location;
 		
-		if(!oddbtool.isODPage(url) || !oddbtool.isParsePage(url)) return false;
-	}
-	
-	// Einstellungen und Sitter bei gegebener Einstellung nicht scannen
-	else if(oddbtool.prefs.auto && !oddbtool.prefs.settings && oddbtool.isSettingsPage(page.location) && !manual) {
-		$('#oddbtoolwin',page).append('<a href="javascript:void(0)" id="oddbtoolparselink">[Seite parsen]</a>');
-		return false;
+		if(!oddbtool.isODPage(url) || !oddbtool.isParsePage(url)) {
+			return false;
+		}
 	}
 	
 	// doppeltes Parsen verhindern
-	if($('body',page).find('#oddbtoolparser').attr('id') != null) return false;
+	if($('body',page).find('#oddbtoolparser').attr('id') != null) {
+		return false;
+	}
 	
 	// Parser-Link verstecken
 	$('#oddbtoolparselink',page).hide();
@@ -35,7 +33,9 @@ oddbtool.parser = function(page, data2, manual) {
 	$('#oddbtoolwin',page).append('<span id="oddbtoolparser">Parse Quelltext... </span>');
 	
 	// Seite parsen
-	var pdata = oddbtool.parsePage(page, manual);
+	if(!pdata) {
+		var pdata = oddbtool.parsePage(page, manual);
+	}
 	
 	// Parsen fehlgeschlagen
 	if(!pdata) {
@@ -96,95 +96,11 @@ oddbtool.parser = function(page, data2, manual) {
  * @return string Quelltext
  */
 oddbtool.getQuelltext = function(page) {
-	// Benchmark:
-	//var t1 = new Date().getTime() / 1000;
 	
-	// neu: Quelltext über DOM abgreifen
 	var s = $('body', page).html();
 	s = s.replace(/&amp;/g, '&');
 	return s;
 	
-	
-	/*
-	// code copied and modified from odhelper extension 
-	// (http://helper.omega-day.com/)
-	// and db.moz.plugin
-	// (http://db.wiki.seiringer.eu/plugin/start)
-
-	// originial: doc = window._content.document;
-	// but _content is deprecated
-	var doc = page || window.content.document;
-	
-	// Sonderbehandlung Orbit
-	if(page) {
-		var url = ""+page.location;
-		if(url.indexOf('orbit') != -1) {
-			// Quelltext über page-DOM abrufen.
-			var s = $('html', page).html();
-			s = s.replace(/&amp;/g, '&');
-			
-			return s;
-		}
-	}
-	
-	// Part 1 : get the history entry (nsISHEntry) associated with the document
-	var webnav;
-	try {
-	  // Get the DOMWindow for the requested document.  If the DOMWindow
-	  // cannot be found, then just use the _content window...
-	  var win = doc.defaultView;
-	  if (win == window) {
-		// originial: win = _content;
-		// but _content is deprecated
-		win = content;
-	  }
-	  var ifRequestor = win.QueryInterface(Components.interfaces.nsIInterfaceRequestor);
-	  webNav = ifRequestor.getInterface(Components.interfaces.nsIWebNavigation);
-	} catch(err) {
-	  // If nsIWebNavigation cannot be found, just get the one for the whole window...
-	  webNav = getWebNavigation();
-	}
-	try {
-	  var PageLoader = webNav.QueryInterface(Components.interfaces.nsIWebPageDescriptor);
-	  var pageCookie = PageLoader.currentDescriptor;
-	  var shEntry = pageCookie.QueryInterface(Components.interfaces.nsISHEntry);
-	} catch(err) {
-	  // If no page descriptor is available, just use the URL...
-	}
-	//// Part 2 : open a nsIChannel to get the HTML of the doc
-	var url = doc.URL;
-	var urlCharset = doc.characterSet;
-	var ios = Components.classes["@mozilla.org/network/io-service;1"]
-						.getService(Components.interfaces.nsIIOService);
-  
-	var channel = ios.newChannel( url, urlCharset, null );
-	channel.loadFlags |= Components.interfaces.nsIRequest.VALIDATE_NEVER;
-	channel.loadFlags |= Components.interfaces.nsIRequest.LOAD_FROM_CACHE;
-  //    channel.loadFlags |= Components.interfaces.nsICachingChannel.LOAD_ONLY_FROM_CACHE;
-  
-	try {
-	  // Use the cache key to distinguish POST entries in the cache (see nsDocShell.cpp)
-	  var cacheChannel = channel.QueryInterface(Components.interfaces.nsICachingChannel);
-	  cacheChannel.cacheKey = shEntry.cacheKey;
-	} catch(e) {
-	}
-  
-	var stream = channel.open();
-	const scriptableStream = Components.classes["@mozilla.org/scriptableinputstream;1"].createInstance(Components.interfaces.nsIScriptableInputStream);
-	scriptableStream.init( stream );
-  
-	var s = "";
-	try {
-	  while( scriptableStream.available()>0 ) {
-		s += scriptableStream.read(scriptableStream.available());
-	  }
-	} catch(e) {
-	}
-	scriptableStream.close();
-	stream.close();
-	
-	return s;
-	*/
 };
 
 /**
