@@ -3,7 +3,7 @@
 	/**
 	 * Version
 	 */
-	version: '1.1.3',
+	version: '1.1.4',
 	
 	
 	/**
@@ -246,7 +246,7 @@
 	 */
 	isToxxPage: function(url) {
 		
-		// Einstellungen oder Sitter
+		// Toxx-Seite
 		if(oddbtool.parserRegex.toxx.exec(url) != null) {
 			return true;
 		}

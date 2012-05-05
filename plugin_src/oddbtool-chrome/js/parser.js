@@ -1,7 +1,7 @@
 /**
  * Quelltext einer Seite parsen und abschicken
  * @param page Seite
- * @param data2 bereits geparste Daten
+ * @param pdata bereits geparste Daten @see oddbtool.parsePage()
  * @param manual bool manuell aufgerufen
  */
 oddbtool.parser = function(page, pdata, manual) {
