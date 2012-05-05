@@ -13,11 +13,12 @@ $(document).ready(function() {
 		"auto_orbit": true,
 		"auto_floview": true,
 		"auto_sitter": false,
-		"auto_einst": false
+		"auto_einst": false,
+		"auto_toxx": true
 	};
 	
 	if(localStorage['oddbtool']) {
-		prefs = JSON.parse(localStorage['oddbtool']);
+		$.extend(prefs, JSON.parse(localStorage['oddbtool']));
 	}
 	
 	$('#url').val(prefs.url);
@@ -58,7 +59,8 @@ $(document).ready(function() {
 			"auto_orbit",
 			"auto_floview",
 			"auto_sitter",
-			"auto_einst"
+			"auto_einst",
+			"auto_toxx"
 		];
 		
 		var p;
