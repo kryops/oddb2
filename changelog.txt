@@ -1,6 +1,7 @@
 ﻿xx.05.2012 - V2.1.4
 -------------------
 * ODDB Tool für Chrome offiziell eingebunden
+* Erweiterte Einstellungen des Autoparsers im ODDB Tool
 * "Schiffe hierher schicken"-Link im FoW
 * Suchfilter für Bergbauschiffe und Terraformer kombiniert, Option "eins von beiden"
 * Funktion "Bergbau / Terraformer löschen" im FoW
