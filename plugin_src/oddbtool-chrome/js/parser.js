@@ -1,10 +1,10 @@
 /**
  * Quelltext einer Seite parsen und abschicken
  * @param page Seite
- * @param data2 geparste Daten @see oddbtool.parsePage()
+ * @param data2 bereits geparste Daten
  * @param manual bool manuell aufgerufen
  */
-oddbtool.parser = function(page, data2, manual) {
+oddbtool.parser = function(page, pdata, manual) {
 	
 	// automatisch aufgerufen
 	if(typeof(manual) == 'undefined') {
@@ -19,14 +19,10 @@ oddbtool.parser = function(page, data2, manual) {
 		if(!oddbtool.isParsePage(url)) return false;
 	}
 	
-	// Einstellungen und Sitter bei gegebener Einstellung nicht scannen
-	else if(oddbtool.prefs.auto && !oddbtool.prefs.settings && oddbtool.isSettingsPage(page.location) && !manual) {
-		$('#oddbtoolwin',page).append('<a href="javascript:void(0)" id="oddbtoolparselink">[Seite parsen]</a>');
+	// doppeltes Parsen verhindern
+	if($('body',page).find('#oddbtoolparser').attr('id') != null) {
 		return false;
 	}
-	
-	// doppeltes Parsen verhindern
-	if($('body',page).find('#oddbtoolparser').attr('id') != null) return false;
 	
 	// Parser-Link verstecken
 	$('#oddbtoolparselink',page).hide();
@@ -35,7 +31,9 @@ oddbtool.parser = function(page, data2, manual) {
 	$('#oddbtoolwin',page).append('<span id="oddbtoolparser">Parse Quelltext... </span>');
 	
 	// Seite parsen
-	var pdata = oddbtool.parsePage(page, manual);
+	if(!pdata) {
+		var pdata = oddbtool.parsePage(page, manual);
+	}
 	
 	// Parsen fehlgeschlagen
 	if(!pdata) {

@@ -118,13 +118,6 @@
 			return false;
 		}
 		
-		// Einstellungen auslesen
-		/*
-		if(localStorage['oddbtool']) {
-			oddbtool.prefs = JSON.parse(localStorage['oddbtool']);
-		}
-		*/
-		
 		// CSS mit Pfad einbinden
 		var css = [
 			'#oddbtoollogo {position:absolute; top:1px; left:200px; width:32px; height:32px; background-image:url('+chrome.extension.getURL('img/fowsprite32.png')+'); cursor:pointer; z-index:2}',
@@ -166,7 +159,8 @@
 		$('body',page).append('<div id="oddbtoollogo" class="oddbtoolsprite" title="Einstellungen f&uuml;r das ODDB Tool &auml;ndern"></div><div id="oddbtoolwin"></div>');
 		
 		// Planet getoxxt
-		if(oddbtool.isToxxPage(url)) {
+		if(oddbtool.prefs.auto_toxx && oddbtool.isToxxPage(url)) {
+			
 			oddbtool.toxxen(page);
 			
 			// Parsen verhindern
@@ -176,28 +170,56 @@
 		var data = false;
 		
 		// FoW-Ausgleich in Systemen
-		var regex_sys = /\?op=system&sys=(\d+)/;
-		if(oddbtool.prefs.fow && regex_sys.exec(url) != null) {
+		if(oddbtool.prefs.fow && oddbtool.parserRegex.system.exec(url) != null) {
 			// Seite parsen
-			data = oddbtool.parsePage(page);
-			oddbtool.fow(page, data);
+			var data2 = oddbtool.parsePage(page);
+			
+			// Parser-Daten kopieren
+			data = $.extend(true, {}, data2);
+			
+			oddbtool.fow(page, data2);
 		}
 		
 		// Autoparser
-		if(oddbtool.prefs.auto) {
-			window.setTimeout(
-				function() {
-					oddbtool.parser(page, false);
-				},
-				200
-			);
+		for(var i in oddbtool.parserRegex) {
+		
+			if(oddbtool.parserRegex[i].exec(url) != null) {
+				
+				if(typeof(oddbtool.prefs["auto_"+i]) != 'undefined' && oddbtool.prefs["auto_"+i]) {
+					window.setTimeout(
+						function() {
+							oddbtool.parser(page, data);
+						},
+						200
+					);
+				}
+				else {
+					$('#oddbtoolwin',page).append('<a href="javascript:void(0)" id="oddbtoolparselink">[Seite parsen]</a>');
+				}
+				
+				
+				return true;
+			}
 		}
-		else {
-			$('#oddbtoolwin',page).append('<a href="javascript:void(0)" id="oddbtoolparselink">[Seite parsen]</a>');
-		}
+		
+		
+		
 		
 	},
 	
+	/**
+	 * Adress-Muster, deren Seiten geparst werden können
+	 */
+	parserRegex: {
+		system: /\?op=system&sys=\d+(|&galx=\d+)$/,
+		poview: /\?op=planlist$/,
+		planet: /\?op=planet&index=\d+/,
+		orbit: /\?op=orbit&index=\d+$/,
+		einst: /\?op=settings$/,
+		sitter: /\?op=sitter$/,
+		floview: /\?op=fleet$/,
+		toxx: /\?op=orbit&index=\d+&bioatack=1$/
+	},
 	
 	/**
 	 * ist die aktuelle Seite eine Seite, die geparst werden kann?
@@ -205,39 +227,15 @@
 	 * @return bool
 	 */
 	isParsePage: function(url) {
-		var regex_sys = /\?op=system&sys=\d+(|&galx=\d+)$/;
-		var regex_planov = /\?op=planlist$/;
-		var regex_plani = /\?op=planet&index=\d+/;
-		var regex_orbit = /\?op=orbit&index=\d+$/;
-		var regex_einstellungen = /\?op=settings$/;
-		var regex_sitter = /\?op=sitter$/;
-		var regex_flov = /\?op=fleet$/;
-		var regex_toxx = /\?op=orbit&index=\d+&bioatack=1$/;
 		
 		// geeignete Seite
-		if(regex_sys.exec(url) != null || regex_planov.exec(url) != null || regex_plani.exec(url) != null || regex_orbit.exec(url) != null || regex_einstellungen.exec(url) != null || regex_sitter.exec(url) != null || regex_flov.exec(url) != null || regex_toxx.exec(url) != null) {
-			return true;
+		for(var i in oddbtool.parserRegex) {
+			if(oddbtool.parserRegex[i].exec(url) != null) {
+				return true;
+			}
 		}
 		
 		// ungeeignete Seite
-		return false;
-	},
-	
-	/**
-	 * ist die aktuelle Seite die Einstellungs- oder Sitterseite?
-	 * @param url String
-	 * @return bool
-	 */
-	isSettingsPage: function(url) {
-		var regex_einstellungen = /\?op=settings$/;
-		var regex_sitter = /\?op=sitter$/;
-		
-		// Einstellungen oder Sitter
-		if(regex_einstellungen.exec(url) != null || regex_sitter.exec(url) != null) {
-			return true;
-		}
-		
-		// andere Seite
 		return false;
 	},
 	
@@ -247,10 +245,9 @@
 	 * @return bool
 	 */
 	isToxxPage: function(url) {
-		var regex_toxx = /\?op=orbit&index=(\d+)&bioatack=1$/;
 		
 		// Einstellungen oder Sitter
-		if(regex_toxx.exec(url) != null) {
+		if(oddbtool.parserRegex.toxx.exec(url) != null) {
 			return true;
 		}
 		
@@ -366,7 +363,7 @@
 					getoxxt = getoxxt.replace(/\./g, '');
 				}
 				else {
-					alert('Konnte getoxxt-Summe nicht ermitteln!');
+					$('#oddbtoolwin',page).append('<span style="color:red">Konnte Getoxxt-Summe nicht ermitteln!</span><br>');
 					return false;
 				}
 				

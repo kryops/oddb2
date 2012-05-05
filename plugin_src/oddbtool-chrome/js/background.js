@@ -8,8 +8,14 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
 	var prefs = {
 		"url": "http://oddb.kryops.de/",
 		"fow": true,
-		"auto": true,
-		"settings": false
+		"auto_poview": true,
+		"auto_planet": true,
+		"auto_system": true,
+		"auto_orbit": true,
+		"auto_floview": true,
+		"auto_sitter": false,
+		"auto_einst": false,
+		"auto_toxx": true
 	};
 	
 	// schon gespeichert
