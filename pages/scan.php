@@ -267,8 +267,11 @@ if(!$user->rechte['scan']) {
 
 // ODDB Tool veraltet
 if(isset($_GET['plugin'], $_GET['version']) AND $_GET['version'] != ODDBTOOL) {
+	
+	$path = strpos($_SERVER['HTTP_USER_AGENT'], 'Chrome') ? ODDBTOOLPATH_CHROME : ODDBTOOLPATH;
+	
 	$tmpl->error = 'ODDB Tool veraltet!<br />
-	<a href="'.ADDR.'plugin/'.ODDBTOOLPATH.'" style="color:#ffff00">[neue Version installieren]</a>';
+	<a href="'.ADDR.'plugin/'.$path.'" style="color:#ffff00">[neue Version installieren]</a>';
 	$tmpl->output();
 	die();
 }

@@ -286,7 +286,10 @@ if(!isset($_GET['id']) OR !is_numeric($_GET['id'])) {
 
 // ODDB Tool veraltet
 if(isset($_GET['version']) AND $_GET['version'] != ODDBTOOL) {
-	fowerror('ODDB Tool veraltet!<br /><a href="'.ADDR.'plugin/'.ODDBTOOLPATH.'" style="color:#ffff00">[neue Version installieren]</a>');
+	
+	$path = strpos($_SERVER['HTTP_USER_AGENT'], 'Chrome') ? ODDBTOOLPATH_CHROME : ODDBTOOLPATH;
+	
+	fowerror('ODDB Tool veraltet!<br /><a href="'.ADDR.'plugin/'.$path.'" style="color:#ffff00">[neue Version installieren]</a>');
 }
 
 // Daten sichern
