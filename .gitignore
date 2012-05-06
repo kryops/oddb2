@@ -3,3 +3,5 @@ __devel
 .settings
 Thumbs.db
 config/*.php
+.project
+.buildpath
