@@ -1,4 +1,4 @@
-﻿xx.05.2012 - V2.1.4
+﻿06.05.2012 - V2.1.4
 -------------------
 * ODDB Tool für Chrome offiziell eingebunden
 * Erweiterte Einstellungen des Autoparsers im ODDB Tool
