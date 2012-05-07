@@ -18,9 +18,9 @@ if(!defined('ODDB')) die('unerlaubter Zugriff!');
 //
 
 // Hauptversion
-define('VERSION', '2.1.4');
+define('VERSION', '2.1.5');
 // Datei-Zusatz (css und js)
-define('FILESTAMP', '?4');
+define('FILESTAMP', '?5');
 // OD-Runde
 define('ODWORLD', 'int9');
 define('DOWNTIME', false);
