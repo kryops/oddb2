@@ -1918,15 +1918,15 @@ else {
 					}
 					// System
 					if(isset($sp2[2])) {
-						$spv[2] = '<a class="link winlink contextmenu" data-link="index.php?p=show_system&amp;id='.$row['systemeID'].'&amp;ajax">'.$row['systemeID'].'</a>';
+						$spv[2] = '<a class="link winlink contextmenu link_system" data-id="'.$row['systemeID'].'" data-link="index.php?p=show_system&amp;id='.$row['systemeID'].'&amp;ajax">'.$row['systemeID'].'</a>';
 					}
 					// Plani-ID
 					if(isset($sp2[3])) {
-						$spv[3] = '<a class="link winlink contextmenu" data-link="index.php?p=show_planet&amp;id='.$row['planetenID'].'&amp;nav='.$t.'&amp;ajax">'.$row['planetenID'].'</a>';
+						$spv[3] = '<a class="link winlink contextmenu link_planet" data-id="'.$row['planetenID'].'" data-link="index.php?p=show_planet&amp;id='.$row['planetenID'].'&amp;nav='.$t.'&amp;ajax">'.$row['planetenID'].'</a>';
 					}
 					// Plani-Name
 					if(isset($sp2[4])) {
-						$spv[4] = '<a class="link winlink contextmenu" data-link="index.php?p=show_planet&amp;id='.$row['planetenID'].'&amp;nav='.$t.'&amp;ajax">'.htmlspecialchars($row['planetenName'], ENT_COMPAT, 'UTF-8').'</a>';
+						$spv[4] = '<a class="link winlink contextmenu link_planet" data-id="'.$row['planetenID'].'" data-link="index.php?p=show_planet&amp;id='.$row['planetenID'].'&amp;nav='.$t.'&amp;ajax">'.htmlspecialchars($row['planetenName'], ENT_COMPAT, 'UTF-8').'</a>';
 						
 						if($user->rechte['fremdinvakolos']) {
 							// Bergbau anzeigen

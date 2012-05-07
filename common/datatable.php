@@ -32,7 +32,7 @@ class datatable {
 	 * @return HTML
 	 */
 	public static function system($id) {
-		return '<a class="link winlink contextmenu" data-link="index.php?p=show_system&amp;id='.$id.'&amp;ajax">'.$id.'</a>';
+		return '<a class="link winlink contextmenu link_system" data-id="'.$id.'" data-link="index.php?p=show_system&amp;id='.$id.'&amp;ajax">'.$id.'</a>';
 	}
 	
 	/**
@@ -43,7 +43,7 @@ class datatable {
 	 * @return HTML
 	 */
 	public static function systemsektor($id, $x, $z) {
-		return '<a class="link winlink contextmenu" data-link="index.php?p=show_system&amp;id='.$id.'&amp;ajax" style="color:'.sektor_coord($x, $z).'">'.$id.'</a>';
+		return '<a class="link winlink contextmenu link_system" data-id="'.$id.'" data-link="index.php?p=show_system&amp;id='.$id.'&amp;ajax" style="color:'.sektor_coord($x, $z).'">'.$id.'</a>';
 	}
 	
 	/**
@@ -53,7 +53,7 @@ class datatable {
 	 * @return HTML
 	 */
 	public static function planet($id, $name=false) {
-		return '<a class="link winlink contextmenu" data-link="index.php?p=show_planet&amp;id='.$id.'&amp;ajax">'.($name === false ? $id : htmlspecialchars($name, ENT_COMPAT, 'UTF-8')).'</a>';
+		return '<a class="link winlink contextmenu link_planet" data-id="'.$id.'" data-link="index.php?p=show_planet&amp;id='.$id.'&amp;ajax">'.($name === false ? $id : htmlspecialchars($name, ENT_COMPAT, 'UTF-8')).'</a>';
 	}
 	
 	/**

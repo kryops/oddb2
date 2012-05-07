@@ -1,4 +1,13 @@
-﻿06.05.2012 - V2.1.4
+﻿xx.xx.2012 - V2.1.5
+-------------------
+* Erweitertes Kontextmenü bei Planeten- und Systemlinks
+  - System in OD öffnen
+  - Orbit in OD öffnen
+  - Schiffe hierher schicken
+
+
+
+06.05.2012 - V2.1.4
 -------------------
 * ODDB Tool für Chrome offiziell eingebunden
 * Erweiterte Einstellungen des Autoparsers im ODDB Tool

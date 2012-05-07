@@ -430,9 +430,9 @@ else if($_GET['sp'] == '') {
 					
 					$tmpl->content .= '
 					<td'.($pl['playerDeleted'] ? ' style="opacity:0.5;filter:alpha(opacity=50)"' : '').'>
-						<a class="link winlink contextmenu" style="font-weight:bold" data-link="index.php?p=show_planet&amp;id='.$pl['planetenID'].'&amp;ajax">'.$pl['planetenID'].'</a>
+						<a class="link winlink contextmenu link_planet" data-id="'.$pl['planetenID'].'" style="font-weight:bold" data-link="index.php?p=show_planet&amp;id='.$pl['planetenID'].'&amp;ajax">'.$pl['planetenID'].'</a>
 						<br />
-						<a class="link winlink contextmenu small" data-link="index.php?p=show_planet&amp;id='.$pl['planetenID'].'&amp;ajax">'.htmlspecialchars($pl['planetenName'], ENT_COMPAT, 'UTF-8').'</a>
+						<a class="link winlink contextmenu small link_planet" data-id="'.$pl['planetenID'].'" data-link="index.php?p=show_planet&amp;id='.$pl['planetenID'].'&amp;ajax">'.htmlspecialchars($pl['planetenName'], ENT_COMPAT, 'UTF-8').'</a>
 						<br /><br />';
 					// Inhaber
 					if($pl['playerName'] != NULL) {
