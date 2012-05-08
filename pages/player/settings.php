@@ -171,6 +171,10 @@ else {
 		if($_POST['handel_ally'] != -1 AND $row['userODSettings'][2] != $_POST['handel_ally']) {
 			$r = false;
 		}
+		// NAP-Handel
+		if($_POST['handel_nap'] != -1 AND $row['userODSettings'][3] != $_POST['handel_nap']) {
+			$r = false;
+		}
 		// Kampfsystem
 		if($_POST['kampf'] != -1 AND $row['userODSettings'][4] != $_POST['kampf']) {
 			$r = false;
@@ -212,7 +216,7 @@ else {
 				// Handel
 				$handel = array();
 				if($row['userODSettings'][2]) $handel[] = 'Allianz';
-				if($row['userODSettings'][3]) $handel[] = 'Meta';
+				if($row['userODSettings'][3]) $handel[] = 'NAP';
 				if($row['userODSettings'][1]) $handel[] = 'neutral';
 				
 				if(!count($handel)) $handel = '<i>keiner</i>';

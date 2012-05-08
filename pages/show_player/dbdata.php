@@ -363,11 +363,11 @@ if($data['userODSettings'] != '' AND strlen($data['userODSettings']) == 6) {
 	// Handel rendern
 	$handel = array();
 	if($data['userODSettings'][2]) $handel[] = 'Allianz';
-	if($data['userODSettings'][3]) $handel[] = 'Meta';
+	if($data['userODSettings'][3]) $handel[] = 'NAP';
 	if($data['userODSettings'][1]) $handel[] = 'neutral';
 	
 	if(!count($handel)) $handel = '<i>keiner</i>';
-	else if(count($handel) == 3) $handel = 'Allianz, Meta und neutral';
+	else if(count($handel) == 3) $handel = 'Allianz, NAP und neutral';
 	else $handel = implode(' und ', $handel);
 	
 	

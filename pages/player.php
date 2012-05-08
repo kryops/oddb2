@@ -633,6 +633,12 @@ else {
 						<option value="1">an</option>
 						<option value="0">aus</option>
 					</select> &nbsp; &nbsp; 
+					NAP-Handel 
+					<select name="handel_nap" size="1">
+						<option value="-1">egal</option>
+						<option value="1">an</option>
+						<option value="0">aus</option>
+					</select> &nbsp; &nbsp; 
 					neutraler Handel 
 					<select name="handel_neutral" size="1">
 						<option value="-1">egal</option>

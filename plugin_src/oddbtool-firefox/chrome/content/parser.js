@@ -757,7 +757,7 @@ oddbtool.parsePage = function(page, manual) {
 				throw 'Konnte Spieler nicht ermitteln!';
 			}
 			
-			// Format: AA-HandelNeutral-HandelAlly-HandelMeta-KS[1,2,3]-Steuern[1,2,3]
+			// Format: AA-HandelNeutral-HandelAlly-HandelNAP-KS[1,2,3]-Steuern[1,2,3]
 			
 			// AA
 			out['einst'] = '0';
@@ -765,8 +765,8 @@ oddbtool.parsePage = function(page, manual) {
 			out['einst'] += ctree.find('#pn2:checked').length;
 			// HandelAlly
 			out['einst'] += ctree.find('#pv2:checked').length;
-			// HandelMeta
-			out['einst'] += '0';
+			// HandelNAP
+			out['einst'] += ctree.find('#nap2:checked').length;
 			// Kampfsystem
 			if(ctree.find('#km1:checked').length) {
 				out['einst'] += '1';
