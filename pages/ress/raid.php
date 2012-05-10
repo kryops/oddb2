@@ -73,7 +73,7 @@ gesamter Ressvorrat:
 
 // Bedingungen
 $conds = array(
-	"(statusStatus IS NULL OR statusStatus NOT IN(".implode(", ", $status_freund)."))",
+	"(statusStatus IS NULL OR statusStatus NOT IN(".implode(", ", $status_freund).", 5))",
 	"(playerUmod = 0 OR planeten_playerID = -2 OR planeten_playerID = -3)"
 );
 
