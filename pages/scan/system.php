@@ -255,9 +255,13 @@ else {
 				planetenRiss,
 				planetenBevoelkerung,
 				
+				schiffeBergbau,
+				
 				playerRasse
 			FROM
 				".PREFIX."planeten
+				LEFT JOIN ".PREFIX."planeten_schiffe
+					ON schiffe_planetenID = planetenID
 				LEFT JOIN ".GLOBPREFIX."player
 					ON playerID = planeten_playerID
 			WHERE
@@ -335,6 +339,20 @@ else {
 								planetenRiss = ".$pldata['id']."
 							WHERE
 								planetenID = ".$pldata['mgate']."
+						") OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
+					}
+					
+					// Bergbau eintragen
+					if(isset($pldata['bb'])) {
+						query("
+							INSERT INTO ".PREFIX."planeten_schiffe
+							SET
+								schiffe_planetenID = ".$pldata['id'].",
+								schiffeBergbau = -1,
+								schiffeBergbauUpdate = ".time()."
+							ON DUPLICATE KEY UPDATE
+								schiffeBergbau = -1,
+								schiffeBergbauUpdate = ".time()."
 						") OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
 					}
 				}
@@ -482,6 +500,20 @@ else {
 								planetenID = ".$pl[$pldata['id']]['planetenRiss']."
 						") OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
 					}
+					
+					// Bergbau eintragen
+					if(isset($pldata['bb'])) {
+						query("
+							INSERT INTO ".PREFIX."planeten_schiffe
+							SET
+								schiffe_planetenID = ".$pldata['id'].",
+								schiffeBergbau = -1,
+								schiffeBergbauUpdate = ".time()."
+							ON DUPLICATE KEY UPDATE
+								".($pl[$pldata['id']]['schiffeBergbau'] ? "" : "schiffeBergbau = -1,")."
+								schiffeBergbauUpdate = ".time()."
+						") OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
+					}
 				}
 				
 				// Inhaber in ODRequest-Array eintragen
@@ -522,6 +554,13 @@ else {
 				DELETE FROM ".PREFIX."myrigates
 				WHERE
 					myrigates_planetenID IN(".$ids.")
+			") OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
+			
+			// BBS und Terraformer löschen
+			query("
+				DELETE FROM ".PREFIX."planeten_schiffe
+				WHERE
+					schiffe_planetenID IN(".$ids.")
 			") OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
 			
 			// Invasionen ins Archiv verschieben

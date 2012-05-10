@@ -323,6 +323,17 @@ oddbtool.parsePage = function(page, manual) {
 					if(data != null) {
 						pl[i]['riss'] = data[1];
 					}
+					
+
+					// Bergbau
+					if($(this).find('tr:last-child img[src*="flotte-bergbau.gif"]').length) {
+						pl[i]['bb'] = 1;
+					}
+					
+					// Kolo
+					if($(this).find('tr:last-child img[src*="flotte-kolo.gif"]').length) {
+						pl[i]['kolo'] = 1;
+					}
 				}
 				// Kein Planet vorhanden
 				else {

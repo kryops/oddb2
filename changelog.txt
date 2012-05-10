@@ -4,6 +4,8 @@
   - System in OD öffnen
   - Orbit in OD öffnen
   - Schiffe hierher schicken
+* Parser Einstellungen: Handel NAP wird mitgeparst
+* BBS und Kolos werden über den System-Scan eingetragen
 
 
 
