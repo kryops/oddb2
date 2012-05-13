@@ -1,6 +1,6 @@
 ﻿{
   "name": "ODDB Tool",
-  "version": "1.1.3",
+  "version": "1.1.4",
   "manifest_version": 2,
   "description": "Das Chrome-Addon für die ODDB V2",
   "homepage_url": "http://www.kryops.de",
@@ -26,6 +26,7 @@
 			"*://www.omega-day.com/game/*",
 			"*://omega-day.com/game/*",
 			"*://www.omega-day.de/game/*",
+			"*://www3.omega-day.de/game/*",
 			"*://omega-day.de/game/*",
 			"*://www.omegaday.de/game/*",
 			"*://omegaday.de/game/*"
