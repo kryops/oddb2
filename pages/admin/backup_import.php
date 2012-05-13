@@ -372,7 +372,7 @@ else if(isset($_FILES['import'])) {
 				planetenRPWolfram = ".(int)$row[8].",
 				planetenRPKristall = ".(int)$row[9].",
 				planetenRPFluor = ".(int)$row[10].",
-				planetenRMGesamt = ".((int)$row[6]+(int)$row[7]+(int)$row[8]+(int)$row[9]+(int)$row[10]).",
+				planetenRPGesamt = ".((int)$row[6]+(int)$row[7]+(int)$row[8]+(int)$row[9]+(int)$row[10]).",
 				planetenForschung = ".(int)$row[16].",
 				planetenIndustrie = ".(int)$row[17].",
 				planetenUpdate = ".(int)$row[1].",".$upd;
