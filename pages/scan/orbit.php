@@ -363,8 +363,9 @@ else {
 		}
 	}
 	
-	// Bergbau eintragen
-	if(isset($_POST['bb'])) {
+	// Bergbau eintragen/aktualisieren
+	// nur aktualisieren, wenn über Orbit eingescannt
+	if(isset($_POST['bb']) AND ($data['schiffeBergbau'] === NULL OR $data['schiffeBergbau'] == -1)) {
 		query("
 			INSERT INTO ".PREFIX."planeten_schiffe
 			SET
@@ -376,8 +377,8 @@ else {
 				schiffeBergbauUpdate = ".time()."
 		") OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
 	}
-	// Bergbau austragen
-	else if($data['schiffeBergbau'] !== NULL) {
+	// Bergbau austragen, wenn über Orbit eingescannt
+	else if(!isset($_POST['bb']) AND $data['schiffeBergbau'] == -1) {
 		query("
 			UPDATE ".PREFIX."planeten_schiffe
 			SET

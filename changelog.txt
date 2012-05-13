@@ -5,7 +5,9 @@
   - Orbit in OD öffnen
   - Schiffe hierher schicken
 * Parser Einstellungen: Handel NAP wird mitgeparst
-* BBS und Kolos werden über den System-Scan eingetragen
+* BBS werden über den System-Scan eingetragen
+* Verbessertes Aktualisieren und Löschen von BBS im Orbit
+* Bugfix: Funktion "Ress zum Raiden" blendet Status "in Ruhe lassen" nun aus
 
 
 
