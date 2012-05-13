@@ -8,6 +8,7 @@
 * BBS werden über den System-Scan eingetragen
 * Verbessertes Aktualisieren und Löschen von BBS im Orbit
 * Bugfix: Funktion "Ress zum Raiden" blendet Status "in Ruhe lassen" nun aus
+* Bugfix: Beim DB-Import wurden der gesamte Ressvorrat und die gesamte Ressproduktion nicht richitg gespeichert
 
 
 
