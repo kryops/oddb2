@@ -39,6 +39,7 @@ else {
 		if(isset($_POST['state'])) {
 			$state = $_POST['state'];
 			$time = (int)$_POST['time'];
+			$fail = (int)$_POST['fail'];
 			
 			$i = 0;
 			
@@ -53,7 +54,17 @@ else {
 				") OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
 				
 				if(!mysql_num_rows($query)) {
-					odrequest($state, false, 2000);
+					$success = odrequest($state, false, 2000);
+					
+					// fehlgeschlagene Requests zurücksetzen
+					if($success) {
+						$fail = 0;
+					}
+					// fehlgeschlagene Requests erhöhen
+					else {
+						$fail++;
+					}
+					
 					$i++;
 				}
 				
@@ -75,13 +86,25 @@ else {
 				$width = 0;
 			}
 			
+			// OD-Lag-Schutz
+			if($cache->getglobal('odrequest_lag') AND $state < $_POST['end']) {
+				$tmpl->script = '
+$(\'#balken'.$time.' > .balkenfill\').css(\'width\', \''.$width.'px\');
+$(\'#insertplayer'.$time.'\').html(\'OD ist zurzeit nicht erreichbar oder &uuml;berlastet. Bitte versuche es sp&auml;ter erneut.<br /><a class="hint" onclick="ajaxcall(\\\'index.php?p=admin&sp=settings_insertplayer\\\', false, {\\\'start\\\':'.$_POST['start'].',\\\'end\\\':'.$_POST['end'].',\\\'state\\\':'.$state.',\\\'time\\\':'.$time.',\\\'fail\\\':'.$fail.'}, false);">[weitermachen]</a>\');';
+			}
+			// Außerhalb des Spieler-Bereichs
+			else if($fail > 500) {
+				$tmpl->script = '
+$(\'#balken'.$time.' > .balkenfill\').css(\'width\', \''.$width.'px\');
+$(\'#insertplayer'.$time.'\').html(\'Es konnten 500 Spielerprofile am St&uuml;ck nicht eingelesen werden. Du scheinst au&szlig;erhalb des Bereichs der angemeldeten Spieler zu sein!\');';
+			}
 			// weitermachen
-			if($state < $_POST['end']) {
+			else if($state < $_POST['end']) {
 				$tmpl->script = '
 $(\'#balken'.$time.' > .balkenfill\').css(\'width\', \''.$width.'px\');
 $(\'#insertplayer'.$time.'\').html(\'Spieler bis ID '.($state-1).' eingetragen <img src="img/layout/ajax.gif" alt="" style="width:16px;height:16px"/>\');
 window.setTimeout(function() {
-	ajaxcall(\'index.php?p=admin&sp=settings_insertplayer\', false, {\'start\':'.$_POST['start'].',\'end\':'.$_POST['end'].',\'state\':'.$state.',\'time\':'.$time.'}, false);
+	ajaxcall(\'index.php?p=admin&sp=settings_insertplayer\', false, {\'start\':'.$_POST['start'].',\'end\':'.$_POST['end'].',\'state\':'.$state.',\'time\':'.$time.',\'fail\':'.$fail.'}, false);
 }, 2000);';
 			}
 			// fertig
@@ -108,7 +131,7 @@ $(\'#insertplayer'.$time.'\').html(\'Vorgang abgeschlossen\');';
 			// Formular deaktivieren
 			$tmpl->script = '$(\'form[name="settings_insertplayer"] input\').attr(\'disabled\', \'disabled\');
 $(\'form[name="settings_insertplayer"] .button\').replaceWith(\'einlesen\');
-ajaxcall(\'index.php?p=admin&sp=settings_insertplayer\', false, {\'start\':'.$_POST['start'].',\'end\':'.$_POST['end'].',\'state\':'.$_POST['start'].',\'time\':'.$time.'}, false);';
+ajaxcall(\'index.php?p=admin&sp=settings_insertplayer\', false, {\'start\':'.$_POST['start'].',\'end\':'.$_POST['end'].',\'state\':'.$_POST['start'].',\'time\':'.$time.',\'fail\':0}, false);';
 			
 			// Log-Eintrag
 			if($config['logging'] >= 1) {

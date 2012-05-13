@@ -426,6 +426,10 @@ playeratm=4173&userid=602511&name=Kryops&points=34202&titel=&warpoints=8608&gesi
 	// Downtime
 	if(DOWNTIME AND date("G") == 4) return false;
 	
+	// OD Lag-Schutz
+	if(CACHING AND !$always AND $c = $cache->getglobal('odrequest_lag')) {
+		return false;
+	}
 	
 	// Cache abfragen und eintragen
 	if(CACHING AND !$always AND INSTANCE AND $c = $cache->getglobal('odrequest'.$uid)) {
@@ -465,13 +469,26 @@ playeratm=4173&userid=602511&name=Kryops&points=34202&titel=&warpoints=8608&gesi
 	}
 	
 	
+	// OD-Interface abfragen
 	if($odip == NULL) {
 		$odip = gethostbyname('www.omega-day.com');
 	}
 	
 	$file = 'http://'.$odip.'/game/states/live_state.php?userid='.$uid.'&world='.ODWORLD;
 	$connection = @fopen($file,'r');
-	if(!$connection) return false;
+	
+	// Keine Verbindung
+	if(!$connection) {
+		
+		// Cache-Lag-Flag setzen
+		if(CACHING) {
+			$cache->setglobal('odrequest_lag', 1, 180);
+		}
+		
+		return false;
+	}
+	
+	// Antwort auslesen
 	$buffer = fread($connection, 4096);
 	fclose($connection);
 	
@@ -519,6 +536,12 @@ playeratm=4173&userid=602511&name=Kryops&points=34202&titel=&warpoints=8608&gesi
 	// bei ungewöhnlicher Rückgabe abbrechen
 	if(!isset($oddata['name'], $oddata['version'])) {
 		return false;
+	}
+	
+	// OD-Lag-Schutz
+	// bei über 1 Sekunde Erstellzeit Cache-Flag setzen
+	if($oddata['erstellzeit'] > 1) {
+		$cache->setglobal('odrequest_lag', 1, 60);
 	}
 	
 	// HTML und CP1252 dekodieren und alles in UTF-8 enkodieren
