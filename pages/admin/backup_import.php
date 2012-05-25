@@ -279,7 +279,7 @@ else if(isset($_FILES['import'])) {
 							SET
 								myrigates_planetenID = ".(int)$plid.",
 								myrigates_galaxienID = ".(int)$gala.",
-								myrigatesSprung = ".($plrow[9] == 2 ? "1" : "0")."
+								myrigatesSprung = ".($plrow[9] == 2 ? $sysupd : "0")."
 						") OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
 					}
 					// Myrigate entfernen
@@ -410,13 +410,14 @@ else if(isset($_FILES['import'])) {
 	
 	query("
 		UPDATE
-			".PREFIX."planeten
-			LEFT JOIN ".PREFIX."myrigates
-				ON myrigates_planetenID = planetenID
+			".PREFIX."planeten p1
+			LEFT JOIN ".PREFIX."planeten p2
+				ON p1.planetenID = p2.planetenMyrigate
 		SET
-			planetenRiss = 1
+			p1.planetenRiss = p2.planetenID
 		WHERE
-			myrigatesSprung = 0
+			p1.planetenID > 2 AND
+			p2.planetenID IS NOT NULL
 	") OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
 	
 	
