@@ -282,7 +282,7 @@ $tmpl->content .= '
 				<td style="width:39%" rowspan="2">
 					<b>Galaxie</b>: <span style="color:#'.sektor_coord($data['systemeX'], $data['systemeZ']).'">'.$data['systeme_galaxienID'].'</span>
 					<br />
-					<b>System</b>: <a class="link winlink contextmenu" data-link="index.php?p=show_system&amp;id='.$data['systemeID'].'&amp;ajax">'.$data['systemeID'].'</a>
+					<b>System</b>: <a class="link winlink contextmenu link_system" data-link="index.php?p=show_system&amp;id='.$data['systemeID'].'&amp;ajax" data-id="'.$data['systemeID'].'">'.$data['systemeID'].'</a>
 					<br />
 					'.($data['planetenGateEntf'] != NULL ? '
 					<b>Gate</b>: '.flugdauer($data['planetenGateEntf'], $user->settings['antrieb']).' bei A'.$user->settings['antrieb'].'
