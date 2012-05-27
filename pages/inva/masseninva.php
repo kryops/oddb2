@@ -182,6 +182,7 @@ if(isset($config['masseninva'])) {
 			planetenKategorie,
 			planetenUpdateOverview,
 			planetenUpdate,
+			planetenUnscannbar,
 			planetenGebPlanet,
 			planetenGebOrbit,
 			planetenKommentar,
@@ -260,7 +261,7 @@ if(isset($config['masseninva'])) {
 	<td>'.datatable::typ($row['planetenTyp']).'</td>
 	<td>'.datatable::bevoelkerung($row['planetenBevoelkerung']).'</td>
 	<td>'.datatable::gate($row['planetenGateEntf'], $user->settings['antrieb']).'</td>
-	<td>'.datatable::scan($row['planetenUpdate'], $config['scan_veraltet']).'</td>
+	<td>'.datatable::scan($row['planetenUpdateOverview'], $config['scan_veraltet'], $row['planetenUnscannbar']).'</td>
 	<td>'.datatable::screenshot($row, $config['scan_veraltet']).'</td>
 	<td>'.datatable::kategorie($row['planetenKategorie']).'</td>
 	<td>'.datatable::kommentar($row['planetenKommentar'], $row['planetenID']).'</td>
@@ -398,6 +399,7 @@ Bev&ouml;lkerung
 				planetenKategorie,
 				planetenUpdateOverview,
 				planetenUpdate,
+				planetenUnscannbar,
 				planetenGebPlanet,
 				planetenGebOrbit,
 				planetenKommentar,
@@ -415,7 +417,7 @@ Bev&ouml;lkerung
 				
 				user_playerName,
 				
-				allianzenTag
+				allianzenTag,
 				
 				invasionenID
 			FROM
@@ -453,7 +455,7 @@ Bev&ouml;lkerung
 	<td>'.datatable::typ($row['planetenTyp']).'</td>
 	<td>'.datatable::bevoelkerung($row['planetenBevoelkerung']).'</td>
 	<td>'.datatable::gate($row['planetenGateEntf'], $user->settings['antrieb']).'</td>
-	<td>'.datatable::scan($row['planetenUpdate'], $config['scan_veraltet']).'</td>
+	<td>'.datatable::scan($row['planetenUpdateOverview'], $config['scan_veraltet'], $row['planetenUnscannbar']).'</td>
 	<td>'.datatable::screenshot($row, $config['scan_veraltet']).'</td>
 	<td>'.datatable::kategorie($row['planetenKategorie']).'</td>
 	<td>'.datatable::kommentar($row['planetenKommentar'], $row['planetenID']).'</td>

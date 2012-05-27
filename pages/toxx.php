@@ -337,6 +337,7 @@ else if($_GET['sp'] == 'send') {
 						planetenGroesse,
 						planetenTyp,
 						planetenUpdateOverview,
+						planetenUnscannbar,
 						planetenGebPlanet,
 						planetenGebOrbit,
 						planetenKategorie,
@@ -434,7 +435,7 @@ else if($_GET['sp'] == 'send') {
 					<td>'.$row['planetenGroesse'].'</td>
 					<td>'.datatable::typ($row['planetenTyp']).'</td>
 					<td>'.flugdauer($row['planetenEntfernung'], $_POST['antrieb']).'</td>
-					<td>'.datatable::scan($row['planetenUpdateOverview'], $config['scan_veraltet']).'</td>';
+					<td>'.datatable::scan($row['planetenUpdateOverview'], $config['scan_veraltet'], $row['planetenUnscannbar']).'</td>';
 						// Miniaturansicht
 						// Berechtigung überprüfen, den Scan zu sehen
 						$r = $user->rechte['show_planet'];

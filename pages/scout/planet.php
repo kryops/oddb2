@@ -159,6 +159,7 @@ else {
 					planetenGroesse,
 					planetenTyp,
 					planetenUpdateOverview,
+					planetenUnscannbar,
 					planetenGebPlanet,
 					planetenGebOrbit,
 					planetenKategorie,
@@ -242,7 +243,7 @@ else {
 					<td>'.$row['planetenGroesse'].'</td>
 					<td>'.datatable::typ($row['planetenTyp']).'</td>
 					<td>'.flugdauer($row['planetenEntfernung'], $_POST['antrieb']).'</td>
-					<td>'.datatable::scan($row['planetenUpdateOverview'], $config['scan_veraltet']).'</td>
+					<td>'.datatable::scan($row['planetenUpdateOverview'], $config['scan_veraltet'], $row['planetenUnscannbar']).'</td>
 					<td>'.datatable::screenshot($row, $config['scan_veraltet']).'</td>
 					<td>'.datatable::kategorie($row['planetenKategorie'], $row['planetenUpdateOverview'], $row).'</td>
 					<td>'.datatable::kommentar($row['planetenKommentar'], $row['planetenID']).'</td>

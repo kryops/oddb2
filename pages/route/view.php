@@ -221,6 +221,7 @@ else {
 				planetenRMKristall,
 				planetenRMFluor,
 				planetenUpdateOverview,
+				planetenUnscannbar,
 				planetenGebPlanet,
 				planetenGebOrbit,
 				planetenKategorie,
@@ -302,7 +303,7 @@ else {
 					$tmpl->content .= '<td>'.flugdauer($row['planetenEntfernung'], $route->antrieb).'</td>';
 				}
 				$tmpl->content .= '
-		<td>'.datatable::scan($row['planetenUpdateOverview'], $config['scan_veraltet']).'</td>
+		<td>'.datatable::scan($row['planetenUpdateOverview'], $config['scan_veraltet'], $row['planetenUnscannbar']).'</td>
 		<td>'.datatable::screenshot($row, $config['scan_veraltet']).'</td>
 		<td>'.datatable::kategorie($row['planetenKategorie'], $row['planetenUpdateOverview'], $row).'</td>
 		<td>'.datatable::kommentar($row['planetenKommentar'], $row['planetenID']).'</td>';

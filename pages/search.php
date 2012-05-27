@@ -519,7 +519,8 @@ else {
 				<option value="4"'.((isset($_GET['sc']) AND $_GET['sc'] == 4) ? ' selected="selected"' : '').'>&auml;lter als (Tage)</option>
 			</select> 
 			<input type="text" class="smalltext sct" name="sct" value="'.(isset($_GET['sct']) ? htmlspecialchars($_GET['sct'], ENT_COMPAT, 'UTF-8') : '').'" style="'.((!isset($_GET['sc']) OR $_GET['sc'] < 3) ? 'display:none;' : '').'width:40px" /> &nbsp; &nbsp;
-			automatisch kategorisiert 
+			<input type="checkbox" name="usc"'.(isset($_GET['usc']) ? ' checked="checked"' : '').' /> <span class="togglecheckbox" data-name="usc">unscannbar</span> &nbsp; &nbsp;
+			kategorisiert 
 			<select name="k">
 				<option value=""></option>
 				<option value="0"'.((isset($_GET['k']) AND $_GET['k'] == 0) ? ' selected="selected"' : '').'>nicht kategorisiert</option>
@@ -1109,6 +1110,10 @@ else {
 				else if($_GET['sct'] > 0) {
 					$conds[] = 'planetenUpdateOverview '.(($_GET['sc'] == 3) ? '>' : '<').' '.(time()-$_GET['sct']*86400);
 				}
+			}
+			// unscannbar
+			if(isset($_GET['usc'])) {
+				$conds[] = 'planetenUnscannbar > planetenUpdateOverview';
 			}
 			// Kategorie
 			if(isset($_GET['k'])) {
@@ -1806,6 +1811,7 @@ else {
 						planetenName,
 						planetenUpdateOverview,
 						planetenUpdate,
+						planetenUnscannbar,
 						planetenTyp,
 						planetenGroesse,
 						planetenKategorie,
@@ -1997,7 +2003,13 @@ else {
 						if($row['planetenUpdateOverview'] >= $heute) $scan = 'heute';
 						else if($row['planetenUpdateOverview']) $scan = strftime('%d.%m.%y', $row['planetenUpdateOverview']);
 						else $scan = 'nie';
+						
 						$spv[12] = '<span class="'.$color.'">'.$scan.'</span>';
+						
+						if($row['planetenUnscannbar'] > $row['planetenUpdateOverview']) {
+							$spv[12] .= ' <span class="red bold">(!)</span>';
+						}
+						
 					}
 					// Miniaturansicht
 					if(isset($sp2[13])) {
@@ -2025,7 +2037,16 @@ else {
 							$scan = strftime('%d.%m.%y', $row['planetenUpdateOverview']);
 							if($row['planetenUpdateOverview'] >= $heute) $scan = 'heute';
 							else $scan = strftime('%d.%m.%y', $row['planetenUpdateOverview']);
-							$spv[13] = '<div class="searchicon tooltip plscreen" style="width:18px;height:18px;background-position:-336px -54px" data-plscreen="'.$row['planetenTyp'].'_0+'.$row['planetenGebPlanet'].'_0+'.$row['planetenGebOrbit'].'_&lt;div class=&quot;'.$color.' center&quot;&gt;Scan: '.$scan.'&lt;/div&gt;"></div>';
+							
+							// Unscannbar
+							if($row['planetenUnscannbar'] > $row['planetenUpdateOverview']) {
+								$unscannbar = '&lt;div class=&quot;red center bold&quot;&gt;unscannbar!&lt;/div&gt;';
+							}
+							else {
+								$unscannbar = '';
+							}
+							
+							$spv[13] = '<div class="searchicon tooltip plscreen" style="width:18px;height:18px;background-position:-336px -54px" data-plscreen="'.$row['planetenTyp'].'_0+'.$row['planetenGebPlanet'].'_0+'.$row['planetenGebOrbit'].'_&lt;div class=&quot;'.$color.' center&quot;&gt;Scan: '.$scan.'&lt;/div&gt;'.$unscannbar.'"></div>';
 						}
 						else $spv[13] = '&nbsp;';
 					}

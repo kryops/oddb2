@@ -204,6 +204,7 @@ $query = query("
 		planetenRMFluor,
 		planetenUpdateOverview,
 		planetenUpdate,
+		planetenUnscannbar,
 		planetenGebPlanet,
 		planetenGebOrbit,
 		planetenKommentar,
@@ -286,7 +287,7 @@ if(mysql_num_rows($query)) {
 	<td>'.datatable::allianz($row['player_allianzenID'], $row['allianzenTag'], $row['statusStatus']).'</td>
 	<td>'.$row['planetenGroesse'].'</td>
 	<td>'.datatable::typ($row['planetenTyp']).'</td>
-	<td>'.datatable::scan($row['planetenUpdateOverview'], $config['scan_veraltet']).'</td>
+	<td>'.datatable::scan($row['planetenUpdateOverview'], $config['scan_veraltet'], $row['planetenUnscannbar']).'</td>
 	<td>'.($row['planetenUpdateOverview'] ? ressmenge2($row['planetenRMErz']) : '?').'</td>
 	<td>'.($row['planetenUpdateOverview'] ? ressmenge2($row['planetenRMMetall']) : '?').'</td>
 	<td>'.($row['planetenUpdateOverview'] ? ressmenge2($row['planetenRMWolfram']) : '?').'</td>

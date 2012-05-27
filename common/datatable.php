@@ -236,9 +236,10 @@ class datatable {
 	 * Scan-Datum
 	 * @param $sc int Timestamp
 	 * @param $days int Tage, ab denen der Scan veraltet ist
+	 * @param $unscannbar int Timestamp des letzten fehlgeschlagenen Scans @default 0
 	 * @return HTML
 	 */
-	public static function scan($sc, $days) {
+	public static function scan($sc, $days, $unscannbar=0) {
 		global $datum_heute;
 		if($datum_heute === NULL) {
 			$datum_heute = strtotime('today');
@@ -250,7 +251,7 @@ class datatable {
 		else if($sc) $scan = strftime('%d.%m.%y', $sc);
 		else $scan = 'nie';
 		
-		return '<span class="'.$color.'">'.$scan.'</span>';
+		return '<span class="'.$color.'">'.$scan.'</span>'.($unscannbar > $sc ? ' <span class="red bold">(!)</span>' : '');
 	}
 	
 	/**
@@ -272,6 +273,7 @@ class datatable {
 			'statusStatus',
 			'allianzenRegister',
 			'planetenUpdateOverview',
+			'planetenUnscannbar',
 			'planetenTyp',
 			'planetenGebPlanet',
 			'planetenGebOrbit'
@@ -309,7 +311,15 @@ class datatable {
 			if($row['planetenUpdateOverview'] >= $datum_heute) $scan = 'heute';
 			else $scan = strftime('%d.%m.%y', $row['planetenUpdateOverview']);
 			
-			$c = '<div class="searchicon tooltip plscreen" style="width:18px;height:18px;background-position:-336px -54px" data-plscreen="'.$row['planetenTyp'].'_0+'.$row['planetenGebPlanet'].'_0+'.$row['planetenGebOrbit'].'_&lt;div class=&quot;'.$color.' center&quot;&gt;Scan: '.$scan.'&lt;/div&gt;"></div>';
+			// Unscannbar
+			if($row['planetenUnscannbar'] > $row['planetenUpdateOverview']) {
+				$unscannbar = '&lt;div class=&quot;red center bold&quot;&gt;unscannbar!&lt;/div&gt;';
+			}
+			else {
+				$unscannbar = '';
+			}
+			
+			$c = '<div class="searchicon tooltip plscreen" style="width:18px;height:18px;background-position:-336px -54px" data-plscreen="'.$row['planetenTyp'].'_0+'.$row['planetenGebPlanet'].'_0+'.$row['planetenGebOrbit'].'_&lt;div class=&quot;'.$color.' center&quot;&gt;Scan: '.$scan.'&lt;/div&gt;'.$unscannbar.'"></div>';
 		}
 		else $c = '&nbsp;';
 		
