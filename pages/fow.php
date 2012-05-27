@@ -347,6 +347,7 @@ if($data['systemeUpdateHidden']) {
 			planetenPosition,
 			planetenUpdateOverview,
 			planetenUpdate,
+			planetenUnscannbar,
 			planetenTyp,
 			planetenGroesse,
 			planetenBevoelkerung,
@@ -697,6 +698,7 @@ if($showr) {
 		<rechte>0</rechte>
 		<scanDate current="2"><![CDATA[keine Berechtigung]]></scanDate>
 		<scanOview>0</scanOview>
+		<scanFailed>0</scanFailed>
 		<scanImg></scanImg>';
 				}
 				// Planet noch nicht gescannt
@@ -705,6 +707,7 @@ if($showr) {
 		<rechte>1</rechte>
 		<scanDate current="2"><![CDATA[noch nicht gescannt]]></scanDate>
 		<scanOview>0</scanOview>
+		<scanFailed>'.$pl['planetenUnscannbar'].'</scanFailed>
 		<scanImg></scanImg>';
 				}
 				else {
@@ -713,6 +716,7 @@ if($showr) {
 		<scanDate current="'.(($pl['planetenUpdateOverview'] > time()-$config['scan_veraltet']*86400) ? '1' : '2').'"><![CDATA['.($pl['planetenUpdateOverview'] > $heute ? 'heute' : strftime('%d.%m.%y', $pl['planetenUpdateOverview'])).']]></scanDate>
 		<scanDateFull current="'.(($pl['planetenUpdate'] > time()-$config['scan_veraltet']*86400) ? '1' : '2').'"><![CDATA['.($pl['planetenUpdate'] > $heute ? 'heute' : strftime('%d.%m.%y', $pl['planetenUpdate'])).']]></scanDateFull>
 		<scanOview>'.$pl['planetenUpdateOverview'].'</scanOview>
+		<scanFailed>'.$pl['planetenUnscannbar'].'</scanFailed>
 		<scanImg><![CDATA['.($oddb ? '' : odscreen($pl['planetenTyp'], $pl['planetenGebPlanet'], $pl['planetenGebOrbit'])).']]></scanImg>';
 				}
 				

@@ -158,6 +158,7 @@ oddbtool.fow = function(page, data) {
 						data['pl'][i]['scan'] += '">Scan: '+$(sc).text()+'</span>';
 						
 						data['pl'][i]['updateoverview'] = $(pl).find('scanOview').text();
+						data['pl'][i]['unscannbar'] = $(pl).find('scanFailed').text();
 						data['pl'][i]['gpl'] = $(pl).find('gebplanet').text();
 						data['pl'][i]['gor'] = $(pl).find('geborbit').text();
 						data['pl'][i]['erzmenge'] = $(pl).find('erzmenge').text();
@@ -269,7 +270,10 @@ oddbtool.fow = function(page, data) {
 							data['pl'][i]['comment'] = '<div style="width:22px;height:18px;background-image:url('+oddbtool.prefs.url+'img/layout/sprite32.png);background-position:-480px -54px;float:left;margin-top:-5px"></div>';
 						}
 						
-						
+						// Unscannbar
+						if(data['pl'][i]['unscannbar'] > data['pl'][i]['updateoverview']) {
+							data['pl'][i]['comment'] += '<div style="position:absolute;top:100px;left:10px;font-weight:bold;color:#ff3322">unscannbar!</div>';
+						}
 						
 						// Planet-Overlay
 						if(data['pl'][i]['updateoverview'] > 0) {

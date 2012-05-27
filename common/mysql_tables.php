@@ -190,6 +190,7 @@ $tables_add = array(
   `planetenName` varchar(100) NOT NULL,
   `planetenUpdateOverview` int(10) unsigned NOT NULL,
   `planetenUpdate` int(10) unsigned NOT NULL,
+  `planetenUnscannbar` int(10) unsigned NOT NULL,
   `planetenTyp` smallint(5) unsigned NOT NULL,
   `planetenGroesse` smallint(5) unsigned NOT NULL,
   `planetenKategorie` smallint(5) unsigned NOT NULL,

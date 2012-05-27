@@ -11,6 +11,41 @@ if(!defined('ODDB')) die('unerlaubter Zugriff!');
 
 // Daten sichern
 $_POST['id'] = (int)$_POST['id'];
+
+
+// Planet unscannbar
+if(isset($_POST['unscannbar'])) {
+	
+	// aktualisieren
+	query("
+		UPDATE
+			".PREFIX."planeten
+		SET
+			planetenUnscannbar = ".time()."
+		WHERE
+			planetenID = ".$_POST['id']."
+	") OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
+	
+	// Log-Eintrag
+	if($config['logging'] >= 2) {
+		insertlog(4, 'scannt den Planet '.$_POST['id'].' ein (fehlgeschlagen: Scanprotektoren)');
+	}
+	
+	// Ausgabe
+	$tmpl->content = 'Planet '.$_POST['id'].' als unscannbar markiert';
+	$tmpl->output();
+	
+	die();
+}
+
+
+
+
+
+
+
+
+// Daten sichern
 $_POST['name'] = escape(html_entity_decode($_POST['name'], ENT_QUOTES, 'utf-8'));
 if(isset($_POST['inhabername'])) {
 	$_POST['inhabername'] = escape(html_entity_decode($_POST['inhabername'], ENT_QUOTES, 'utf-8'));

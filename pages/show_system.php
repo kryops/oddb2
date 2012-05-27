@@ -186,6 +186,7 @@ else if($_GET['sp'] == '') {
 				planetenPosition,
 				planetenUpdateOverview,
 				planetenUpdate,
+				planetenUnscannbar,
 				planetenTyp,
 				planetenGroesse,
 				planetenBevoelkerung,
@@ -645,8 +646,14 @@ else if($_GET['sp'] == '') {
 						if(trim($pl['planetenKommentar']) != '') {
 							$tmpl->content .= '<div class="kommentar" style="float:left;margin-top:-5px"></div>';
 						}
+						
 						$tmpl->content .= '
 						<span class="'.scan_color($pl['planetenUpdateOverview'], $config['scan_veraltet']).'">Scan: '.($pl['planetenUpdateOverview'] > $heute ? 'heute' : strftime('%d.%m.%y', $pl['planetenUpdateOverview'])).'</span>';
+						
+						// Unscannbar
+						if($pl['planetenUnscannbar'] > $pl['planetenUpdateOverview']) {
+							$tmpl->content .= '<div class="red center bold">unscannbar!</div>';
+						}
 					}
 					// Gate
 					$o = false;

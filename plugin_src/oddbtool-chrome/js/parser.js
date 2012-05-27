@@ -484,6 +484,18 @@ oddbtool.parsePage = function(page, manual) {
 			}
 		}
 		//
+		// unscannbarer Planet
+		//
+		else if(ctree.find("b:contains('Ihre Scanner reichen nicht aus diesen Planeten zu scannen'), b:contains('Your scanners are not strong enough to scan this planet')").length) {
+			
+			out['typ'] = 'planet';
+			out['unscannbar'] = 1;
+			
+			// ID ermitteln
+			out['id'] = ctree.find('a[href^="?op=orbit"]').attr('href').replace(/[^\d]/g, '');
+			
+		}
+		//
 		// Planetenübersicht
 		//
 		else if(ctree.find('a[href="?op=planlist&order=name"]').length) {

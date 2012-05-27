@@ -20,6 +20,7 @@ $sql = "
 		planeten_playerID,
 		planetenUpdateOverview,
 		planetenUpdate,
+		planetenUnscannbar,
 		planetenTyp,
 		planetenGroesse,
 		planetenGebPlanet,
@@ -153,7 +154,16 @@ if(!$data['planetenUpdateOverview']) $tmpl->content .= 'noch kein Scan vorhanden
 else if(!$data['planetenUpdate']) $tmpl->content .= 'noch kein voller Scan vorhanden';
 else $tmpl->content .= 'voller Scan '.datum($data['planetenUpdate'], true);
 
-$tmpl->content .= '</span>'.($data['planetenUpdateOverview'] > $data['planetenUpdate'] ? ' <span class="'.scan_color($data['planetenUpdateOverview'], $config['scan_veraltet']).'"> &nbsp; (Oberfl&auml;che '.datum($data['planetenUpdateOverview'], true).')</span>' : '').'
+$tmpl->content .= '</span>'.($data['planetenUpdateOverview'] > $data['planetenUpdate'] ? ' <span class="'.scan_color($data['planetenUpdateOverview'], $config['scan_veraltet']).'"> &nbsp; (Oberfl&auml;che '.datum($data['planetenUpdateOverview'], true).')</span>' : '');
+
+// Unscannbar
+if($data['planetenUnscannbar'] > $data['planetenUpdateOverview']) {
+	$tmpl->content .= '
+	<br /><br />
+	<span class="red bold">Der Planet wurde als unscannbar markiert! ('.datum($data['planetenUnscannbar']).')</span>';
+}
+
+$tmpl->content .= '
 	</div>';
 
 // Spieler gelöscht
