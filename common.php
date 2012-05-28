@@ -25,9 +25,9 @@ define('FILESTAMP', '?5');
 define('ODWORLD', 'int9');
 define('DOWNTIME', false);
 // ODDB Tool-Version
-define('ODDBTOOL', '1.1.4');
-define('ODDBTOOLPATH', 'oddbtool-1_1_4.xpi');
-define('ODDBTOOLPATH_CHROME', 'oddbtool-chrome-1_1_4.crx');
+define('ODDBTOOL', '1.1.5');
+define('ODDBTOOLPATH', 'oddbtool-1_1_5.xpi');
+define('ODDBTOOLPATH_CHROME', 'oddbtool-chrome-1_1_5.crx');
 
 // Debug-Modus
 define('DEBUG', false);
