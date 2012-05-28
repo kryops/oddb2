@@ -1,4 +1,4 @@
-﻿xx.xx.2012 - V2.1.5
+﻿28.05.2012 - V2.1.5
 -------------------
 * Fehlgeschlagene Scans werden jetzt erfasst und die Planeten als unscannbar eingetragen
 * Erweitertes Kontextmenü bei Planeten- und Systemlinks
