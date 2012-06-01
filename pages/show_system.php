@@ -560,6 +560,11 @@ else if($_GET['sp'] == '') {
 						}
 						$tmpl->content .= '
 						<span class="red">noch nicht gescannt</span>';
+						
+						// Unscannbar
+						if($pl['planetenUnscannbar'] > $pl['planetenUpdateOverview']) {
+							$tmpl->content .= '<div class="red center bold">unscannbar!</div>';
+						}
 					}
 					// Planet gescannt
 					else {
