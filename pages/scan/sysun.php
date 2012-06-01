@@ -71,7 +71,15 @@ else {
 	// Allianzen im System evtl ändern
 	if($data['systemeAllianzen'] != '' AND isset($_POST['scannerally']) AND (int)$_POST['scannerally']) {
 		$_POST['scannerally'] = (int)$_POST['scannerally'];
+		
 		$data['systemeAllianzen'] = str_replace('+', '', explode('++', $data['systemeAllianzen']));
+		
+		foreach($data['systemeAllianzen'] as $key=>$val) {
+			if($val === '') {
+				unset($data['systemeAllianzen'][$key]);
+			}
+		}
+		
 		// Allianz des Scanners aus der Liste löschen
 		if($_POST['scannerally'] AND $key = array_search($_POST['scannerally'], $data['systemeAllianzen'])) {
 			unset($data['systemeAllianzen'][$key]);
@@ -161,6 +169,12 @@ else {
 	
 	// Systemdaten aktualisieren
 	if($count) {
+		
+		// systemeAllianzen wieder in String umwandeln
+		if(is_array($data['systemeAllianzen'])) {
+			$data['systemeAllianzen'] = '+'.implode('++', $data['systemeAllianzen']).'+';
+		}
+		
 		query("
 			UPDATE ".PREFIX."systeme
 			SET
