@@ -231,7 +231,7 @@ function admincache_clear() {
 		$dir = './cache/';
 		if($handle = @opendir($dir)) {
 			while (($file = readdir($handle)) !== false) {
-				if(is_file($dir.$file) AND $file != '.' AND $file != '..') {
+				if(is_file($dir.$file) AND $file != '.' AND $file != '..' AND $file != 'index.html') {
 					@unlink($dir.$file);
 				}
 			}

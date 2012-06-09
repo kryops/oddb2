@@ -253,50 +253,12 @@ else if($_GET['sp'] == 'add_send') {
 			unset($_POST['mysql_use']);
 		}
 		
-		/*
-		if(isset($_POST['caching']) AND $_POST['caching'] == 0) {
-			$_POST['caching'] = false;
-		}
-		
-		if(isset($_POST['memcached_port'])) {
-			$_POST['memcached_port'] = (int)$_POST['memcached_port'];
-		}
-		
-		if(isset($_POST['ipban'])) {
-			$_POST['ipban'] = (int)$_POST['ipban'];
-			if($_POST['ipban'] < 0) {
-				unset($_POST['ipban']);
-			}
-		}
-		if(isset($_POST['ipban_time'])) {
-			$_POST['ipban_time'] = (int)$_POST['ipban_time'];
-		}
-		
-		if(isset($_POST['flooding'])) {
-			$_POST['flooding'] = (bool)$_POST['flooding'];
-		}
-		
-		if(isset($_POST['flooding_time'])) {
-			$_POST['flooding_time'] = (int)$_POST['flooding_time'];
-			if($_POST['flooding_time'] < 1) {
-				unset($_POST['flooding_time']);
-			}
-		}
-		
-		if(isset($_POST['flooding_pages'])) {
-			$_POST['flooding_pages'] = (int)$_POST['flooding_pages'];
-			if($_POST['flooding_pages'] < 1) {
-				unset($_POST['flooding_pages']);
-			}
-		}
-		*/
-		
 		if(isset($_POST['disable_freischaltung'])) {
 			$_POST['disable_freischaltung'] = (bool)$_POST['disable_freischaltung'];
 		}
 		
 		if(isset($_POST['disable_freischaltung_level'])) {
-			if(!isset($rechte[$_POST['disable_freischaltung_level']])) {
+			if($_POST['disable_freischaltung_level'] === '' OR !isset($rechte[$_POST['disable_freischaltung_level']])) {
 				unset($_POST['disable_freischaltung_level']);
 			}
 			else $_POST['disable_freischaltung_level'] = (int)$_POST['disable_freischaltung_level'];
@@ -759,50 +721,12 @@ else if($_GET['sp'] == 'edit_send') {
 			unset($_POST['name']);
 		}
 		
-		/*
-		if(isset($_POST['caching']) AND $_POST['caching'] == 0) {
-			$_POST['caching'] = false;
-		}
-		
-		if(isset($_POST['memcached_port'])) {
-			$_POST['memcached_port'] = (int)$_POST['memcached_port'];
-		}
-		
-		if(isset($_POST['ipban'])) {
-			$_POST['ipban'] = (int)$_POST['ipban'];
-			if($_POST['ipban'] < 0) {
-				unset($_POST['ipban']);
-			}
-		}
-		if(isset($_POST['ipban_time'])) {
-			$_POST['ipban_time'] = (int)$_POST['ipban_time'];
-		}
-		
-		if(isset($_POST['flooding'])) {
-			$_POST['flooding'] = (bool)$_POST['flooding'];
-		}
-		
-		if(isset($_POST['flooding_time'])) {
-			$_POST['flooding_time'] = (int)$_POST['flooding_time'];
-			if($_POST['flooding_time'] < 1) {
-				unset($_POST['flooding_time']);
-			}
-		}
-		
-		if(isset($_POST['flooding_pages'])) {
-			$_POST['flooding_pages'] = (int)$_POST['flooding_pages'];
-			if($_POST['flooding_pages'] < 1) {
-				unset($_POST['flooding_pages']);
-			}
-		}
-		*/
-		
 		if(isset($_POST['disable_freischaltung'])) {
 			$_POST['disable_freischaltung'] = (bool)$_POST['disable_freischaltung'];
 		}
 		
 		if(isset($_POST['disable_freischaltung_level'])) {
-			if(!isset($rechte[$_POST['disable_freischaltung_level']])) {
+			if($_POST['disable_freischaltung_level'] === '' OR !isset($rechte[$_POST['disable_freischaltung_level']])) {
 				unset($_POST['disable_freischaltung_level']);
 			}
 			else $_POST['disable_freischaltung_level'] = (int)$_POST['disable_freischaltung_level'];
@@ -850,7 +774,7 @@ else if($_GET['sp'] == 'edit_send') {
 			$instance = $_GET['id'];
 			$instance_name = $name;
 			
-			$tmpl->script = '$(\'.dbrow'.$instance.'\').html(\''.addslashes('<td>'.$instance.'</td><td>'.(trim($instance_name) != '' ? htmlspecialchars($instance_name, ENT_COMPAT, 'UTF-8') : ' - ').'</td><td>'.($c ? htmlspecialchars($c['mysql_user'].'@'.$c['mysql_host'].' - [DB] '.$c['mysql_db'].' [Prefix] '.$c['mysql_prefix'], ENT_COMPAT, 'UTF-8') : '<i>unbekannt</i>').'</td><td>'.($c ? ($c['active'] ? 'ja' : '<span class="tooltip" tooltip="'.htmlspecialchars($c['offlinemsg'], ENT_COMPAT, 'UTF-8').'">nein</span>') : '<i>unbekannt</i>').'</td><td class="userlistaction"><img src="../img/layout/leer.gif" style="background-position:-1020px -91px" class="link winlink contextmenu hoverbutton" link="index.php?p=dbs&sp=edit&id='.$instance.'" title="Datenbank bearbeiten" /> <img src="../img/layout/leer.gif" style="background-position:-1040px -91px;cursor:pointer" class="hoverbutton" onclick="if(window.confirm(\'Soll die Datenbank wirklich unwiderruflich gelöscht werden?\')){ajaxcall(\'index.php?p=dbs&sp=del&id='.$instance.'&ajax\', this.parentNode, false, false)}" title="Datenbank l&ouml;schen" /></td>').'\');
+			$tmpl->script = '$(\'.dbrow'.$instance.'\').html(\''.addslashes('<td>'.$instance.'</td><td>'.(trim($instance_name) != '' ? htmlspecialchars($instance_name, ENT_COMPAT, 'UTF-8') : ' - ').'</td><td>'.($c ? htmlspecialchars($c['mysql_user'].'@'.$c['mysql_host'].' - [DB] '.$c['mysql_db'].' [Prefix] '.$c['mysql_prefix'], ENT_COMPAT, 'UTF-8') : '<i>unbekannt</i>').'</td><td>'.($c ? ($c['active'] ? 'ja' : '<span class="tooltip" tooltip="'.htmlspecialchars($c['offlinemsg'], ENT_COMPAT, 'UTF-8').'">nein</span>') : '<i>unbekannt</i>').'</td><td class="userlistaction"><img src="../img/layout/leer.gif" style="background-position:-1020px -91px" class="link winlink contextmenu hoverbutton" link="index.php?p=dbs&sp=edit&id='.$instance.'" title="Datenbank bearbeiten" />'.($instance != 1 ? ' <img src="../img/layout/leer.gif" style="background-position:-1040px -91px;cursor:pointer" class="hoverbutton" onclick="if(window.confirm(\'Soll die Datenbank wirklich unwiderruflich gelöscht werden?\')){ajaxcall(\'index.php?p=dbs&sp=del&id='.$instance.'&ajax\', this.parentNode, false, false)}" title="Datenbank l&ouml;schen" />' : '').'</td>').'\');
 parentwin_close(\'.dbedit'.$instance.'\');';
 		}
 	}
@@ -998,26 +922,7 @@ else if($_GET['sp'] == 'add') {
 	</tr>
 	<tr>
 		<th colspan="2">MySQL</th>
-	</tr>';
-	/*
-	<tr>
-		<td>Server</td>
-		<td><input type="text" class="text" name="mysql_host" /> <span class="small hint">('.htmlspecialchars($bconfig['mysql_host'], ENT_COMPAT, 'UTF-8').')</span></td>
 	</tr>
-	<tr>
-		<td>Benutzername</td>
-		<td><input type="text" class="text" name="mysql_user" /> <span class="small hint">('.htmlspecialchars($bconfig['mysql_user'], ENT_COMPAT, 'UTF-8').')</span></td>
-	</tr>
-	<tr>
-		<td>Passwort</td>
-		<td><input type="password" class="text" name="mysql_pw" /> <span class="small hint">('.htmlspecialchars($bconfig['mysql_pw'], ENT_COMPAT, 'UTF-8').')</span></td>
-	</tr>
-	<tr>
-		<td>Datenbank</td>
-		<td><input type="text" class="text" name="mysql_db" /> <span class="small hint">('.htmlspecialchars($bconfig['mysql_db'], ENT_COMPAT, 'UTF-8').')</span></td>
-	</tr>
-	*/
-	$tmpl->content .= '
 	<tr>
 		<td>Tabellen-Pr&auml;fix</td>
 		<td>
@@ -1028,75 +933,10 @@ else if($_GET['sp'] == 'add') {
 	</tr>
 	<tr>
 		<td colspan="2">&nbsp;</td>
-	</tr>';
-	/*
-	<tr>
-		<th colspan="2">Caching</th>
 	</tr>
-	<tr>
-		<td>Cache-Typ</td>
-		<td><select name="caching" size="1" class="tooltip" tooltip="Regelt, wie bestimmte Inhalte zwischengespeichert werden. Zum Cachen wird das PHP-Modul APC oder ein memcached-Server ben&ouml;tigt.">
-		<option value=""></option>
-		<option value="0">deaktiviert</option>
-		<option value="1">APC</option>
-		<option value="2">memcached</option>
-		</select> <span class="small hint">(';
-	if(!$bconfig['caching']) {
-		$tmpl->content .= 'deaktiviert';
-	}
-	else if($bconfig['caching'] == 1) {
-		$tmpl->content .= 'APC';
-	}
-	else {
-		$tmpl->content .= 'memcached';
-	}
-	$tmpl->content .= ')</span></td>
-	</tr>
-	<tr>
-		<td>memcached-Server</td>
-		<td><input type="text" class="text tooltip" name="memcached_host" tooltip="nur aktiv, wenn Caching auf memcached gesetzt" /> <span class="small hint">('.htmlspecialchars($bconfig['memcached_host'], ENT_COMPAT, 'UTF-8').')</span></td>
-	</tr>
-	<tr>
-		<td>memcached-Port</td>
-		<td><input type="text" class="text tooltip" name="memcached_port" tooltip="nur aktiv, wenn Caching auf memcached gesetzt" /> <span class="small hint">('.htmlspecialchars($bconfig['memcached_port'], ENT_COMPAT, 'UTF-8').')</span></td>
-	</tr>
-	<tr>
-		<td colspan="2">&nbsp;</td>
-	</tr>
-	*/
-	$tmpl->content .= '
 	<tr>
 		<th colspan="2">Sicherheit</th>
-	</tr>';
-	/*
-	<tr>
-		<td>IP-Ban Versuche (0 = deaktiviert)</td>
-		<td><input type="text" class="text tooltip" name="ipban" tooltip="0 = IP-Ban deaktivieren" /> <span class="small hint">('.htmlspecialchars($bconfig['ipban'], ENT_COMPAT, 'UTF-8').')</span></td>
 	</tr>
-	<tr>
-		<td>IP-Ban Bannzeit (Minuten)</td>
-		<td><input type="text" class="text tooltip" name="ipban_time" tooltip="Zeit in Minuten, die eine IP gesperrt bleibt" /> <span class="small hint">('.htmlspecialchars($bconfig['ipban_time'], ENT_COMPAT, 'UTF-8').')</span></td>
-	</tr>
-	<tr>
-		<td>Flooding-Schutz aktiv</td>
-		<td><select name="flooding" size="1" class="tooltip" tooltip="Begrenzt die maximalen Seitenaufrufe eines Users innerhalb einer bestimmten Zeitspanne">
-		<option value=""></option>
-		<option value="0">nein</option>
-		<option value="1">ja</option>
-		</select> <span class="small hint">('.($bconfig['flooding'] ? 'ja' : 'nein').')</span>
-		&nbsp; <img src="img/layout/leer.gif" alt="" class="icon infobutton tooltip" style="cursor:default" data-tooltip="Ist der Flooding-Schutz aktiv, werden alle Anfragen eines Benutzers blockiert, wenn er mehr als eine bestimmte Anzahl Seiten in einer bestimmten Zeit aufruft" />
-		</td>
-	</tr>
-	<tr>
-		<td>Flooding-Zeit (Sekunden)</td>
-		<td><input type="text" class="text tooltip" name="flooding_time" tooltip="Zeit in Sekunden, in der die Seitenaufrufe gez&auml;hlt werden" /> <span class="small hint">('.htmlspecialchars($bconfig['flooding_time'], ENT_COMPAT, 'UTF-8').')</span></td>
-	</tr>
-	<tr>
-		<td>Flooding-Seiten</td>
-		<td><input type="text" class="text tooltip" name="flooding_pages" tooltip="maximale Seitenanzahl, die ein User innerhalb der oben festgelegten Zeit aufrufen darf" /> <span class="small hint">('.htmlspecialchars($bconfig['flooding_pages'], ENT_COMPAT, 'UTF-8').')</span></td>
-	</tr>
-	*/
-	$tmpl->content .= '
 	<tr>
 		<td>Spieler automatisch freischalten</td>
 		<td><select name="disable_freischaltung" size="1">
@@ -1261,26 +1101,7 @@ else if($_GET['sp'] == 'edit') {
 		</tr>
 		<tr>
 			<th colspan="2">MySQL</th>
-		</tr>';
-		/*
-		<tr>
-			<td>Server</td>
-			<td><input type="text" class="text" name="mysql_host" value="'.htmlspecialchars($config2['mysql_host'], ENT_COMPAT, 'UTF-8').'" /> <span class="small hint">('.htmlspecialchars($bconfig['mysql_host'], ENT_COMPAT, 'UTF-8').')</span></td>
 		</tr>
-		<tr>
-			<td>Benutzername</td>
-			<td><input type="text" class="text" name="mysql_user" value="'.htmlspecialchars($config2['mysql_user'], ENT_COMPAT, 'UTF-8').'" /> <span class="small hint">('.htmlspecialchars($bconfig['mysql_user'], ENT_COMPAT, 'UTF-8').')</span></td>
-		</tr>
-		<tr>
-			<td>Passwort</td>
-			<td><input type="password" class="text" name="mysql_pw" value="'.htmlspecialchars($config2['mysql_pw'], ENT_COMPAT, 'UTF-8').'" /> <span class="small hint">('.htmlspecialchars($bconfig['mysql_pw'], ENT_COMPAT, 'UTF-8').')</span></td>
-		</tr>
-		<tr>
-			<td>Datenbank</td>
-			<td><input type="text" class="text" name="mysql_db" value="'.htmlspecialchars($config2['mysql_db'], ENT_COMPAT, 'UTF-8').'" /> <span class="small hint">('.htmlspecialchars($bconfig['mysql_db'], ENT_COMPAT, 'UTF-8').')</span></td>
-		</tr>
-		*/
-		$tmpl->content .= '
 		<tr>
 			<td>Tabellen-Pr&auml;fix</td>
 			<td><input type="text" class="text" name="mysql_prefix" value="'.htmlspecialchars($config2['mysql_prefix'], ENT_COMPAT, 'UTF-8').'" /></td>
@@ -1290,74 +1111,10 @@ else if($_GET['sp'] == 'edit') {
 		</tr>
 		<tr>
 			<td colspan="2">&nbsp;</td>
-		</tr>';
-		/*
-		<tr>
-			<th colspan="2">Caching</th>
 		</tr>
-		<tr>
-			<td>Cache-Typ</td>
-			<td><select name="caching" size="1" class="tooltip" tooltip="Regelt, wie bestimmte Inhalte zwischengespeichert werden. Zum Cachen wird das PHP-Modul APC oder ein memcached-Server ben&ouml;tigt.">
-			<option value=""></option>
-			<option value="0"'.($config2['caching'] === false ? ' selected="selected"' : '').'>deaktiviert</option>
-			<option value="1"'.($config2['caching'] == 1 ? ' selected="selected"' : '').'>APC</option>
-			<option value="2"'.($config2['caching'] == 2 ? ' selected="selected"' : '').'>memcached</option>
-			</select> <span class="small hint">(';
-		if(!$bconfig['caching']) {
-			$tmpl->content .= 'deaktiviert';
-		}
-		else if($bconfig['caching'] == 1) {
-			$tmpl->content .= 'APC';
-		}
-		else {
-			$tmpl->content .= 'memcached';
-		}
-		$tmpl->content .= ')</span></td>
-		</tr>
-		<tr>
-			<td>memcached-Server</td>
-			<td><input type="text" class="text tooltip" name="memcached_host" value="'.htmlspecialchars($config2['memcached_host'], ENT_COMPAT, 'UTF-8').'" tooltip="nur aktiv, wenn Caching auf memcached gesetzt" /> <span class="small hint">('.htmlspecialchars($bconfig['memcached_host'], ENT_COMPAT, 'UTF-8').')</span></td>
-		</tr>
-		<tr>
-			<td>memcached-Port</td>
-			<td><input type="text" class="text tooltip" name="memcached_port" value="'.htmlspecialchars($config2['memcached_port'], ENT_COMPAT, 'UTF-8').'" tooltip="nur aktiv, wenn Caching auf memcached gesetzt" /> <span class="small hint">('.htmlspecialchars($bconfig['memcached_port'], ENT_COMPAT, 'UTF-8').')</span></td>
-		</tr>
-		<tr>
-			<td colspan="2">&nbsp;</td>
-		</tr>
-		*/
-		$tmpl->content .= '
 		<tr>
 			<th colspan="2">Sicherheit</th>
-		</tr>';
-		/*
-		<tr>
-			<td>IP-Ban Versuche (0 = deaktiviert)</td>
-			<td><input type="text" class="text tooltip" name="ipban" value="'.htmlspecialchars($config2['ipban'], ENT_COMPAT, 'UTF-8').'" tooltip="0 = IP-Ban deaktivieren" /> <span class="small hint">('.htmlspecialchars($bconfig['ipban'], ENT_COMPAT, 'UTF-8').')</span></td>
 		</tr>
-		<tr>
-			<td>IP-Ban Bannzeit (Minuten)</td>
-			<td><input type="text" class="text tooltip" name="ipban_time" value="'.htmlspecialchars($config2['ipban_time'], ENT_COMPAT, 'UTF-8').'" tooltip="Zeit in Minuten, die eine IP gesperrt bleibt" /> <span class="small hint">('.htmlspecialchars($bconfig['ipban_time'], ENT_COMPAT, 'UTF-8').')</span></td>
-		</tr>
-		<tr>
-			<td>Flooding-Schutz aktiv</td>
-			<td><select name="flooding" size="1" class="tooltip" tooltip="Begrenzt die maximalen Seitenaufrufe eines Users innerhalb einer bestimmten Zeitspanne">
-			<option value=""></option>
-			<option value="0"'.($config2['flooding'] === false ? ' selected="selected"' : '').'>nein</option>
-			<option value="1"'.($config2['flooding'] ? ' selected="selected"' : '').'>ja</option>
-			</select> <span class="small hint">('.($bconfig['flooding'] ? 'ja' : 'nein').')</span>
-			&nbsp; <img src="img/layout/leer.gif" alt="" class="icon infobutton tooltip" style="cursor:default" data-tooltip="Ist der Flooding-Schutz aktiv, werden alle Anfragen eines Benutzers blockiert, wenn er mehr als eine bestimmte Anzahl Seiten in einer bestimmten Zeit aufruft" />
-			</td>
-		</tr>
-		<tr>
-			<td>Flooding-Zeit (Sekunden)</td>
-			<td><input type="text" class="text tooltip" name="flooding_time" value="'.htmlspecialchars($config2['flooding_time'], ENT_COMPAT, 'UTF-8').'" tooltip="Zeit in Sekunden, in der die Seitenaufrufe gez&auml;hlt werden" /> <span class="small hint">('.htmlspecialchars($bconfig['flooding_time'], ENT_COMPAT, 'UTF-8').')</span></td>
-		</tr>
-		<tr>
-			<td>Flooding-Seiten</td>
-			<td><input type="text" class="text tooltip" name="flooding_pages" value="'.htmlspecialchars($config2['flooding_pages'], ENT_COMPAT, 'UTF-8').'" tooltip="maximale Seitenanzahl, die ein User innerhalb der oben festgelegten Zeit aufrufen darf" /> <span class="small hint">('.htmlspecialchars($bconfig['flooding_pages'], ENT_COMPAT, 'UTF-8').')</span></td>
-		</tr>*/
-		$tmpl->content .= '
 		<tr>
 			<td>Spieler automatisch freischalten</td>
 			<td><select name="disable_freischaltung" size="1">
@@ -1372,7 +1129,7 @@ else if($_GET['sp'] == 'edit') {
 			<option value=""></option>';
 		foreach($rechte as $key=>$data) {
 			$tmpl->content .= '
-			<option value="'.$key.'"'.($config2['disable_freischaltung_level'] == $key ? ' selected="selected"' : '').'>'.htmlspecialchars($data['name'], ENT_COMPAT, 'UTF-8').'</option>';
+			<option value="'.$key.'"'.(($config2['disable_freischaltung_level'] !== '' AND $config2['disable_freischaltung_level'] == $key) ? ' selected="selected"' : '').'>'.htmlspecialchars($data['name'], ENT_COMPAT, 'UTF-8').'</option>';
 		}
 		$tmpl->content .= '
 			</select> <span class="small hint">('.htmlspecialchars($rechte[$bconfig['disable_freischaltung_level']]['name'], ENT_COMPAT, 'UTF-8').')</span></td>
