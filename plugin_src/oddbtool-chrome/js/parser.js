@@ -840,10 +840,17 @@ oddbtool.parsePage = function(page, manual) {
 			var p;
 			
 			// privat-KoP
-			p = /mit <b>([\d\.]*)<\/b> nicht unterstellbare(?:n|m) Schiff(?:en|) ben\S*tigt <b>([\d\.]*)<\/b> KoP \(<b>([\d\.]*)<\/b> KoP/;
+			p = /nicht unterstellbar\) aus <b>([\d\.]*)<\/b> Schiff\(en\) ben\S*tigt <b>([\d\.]*)<\/b> KoP \(<b>([\d\.]*)<\/b> KoP/;
+			
 			data = p.exec(input);
 			if(data == null) {
-				throw 'Konnte Privat-Kommandopunkte nicht ermitteln!';
+				
+				p = /non-assignable\) of <b>([\d\.]*)<\/b> ship\(s\) use <b>([\d\.]*)<\/b> CoP \(<b>([\d\.]*)<\/b> CoP/;
+				data = p.exec(input);
+				
+				if(data == null) {
+					throw 'Konnte Privat-Kommandopunkte nicht ermitteln!';
+				}
 			}
 			for(var i=1; i<=3; i++) {
 				data[i] = data[i].replace(/\./g, '');
@@ -858,17 +865,28 @@ oddbtool.parsePage = function(page, manual) {
 			out['pkopmax'] = data[3];
 			
 			// Orbiter-KOP dazuzählen
-			p = /Orbiter kosten zus\S*tzlich <b>(\d+)<\/b> private/;
+			p = /Orbiter kosten zus\S*tzlich <b>([\d\.]+)<\/b> private/;
 			data = p.exec(input);
+			
+			if(data == null) {
+				p = /orbiter\(s\) cost you additional  <b>([\d\.]+)<\/b> private/;
+				data = p.exec(input);
+			}
+			
 			if(data != null) {
-				out['pkop'] = parseInt(out['pkop']) + parseInt(data[1]);
+				out['pkop'] = parseInt(out['pkop']) + parseInt(data[1].replace(/\./g, ''));
 			}
 			
 			// AF-KoP
-			p = /mit <b>([\d\.]*)<\/b> <b>unterstellbare(?:n|m) Schiff(?:en|)<\/b> ben\S*tigt <b>([\d\.]*)<\/b> KoP \(<b>([\d\.]*)<\/b> KoP/;
+			p = /\(unterstellbar\) aus <b>([\d\.]*)<\/b> Schiff\(en\) ben\S*tigt <b>([\d\.]*)<\/b> KoP \(<b>([\d\.]*)<\/b> KoP/;
 			data = p.exec(input);
 			if(data == null) {
-				throw 'Konnte AF-Kommandopunkte nicht ermitteln!';
+				p = /\(assignable\) of <b>([\d\.]*)<\/b> ship\(s\) use <b>([\d\.]*)<\/b> CoP \(<b>([\d\.]*)<\/b> CoP/;
+				data = p.exec(input);
+				
+				if(data == null) {
+					throw 'Konnte AF-Kommandopunkte nicht ermitteln!';
+				}
 			}
 			for(var i=1; i<=3; i++) {
 				data[i] = data[i].replace(/\./g, '');
@@ -883,11 +901,17 @@ oddbtool.parsePage = function(page, manual) {
 			out['kopmax'] = data[3];
 			
 			// Schiffe im Basar -> vorherige Werte überschreiben
-			p = /sich <b>(\d+)<\/b> Privat-KoP und <b>(\d+)<\/b> normale KoP ergeben./;
+			p = /sich <b>([\d\.]+)<\/b> Privat-KoP und <b>([\d\.]+)<\/b> normale KoP ergeben./;
 			data = p.exec(input);
+			
+			if(data == null) {
+				p = /resulting in <b>([\d\.]+)<\/b> private CoP and <b>([\d\.]+)<\/b> normal CoP/;
+				data = p.exec(input);
+			}
+			
 			if(data != null) {
-				out['pkop'] = data[1];
-				out['kop'] = data[2];
+				out['pkop'] = data[1].replace(/\./g, '');
+				out['kop'] = data[2].replace(/\./g, '');
 			}
 			
 			// Bergbauschiffe
