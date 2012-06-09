@@ -160,6 +160,11 @@ else {
 	// Daten aufbereiten
 	$opfer = $_POST['inhaber'];
 	
+	// Inhaber verschleiert
+	if($opfer < 0) {
+		$opfer = $data['planeten_playerID'];
+	}
+	
 	if(isset($_POST['inva'])) {
 		// Ende
 		if($_POST['inva'] != 4) {
