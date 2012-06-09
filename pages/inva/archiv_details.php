@@ -145,7 +145,7 @@ else {
 			playerName
 		FROM
 			".PREFIX."invasionen_log
-			LEFT JOIN ".PREFIX."player
+			LEFT JOIN ".GLOBPREFIX."player
 				ON playerID = invalog_playerID
 		WHERE
 			invalog_invasionenID = ".$_GET['id']."

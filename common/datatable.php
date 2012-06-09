@@ -271,7 +271,7 @@ class datatable {
 			'planeten_playerID',
 			'player_allianzenID',
 			'statusStatus',
-			'allianzenRegister',
+			'register_allianzenID',
 			'planetenUpdateOverview',
 			'planetenUnscannbar',
 			'planetenTyp',
@@ -299,7 +299,7 @@ class datatable {
 				$r_show = false;
 			}
 			// keine Berechtigung (registrierte Allianzen)
-			else if(!$user->rechte['show_planet_register'] AND $row['allianzenRegister'] AND $row['statusStatus'] != $status_meta) {
+			else if(!$user->rechte['show_planet_register'] AND $row['register_allianzenID'] AND $row['statusStatus'] != $status_meta) {
 				$r_show = false;
 			}
 		}

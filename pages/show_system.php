@@ -518,7 +518,7 @@ else if($_GET['sp'] == '') {
 							$r = false;
 						}
 						// keine Berechtigung (registrierte Allianzen)
-						else if(!$user->rechte['show_planet_register'] AND $pl['allianzenRegister']) {
+						else if(!$user->rechte['show_planet_register'] AND $pl['register_allianzenID']) {
 							$r = false;
 						}
 					}

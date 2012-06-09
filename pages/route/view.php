@@ -241,6 +241,8 @@ else {
 				
 				allianzenTag,
 				
+				register_allianzenID,
+				
 				statusStatus
 			FROM
 				".PREFIX."planeten
@@ -250,6 +252,8 @@ else {
 					ON planeten_playerID = playerID
 				LEFT JOIN ".GLOBPREFIX."allianzen
 					ON allianzenID = player_allianzenID
+				LEFT JOIN ".PREFIX."register
+						ON register_allianzenID = allianzenID
 				LEFT JOIN ".PREFIX."allianzen_status
 					ON statusDBAllianz = ".$user->allianz."
 					AND status_allianzenID = allianzenID
