@@ -22,7 +22,7 @@ if($_GET['sp'] == 'fow') {
 	<br /><br />
 	<form name="fow" onsubmit="return form_send(this, \'index.php?p=settings&amp;sp=save_fow&amp;ajax\', $(this).siblings(\'.ajax\'))">
 		<div style="line-height:30px">
-		<b>Gates und Tradogates</b>
+		<b>Gates und Myrigates</b>
 		<br />
 		<input type="checkbox" name="gate"'.(isset($fow['gate']) ? ' checked="checked"' : '').' /> <span class="togglecheckbox" data-name="gate">Gate anzeigen</span>
 		<br />';
@@ -30,7 +30,7 @@ if($_GET['sp'] == 'fow') {
 	// Myrigate
 	if($user->rechte['show_myrigates']) {
 		$content .= '
-		<input type="checkbox" name="mgate"'.(isset($fow['mgate']) ? ' checked="checked"' : '').' /> <span class="togglecheckbox" data-name="mgate">n&auml;chstes Tradogate anzeigen</span>
+		<input type="checkbox" name="mgate"'.(isset($fow['mgate']) ? ' checked="checked"' : '').' /> <span class="togglecheckbox" data-name="mgate">n&auml;chstes Myrigate anzeigen</span>
 		<br />';
 	}
 	
