@@ -1003,7 +1003,7 @@ if(count($fow) OR !$showr) {
 						AND status_allianzenID = allianzenID
 				WHERE
 					myrigates_galaxienID = ".$data['systeme_galaxienID']."
-					AND (statusStatus IN(".implode(", ", $status_freund).") OR (planeten_playerID = 0 AND myrigatesSprung = 1))
+					AND (statusStatus IN(".implode(", ", $status_freund).") OR (planeten_playerID = 0 AND myrigatesSprung > 0))
 				ORDER BY
 					planetenEntfernung ASC
 			") OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());

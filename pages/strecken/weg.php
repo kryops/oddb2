@@ -285,7 +285,7 @@ else if($_GET['sp'] == 'weg_send') {
 						ON allianzenID = player_allianzenID
 				WHERE
 					myrigates_galaxienID = ".$gala."
-					AND (player_allianzenID IN (".$hak.") OR (planeten_playerID = 0 AND myrigatesSprung = 1))
+					AND (player_allianzenID IN (".$hak.") OR (planeten_playerID = 0 AND myrigatesSprung > 0))
 				ORDER BY
 					planetenEntfernung ASC
 				LIMIT 1
