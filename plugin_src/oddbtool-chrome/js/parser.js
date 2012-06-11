@@ -187,14 +187,15 @@ oddbtool.parsePage = function(page, manual) {
 						// kein Genesis -> Werte
 						if(data.indexOf('!&lt;\/b&gt;&lt;\/center&gt;') == -1 && data.indexOf('demateriali') == -1) {
 							data = data.replace(/','.*$/, '');
+							data = data.replace(/http:\/\/[a-zA-Z0-9]*\.*omega/g, '');
 							data = data.split('<br>');
 							
-							pl[i]['erz'] = data[3].replace(/[^\d+]/g, '');
-							pl[i]['wolfram'] = data[4].replace(/[^\d+]/g, '');
-							pl[i]['kristall'] = data[5].replace(/[^\d+]/g, '');
-							pl[i]['fluor'] = data[6].replace(/[^\d+]/g, '');
-							pl[i]['bev'] = data[8].replace(/[^\d+]/g, '');
-							pl[i]['groesse'] = data[10].replace(/[^\d+]/g, '');
+							pl[i]['erz'] = data[4].replace(/[^\d+]/g, '');
+							pl[i]['wolfram'] = data[5].replace(/[^\d+]/g, '');
+							pl[i]['kristall'] = data[6].replace(/[^\d+]/g, '');
+							pl[i]['fluor'] = data[7].replace(/[^\d+]/g, '');
+							pl[i]['bev'] = data[9].replace(/[^\d+]/g, '');
+							pl[i]['groesse'] = data[11].replace(/[^\d+]/g, '');
 							
 							// Workaround: Unbewohnbare Planis Größe 2
 							if(pl[i]['groesse'] == '') {
