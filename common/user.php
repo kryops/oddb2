@@ -405,7 +405,7 @@ function getrechte($level, $pallies, $pgalas, $allyrechte, $userrechte) {
  *
  * @return bool Erfolg
  */
-function odrequest($uid, $always = false, $minpunkte = 0) {
+function odrequest($uid, $always = false, $minpunkte = 0, $auto = false) {
 	global $odrallies, $dbs, $cache, $gconfig, $config, $odip;
 	
 	/*
@@ -664,17 +664,21 @@ playeratm=4173&userid=602511&name=Kryops&points=34202&titel=&warpoints=8608&gesi
 	}
 	// User hat sich gelöscht
 	else if(isset($oddata['name'], $oddata['playeratm']) AND $oddata['playeratm']) {
-		// Deleted auf 1, Ally auf 0 setzen
-		query("
-			UPDATE ".$config['mysql_globprefix']."player
-			SET
-				playerDeleted = 1,
-				player_allianzenID = 0,
-				playerUpdate = ".time()."
-			WHERE
-				playerID = ".$uid."
-		") OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
-		
+		if(!$auto) {
+			// Deleted auf 1, Ally auf 0 setzen
+			query("
+				UPDATE ".$config['mysql_globprefix']."player
+				SET
+					playerDeleted = 1,
+					player_allianzenID = 0,
+					playerUpdate = ".time()."
+				WHERE
+					playerID = ".$uid."
+			") OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
+		}
+		else {
+			return false;
+		}
 		
 		///////////////////////////////////////
 

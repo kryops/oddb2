@@ -126,6 +126,13 @@ function inva_archiv($id, $log) {
 }
 
 
+//
+// odrequest-Statistik leeren
+//
+if(CACHING) {
+	$cache->removeglobal('odrequest');
+}
+
 
 // Instanzen durchgehen
 foreach($dbs as $instance) {
@@ -407,12 +414,101 @@ foreach($dbs as $instance) {
 		ALTER TABLE ".$prefix."planeten
 		ORDER BY planetenID
 	", $conn) OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
+}
+
+//
+// neue Spieler eintragen
+//
+$query = mysql_query("
+	SELECT
+		MIN(playerID) AS minid
+	FROM
+		".GLOBPREFIX."player
+	WHERE
+		playerID > 1000
+", $conn) OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
+
+$data = mysql_fetch_assoc($query);
+
+$minid = $data['minid'];
+
+
+// OD-Konnektivität testen
+$file = 'http://www.omega-day.com/game/states/live_state.php?userid=999&world='.ODWORLD;
+$connection = @fopen($file,'r');
+$od_up = false;
+
+if($connection) {
+	$buffer = fread($connection, 4096);
+	fclose($connection);
 	
-	//
-	// odrequest-Statistik leeren
-	//
-	if(CACHING) {
-		$cache->removeglobal('odrequest');
+	
+	// Internal Server Error
+	if(stripos($buffer, 'Internal Server Error') === false) {
+		// OD-MySQL-Fehler umgehen
+		if(strpos($buffer, '<b>68</b><br />') !== false) {
+			$buffer = preg_replace('#^(.*)<b>68</b><br />#Uis', '', $buffer);
+		}
+		
+		// als Array parsen
+		parse_str($buffer, $oddata);
+		
+		// bei ungewöhnlicher Rückgabe abbrechen
+		if(isset($oddata['name'], $oddata['version'])) {
+			$od_up = true;
+		}
+	}
+}
+
+
+if($minid AND $od_up) {
+	
+	$counter = $minid;
+	$ids = array();
+	
+	// Spieler abfragen
+	$query = mysql_query("
+		SELECT
+			playerID
+		FROM
+			".GLOBPREFIX."player
+		WHERE
+			playerID > 1000
+		ORDER BY
+			playerID ASC
+	", $conn) OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
+	
+	while($row = mysql_fetch_assoc($query)) {
+		
+		// nicht eingetragene IDs hinzufügen
+		for($i=$counter; $i < $row['playerID']; $i++) {
+			$ids[] = $i;
+		}
+		
+		// Zähler erhöhen
+		$counter = $row['playerID']+1;
+	}
+	
+	$c = 0;
+	foreach($ids as $id) {
+		
+		// Spieler nicht gefunden: Leeren Spieler eintragen
+		if(!odrequest($id, false, 0, true)) {
+			mysql_query("
+				INSERT INTO
+					".GLOBPREFIX."player
+				SET
+					playerID = ".$id.",
+					playerDeleted = 1
+			", $conn) OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
+		}
+		
+		$c++;
+		
+		// bei 100 abbrechen
+		if($c > 100) {
+			break;
+		}
 	}
 }
 

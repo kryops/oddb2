@@ -193,11 +193,12 @@ if(!$data) {
 			
 			$data = mysql_fetch_assoc($query);
 		}
+		
 	}
 }
 
-// Spieler nicht gefunden
-if(!$data) {
+// Spieler nicht gefunden oder Platzhalter für gelöschten Spieler
+if(!$data OR $data['playerName'] === '') {
 	$tmpl->error = 'Der Spieler wurde nicht gefunden!';
 	$tmpl->output();
 	die();
