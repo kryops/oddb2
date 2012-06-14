@@ -29,6 +29,18 @@ beschr&auml;nken auf eingetragene Werften deiner
 in Galaxie 
 &nbsp;<input type="text" class="smalltext" name="g" value="'.(isset($_GET['g']) ? htmlspecialchars($_GET['g'], ENT_COMPAT, 'UTF-8') : '').'" />
 <br />
+Inhaber <input type="text" class="text" name="player" value="'.(isset($_GET['player']) ? htmlspecialchars($_GET['player'], ENT_COMPAT, 'UTF-8') : '').'" />
+&nbsp; &nbsp;
+Rasse 
+<select name="ra" size="1">
+	<option value="">egal</option>';
+foreach($rassen as $key=>$val) {
+	$content .= '
+	<option value="'.$key.'"'.((isset($_GET['ra']) AND $_GET['ra'] == $key) ? ' selected="selected"' : '').'>'.$val.'</option>';
+}
+$content .= '
+</select>
+<br />
 <input type="checkbox" name="leer" value="1"'.(isset($_GET['leer']) ? ' checked="checked"': '').' /> <span class="togglecheckbox" data-name="leer">nur leerstehende Werften</span> &nbsp; &nbsp; &nbsp;
 <input type="checkbox" name="bed" value="1"'.(isset($_GET['bed']) ? ' checked="checked"': '').' /> <span class="togglecheckbox" data-name="bed">nur Werften mit Ressbedarf</span>
 <br />
@@ -75,6 +87,65 @@ else {
 // Gala
 if(isset($_GET['g']) AND (int)$_GET['g']) {
 	$conds[] = "systeme_galaxienID = ".(int)$_GET['g'];
+}
+
+// Rasse
+if(isset($_GET['ra'])) {
+	$_GET['ra'] = (int)$_GET['ra'];
+	// Lux
+	if($_GET['ra'] == 10) $conds[] = '(playerRasse = '.$_GET['ra'].' OR planeten_playerID = -2)';
+	// bestimmte Altrasse
+	else $conds[] = 'playerRasse = '.$_GET['ra'];
+}
+
+// Inhaber
+if(isset($_GET['player']) AND $_GET['player'] != '') {
+	// Name eingegeben
+	if(preg_replace('/[\d, ]/', '', $_GET['player']) != '') {
+		$query = query("
+			SELECT
+				playerID,
+				player_allianzenID
+			FROM
+				".GLOBPREFIX."player
+			WHERE
+				playerName = '".escape($_GET['player'])."'
+		") OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
+		
+		// nicht gefunden
+		if(!mysql_num_rows($query)) {
+			$conds[] = "1 = 0";
+		}
+		else {
+			$data = mysql_fetch_assoc($query);
+			// Allianz gesperrt
+			if($user->protectedAllies AND in_array($data['player_allianzenID'], $user->protectedAllies)) {
+				$tmpl->error = 'Du hast keinen Zugriff auf die Allianz dieses Spielers!';
+			}
+			else {
+				$conds[] = "planeten_playerID = ".$data['playerID'];
+			}
+		}
+	}
+	// eine ID eingegeben
+	else if(strpos($_GET['player'], ',') === false) {
+		$_GET['player'] = (int)$_GET['player'];
+		if($_GET['player'] > 0) {
+			$conds[] = "planeten_playerID = ".$_GET['player'];
+		}
+	}
+	// mehrere IDs eingegeben
+	else {
+		$_GET['player'] = explode(',', $_GET['player']);
+		foreach($_GET['player'] as $key=>$val) {
+			$val = (int)$val;
+			if($val > 0) $_GET['player'][$key] = $val;
+			else unset($_GET['player'][$key]);
+		}
+		if(count($_GET['player'])) {
+			$conds[] = "planeten_playerID IN(".implode(",", $_GET['player']).")";
+		}
+	}
 }
 
 // nur leerstehende Werften
