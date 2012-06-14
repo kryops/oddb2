@@ -493,6 +493,13 @@ $(document).ready(function(){
 		return false;
 	});
 	
+	// GUI tabben
+	$(document).on('keypress', function(e) {
+		if(e.altKey && e.ctrlKey && e.which == 116) {
+			tab_next();
+		}
+	});
+	
 	// Enter-Taste bei Inputs aktivieren
 	$(document).on('keypress', '.enter', function(e) {
 		if(e.keyCode == 13) {
@@ -1487,6 +1494,48 @@ function tab_reload(id) {
 	
 	// Seite laden
 	page_load(1, false, link, id, false);
+}
+
+
+/** 
+ * zum nächsten Tab wechseln
+ */
+function tab_next() {
+	// nur 1 Tab
+	if(tabs.length < 2) {
+		return false;
+	}
+	
+	var firsttab = false;
+	var next = false;
+	var stop = false;
+	
+	jQuery.each(tabs, function(){
+		
+		if(!stop) {
+			// ersten Tab speichern
+			if(firsttab === false) {
+				firsttab = this[0];
+			}
+			
+			// beim nächsten Tab angekommen
+			if(next) {
+				tab_click(this[0]+'');
+				stop = true;
+			}
+			
+			// beim aktiven Tab angekommen: markieren
+			if(this[0] == acttab) {
+				next = true;
+			}
+		}
+		
+	});
+	
+	// aktiver Tab am Ende: ersten Tab auswählen
+	if(!stop) {
+		tab_click(firsttab+'');
+	}
 }
 
 
