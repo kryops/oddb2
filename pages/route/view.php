@@ -50,7 +50,7 @@ else {
 	</td>
 	<td style="width:50%;line-height:22px;vertical-align:top">';
 	// Rechte zum Bearbeiten
-	if($route->rechte_edit()) {
+	if($r) {
 		$tmpl->content .= '<b>Optionen</b>
 	<br />
 	
@@ -89,12 +89,27 @@ else {
 	</div>';
 		}
 		
+		// als CSV exportieren
+		$tmpl->content .= '
+	<a class="link winlink contextmenu" data-link="index.php?p=route&amp;sp=export&amp;id='.$_GET['id'].'">als CSV exportieren</a>
+	<br />
+		';
+		
 		// bearbeiten und löschen
 		$tmpl->content .= '
 	<a class="link contextmenu" data-link="index.php?p=route&amp;sp=edit&amp;id='.$_GET['id'].'">Details der '.$rnames[$route->info['routenListe']].' &auml;ndern</a>
 	<br />
 	<a onclick="if(window.confirm(\'Soll die '.$rnames[$route->info['routenListe']].' wirklich gelöscht werden?\')){$(this).siblings(\'.dellink\').trigger(\'click\');}">'.$rnames[$route->info['routenListe']].' l&ouml;schen</a>
 	<br />';
+	}
+	// nur CVS-Export
+	else {
+		$tmpl->content .= '
+	<b>Optionen</b>
+	<br />
+	<a class="link winlink contextmenu" data-link="index.php?p=route&amp;sp=export&amp;id='.$_GET['id'].'">als CSV exportieren</a>
+	<br />
+		';
 	}
 	$tmpl->content .= '
 	</td>

@@ -34,7 +34,9 @@ $pages = array(
 	
 	'remove'=>true,
 	
-	'karte'=>true
+	'karte'=>true,
+	
+	'export'=>true
 );
 
 
@@ -326,6 +328,11 @@ else if($_GET['sp'] == 'edit') {
 // Planeten hinzufügen / entfernen
 else if($_GET['sp'] == 'addoptions') {
 	include './pages/route/add.php';
+}
+
+// Planeten hinzufügen / entfernen
+else if($_GET['sp'] == 'export') {
+	include './pages/route/export.php';
 }
 
 // Route/Liste anzeigen
