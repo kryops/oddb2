@@ -1,4 +1,15 @@
-﻿28.05.2012 - V2.1.5
+﻿08.07.2012 - V2.1.6
+-------------------
+* Routen können jetzt als CSV exportiert werden
+* Verbündete Werften-Filter erweitert
+* In der DB können die Tabs nun mit Strg+Alt+T gewechselt werden (nicht im Chrome)
+* neue Spielerprofile werden nachts automatisch eingelesen, um den Inhaber beim Scan von
+  verschleierten Planeten immer korrekt einzutragen
+* mehrere Bugfixes
+
+
+
+28.05.2012 - V2.1.5
 -------------------
 * Fehlgeschlagene Scans werden jetzt erfasst und die Planeten als unscannbar eingetragen
 * Erweitertes Kontextmenü bei Planeten- und Systemlinks
