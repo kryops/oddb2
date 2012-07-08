@@ -18,7 +18,7 @@ if(!defined('ODDB')) die('unerlaubter Zugriff!');
 //
 
 // Hauptversion
-define('VERSION', '2.1.5');
+define('VERSION', '2.1.6');
 // Datei-Zusatz (css und js)
 define('FILESTAMP', '?7');
 // OD-Runde
