@@ -4,7 +4,7 @@
   "manifest_version": 2,
   "description": "Das Chrome-Addon für die ODDB V2",
   "homepage_url": "http://www.kryops.de",
-  "minimum_chrome_vesion": "18",
+  "minimum_chrome_version": "18",
   "icons": {
 	"48": "img/icon48.png",
 	"128": "img/icon128.png"
