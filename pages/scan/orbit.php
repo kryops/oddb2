@@ -56,6 +56,10 @@ if(!mysql_num_rows($query)) {
 else {
 	$data = mysql_fetch_assoc($query);
 	
+	// Inhaber-Verschleierung umgehen
+	$inhaber = ($_POST['inhaber'] >= 0) ? $_POST['inhaber'] : $data['planeten_playerID'];
+	
+	
 	// anderer Inhaber -> History
 	// vorerst nur ändern, wenn eindeutiger Inhaber (Verschleierung)
 	if($_POST['inhaber'] > 0 AND $data['planeten_playerID'] != $_POST['inhaber']) {
@@ -95,7 +99,7 @@ else {
 	}
 	
 	// Urlaubsmodus aktualisieren, falls er einen Inhaber hat
-	if($_POST['inhaber'] > 3) {
+	if($inhaber > 3) {
 		query("
 			UPDATE ".GLOBPREFIX."player
 			SET
@@ -107,7 +111,7 @@ else {
 	
 	$registered = false;
 	$opfer_ally = 0;
-	if($_POST['inhaber'] > 3) {
+	if($inhaber > 3) {
 		$query = query("
 			SELECT
 				user_allianzenID
@@ -158,12 +162,7 @@ else {
 	}
 	
 	// Daten aufbereiten
-	$opfer = $_POST['inhaber'];
-	
-	// Inhaber verschleiert
-	if($opfer < 0) {
-		$opfer = $data['planeten_playerID'];
-	}
+	$opfer = $inhaber;
 	
 	if(isset($_POST['inva'])) {
 		// Ende
