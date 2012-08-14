@@ -113,8 +113,8 @@ else if(isset($_FILES['import'])) {
 	// Dateiinhalt auslesen
 	$data = file_get_contents($_FILES['import']['tmp_name']);
 	
-	// dekomprimieren und JSON dekodieren
-	if(($data = @gzuncompress($data)) === false OR ($data = @json_decode($data, true)) === false OR !isset($data['systems'], $data['planets'])) {
+	// dekomprimieren
+	if(($data = @gzuncompress($data)) === false) {
 		$tmpl->error = 'Ung&uuml;ltige Datei!';
 		$tmpl->output();
 		die();
@@ -195,210 +195,257 @@ else if(isset($_FILES['import'])) {
 	mysql_free_result($query);
 	
 	
-	// Systemdaten abgleichen
-	foreach($data['systems'] as $id=>$row) {
-		$sysupd = (int)$row[0];
-		unset($row[0]);
-		
-		// nur aktuellere Systeme abgleichen
-		if(isset($sys[$id]) AND $sys[$id] < $sysupd) {
-			// System aktualisieren
-			query("
-				UPDATE
-					".PREFIX."systeme
-				SET
-					systemeUpdateHidden = ".$sysupd.",
-					systemeUpdate = ".$sysupd."
-				WHERE
-					systemeID = ".(int)$id."
-			") OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
-			
-			// Planeten durchgehen
-			foreach($row as $plid=>$plrow) {
-				if(count($plrow) == 11 AND isset($pl[$plid])) {
-					// bei verschleierten Planeten Inhaber nicht immer übernehmen
-					$saveowner = true;
-					// Planet verschleiert
-					if($plrow[1] == -2 OR $plrow[1] == -3) {
-						$saveowner = false;
-						
-						// eingetragener Inhaber ganz unbekannt oder Planet vorher frei
-						if($pl[$plid][0] == 0 OR $pl[$plid][0] == -1) {
-							$saveowner = true;
-						}
-						// Altrasse / Lux hat gewechselt
-						if($plrow[1] == -2 AND ($pl[$plid][0] == -3 OR $pl[$plid][3] != 10)) {
-							$saveowner = true;
-						}
-						// Altrasse-Planet war als Lux eingetragen
-						else if($plrow[1] == -3 AND ($pl[$plid][0] == -2 OR $pl[$plid][3] == 10)) {
-							$saveowner = true;
-						}
-					}
-					
-					
-					// Planet aktualisieren
-					query("
-						UPDATE
-							".PREFIX."planeten
-						SET
-							planetenName = '".escape($plrow[0])."',
-							".($saveowner ? "planeten_playerID = ".(int)$plrow[1]."," : "")."
-							planetenGroesse = ".(int)$plrow[2].",
-							planetenBevoelkerung = ".(int)$plrow[3].",
-							planetenNatives = ".(int)$plrow[4].",
-							planetenRWErz = ".(int)$plrow[5].",
-							planetenRWWolfram = ".(int)$plrow[6].",
-							planetenRWKristall = ".(int)$plrow[7].",
-							planetenRWFluor = ".(int)$plrow[8].",
-							planetenMyrigate = ".(int)$plrow[9].",
-							planetenRiss = ".(int)$plrow[10]."
-						WHERE
-							planetenID = ".(int)$plid."
-					") OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
-					
-					// Myrigate eintragen
-					if($plrow[9] AND !isset($mgates[$plid])) {
-						// Galaxie abfragen
-						$query = query("
-							SELECT
-								systeme_galaxienID
-							FROM
-								".PREFIX."systeme
-							WHERE
-								systemeID = ".(int)$id."
-						") OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
-						
-						$gala = mysql_fetch_array($query);
-						$gala = $gala[0];
-						
-						mysql_free_result($query);
-						
-						query("
-							INSERT INTO ".PREFIX."myrigates
-							SET
-								myrigates_planetenID = ".(int)$plid.",
-								myrigates_galaxienID = ".(int)$gala.",
-								myrigatesSprung = ".($plrow[9] == 2 ? $sysupd : "0")."
-						") OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
-					}
-					// Myrigate entfernen
-					else if(!$plrow[9] AND isset($mgates[$plid])) {
-						query("
-							DELETE FROM ".PREFIX."myrigates
-							WHERE
-								myrigates_planetenID = ".(int)$plid."
-						") OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
-					}
-					
-					// Inhaber-History
-					if($saveowner AND $pl[$plid][0] != $plrow[1]) {
-						query("
-							INSERT INTO ".PREFIX."planeten_history
-							SET
-								history_planetenID = ".(int)$plid.",
-								history_playerID = ".(int)$plrow[1].",
-								historyLast = ".(int)$pl[$plid][0].",
-								historyTime = ".$sysupd."
-						") OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
-					}
-				}
-			}
-			
-			// Zähler erhöhen
-			$syscount++;
-		}
-		// System älter -> nur verschleierte Planeten aktualisieren
-		else if(isset($sys[$id])) {
-			// Planeten durchgehen
-			foreach($row as $plid=>$plrow) {
-				// valider Datensatz, Planet eingetragen, verschleiert in der DB, im Export nicht
-				if(count($plrow) == 11 AND isset($pl[$plid]) AND $plrow[1] > 0 AND ($pl[$plid][0] == -2 OR $pl[$plid][0] == -3)) {
-					// Planet aktualisieren
-					query("
-						UPDATE
-							".PREFIX."planeten
-						SET
-							planeten_playerID = ".(int)$plrow[1]."
-						WHERE
-							planetenID = ".(int)$plid."
-					") OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
-					
-					query("
-						INSERT INTO ".PREFIX."planeten_history
-						SET
-							history_planetenID = ".(int)$plid.",
-							history_playerID = ".(int)$plrow[1].",
-							historyLast = ".(int)$pl[$plid][0].",
-							historyTime = ".$sysupd."
-					") OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
-				}
-			}
-		}
-		
-		// bearbeitete Systeme löschen
-		unset($data['systems'][$id]);
+	// Daten abgleichen
+	$abgleich_runde = 0;
+	$abgleich_version = 0;
+	
+	$data = explode('""""', $data);
+	
+	// Ungültige Daten
+	if(count($data) < 2) {
+		$tmpl->error = 'Ung&uuml;ltige Datei!';
+		$tmpl->output();
+		die();
 	}
 	
-	// Variablen löschen, um Speicherplatz zu sparen
-	unset($data['systems']);
-	unset($sys);
-	unset($mgates);
+	$i = 0;
 	
-	// Planetendaten abgleichen
-	foreach($data['planets'] as $id=>$row) {
-		// nur existente, vollständige, aktuellere Planeten abgleichen
-		if(count($row) == 18 AND isset($pl[$id]) AND $pl[$id][1] < $row[0]) {
-			// Oberflächen-Scan aktueller
-			$upd = "
-				planetenKategorie = ".(int)$row[2].",
-				planetenGebPlanet = '".escape($row[3])."',
-				planetenGebOrbit = '".escape($row[4])."',
-				planetenOrbiter = ".(int)$row[5].",
-				planetenRMErz = ".(int)$row[11].",
-				planetenRMMetall = ".(int)$row[12].",
-				planetenRMWolfram = ".(int)$row[13].",
-				planetenRMKristall = ".(int)$row[14].",
-				planetenRMFluor = ".(int)$row[15].",
-				planetenRMGesamt = ".((int)$row[11]+(int)$row[12]+(int)$row[13]+(int)$row[14]+(int)$row[15]).",
-				planetenUpdateOverview = ".(int)$row[0];
+	// Datensätze durchgehen
+	foreach($data as $val) {
+		
+		$i++;
+		
+		// Überprüfen, ob Umgebungsdaten richtig waren
+		if($i == 3) {
+			if($abgleich_runde != ODWORLD) {
+				$tmpl->error = 'Die Runde des Abgleichs stimmt nicht mit der aktuellen Runde &uuml;berein!';
+				$tmpl->output();
+				die();
+			}
+			if($abgleich_version != ABGLEICH_VERSION) {
+				$tmpl->error = 'Der Abgleich wurde mit einer anderen, inkompatiblen Version der ODDB erzeugt!';
+				$tmpl->output();
+				die();
+			}
+		}
+		
+		// Zeile auswerten
+		if(preg_match("/^([A-Z])(\d+)=(.+)$/Uis", $val, $row)) {
+			
+			// Umgebungsdaten
+			if($row[1] == 'C') {
+				if($row[2] == 1) {
+					$abgleich_runde = $row[3];
+				}
+				else if($row[2] == 2) {
+					$abgleich_version = $row[3];
+				}
+			}
+			
+			// System-Datensatz
+			else if($row[1] == 'S') {
 				
-			
-			// bei vollem Scan auch Ressproduktion, Forschung und Industrie übertragen
-			if($row[1] > $pl[$id][2]) {
-				$upd = "
-				planetenRPErz = ".(int)$row[6].",
-				planetenRPMetall = ".(int)$row[7].",
-				planetenRPWolfram = ".(int)$row[8].",
-				planetenRPKristall = ".(int)$row[9].",
-				planetenRPFluor = ".(int)$row[10].",
-				planetenRPGesamt = ".((int)$row[6]+(int)$row[7]+(int)$row[8]+(int)$row[9]+(int)$row[10]).",
-				planetenForschung = ".(int)$row[16].",
-				planetenIndustrie = ".(int)$row[17].",
-				planetenUpdate = ".(int)$row[1].",".$upd;
+				$id = $row[2];
+				$row = json_decode($row[3], true);
+				
+				
+				$sysupd = (int)$row[0];
+				unset($row[0]);
+				
+				// nur aktuellere Systeme abgleichen
+				if(isset($sys[$id]) AND $sys[$id] < $sysupd) {
+					// System aktualisieren
+					query("
+						UPDATE
+							".PREFIX."systeme
+						SET
+							systemeUpdateHidden = ".$sysupd.",
+							systemeUpdate = ".$sysupd."
+						WHERE
+							systemeID = ".(int)$id."
+					") OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
+					
+					// Planeten durchgehen
+					foreach($row as $plid=>$plrow) {
+						if(count($plrow) == 11 AND isset($pl[$plid])) {
+							// bei verschleierten Planeten Inhaber nicht immer übernehmen
+							$saveowner = true;
+							// Planet verschleiert
+							if($plrow[1] == -2 OR $plrow[1] == -3) {
+								$saveowner = false;
+								
+								// eingetragener Inhaber ganz unbekannt oder Planet vorher frei
+								if($pl[$plid][0] == 0 OR $pl[$plid][0] == -1) {
+									$saveowner = true;
+								}
+								// Altrasse / Lux hat gewechselt
+								if($plrow[1] == -2 AND ($pl[$plid][0] == -3 OR $pl[$plid][3] != 10)) {
+									$saveowner = true;
+								}
+								// Altrasse-Planet war als Lux eingetragen
+								else if($plrow[1] == -3 AND ($pl[$plid][0] == -2 OR $pl[$plid][3] == 10)) {
+									$saveowner = true;
+								}
+							}
+							
+							
+							// Planet aktualisieren
+							query("
+								UPDATE
+									".PREFIX."planeten
+								SET
+									planetenName = '".escape($plrow[0])."',
+									".($saveowner ? "planeten_playerID = ".(int)$plrow[1]."," : "")."
+									planetenGroesse = ".(int)$plrow[2].",
+									planetenBevoelkerung = ".(int)$plrow[3].",
+									planetenNatives = ".(int)$plrow[4].",
+									planetenRWErz = ".(int)$plrow[5].",
+									planetenRWWolfram = ".(int)$plrow[6].",
+									planetenRWKristall = ".(int)$plrow[7].",
+									planetenRWFluor = ".(int)$plrow[8].",
+									planetenMyrigate = ".(int)$plrow[9].",
+									planetenRiss = ".(int)$plrow[10]."
+								WHERE
+									planetenID = ".(int)$plid."
+							") OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
+							
+							// Myrigate eintragen
+							if($plrow[9] AND !isset($mgates[$plid])) {
+								// Galaxie abfragen
+								$query = query("
+									SELECT
+										systeme_galaxienID
+									FROM
+										".PREFIX."systeme
+									WHERE
+										systemeID = ".(int)$id."
+								") OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
+								
+								$gala = mysql_fetch_array($query);
+								$gala = $gala[0];
+								
+								mysql_free_result($query);
+								
+								query("
+									INSERT INTO ".PREFIX."myrigates
+									SET
+										myrigates_planetenID = ".(int)$plid.",
+										myrigates_galaxienID = ".(int)$gala.",
+										myrigatesSprung = ".($plrow[9] == 2 ? $sysupd : "0")."
+								") OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
+							}
+							// Myrigate entfernen
+							else if(!$plrow[9] AND isset($mgates[$plid])) {
+								query("
+									DELETE FROM ".PREFIX."myrigates
+									WHERE
+										myrigates_planetenID = ".(int)$plid."
+								") OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
+							}
+							
+							// Inhaber-History
+							if($saveowner AND $pl[$plid][0] != $plrow[1]) {
+								query("
+									INSERT INTO ".PREFIX."planeten_history
+									SET
+										history_planetenID = ".(int)$plid.",
+										history_playerID = ".(int)$plrow[1].",
+										historyLast = ".(int)$pl[$plid][0].",
+										historyTime = ".$sysupd."
+								") OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
+							}
+						}
+					}
+					
+					// Zähler erhöhen
+					$syscount++;
+				}
+				// System älter -> nur verschleierte Planeten aktualisieren
+				else if(isset($sys[$id])) {
+					// Planeten durchgehen
+					foreach($row as $plid=>$plrow) {
+						// valider Datensatz, Planet eingetragen, verschleiert in der DB, im Export nicht
+						if(count($plrow) == 11 AND isset($pl[$plid]) AND $plrow[1] > 0 AND ($pl[$plid][0] == -2 OR $pl[$plid][0] == -3)) {
+							// Planet aktualisieren
+							query("
+								UPDATE
+									".PREFIX."planeten
+								SET
+									planeten_playerID = ".(int)$plrow[1]."
+								WHERE
+									planetenID = ".(int)$plid."
+							") OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
+							
+							query("
+								INSERT INTO ".PREFIX."planeten_history
+								SET
+									history_planetenID = ".(int)$plid.",
+									history_playerID = ".(int)$plrow[1].",
+									historyLast = ".(int)$pl[$plid][0].",
+									historyTime = ".$sysupd."
+							") OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
+						}
+					}
+				}
+				
 			}
 			
-			// Planet aktualisieren
-			query("
-				UPDATE
-					".PREFIX."planeten
-				SET
-					".$upd."
-				WHERE
-					planetenID = ".(int)$id."
-			") OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
-			
-			// Counter erhöhen
-			$plcount++;
+			// Planeten-Datensatz
+			else if($row[1] == 'P') {
+				
+				$id = $row[2];
+				$row = json_decode($row[3], true);
+				
+				
+				// nur existente, vollständige, aktuellere Planeten abgleichen
+				if(count($row) == 18 AND isset($pl[$id]) AND $pl[$id][1] < $row[0]) {
+					// Oberflächen-Scan aktueller
+					$upd = "
+						planetenKategorie = ".(int)$row[2].",
+						planetenGebPlanet = '".escape($row[3])."',
+						planetenGebOrbit = '".escape($row[4])."',
+						planetenOrbiter = ".(int)$row[5].",
+						planetenRMErz = ".(int)$row[11].",
+						planetenRMMetall = ".(int)$row[12].",
+						planetenRMWolfram = ".(int)$row[13].",
+						planetenRMKristall = ".(int)$row[14].",
+						planetenRMFluor = ".(int)$row[15].",
+						planetenRMGesamt = ".((int)$row[11]+(int)$row[12]+(int)$row[13]+(int)$row[14]+(int)$row[15]).",
+						planetenUpdateOverview = ".(int)$row[0];
+					
+					
+					// bei vollem Scan auch Ressproduktion, Forschung und Industrie übertragen
+					if($row[1] > $pl[$id][2]) {
+						$upd = "
+						planetenRPErz = ".(int)$row[6].",
+						planetenRPMetall = ".(int)$row[7].",
+						planetenRPWolfram = ".(int)$row[8].",
+						planetenRPKristall = ".(int)$row[9].",
+						planetenRPFluor = ".(int)$row[10].",
+						planetenRPGesamt = ".((int)$row[6]+(int)$row[7]+(int)$row[8]+(int)$row[9]+(int)$row[10]).",
+						planetenForschung = ".(int)$row[16].",
+						planetenIndustrie = ".(int)$row[17].",
+						planetenUpdate = ".(int)$row[1].",".$upd;
+					}
+					
+					// Planet aktualisieren
+					query("
+						UPDATE
+							".PREFIX."planeten
+						SET
+							".$upd."
+						WHERE
+							planetenID = ".(int)$id."
+					") OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
+					
+					// Counter erhöhen
+					$plcount++;
+				}
+				
+			}
 		}
-		
-		// bearbeitete Planeten löschen
-		unset($data['planets'][$id]);
 	}
 	
-	// Variablen löschen um Speicherplatz zu sparen
-	unset($data);
-	unset($pl);
 	
 	// Risse zurücksetzen
 	query("
