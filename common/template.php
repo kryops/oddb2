@@ -82,7 +82,7 @@ class template {
 <body>
 
 '.(DEBUG ? '<div style="position:absolute;top:10px;left:500px;z-index:1000;font-weight:bold;color:red">Debug-Modus aktiviert!</div>' : '').'
-<div id="bgpic"><img src="img/bg/earth.jpg" width="1150" height="452" alt="" /></div>
+<div id="bgpic"><img src="img/bg/milchstrasse.jpg" width="1150" height="300" alt="" /></div>
 
 <div id="logo"></div>
 
