@@ -30,11 +30,9 @@ else {
 	// Memory-Limit erhöhen
 	@ini_set('memory_limit', '768M');
 	
-	// Ausgabe-Container
-	$out = array(
-		'systems'=>array(),
-		'planets'=>array()
-	);
+	// Ausgabe
+	// Runde
+	$out = 'C1='.ODWORLD.'""""C2='.ABGLEICH_VERSION.'""""';
 	
 	// System-Scandaten abfragen
 	$query = query("
@@ -69,12 +67,18 @@ else {
 	while($row = mysql_fetch_assoc($query)) {
 		// System anhängen
 		if($current_sys != $row['systemeID']) {
-			$out['systems'][$row['systemeID']] = array((int)$row['systemeUpdate']);
+			
+			// in den Ausgabe-String
+			if($current_sys != 0) {
+				$out .= 'S'.$row['systemeID'].'='.json_encode($o).'""""';
+			}
+			
+			$o = array((int)$row['systemeUpdate']);
 			$current_sys = $row['systemeID'];
 		}
 		
 		// Planet anhängen
-		$out['systems'][$row['systemeID']][$row['planetenID']] = array(
+		$o[$row['planetenID']] = array(
 			$row['planetenName'],
 			(int)$row['planeten_playerID'],
 			(int)$row['planetenGroesse'],
@@ -87,6 +91,11 @@ else {
 			(int)$row['planetenMyrigate'],
 			(int)$row['planetenRiss']
 		);
+	}
+	
+	// in den Ausgabe-String
+	if($current_sys != 0) {
+		$out .= 'S'.$row['systemeID'].'='.json_encode($o).'""""';
 	}
 	
 	// Speicher wieder freigeben
@@ -123,7 +132,7 @@ else {
 	") OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
 	
 	while($row = mysql_fetch_assoc($query)) {
-		$out['planets'][$row['planetenID']] = array(
+		$out .= 'P'.$row['planetenID'].'='.json_encode(array(
 			(int)$row['planetenUpdateOverview'],
 			(int)$row['planetenUpdate'],
 			(int)$row['planetenKategorie'],
@@ -142,7 +151,7 @@ else {
 			(int)$row['planetenRMFluor'],
 			(int)$row['planetenForschung'],
 			(int)$row['planetenIndustrie']
-		);
+		)).'""""';
 	}
 	
 	// Speicher wieder freigeben
@@ -151,12 +160,11 @@ else {
 	// max_input_vars-Problem
 	@ini_set('max_input_vars', 65536);
 	
-	// Array kodieren und komprimieren
-	$out = json_encode($out);
+	// Array komprimieren
 	$out = gzcompress($out, 2);
 	
 	// Download-Header
-	header('Content-Disposition: attachment; filename=oddb'.INSTANCE.'_'.date('Y-m-d').'.json.gz');
+	header('Content-Disposition: attachment; filename=oddb'.INSTANCE.'_'.date('Y-m-d').'.gz');
     header('Content-Type: application/x-gzip');
     header('Content-Transfer-Encoding: binary');
 	

@@ -24,6 +24,8 @@ define('FILESTAMP', '?7');
 // OD-Runde
 define('ODWORLD', 'int9');
 define('DOWNTIME', false);
+// Abgleich-Version
+define('ABGLEICH_VERSION', 1);
 // ODDB Tool-Version
 define('ODDBTOOL', '1.1.5b');
 define('ODDBTOOLPATH', 'oddbtool-1_1_5b.xpi');
