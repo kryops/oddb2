@@ -3,7 +3,7 @@
 	/**
 	 * Version
 	 */
-	version: '1.1.5b',
+	version: '1.1.5c',
 	
 	
 	/**
