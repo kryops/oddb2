@@ -3462,7 +3462,7 @@ function quelltext(f, r) {
 			}
 			
 			// Genesis
-			if(input.indexOf('<b>An diesem Planeten wird ein Genesis-Projekt gestartet.') != -1) {
+			if(input.indexOf('An diesem Planeten wird ein Genesis-Projekt gestartet.') != -1 || input.indexOf('At this planet a genesis project is initiated.') != -1) {
 				// neu
 				out['gen'] = 1;
 				// alt
@@ -3479,6 +3479,13 @@ function quelltext(f, r) {
 				out['genende'] = data[1];
 				// alt
 				out['ende'] = data[1];
+				
+				// Genesis-Benutzer
+				var genuser = ctree.find('.box td:contains("enesis") a[href^="?op=usershow"]'); 
+				if(genuser.length) {
+					out['genuser'] = genuser.attr('href').replace(/[^\d]/g, '');
+					out['user'] = out['genuser'];
+				}
 			}
 			
 			// Reso
