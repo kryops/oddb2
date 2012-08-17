@@ -335,6 +335,11 @@ oddbtool.parsePage = function(page, manual) {
 					if($(this).find('tr:last-child img[src*="flotte-kolo.gif"]').length) {
 						pl[i]['kolo'] = 1;
 					}
+					
+					// Genesis
+					if($(this).find('tr:last-child img[src*="flotte-genesis.gif"]').length) {
+						pl[i]['genesis'] = 1;
+					}
 				}
 				// Kein Planet vorhanden
 				else {

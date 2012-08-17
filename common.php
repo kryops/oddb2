@@ -32,7 +32,7 @@ define('ODDBTOOLPATH', 'oddbtool-1_1_5c.xpi');
 define('ODDBTOOLPATH_CHROME', 'oddbtool-chrome-1_1_5c.crx');
 
 // Debug-Modus
-define('DEBUG', false);
+define('DEBUG', true);
 
 //
 // Umgebungsdaten

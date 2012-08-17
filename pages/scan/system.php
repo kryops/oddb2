@@ -9,6 +9,116 @@ if(!defined('ODDB')) die('unerlaubter Zugriff!');
 
 
 
+class ScanSystem {
+	
+	/**
+	 * Planeten-Aktion eintragen; erfasst werden Genesis und Kolos
+	 * @param array $pldata Planetendaten aus dem Scan
+	 * @param array $plrow gespeicherter Planetendatensatz @default false
+	 */
+	public static function addInvasion($pldata, $plrow=false) {
+		
+		global $invasionen, $cache, $user, $tmpl;
+		
+		
+		// Abbrechen, wenn schon eine Aktion eingetragen ist
+		if(isset($invasionen[$pldata['id']])) {
+			return false;
+		}
+		
+		// keine Aktion erfasst
+		if(!isset($pldata['kolo']) AND !isset($pldata['genesis'])) {
+			return false;
+		}
+		
+		// Planeten-Verschleierung umgehen
+		$inhaber = $pldata['inhaber'];
+		
+		if($plrow !== false AND $inhaber < 0) {
+			$inhaber = $plrow['planeten_playerID'];
+		}
+		
+		
+		// Kolo oder Genesis können erfasst werden
+		if(isset($pldata['kolo'])) {
+			$invatyp = 5;
+		}
+		
+		else if(isset($pldata['genesis'])) {
+			$invatyp = 3;
+		}
+		
+		// frei oder verschleiert
+		if($inhaber < 3) {
+			$open = 0;
+			$fremd = 1;
+		}
+		// ermitteln, ob Opfer registiert ist
+		else {
+			$query = query("
+				SELECT
+					COUNT(*) AS Anzahl
+				FROM
+					".PREFIX."user
+				WHERE
+					user_playerID = ".$inhaber."
+			") OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
+			
+			$regdata = mysql_fetch_assoc($query);
+			
+			if($regdata['Anzahl']) {
+				$open = 1;
+				$fremd = 0;
+			}
+			else {
+				$open = 0;
+				$fremd = 1;
+			}
+		}
+		
+		// Kolos sind nie offen
+		if($invatyp == 5) {
+			$open = 0;
+		}
+			
+		// Aktion eintragen
+		query("
+			INSERT INTO ".PREFIX."invasionen
+			SET
+				invasionenTime = ".time().",
+				invasionen_playerID = ".$inhaber.",
+				invasionen_planetenID = ".$pldata['id'].",
+				invasionen_systemeID = ".$_POST['id'].",
+				invasionenTyp = ".$invatyp.",
+				invasionenFremd = ".$fremd.",
+				invasionenOpen = ".$open."
+		") OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
+		
+		$id = mysql_insert_id();
+		
+		// InvaLog-Eintrag
+		query("
+			INSERT INTO ".PREFIX."invasionen_log
+			SET
+				invalog_invasionenID = ".$id.",
+				invalogTime = ".time().",
+				invalog_playerID = ".$user->id.",
+				invalogText = 'erfasst die Aktion durch Einscannen des Systems'
+		") OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
+		
+		// offene Invasionen aus dem Cache löschen
+		$cache->remove('openinvas');
+		
+		if(!isset($_GET['plugin']) AND $user->rechte['invasionen']) {
+			$tmpl->script = 'openinvas();';
+		}
+	}
+	
+}
+
+
+
+
 // eingehende Daten sichern und Allianzen im System ermitteln
 $allies = '';
 $allyarray = array();
@@ -84,6 +194,32 @@ else {
 	
 	
 	$gate = 0;
+	
+	
+	// eingetragene Aktionen im System ermitteln
+	$invasionen = array();
+				
+	$conds = array(
+		"invasionen_systemeID = ".$_POST['id'],
+		"(invasionenEnde > ".time()." OR invasionenEnde = 0)"
+	);
+	
+	$query = query("
+		SELECT
+			invasionen_planetenID,
+			invasionenTyp
+		FROM
+			".PREFIX."invasionen
+		WHERE
+			".implode(' AND ', $conds)."
+	") OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
+	
+	while($row = mysql_fetch_assoc($query)) {
+		$invasionen[$row['invasionen_planetenID']] = $row['invasionenTyp'];
+	}
+	
+	
+	
 	
 	// Ausgabe
 	$out = 'eingetragen';
@@ -235,6 +371,25 @@ else {
 				if(isset($pldata['gate']) AND $pldata['id'] != $data['galaxienGate']) {
 					$gate = array($pldata['id'], $pos);
 				}
+				
+				// Bergbau eintragen
+				if(isset($pldata['bb'])) {
+					query("
+						INSERT INTO ".PREFIX."planeten_schiffe
+						SET
+							schiffe_planetenID = ".$pldata['id'].",
+							schiffeBergbau = -1,
+							schiffeBergbauUpdate = ".time()."
+						ON DUPLICATE KEY UPDATE
+							schiffeBergbau = -1,
+							schiffeBergbauUpdate = ".time()."
+					") OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
+				}
+				
+				
+				// Kolo und Genesis eintragen
+				ScanSystem::addInvasion($pldata);
+				
 			}
 		}
 	}
@@ -355,6 +510,10 @@ else {
 								schiffeBergbauUpdate = ".time()."
 						") OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
 					}
+					
+					// Kolo und Genesis eintragen
+					ScanSystem::addInvasion($pldata);
+					
 				}
 				// Planet aktualisieren
 				else {
@@ -514,6 +673,10 @@ else {
 								schiffeBergbauUpdate = ".time()."
 						") OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
 					}
+					
+					// Kolo und Genesis eintragen
+					ScanSystem::addInvasion($pldata, $pl[$pldata['id']]);
+					
 				}
 				
 				// Inhaber in ODRequest-Array eintragen
