@@ -475,7 +475,7 @@ else if($_GET['sp'] == 'add_send') {
 						user_playerName = '".escape($data['playerName'])."',
 						user_allianzenID = ".$data['player_allianzenID'].",
 						userRechtelevel = 4,
-						userPassword = '".md5($pw)."',
+						userPassword = '".General::encryptPassword($pw, $config['key'])."',
 						userSettings = '".escape($settings)."'
 				");
 				if(!$query) {

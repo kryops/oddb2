@@ -45,7 +45,9 @@ class General {
 	 */
 	public static function encryptPassword($pass, $key='') {
 		
-		return md5($pass);
+		$hash = crypt($pass, '$2a$10'.$key.'$');
+		
+		return substr($hash, -32, 32);
 		
 	}
 	

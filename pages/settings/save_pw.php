@@ -36,7 +36,7 @@ $query = query("
 $data = mysql_fetch_assoc($query);
 
 // altes Passwort verschlüsseln
-$_POST['old'] = md5($_POST['old']);
+$_POST['old'] = General::encryptPassword($_POST['old'], $config['instancekey']);
 
 // altes Passwort falsch
 if($_POST['old'] != $data['userPassword']) {
@@ -60,21 +60,21 @@ if(trim($_POST['new1']) == '') {
 }
 
 // neues Passwort verschlüsseln
-$_POST['new1'] = md5($_POST['new1']);
+$newpw = General::encryptPassword($_POST['new1'], $config['instancekey']);
 
 // speichern
 query("
 	UPDATE
 		".PREFIX."user
 	SET
-		userPassword = '".$_POST['new1']."'
+		userPassword = '".$newpw."'
 	WHERE
 		user_playerID = ".$user->id."
 ") OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
 
 // Cookie ändern
 if(isset($_COOKIE['oddb'])) {
-	setcookie('oddb', $user->id.'+'.$_POST['new1'].'+'.INSTANCE, time()+31536000);
+	setcookie('oddb', $user->id.'+'.$newpw.'+'.INSTANCE, time()+31536000);
 }
 
 // Cache löschen

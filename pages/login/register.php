@@ -104,7 +104,7 @@ else {
 			// Erlaubnis -> fertigstellen
 			else {
 				// Passwort verschlüsseln
-				$pw = md5($_POST['pw']);
+				$pw = General::encryptPassword($_POST['pw'], $config['instancekey']);
 				
 				$settings = $bsettings;
 				$settings['scout'] = $config['scan_veraltet'];

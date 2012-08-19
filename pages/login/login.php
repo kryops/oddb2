@@ -26,6 +26,10 @@ else {
 	}
 	// IP nicht gebannt
 	else {
+		
+		// Passwort verschlüsseln
+		$hash = General::encryptPassword($_POST['pw'], $config['instancekey']);
+		
 		// eingegebene Daten überprüfen und User-ID abfragen
 		$query = query("
 			SELECT
@@ -34,7 +38,7 @@ else {
 				".PREFIX."user
 			WHERE
 				user_playerName = '".escape($_POST['username'])."'
-				AND userPassword = '".md5($_POST['pw'])."'
+				AND userPassword = '".$hash."'
 		") OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
 		
 		// Daten falsch
@@ -63,7 +67,7 @@ else {
 			
 			// Cookie setzen bei Autologin (1 Jahr)
 			if($_POST['autologin']) {
-				setcookie('oddb', $data['user_playerID'].'+'.md5($_POST['pw']).'+'.INSTANCE, time()+31536000);
+				setcookie('oddb', $data['user_playerID'].'+'.$hash.'+'.INSTANCE, time()+31536000);
 			}
 			
 			// Logeintrag

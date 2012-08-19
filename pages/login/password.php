@@ -187,7 +187,7 @@ else if($_GET['sp'] == 'retpw') {
 			UPDATE
 				".PREFIX."user
 			SET
-				userPassword = '".md5($pw)."',
+				userPassword = '".General::encryptPassword($pw, $config['instancekey'])."',
 				userPwSend = 0
 			WHERE
 				user_playerID = ".$_GET['uid']."
