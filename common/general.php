@@ -52,6 +52,38 @@ class General {
 	}
 	
 	
+	/**
+	 * Patches installieren
+	 */
+	public static function patchApplication() {
+		
+		global $config, $cache;
+		
+		// Anwendung nicht aktuell
+		if(PATCH_VERSION < $config['patchversion']) {
+			
+			// Doppeltes Patchen verhindern
+			if($cache->getglobal('patch')) {
+				return false;
+			}
+			
+			$cache->setglobal('patch', true, 60);
+			
+			
+			// Patches einbinden
+			for($i = $config['patchversion']+1; $i <= PATCH_VERSION; $i++) {
+				include './patch/patch'.$i.'.php';
+			}
+			
+			
+			// Konfiguration speichern
+			General::loadClass('config');
+			config::saveGlobal('global', 'config', array('patchversion'=>PATCH_VERSION), true);
+			
+		}
+		
+	}
+		
 }
 
 

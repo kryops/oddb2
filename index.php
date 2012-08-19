@@ -163,19 +163,21 @@ if($_GET['p'] == 'impressum') {
 	include './pages/login.php';
 }
 
-// wenn Instanz gesetzt ist, MySQL und Caching initialisieren
-if(INSTANCE) {
-	// MySQL-Klasse initialisieren
-	$mysql_conn = new mysql;
+// MySQL und Caching initialisieren
+$mysql_conn = new mysql;
 
-	// MySQL-Präfix als Konstante definieren
-	$config['mysql_prefix'] = $config['mysql_globprefix'].INSTANCE.'_';
-	define('PREFIX', $config['mysql_prefix']);
-	
-	// Cache-Klasse initialisieren
-	$cache = new cache();
-	$ucache = true;
-}
+// MySQL-Präfix als Konstante definieren
+$config['mysql_prefix'] = $config['mysql_globprefix'].INSTANCE.'_';
+define('PREFIX', $config['mysql_prefix']);
+
+// Cache-Klasse initialisieren
+$cache = new cache();
+$ucache = true;
+
+
+// Patches installieren
+General::patchApplication();
+
 
 // Login überprüfen
 $user = new user;

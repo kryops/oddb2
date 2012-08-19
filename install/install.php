@@ -101,6 +101,7 @@ else {
 	// globale Konfiguration
 	$c = $_POST;
 	$c['passwort'] = $pw;
+	$c['patchversion'] = PATCH_VERSION;
 	unset($c['db_name']);
 	unset($c['admin']);
 	unset($c['admin_passwort']);
