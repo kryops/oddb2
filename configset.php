@@ -8,9 +8,14 @@ error_reporting(E_ALL);
 
 // Sicherheitskonstante setzen
 define('ODDB', true);
+define('ODDBADMIN', false);
 
 // Konfigurationsdatei einbinden
-include './globalconfig.php';
+include './common.php';
+include './config/global.php';
+
+define('ADDR', $config['addr']);
+
 
 // HTTP-Cache-Header ausgeben (Caching der Seite verhindern)
 header('Expires: Mon, 26 Jul 1997 05:00:00 GMT');

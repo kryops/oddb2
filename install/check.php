@@ -15,9 +15,6 @@ if(!ini_get('allow_url_fopen')) {
 }
 
 // Dateien und Verzeichnisse schreibbar
-if(!is_writable('../globalconfig.php')) {
-	$errors[] = 'PHP ben&ouml;tigt Schreibrechte für die Datei globalconfig.php!';
-}
 if(!is_writable('../config')) {
 	$errors[] = 'PHP ben&ouml;tigt Schreibrechte für den Ordner /config!';
 }
@@ -46,10 +43,41 @@ else {
 
 Dieses Script speichert die wichtigsten Grundeinstellungen der ODDB und legt die erste Instanz an.
 <br />
-Die Einstellungen kannst du sp&auml;ter in der globalconfig.php wieder &auml;ndern, weitere Instanzen kannst du in der Administrationsoberfläche anlegen.
+Die Einstellungen &auml;ndern sowie weitere Instanzen anlegen kannst du sp&auml;ter in der Administrationsoberfläche.
 <br /><br />
 	
 '.$tmpl->form();
+	
+	// Cache-Optionen bei deaktiviertem Cache ausblenden
+	$tmpl->script = '
+
+$(document).ready(function() {
+	
+	if($(".cache_option :selected").val() != 2) {
+		$(".show_memcached").hide();
+	}
+	
+	if($(".cache_option :selected").val() == 0) {
+		$(".show_cache").hide();
+	}
+	
+	$(".cache_option").change(function() {
+		if($(this).val() == 0) {
+			$(".show_cache").hide();
+			$(".show_memcached").hide();
+		}
+		else if($(this).val() == 1) {
+			$(".show_cache").show();
+			$(".show_memcached").hide();
+		}
+		else {
+			$(".show_cache").show();
+		}
+	});
+	
+});
+
+';
 }
 
 $tmpl->output();

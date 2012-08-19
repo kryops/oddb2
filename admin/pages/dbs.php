@@ -47,153 +47,15 @@ function getconfig($instance) {
 	global $bconfig;
 	
 	$config = $bconfig;
+	
+	include '../config/global.php';
+	
 	if(@include('../config/config'.$instance.'.php')) {
 		return $config;
 	}
 	else {
 		return false;
 	}
-}
-
-
-/**
- * Instanz-Konfiguration speichern
- * @param $instance int DB-Instanz
- * @param $config array Konfiguration
- *
- * @return bool Erfolg
- */
-function config_save($instance, $config, $rechte) {
-	// valide ID übergeben?
-	if(!is_int($instance)) {
-		return false;
-	}
-	
-	// Dateininhalt erzeugen
-	$content = '<'.'?php
-
-/**
- * config.php
- * manipuliert die Instanz-spezifischen Einstellungen
- */
-
-// Sicherheitsabfrage
-if(!defined(\'ODDB\')) die(\'unerlaubter Zugriff!\');
-
-';
-	
-	// Einstellungen
-	foreach($config as $key=>$val) {
-		$content .= '$config[\''.addslashes($key).'\'] = ';
-		if(is_bool($val)) {
-			$content .= $val ? 'true' : 'false';
-		}
-		else if(is_int($val)) {
-			$content .= $val;
-		}
-		else {
-			$content .= '\''.addslashes($val).'\'';
-		}
-		$content .= ';
-';
-	}
-	
-	$content .= '
-';
-	
-	// Rechte
-	if($rechte !== false) {
-		// Einstellungen
-		foreach($rechte as $key=>$val) {
-			if(count($val)) {
-				foreach($val as $key2=>$val2) {
-					$content .= '$rechte['.$key.'][\''.addslashes($key2).'\'] = ';
-					if(is_bool($val2)) {
-						$content .= $val2 ? 'true' : 'false';
-					}
-					else if(is_int($val2)) {
-						$content .= $val2;
-					}
-					else {
-						$content .= '\''.addslashes($val2).'\'';
-					}
-					$content .= ';
-';
-				}
-			}
-		}
-	}
-
-	$content .= '
-
-?'.'>';
-	
-	$fp = @fopen('../config/config'.$instance.'.php', 'w');
-	if(!$fp) {
-		return false;
-	}
-	fwrite($fp, $content);
-	fclose($fp);
-	
-	// Erfolg
-	return true;
-}
-
-/**
- * globale Konfiguration speichern (DB-Array)
- * @return bool Erfolg
- */
-function globalconfig_save() {
-	// Inhalt einlesen
-	if(!($content = file_get_contents('../globalconfig.php'))) {
-		return false;
-	}
-	
-	// neues Array erzeugen
-	global $dbs;
-	
-	$count = count($dbs);
-	if($count <= 1) {
-		$new = '/***_dbs_***/
-
-$dbs = false;
-
-/***_/dbs_***/';
-	}
-	else {
-		$i = 1;
-		$new = '/***_dbs_***/
-
-$dbs = array(';
-		foreach($dbs as $key=>$val) {
-			if($val == '') {
-				$val = '[unbenannt]';
-			}
-			$new .= '
-	'.$key.'=>\''.addslashes($val).'\'';
-			if($i < $count) {
-				$new .= ',';
-			}
-			$i++;
-		}
-		$new .= '
-);
-
-/***_/dbs_***/';
-	}
-	
-	// Inhalt ersetzen
-	$content = preg_replace('#/\*\*\*_dbs_\*\*\*/(?:.|\s)*/\*\*\*_/dbs_\*\*\*/#Uis', '{***_dbs_***}', $content);
-	$content = str_replace('{***_dbs_***}', $new, $content);
-	
-	$fp = @fopen('../globalconfig.php', 'w');
-	if(!$fp) {
-		return false;
-	}
-	fwrite($fp, $content);
-	fclose($fp);
-	
-	return true;
 }
 
 
@@ -248,10 +110,6 @@ else if($_GET['sp'] == 'add_send') {
 		}
 		
 		$mysql_use = false;
-		if(isset($_POST['mysql_use'])) {
-			$mysql_use = true;
-			unset($_POST['mysql_use']);
-		}
 		
 		if(isset($_POST['disable_freischaltung'])) {
 			$_POST['disable_freischaltung'] = (bool)$_POST['disable_freischaltung'];
@@ -279,7 +137,7 @@ else if($_GET['sp'] == 'add_send') {
 		}
 		
 		// Schlüssel erzeugen
-		$_POST['key'] = generate_key();
+		$_POST['instancekey'] = generate_key();
 		
 		// ID ermitteln
 		$dbkeys = array_keys($dbs);
@@ -290,11 +148,12 @@ else if($_GET['sp'] == 'add_send') {
 		
 		// fertige Konfiguration erzeugen
 		$config = $bconfig;
+		include '../config/global.php';
 		foreach($_POST as $key=>$val) {
 			$config[$key] = $val;
 		}
 		
-		$prefix = $config['mysql_prefix'];
+		$prefix = $config['mysql_globprefix'].$instance.'_';
 		
 		// normale MySQL-Klasse umgehen
 		$mysql_conn = new mysql;
@@ -378,7 +237,7 @@ else if($_GET['sp'] == 'add_send') {
 				
 				// Konfiguration einbinden
 				if($dconfig = getconfig($data_copy)) {
-					$dprefix = $dconfig['mysql_prefix'];
+					$dprefix = $dconfig['mysql_globprefix'].$data_copy.'_';
 					
 					if($dataconn = @mysql_connect($dconfig['mysql_host'], $dconfig['mysql_user'], $dconfig['mysql_pw'])) {
 						// MySQL auf UTF-8 stellen
@@ -630,13 +489,15 @@ else if($_GET['sp'] == 'add_send') {
 				}
 			}
 			
+			General::loadClass('config');
+			
 			// Instanz-Konfiguration speichern
-			if(!config_save($instance, $_POST, false)) {
+			if(!config::save($instance, $_POST, false)) {
 				$tmpl->error .= 'Konnte Konfiguration nicht speichern!';
 			}
-			// DB-Array in der globalconfig.php speichern
-			else if(!globalconfig_save()) {
-				$tmpl->error .= 'Konnte globale Konfiguration nicht speichern!';
+			// DB-Array speichern
+			else if(!config::saveGlobal('dbs', 'dbs', $dbs)) {
+				$tmpl->error .= 'Konnte Liste der Instanzen nicht speichern!';
 			}
 			// erfolgreich
 			else {
@@ -710,7 +571,7 @@ else if($_GET['sp'] == 'edit_send') {
 		}
 		
 		// Schlüssel erzeugen
-		$_POST['key'] = isset($config['key']) ? $config['key'] : generate_key();
+		$_POST['instancekey'] = $config['instancekey'];
 		
 		$_POST['active'] = isset($_POST['active']);
 		
@@ -747,13 +608,15 @@ else if($_GET['sp'] == 'edit_send') {
 		}
 		
 		
+		General::loadClass('config');
+			
 		// Instanz-Konfiguration speichern
-		if(!config_save($_GET['id'], $_POST, $rechte)) {
-			$tmpl->error = 'Konnte Konfiguration nicht speichern!';
+		if(!config::save($_GET['id'], $_POST, false)) {
+			$tmpl->error .= 'Konnte Konfiguration nicht speichern!';
 		}
-		// DB-Array in der globalconfig.php speichern
-		else if(!globalconfig_save()) {
-			$tmpl->error = 'Konnte globale Konfiguration nicht speichern!';
+		// DB-Array speichern
+		else if(!config::saveGlobal('dbs', 'dbs', $dbs)) {
+			$tmpl->error .= 'Konnte Liste der Instanzen nicht speichern!';
 		}
 		// erfolgreich
 		else {
@@ -800,14 +663,8 @@ else if($_GET['sp'] == 'del') {
 		// Daten sichern
 		$_GET['id'] = (int)$_GET['id'];
 		
-		// Daten aufbereiten
-		$config = $bconfig;
-		
-		@include('../config/config'.$_GET['id'].'.php');
-		
-		
 		// MySQL-Tabellen löschen
-		$prefix = $config['mysql_prefix'];
+		$prefix = $config['mysql_globprefix'].$_GET['id'].'_';
 		
 		// normale MySQL-Klasse umgehen
 		$mysql_conn = new mysql;
@@ -849,20 +706,11 @@ else if($_GET['sp'] == 'del') {
 		
 		// globale Konfiguration speichern
 		unset($dbs[$_GET['id']]);
-		if(!globalconfig_save()) {
-			$tmpl->error .= '
-Konnte globale Konfiguration nicht speichern!';
-		}
 		
-		// gerenderte Bilder dieser Instanz löschen
-		$dir = '../render/';
-		if($handle = @opendir($dir)) {
-			while (($file = readdir($handle)) !== false) {
-				if(is_file($dir.$file) AND strpos($file, $config['key']) !== false) {
-					@unlink($dir.$file);
-				}
-			}
-			closedir($handle);
+		General::loadClass('config');
+		
+		if(!config::saveGlobal('dbs', 'dbs', $dbs)) {
+			$tmpl->error .= 'Konnte Liste der Instanzen nicht speichern!';
 		}
 		
 		// Cache leeren
@@ -897,7 +745,7 @@ else if($_GET['sp'] == 'add') {
 	$tmpl->content = '<div class="icontent dbadd'.$time.'">
 	Die eingeklammerten Werte hinter den Eingabefeldern sind die Standardwerte.
 	<br />
-	L&auml;sst du diese Felder leer, nimmt die Konfiguration die eingeklammerten Werte an (k&ouml;nnen in der globalconfig.php ge&auml;ndert werden).
+	L&auml;sst du diese Felder leer, nimmt die Konfiguration die eingeklammerten Werte an.
 	<br /><br />
 	<form onsubmit="return false">
 	<table class="leftright" style="width:100%">
@@ -916,20 +764,6 @@ else if($_GET['sp'] == 'add') {
 		<td>inaktiv-Nachricht</td>
 		<td><input type="text" class="text tooltip" style="width:300px" name="offlinemsg" tooltip="wird angezeigt, wenn die Datenbank auf inaktiv gesetzt ist" />
 		'.($bconfig['offlinemsg'] ? '<br /><span class="small hint">('.htmlspecialchars($bconfig['offlinemsg'], ENT_COMPAT, 'UTF-8').')</span>' : '').'</td>
-	</tr>
-	<tr>
-		<td colspan="2">&nbsp;</td>
-	</tr>
-	<tr>
-		<th colspan="2">MySQL</th>
-	</tr>
-	<tr>
-		<td>Tabellen-Pr&auml;fix</td>
-		<td>
-			<input type="text" class="text" name="mysql_prefix" value="oddb'.$nextid.'_" />
-			&nbsp;
-			<input type="checkbox" name="mysql_use" /> <span class="togglecheckbox tooltip" data-name="mysql_use" tooltip="Falls schon MySQL-Tabellen mit diesem Pr&auml;fix vorhanden sind, wird keine Warnung ausgegeben">vorhandene Installation benutzen</span>
-			</td>
 	</tr>
 	<tr>
 		<td colspan="2">&nbsp;</td>
@@ -1069,7 +903,7 @@ else if($_GET['sp'] == 'edit') {
 		
 		$tmpl->content .= 'Die eingeklammerten Werte hinter den Eingabefeldern sind die Standardwerte.
 		<br />
-		L&auml;sst du diese Felder leer, nimmt die Konfiguration die eingeklammerten Werte an (k&ouml;nnen in der globalconfig.php ge&auml;ndert werden).
+		L&auml;sst du diese Felder leer, nimmt die Konfiguration die eingeklammerten Werte an.
 		<br /><br />
 		<form onsubmit="return false">
 		<table class="leftright" style="width:100%">
@@ -1095,19 +929,6 @@ else if($_GET['sp'] == 'edit') {
 			<td>inaktiv-Nachricht</td>
 			<td><input type="text" class="text tooltip" style="width:300px" name="offlinemsg" tooltip="wird angezeigt, wenn die Datenbank auf inaktiv gesetzt ist" value="'.htmlspecialchars($config2['offlinemsg'], ENT_COMPAT, 'UTF-8').'" />
 			'.($bconfig['offlinemsg'] ? '<br /><span class="small hint">('.htmlspecialchars($bconfig['offlinemsg'], ENT_COMPAT, 'UTF-8').')</span>' : '').'</td>
-		</tr>
-		<tr>
-			<td colspan="2">&nbsp;</td>
-		</tr>
-		<tr>
-			<th colspan="2">MySQL</th>
-		</tr>
-		<tr>
-			<td>Tabellen-Pr&auml;fix</td>
-			<td><input type="text" class="text" name="mysql_prefix" value="'.htmlspecialchars($config2['mysql_prefix'], ENT_COMPAT, 'UTF-8').'" /></td>
-		</tr>
-		<tr>
-			<td colspan="2" style="text-align:center;font-style:italic">Achtung: Die Tabellen werden nicht automatisch umbenannt!</td>
 		</tr>
 		<tr>
 			<td colspan="2">&nbsp;</td>
@@ -1199,6 +1020,7 @@ else {
 		foreach($dbs as $instance=>$instance_name) {
 			// Konfigurationsdatei einbinden
 			$config = $bconfig;
+			include '../config/global.php';
 			if(!(@include('../config/config'.$instance.'.php'))) {
 				continue;
 			}

@@ -29,7 +29,7 @@ $content = '
 	<br /><br />
 	Die eingeklammerten Werte hinter den Eingabefeldern sind die Standardwerte.
 	<br />
-	L&auml;sst du diese Felder leer, nimmt die Konfiguration die eingeklammerten Werte an (k&ouml;nnen in der globalconfig.php ge&auml;ndert werden).
+	L&auml;sst du diese Felder leer, nimmt die Konfiguration die eingeklammerten Werte an (k&ouml;nnen im Administrationsbereich ge&auml;ndert werden).
 	<br /><br />
 	<form onsubmit="return false">
 	<div style="width:80%;margin:auto">

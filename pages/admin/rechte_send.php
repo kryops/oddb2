@@ -31,6 +31,7 @@ else {
 	}
 	
 	$br = $brechte[$id];
+	$br = array_merge_recursive($br, config::getcustomGlobal('global', 'rechte'));
 	
 	// Rechte-Container generieren
 	$rechte = array(

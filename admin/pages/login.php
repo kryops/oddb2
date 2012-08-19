@@ -129,7 +129,7 @@ if($_GET['sp'] == 'login') {
 		// IP nicht gebannt
 		else {
 			// Daten falsch
-			if(md5($_POST['pw']) != $config['adminpw']) {
+			if(General::encryptPassword($_POST['pw'], $config['key']) != $config['passwort']) {
 				// Fehlermeldung
 				$tmpl->error = 'Die eingegebenen Daten sind ung&uuml;ltig!';
 				

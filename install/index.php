@@ -47,10 +47,10 @@ if(get_magic_quotes_gpc()) {
 // gemeinsame Dateien einbinden
 include '../common.php';
 include './common.php';
-include '../globalconfig.php';
+include '../common/general.php';
 
 // bestehende Installation prüfen
-if(INSTALLED) {
+if(file_exists('../config/global.php')) {
 	die('Die ODDB wurde schon installiert!');
 }
 

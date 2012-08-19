@@ -141,6 +141,10 @@ class template_install {
 <td><textarea name="impressum" style="width:300px;height:60px">'.h(isset($_POST['impressum']) ? $_POST['impressum'] : '').'</textarea></td>
 </tr>
 <tr>
+<td>HTML-Code, der immer eingebunden werden soll<br />(Werbung, Counter...)</td>
+<td><textarea name="adcode" style="width:300px;height:60px">'.h(isset($_POST['adcode']) ? $_POST['adcode'] : '').'</textarea></td>
+</tr>
+<tr>
 <td colspan="2">&nbsp;</td>
 </tr>
 <tr>
@@ -152,19 +156,19 @@ class template_install {
 </tr>
 <tr>
 <td>MySQL-Benutzer</td>
-<td><input type="text" class="text" name="mysql_user" value="'.h(isset($_POST['mysql_user']) ? $_POST['mysql_user'] : 'root').'" /></td>
+<td><input type="text" class="text" name="mysql_user" value="'.h(isset($_POST['mysql_user']) ? $_POST['mysql_user'] : $bconfig['mysql_user']).'" /></td>
 </tr>
 <tr>
 <td>MySQL-Passwort</td>
-<td><input type="password" class="text" name="mysql_pw" value="'.h(isset($_POST['mysql_pw']) ? $_POST['mysql_pw'] : '').'" /></td>
+<td><input type="password" class="text" name="mysql_pw" value="'.h(isset($_POST['mysql_pw']) ? $_POST['mysql_pw'] : $bconfig['mysql_pw']).'" /></td>
 </tr>
 <tr>
 <td>MySQL-Datenbank</td>
-<td><input type="text" class="text" name="mysql_db" value="'.h(isset($_POST['mysql_db']) ? $_POST['mysql_db'] : 'oddb2').'" /></td>
+<td><input type="text" class="text" name="mysql_db" value="'.h(isset($_POST['mysql_db']) ? $_POST['mysql_db'] : $bconfig['mysql_db']).'" /></td>
 </tr>
 <tr>
-<td>globaler MySQL-Tabellenpr&auml;fix</td>
-<td><input type="text" class="text" name="mysql_globprefix" value="'.h(isset($_POST['mysql_globprefix']) ? $_POST['mysql_globprefix'] : 'oddb_').'" /></td>
+<td>MySQL-Tabellenpr&auml;fix</td>
+<td><input type="text" class="text" name="mysql_globprefix" value="'.h(isset($_POST['mysql_globprefix']) ? $_POST['mysql_globprefix'] : $bconfig['mysql_globprefix']).'" /></td>
 </tr>
 <tr>
 <td colspan="2">&nbsp;</td>
@@ -174,21 +178,21 @@ class template_install {
 </tr>
 <tr>
 <td>Cache-Typ</td>
-<td><select name="caching" size="1">
+<td><select name="caching" size="1" class="cache_option">
 <option value="0">deaktiviert</option>
 '.(function_exists('apc_fetch') ? '<option value="1"'.($cacheselect == 1 ? ' selected="selected"' : '').'>APC</option>' : '').'
 '.(class_exists('Memcache') ? '<option value="2"'.($cacheselect == 2 ? ' selected="selected"' : '').'>memcached</option>' : '').'
 </select></td>
 </tr>
-<tr>
+<tr class="show_cache">
 <td>Cache-Pr&auml;fix</td>
 <td><input type="text" class="text" name="caching_prefix" value="'.h(isset($_POST['caching_prefix']) ? $_POST['caching_prefix'] : $bconfig['caching_prefix']).'" /></td>
 </tr>
-<tr>
+<tr class="show_cache show_memcached">
 <td>memcached-Server</td>
 <td><input type="text" class="text" name="memcached_host" value="'.h(isset($_POST['memcached_host']) ? $_POST['memcached_host'] : $bconfig['memcached_host']).'" /></td>
 </tr>
-<tr>
+<tr class="show_cache show_memcached">
 <td>memcached-Port</td>
 <td><input type="text" class="text" name="memcached_port" value="'.h(isset($_POST['memcached_port']) ? $_POST['memcached_port'] : $bconfig['memcached_port']).'" /></td>
 </tr>
@@ -229,8 +233,8 @@ class template_install {
 <th colspan="2">Einstellungen f&uuml;r 1. Instanz</th>
 </tr>
 <tr>
-<td>MySQL-Pr&auml;fix</td>
-<td><input type="text" class="text" name="mysql_prefix" value="'.h(isset($_POST['mysql_prefix']) ? $_POST['mysql_prefix'] : 'oddb1_').'" /></td>
+<td>Name der Instanz</td>
+<td><input type="text" class="text" name="db_name" value="'.h(isset($_POST['db_name']) ? $_POST['db_name'] : '').'" /></td>
 </tr>
 <tr>
 <td colspan="2">&nbsp;</td>
@@ -238,6 +242,14 @@ class template_install {
 <tr>
 <td>Administrator-UserID</td>
 <td><input type="text" class="text" name="admin" value="'.h(isset($_POST['admin']) ? $_POST['admin'] : '').'" /> <span class="small hint">(deine OD-Spieler-ID)</span></td>
+</tr>
+<tr>
+<td>Passwort</td>
+<td><input type="password" class="text" name="admin_passwort" value="'.h(isset($_POST['admin_passwort']) ? $_POST['admin_passwort'] : '').'" /></td>
+</tr>
+<tr>
+<td>(wiederholen)</td>
+<td><input type="password" class="text" name="admin_passwort2" value="'.h(isset($_POST['admin_passwort2']) ? $_POST['admin_passwort2'] : '').'" /></td>
 </tr>
 </table>
 

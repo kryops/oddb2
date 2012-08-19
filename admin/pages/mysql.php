@@ -62,6 +62,7 @@ else if($_GET['sp'] == 'send') {
 			
 			// Konfigurationsdatei einbinden
 			$config = $bconfig;
+			include '../config/global.php';
 			if(!(@include('../config/config'.$instance.'.php'))) {
 				$tmpl->content .= '<b>Konnte Konfigurationsdatei nicht einbinden!</b>
 				</div>';
@@ -111,7 +112,7 @@ else if($_GET['sp'] == 'send') {
 				continue;
 			}
 			
-			$prefix = $config['mysql_prefix'];
+			$prefix = $config['mysql_globprefix'].$instance.'_';
 			
 			
 			// Präfix-Platzhalter ersetzen

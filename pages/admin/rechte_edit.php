@@ -33,6 +33,7 @@ else {
 	$r = config::getcustom_rechte(INSTANCE);
 	$r = $r[$_GET['id']];
 	$br = $brechte[$_GET['id']];
+	$br = array_merge_recursive($br, config::getcustomGlobal('global', 'rechte'));
 	$gr = $rechte[$_GET['id']];
 	
 	$tmpl->name = 'Rechtelevel '.h($rechte[$id]['name']).' bearbeiten';

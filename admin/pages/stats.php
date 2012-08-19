@@ -63,6 +63,7 @@ else {
 		foreach($dbs as $instance=>$instance_name) {
 			// Konfigurationsdatei einbinden
 			$config = $bconfig;
+			include '../config/global.php';
 			if(!(@include('../config/config'.$instance.'.php'))) {
 				continue;
 			}
@@ -105,12 +106,12 @@ else {
 				}
 			}
 			
-			// Datenbank auswählen
+			// Datenbank auswÃ¤hlen
 			if(!mysql_select_db($config['mysql_db'], $conn)) {
 				continue;
 			}
 			
-			$prefix = $config['mysql_prefix'];
+			$prefix = $config['mysql_globprefix'].$instance.'_';
 			
 			// angemeldete User
 			$query = mysql_query("
@@ -235,7 +236,7 @@ else {
 			<br /><br />';
 	}
 	
-	 // Zähler
+	 // Zï¿½hler
 	$count_user = 0;
 	$count_online = 0;
 	$count_plugin = 0;

@@ -11,7 +11,7 @@ if(!defined('ODDBADMIN')) die('unerlaubter Zugriff!');
 $errors = array();
 
 // Daten unvollständig
-if(!isset($_POST['addr'], $_POST['server'], $_POST['key'], $_POST['mysql_host'], $_POST['mysql_user'], $_POST['mysql_pw'], $_POST['mysql_db'], $_POST['mysql_globprefix'], $_POST['caching'], $_POST['caching_prefix'], $_POST['memcached_host'], $_POST['memcached_port'], $_POST['ipban'], $_POST['ipban_time'], $_POST['flooding'], $_POST['flooding_time'], $_POST['flooding_pages'], $_POST['mysql_prefix'], $_POST['admin'])) {
+if(!isset($_POST['addr'], $_POST['server'], $_POST['key'], $_POST['mysql_host'], $_POST['mysql_user'], $_POST['mysql_pw'], $_POST['mysql_db'], $_POST['mysql_globprefix'], $_POST['impressum'], $_POST['adcode'], $_POST['caching'], $_POST['caching_prefix'], $_POST['memcached_host'], $_POST['memcached_port'], $_POST['ipban'], $_POST['ipban_time'], $_POST['flooding'], $_POST['flooding_time'], $_POST['flooding_pages'], $_POST['db_name'], $_POST['admin'])) {
 	$errors[] = 'Daten unvollst&auml;ndig!';
 }
 else {
@@ -27,9 +27,6 @@ else {
 	if(preg_replace('/[a-zA-Z0-9\-_]/', '', $_POST['mysql_globprefix']) != '') {
 		$errors[] = 'Ung&uuml;ltiger globaler Tabellenpr&auml;fix!';
 	}
-	if(preg_replace('/[a-zA-Z0-9\-_]/', '', $_POST['mysql_prefix']) != '') {
-		$errors[] = 'Ung&uuml;ltiger Tabellenpr&auml;fix f&uuml;r die 1. Instanz!';
-	}
 
 	// Kein Key
 	if($_POST['key'] == '') {
@@ -38,7 +35,20 @@ else {
 	else if(preg_replace('/[a-zA-Z0-9\-_]/', '', $_POST['key']) != '') {
 		$errors[] = 'Der Sicherheitsschl&uuml;ssel darf nur Buchstaben und Zahlen beinhalten!';
 	}
-
+	
+	// Kein Name
+	if(trim($_POST['db_name']) == '') {
+		$errors[] = 'Kein Instanz-Name eingegeben!';
+	}
+	
+	// Instanz-Admin-Passwort
+	if($_POST['admin_passwort'] != $_POST['admin_passwort2']) {
+		$errors[] = 'Die Passwörter sind unterschiedlich!';
+	}
+	else if(trim($_POST['admin_passwort']) == '') {
+		$errors[] = 'Kein Instanz-Admin-Passwort eingegeben!';
+	}
+	
 	// User-ID
 	if((int)$_POST['admin'] < 10) {
 		$errors[] = 'Ung&uuml;ltuge Administrator-UserID eingegeben!';
@@ -65,10 +75,6 @@ else {
 		}
 	}
 
-	// Konfigurationsdatei auslesen
-	if(($gc = file_get_contents('../globalconfig.php')) === false) {
-		$errors[] = 'Konnte die Datei globalconfig.php nicht lesen!';
-	}
 }
 
 
@@ -84,166 +90,57 @@ if(count($errors)) {
 
 // Installation abschließen
 else {
-	// Konfigurationsdateien schreiben
+	/*
+	 * Konfigurationsdateien schreiben
+	 */
+	General::loadClass('config');
 	
-	// globalconfig.php
-	$gc = str_replace(
-		"define('INSTALLED', false);",
-		"define('INSTALLED', true);",
-		$gc
-	);
-	$gc = str_replace(
-		"define('ADDR', '".str_replace('\\"', '"', addslashes(ADDR))."');",
-		"define('ADDR', '".str_replace('\\"', '"', addslashes($_POST['addr']))."');",
-		$gc
-	);
-	$gc = str_replace(
-		"define('SERVER', '".str_replace('\\"', '"', addslashes(SERVER))."');",
-		"define('SERVER', '".str_replace('\\"', '"', addslashes($_POST['server']))."');",
-		$gc
-	);
-	$gc = str_replace(
-		"define('KEY', '".str_replace('\\"', '"', addslashes(KEY))."');",
-		"define('KEY', '".str_replace('\\"', '"', addslashes($_POST['key']))."');",
-		$gc
-	);
+	// Passwort erzeugen
+	$pw = General::encryptPassword($_POST['admin_passwort'], $_POST['key']);
 	
-	$impressum = nl2br($_POST['impressum']);
-	$impressum = str_replace(array("\r\n", "\n"), "", $impressum);
-	$gc = str_replace(
-		"define('IMPRESSUM', '".str_replace('\\"', '"', addslashes(IMPRESSUM))."');",
-		"define('IMPRESSUM', '".str_replace('\\"', '"', addslashes($impressum))."');",
-		$gc
-	);
+	// globale Konfiguration
+	$c = $_POST;
+	$c['passwort'] = $pw;
+	unset($c['db_name']);
+	unset($c['admin']);
+	unset($c['admin_passwort']);
+	unset($c['admin_passwort2']);
+	
+	config::saveGlobal('global', 'config', $c);
 	
 	
-	$gc = str_replace(
-		"'mysql_host' => '".str_replace('\\"', '"', addslashes($bconfig['mysql_host']))."',",
-		"'mysql_host' => '".str_replace('\\"', '"', addslashes($_POST['mysql_host']))."',",
-		$gc
-	);
-	$gc = str_replace(
-		"'mysql_user' => '".str_replace('\\"', '"', addslashes($bconfig['mysql_user']))."',",
-		"'mysql_user' => '".str_replace('\\"', '"', addslashes($_POST['mysql_user']))."',",
-		$gc
-	);
-	$gc = str_replace(
-		"'mysql_pw' => '".str_replace('\\"', '"', addslashes($bconfig['mysql_pw']))."',",
-		"'mysql_pw' => '".str_replace('\\"', '"', addslashes($_POST['mysql_pw']))."',",
-		$gc
-	);
-	$gc = str_replace(
-		"'mysql_db' => '".str_replace('\\"', '"', addslashes($bconfig['mysql_db']))."',",
-		"'mysql_db' => '".str_replace('\\"', '"', addslashes($_POST['mysql_db']))."',",
-		$gc
-	);
-	$gc = str_replace(
-		"'mysql_globprefix' => '".str_replace('\\"', '"', addslashes($bconfig['mysql_globprefix']))."',",
-		"'mysql_globprefix' => '".str_replace('\\"', '"', addslashes($_POST['mysql_globprefix']))."',",
-		$gc
+	// Instanz-Verzeichnis
+	$dbs = array(
+		1=>$_POST['db_name']
 	);
 	
-	$_POST['caching'] = (int)$_POST['caching'];
-	if($_POST['caching'] < 0 OR $_POST['caching'] > 2) {
-		$_POST['caching'] = 0;
-	}
-	$_POST['memcached_port'] = (int)$_POST['memcached_port'];
-	
-	$gc = str_replace(
-		"'caching' => ".(int)$bconfig['caching'].",",
-		"'caching' => ".$_POST['caching'].",",
-		$gc
-	);
-	$gc = str_replace(
-		"'caching_prefix' => '".str_replace('\\"', '"', addslashes($bconfig['caching_prefix']))."',",
-		"'caching_prefix' => '".str_replace('\\"', '"', addslashes($_POST['caching_prefix']))."',",
-		$gc
-	);
-	$gc = str_replace(
-		"'memcached_host' => '".str_replace('\\"', '"', addslashes($bconfig['memcached_host']))."',",
-		"'memcached_host' => '".str_replace('\\"', '"', addslashes($_POST['memcached_host']))."',",
-		$gc
-	);
-	$gc = str_replace(
-		"'memcached_port' => ".(int)$bconfig['memcached_port'].",",
-		"'memcached_port' => ".$_POST['memcached_port'].",",
-		$gc
-	);
-	
-	$_POST['ipban'] = (int)$_POST['ipban'];
-	if($_POST['ipban'] < 0) {
-		$_POST['ipban'] = 0;
-	}
-	$_POST['ipban_time'] = (int)$_POST['ipban_time'];
-	
-	$gc = str_replace(
-		"'ipban' => ".(int)$bconfig['ipban'].",",
-		"'ipban' => ".$_POST['ipban'].",",
-		$gc
-	);
-	$gc = str_replace(
-		"'ipban_time' => ".(int)$bconfig['ipban_time'].",",
-		"'ipban_time' => ".$_POST['ipban_time'].",",
-		$gc
-	);
-	
-	$_POST['flooding_time'] = (int)$_POST['flooding_time'];
-	if($_POST['flooding_time'] < 1) {
-		$_POST['flooding_time'] = 10;
-	}
-	$_POST['flooding_pages'] = (int)$_POST['flooding_pages'];
-	if($_POST['flooding_pages'] < 1) {
-		$_POST['flooding_pages'] = 30;
-	}
-	
-	$gc = str_replace(
-		"'flooding' => ".($bconfig['flooding'] ? "true" : "false").",",
-		"'flooding' => ".($_POST['flooding'] ? "true" : "false").",",
-		$gc
-	);
-	$gc = str_replace(
-		"'flooding_time' => ".(int)$bconfig['flooding_time'].",",
-		"'flooding_time' => ".$_POST['flooding_time'].",",
-		$gc
-	);
-	$gc = str_replace(
-		"'flooding_pages' => ".(int)$bconfig['flooding_pages'].",",
-		"'flooding_pages' => ".$_POST['flooding_pages'].",",
-		$gc
-	);
+	config::saveGlobal('dbs', 'dbs', $dbs);
 	
 	
-	$fp = @fopen('../globalconfig.php', 'w');
-	if($fp) {
-		fwrite($fp, $gc);
-		fclose($fp);
-	}
-	
-	
-	// Instanz-Konfiguration
-	if(!class_exists('config')) {
-		include '../common/config.php';
-	}
-	
+	// Instanzkonfiguration
 	$c = array(
-		'active'=>true,
-		'mysql_prefix'=>$_POST['mysql_prefix'],
-		'key'=>generate_key()
+		'instancekey'=>generate_key()
 	);
 	
 	config::save(1, $c, false);
 	
+	$config['instancekey'] = $c['instancekey'];
+	
 	foreach($_POST as $key=>$val) {
-		if($key != 'key') {
-			$config[$key] = $val;
-		}
+		$config[$key] = $val;
 	}
 	
+	
+	
+	
+	/*
+	 * Tabellen anlegen
+	 */
+	// MySQL-Präfixe
 	$globprefix = $_POST['mysql_globprefix'];
-	$prefix = $_POST['mysql_prefix'];
+	$prefix = $globprefix.'1_';
 	
 	
-	// Tabellen anlegen
 	$mysql_conn = new mysql;
 	$mysql_conn->connected = true;
 	
@@ -285,16 +182,7 @@ else {
 	odrequest($admin, true);
 	
 	// Passwort erzeugen
-	$v = array("a", "e", "i", "o", "u");
-	$c = array("b", "c", "d", "f", "g", "h", "j", "k", "l", "m", "n", "p", "r", "s", "t", "v", "w", "x", "z");
-	$vc = count($v)-1;
-	$cc = count($c)-1;
-	
-	$pw = '';
-	for($i=1;$i<=3;$i++) {
-		$pw .= $c[rand(0, $cc)].$v[rand(0, $vc)];
-	}
-	$pw .= rand(10,99);
+	$pw = General::encryptPassword($_POST['admin_passwort'], $config['instancekey']);
 	
 	// Registrierungserlaubnis
 	$query = query("
@@ -335,7 +223,7 @@ else {
 				user_playerName = '".escape($data['playerName'])."',
 				user_allianzenID = ".$data['player_allianzenID'].",
 				userRechtelevel = 4,
-				userPassword = '".md5($pw)."',
+				userPassword = '".$pw."',
 				userSettings = '".escape($settings)."'
 		");
 		if(!$query) {
@@ -369,9 +257,9 @@ else {
 	$tmpl->content = '
 Die ODDB wurde erfolgreich installiert.
 <br /><br />
-Der Account '.htmlspecialchars($data['playerName'], ENT_COMPAT, 'UTF-8').' wurde mit dem Passwort <b>'.$pw.'</b> angelegt.
+Der Account '.htmlspecialchars($data['playerName'], ENT_COMPAT, 'UTF-8').' wurde mit dem eingegebenen Passwort angelegt.
 <br /><br />
-Den Administrationsbereich findest du unter <a href="'.h($_POST['addr']).'admin/" target="_blank"><b>'.h($_POST['addr']).'admin/</b></a>. Das Standardpasswort lautet <b>oddb</b>, du kannst es unter admin/config.php &auml;ndern.
+Den Administrationsbereich findest du unter <a href="'.h($_POST['addr']).'admin/" target="_blank"><b>'.h($_POST['addr']).'admin/</b></a>. Auch hier kannst du dich mit dem eingegebenen Passwort anmelden.
 <br /><br />
 Zum korrekten Betrieb der ODDB musst du noch 2 Cronjobs einrichten:
 <br />
@@ -386,7 +274,9 @@ Fehler, Fragen und Anregungen bitte an michael@kryops.de
 <br /><br /><br />
 Und jetzt viel Spa&szlig; mit der ODDB!
 <br /><br />
-<a href="../" target="_blank"><b>&raquo; zum Login</b></a>';
+<a href="../" target="_blank"><b>&raquo; zum Login</b></a>
+<br />
+<a href="'.h($_POST['addr']).'admin/" target="_blank"><b>&raquo; zum Administrationsbereich</b></a>';
 
 }
 

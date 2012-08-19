@@ -25,6 +25,8 @@ class config {
 		global $bconfig;
 		
 		$config = $bconfig;
+		include (ODDBADMIN ? '.' : '').'./config/global.php';
+		
 		if(@include((ODDBADMIN ? '.' : '').'./config/config'.$instance.'.php')) {
 			return $config;
 		}
@@ -96,14 +98,14 @@ class config {
 		
 		// Konfiguration und Rechte laden
 		if($config === false) {
-			$config = config::getcustom($instance);
+			$config = self::getcustom($instance);
 		}
 		if($config === false) {
 			$config = array();
 		}
 		
 		if($rechte === false) {
-			$rechte = config::getcustom_rechte($instance);
+			$rechte = self::getcustom_rechte($instance);
 		}
 		
 		// Dateiinhalt erzeugen
@@ -190,6 +192,181 @@ if(!defined(\'ODDB\')) die(\'unerlaubter Zugriff!\');
 		// Erfolg
 		return true;
 	}
+	
+	/**
+	 * Inkrementelle globale Konfiguration auslesen
+	 * @param string $filename Name der Datei (ohne .php-Endung)
+	 * @param string $varname Name der Konfigurationsvariable
+	 * @return array/false Konfiguration
+	 */
+	public static function getcustomGlobal($filename, $varname) {
+		
+		// Datei- und Variablennamen validieren
+		if(!self::validateString($filename) OR !self::validateString($varname)) {
+			return false;
+		}
+		
+		
+		${$varname} = array();
+		if(@include((ODDBADMIN ? '.' : '').'./config/'.$filename.'.php')) {
+			return ${$varname};
+		}
+		else {
+			return false;
+		}
+		
+	}
+	
+	
+	/**
+	 * globale Konfiguration speichern
+	 * @param string $filename Name der Datei (ohne .php-Endung)
+	 * @param string $varname Name der Konfigurationsvariable
+	 * @param array $data zu speicherndes Konfigurations-Array
+	 * @param bool $merge Konfiguration vorher auslesen und verschmelzen
+	 * @return bool Erfolg
+	 */
+	public static function saveGlobal($filename, $varname, $data, $merge=false) {
+		
+		// Datei- und Variablennamen validieren
+		if(!self::validateString($filename) OR !self::validateString($varname)) {
+			return false;
+		}
+		
+		
+		$path = (ODDBADMIN ? '.' : '').'./config/'.$filename.'.php';
+		
+		if(file_exists($path)) {
+			// restliche Konfiguration auslesen
+			if($merge) {
+				$data = array_merge(self::getcustom_global($filename, $varname), $data);
+			}
+			
+			// benutzerdefinierte Einstellungen beachten
+			$content = file_get_contents($path);
+			preg_match("#//BEGIN:USERDEFINED(.*)//END:USERDEFINED#Uis", $content, $udef);
+			
+			if($udef) {
+				$udef = $udef[1];
+			}
+			else {
+				$udef = '';
+			}
+		}
+		else {
+			$udef = '';
+		}
+		
+		// Dateiinhalt erzeugen
+		$content = "<"."?php
+error_reporting(E_ALL);
+
+// Sicherheitsabfrage
+if(!defined('ODDB')) die('unerlaubter Zugriff!');
+
+";
+		
+		foreach($data as $key=>$val) {
+			$content .= '
+$'.$varname.'['.self::transformArrayVal($key, true).'] = '.self::transformArrayVal($val).';';
+		}
+		
+		$content .= '
+
+//BEGIN:USERDEFINED
+'.trim($udef).'
+//END:USERDEFINED
+
+?'.'>';
+		
+		// speichern
+		$fp = @fopen($path, 'w');
+		if(!$fp) {
+			return false;
+		}
+		fwrite($fp, $content);
+		fclose($fp);
+		
+		// Erfolg
+		return true;
+		
+	}
+	
+	
+	/**
+	 * Überprüft, ob ein String nur Buchstaben, Zahlen, Bindetriche und Unterstriche enthält
+	 * @param string $str
+	 * @return boolean
+	 */
+	public static function validateString($str) {
+		return (preg_replace("/[a-zA-Z0-9_\-]/Uis", "", $str) == "");
+	}
+	
+	
+	/**
+	 * Array in String umwandeln
+	 * @param Array $arr
+	 * @return string
+	 */
+	public static function transformArray($arr) {
+		
+		$out = array();
+		
+		foreach($arr as $key=>$val) {
+			$out[] = self::transformArrayVal($key, true).' => '.self::transformArrayVal($val);
+		}
+		
+		return implode(",\n	", $out);
+		
+	}
+	
+	/**
+	 * Array-Schlüssel oder -Wert zur Speicherung umwandeln
+	 * Strings werden mit Anführungszeichen versehen
+	 * Arrays 
+	 * @param mixed $var
+	 * @param boolean $key Handelt es sich um einen Array-Schl�ssel? @default false
+	 * @return string
+	 */
+	public static function transformArrayVal($var, $key=false) {
+		
+		// boolesche Variable
+		if(is_bool($var)) {
+			
+			// in Schlüsseln nicht erlaubt; als String zurückgeben
+			if($key) {
+				return $var ? "'true'" : "'false'";
+			}
+			
+			return $var ? "true" : "false";
+		}
+		
+		// Zahl
+		if(is_int($var)) {
+			return (string)$var;
+		}
+		
+		// Array: rekursiv behandeln
+		if(is_array($var)) {
+			
+			// Schlüssel können keine Arrays sein
+			if($key) {
+				return "array";
+			}
+			
+			return "array(".self::transformArray($var).")";
+		}
+		
+		// den Rest als String behandeln
+		$var = addslashes($var);
+		
+		// doppelte Anführungszeichen wieder unescapen
+		$var = str_replace('\\"', '"', $var);
+		
+		return "'".$var."'";
+		
+	}
+	
 }
 
 ?>

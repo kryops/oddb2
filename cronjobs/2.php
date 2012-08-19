@@ -41,21 +41,23 @@ header('Expires: Mon, 26 Jul 1997 05:00:00 GMT');
 header('Last-Modified: ' . gmdate('D, d M Y H:i:s') . ' GMT');
 header('Cache-Control: no-store, no-cache, must-revalidate');
 header('Cache-Control: post-check=0, pre-check=0', false);
-header('Pragma: no-cache');
 
 // Funktionsdateien einbinden
 include '../common.php';
 
-// globale Konfiguration einbinden
-include '../globalconfig.php';
-
 // nicht installiert
-if(!defined('INSTALLED') OR !INSTALLED) {
+if(!@include('../config/global.php')) {
 	die('Die ODDB wurde noch nicht installiert!');
 }
 
+$gconfig = $config;
+define('GLOBPREFIX', $config['mysql_globprefix']);
+
+include '../config/dbs.php';
+
+
 // falscher Sicherheitsschlüssel
-if(!isset($_GET['key']) OR $_GET['key'] != KEY) {
+if(!isset($_GET['key']) OR $_GET['key'] != $config['key']) {
 	die('Sicherheitscode falsch!');
 }
 
@@ -70,9 +72,6 @@ $mysql_conn->connected = true;
 $mysqlconns = array();
 
 // Caching initialisieren
-if(function_exists('apc_fetch') AND !$config['caching']) {
-	$config['caching'] = 1;
-}
 $cache = new cache();
 
 
@@ -137,7 +136,7 @@ if(CACHING) {
 // Instanzen durchgehen
 foreach($dbs as $instance) {
 	// Konfigurationsdatei einbinden
-	$config = $bconfig;
+	$config = $gconfig;
 	if(!(@include('../config/config'.$instance.'.php'))) {
 		continue;
 	}

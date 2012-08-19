@@ -53,16 +53,19 @@ if($_GET['p'] == 'logout') {
 
 // Umgebungsdaten und globale Funktionen einbinden
 include '../common.php';
+include '../common/general.php';
 include './common.php';
 
 // Einstellungen einbinden
-include '../globalconfig.php';
-include './config.php';
-
 // noch nicht installiert
-if(!INSTALLED) {
+if(!@include('../config/global.php')) {
 	die('Die ODDB wurde noch nicht installiert!');
 }
+
+define('GLOBPREFIX', $config['mysql_globprefix']);
+define('KEY', $config['key']);
+
+include '../config/dbs.php';
 
 // Instanz-Array umformen
 if(!$dbs) $dbs = array(1=>'');

@@ -91,39 +91,39 @@ if($_GET['p'] == 'logout') {
 
 // Umgebungsdaten und globale Funktionen einbinden
 include './common.php';
+include './common/general.php';
+
 
 // globale Einstellungen einbinden
-include './globalconfig.php';
-
-
-
-
-// Vorlage: Datenbank für alle Instanzen deaktivieren
-/*
-define('INSTANCE', 1);
-
-$config = array(
-	'active' => false,
-	'offlinemsg' => 'Update läuft'	// Nachricht
-);
-
-include './pages/login.php';
-*/
-
-
-// DB noch nicht installiert
-if(!INSTALLED) {
+if(@include('./config/global.php')) {
+	
+	// Konstanten anlegen
+	define('ADDR', $config['addr']);			// Adresse der DB (mit abschließendem /)
+	define('SERVER', $config['server']);		// Server der DB (ohne http://, ohne abschließendes /)
+	define('KEY', $config['key']);				// globaler Sicherheitsschlüssel (Cronjobs)
+	define('IMPRESSUM', $config['impressum']);
+	define('ADCODE', $config['adcode']); 		// optionaler Werbecode
+	define('GLOBPREFIX', $config['mysql_globprefix']);
+	
+	// Datenbanken einbinden
+	include './config/dbs.php';
+	
+}
+// nicht installiert
+else {
+	define('INSTALLED', false);
 	header('Location: install/');
 	die();
 }
-
-
 
 
 // Instanz-Konstante definieren
 // es gibt nur eine DB
 if(!$dbs) {
 	define('INSTANCE', 1);
+}
+else if(count($dbs == 1)) {
+	define('INSTANCE', array_shift(array_keys($dbs)));
 }
 // Instanz in der Session gespeichert
 else if(isset($_SESSION['inst']) AND isset($dbs[$_SESSION['inst']])) {
@@ -168,7 +168,8 @@ if(INSTANCE) {
 	// MySQL-Klasse initialisieren
 	$mysql_conn = new mysql;
 
-	// MySQL-Präfix als Konstante definieren (GLOBPREFIX wird in der globalconfig.php angelegt)
+	// MySQL-Präfix als Konstante definieren
+	$config['mysql_prefix'] = $config['mysql_globprefix'].INSTANCE.'_';
 	define('PREFIX', $config['mysql_prefix']);
 	
 	// Cache-Klasse initialisieren

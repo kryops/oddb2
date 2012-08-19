@@ -31,7 +31,7 @@ $tmpl->content = '
 <div class="hl1">Login</div>
 	
 	<div class="icontent" id="contentlogin">';
-if($dbs) {
+if($dbs AND count($dbs) > 1) {
 	$tmpl->content .= '
 		<br />
 		';
