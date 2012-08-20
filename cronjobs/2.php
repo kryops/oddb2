@@ -65,11 +65,8 @@ if(!isset($_GET['key']) OR $_GET['key'] != $config['key']) {
 if(!$dbs) $dbs = array(1=>'');
 $dbs = array_keys($dbs);
 
-// normale MySQL-Klasse umgehen
+// MySQL-Verbindung
 $mysql_conn = new mysql;
-$mysql_conn->connected = true;
-
-$mysqlconns = array();
 
 // Caching initialisieren
 $cache = new cache();
@@ -87,7 +84,7 @@ function inva_archiv($id, $log) {
 	$id = (int)$id;
 	
 	// ins Archiv kopieren
-	$query = mysql_query("
+	$query = query("
 		INSERT INTO ".$prefix."invasionen_archiv
 		SELECT
 			invasionenID,
@@ -104,24 +101,24 @@ function inva_archiv($id, $log) {
 		FROM ".$prefix."invasionen
 		WHERE
 			invasionenID = ".$id."
-	", $conn) OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
+	") OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
 	
 	// Eintrag aus den Invasionen löschen
-	$query = mysql_query("
+	$query = query("
 		DELETE FROM ".$prefix."invasionen
 		WHERE
 			invasionenID = ".$id."
-	", $conn) OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
+	") OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
 	
 	// InvaLog-Eintrag
-	$query = mysql_query("
+	$query = query("
 		INSERT INTO ".$prefix."invasionen_log
 		SET
 			invalog_invasionenID = ".$id.",
 			invalogTime = ".time().",
 			invalog_playerID = 0,
 			invalogText = '".mysql_real_escape_string($log)."'
-	", $conn) OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
+	") OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
 }
 
 
@@ -135,86 +132,40 @@ if(CACHING) {
 
 // Instanzen durchgehen
 foreach($dbs as $instance) {
-	// Konfigurationsdatei einbinden
-	$config = $gconfig;
-	if(!(@include('../config/config'.$instance.'.php'))) {
-		continue;
-	}
 	
-	// MySQL-Verbindung
-	$mysqlhash = $config['mysql_host'].'-'.$config['mysql_user'];
-	
-	// Verbindung besteht schon
-	if(in_array($mysqlhash, $mysqlconns)) {
-		$conn =& ${'mysqlconn'.array_search($mysqlhash, $mysqlconns)};
-	}
-	// Verbindung aufbauen
-	else {
-		${'mysqlconn'.$instance} = @mysql_connect(
-			$config['mysql_host'],
-			$config['mysql_user'],
-			$config['mysql_pw']
-		);
-		
-		// Verbindung fehlgeschlagen
-		if(!${'mysqlconn'.$instance}) {
-			echo 'MySQL-Verbindung fehlgeschlagen: '.$mysqlhash.' ('.$instance.')<br />';
-			continue;
-		}
-		
-		$conn =& ${'mysqlconn'.$instance};
-		$mysqlconns[$instance] = $mysqlhash;
-		
-		// MySQL auf UTF-8 stellen
-		if(function_exists('mysql_set_charset')) {
-			mysql_set_charset('utf8', $conn);
-		}
-		else {
-			mysql_query("
-				SET NAMES 'UTF8'
-			", $conn) OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
-		}
-	}
-	
-	// Datenbank auswählen
-	if(!mysql_select_db($config['mysql_db'], $conn)) {
-		echo 'Datenbank konnte nicht ausgewählt werden: '.$mysqlhash.'-'.$config['mysql_db'].' ('.$instance.')<br />';
-		continue;
-	}
-	
-	$prefix = $config['mysql_prefix'];
+	$prefix = mysql::getPrefix($instance);
 	
 	//
 	// Log löschen
 	//
-	$query = mysql_query("
+	$query = query("
 		DELETE FROM ".$prefix."log
 		WHERE
 			logTime < ".(time()-86400*$config['logging_time'])."
-	", $conn) OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
+	") OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
 	
 	//
 	// veraltete Kolonisationen löschen
 	//
-	$query = mysql_query("
+	$query = query("
 		DELETE FROM ".$prefix."invasionen
 		WHERE
 			invasionenTyp = 5
 			AND invasionenEnde < ".time()."
-	", $conn) OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
+	") OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
 	
 	//
 	// veraltete Invasionen und andere Aktionen ins Archiv verschieben,
 	// nachdem sie zu Ende sind, spätestens nach 7 Tagen
 	//
-	$query = mysql_query("
+	$query = query("
 		SELECT
 			invasionenID
 		FROM ".$prefix."invasionen
 		WHERE
 			(invasionenEnde < ".time()." AND invasionenEnde != 0)
 			OR invasionenTime < ".(time()-604800)."
-	", $conn) OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
+	") OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
 	
 	while($row = mysql_fetch_assoc($query)) {
 		inva_archiv($row['invasionenID'], 'Die Aktion wurde automatisch ins Archiv verschoben');
@@ -223,7 +174,7 @@ foreach($dbs as $instance) {
 	//
 	// eigene Allianz für alle auf Status Meta setzen
 	//
-	$query = mysql_query("
+	$query = query("
 		SELECT
 			DISTINCT user_allianzenID,
 			statusStatus
@@ -236,27 +187,27 @@ foreach($dbs as $instance) {
 			user_allianzenID > 0
 			AND (statusStatus IS NULL
 				OR statusStatus != ".$status_meta.")
-	", $conn) OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
+	") OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
 	
 	while($row = mysql_fetch_assoc($query)) {
 		if($row['statusStatus'] == NULL) {
-			mysql_query("
+			query("
 				INSERT INTO ".$prefix."allianzen_status
 				SET
 					statusDBAllianz = ".$row['user_allianzenID'].",
 					status_allianzenID = ".$row['user_allianzenID'].",
 					statusStatus = ".$status_meta."
-			", $conn) OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
+			") OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
 		}
 		else {
-			mysql_query("
+			query("
 				UPDATE ".$prefix."allianzen_status
 				SET
 					statusStatus = ".$status_meta."
 				WHERE
 					statusDBAllianz = ".$row['user_allianzenID']."
 					AND status_allianzenID = ".$row['user_allianzenID']."
-			", $conn) OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
+			") OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
 		}
 	}
 	
@@ -265,7 +216,7 @@ foreach($dbs as $instance) {
 	//
 	// systemeAllianzen aktualisieren
 	//
-	$query = mysql_query("
+	$query = query("
 		SELECT
 			planeten_systemeID,
 			systemeAllianzen,
@@ -281,7 +232,7 @@ foreach($dbs as $instance) {
 			systemeUpdate > 0
 			AND systemeUpdate < ".(time()-172800)."
 		GROUP BY planeten_systemeID
-	", $conn) OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
+	") OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
 	
 	while($row = mysql_fetch_assoc($query)) {
 		$allies = explode(',', $row['allianzen']);
@@ -298,13 +249,13 @@ foreach($dbs as $instance) {
 		
 		$allies = '+'.implode('++', $allies).'+';
 		if($allies != $row['systemeAllianzen']) {
-			mysql_query("
+			query("
 				UPDATE ".$prefix."systeme
 				SET
 					systemeAllianzen = '".$allies."'
 				WHERE
 					systemeID = ".$row['planeten_systemeID']."
-			", $conn) OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
+			") OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
 		}
 	}
 	
@@ -313,13 +264,13 @@ foreach($dbs as $instance) {
 	//
 	// 7 Tage alte Toxxrouten löschen
 	//
-	mysql_query("
+	query("
 		DELETE FROM
 			".$prefix."routen
 		WHERE
 			routenListe = 2
 			AND routenDate < ".(time()-604800)."
-	", $conn) OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
+	") OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
 	
 	//
 	// veraltete Sprunggeneratoren löschen
@@ -328,7 +279,7 @@ foreach($dbs as $instance) {
 		// Planeten-IDs abfragen
 		$ids = array();
 		
-		$query = mysql_query("
+		$query = query("
 			SELECT
 				myrigates_planetenID
 			FROM
@@ -336,7 +287,7 @@ foreach($dbs as $instance) {
 			WHERE
 				myrigatesSprung > 0
 				AND myrigatesSprung < ".(time()-86400*$config['sprunggenerator_del'])."
-		", $conn) OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
+		") OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
 		
 		while($row = mysql_fetch_assoc($query)) {
 			$ids[] = $row['myrigates_planetenID'];
@@ -349,22 +300,22 @@ foreach($dbs as $instance) {
 			$ids = implode(',', $ids);
 			
 			// aus der Myrigate-Tabelle löschen
-			mysql_query("
+			query("
 				DELETE FROM
 					".$prefix."myrigates
 				WHERE
 					myrigates_planetenID IN(".$ids.")
-			", $conn) OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
+			") OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
 			
 			// aus der Planeten-Tabelle löschen
-			mysql_query("
+			query("
 				UPDATE
 					".$prefix."planeten
 				SET
 					planetenMyrigate = 0
 				WHERE
 					planetenID IN(".$ids.")
-			", $conn) OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
+			") OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
 		}
 	}
 	
@@ -372,60 +323,60 @@ foreach($dbs as $instance) {
 	// gelöschte oder 3 Tage alte BBS und Terraformer löschen
 	// 
 	
-	mysql_query("
+	query("
 		DELETE FROM ".$prefix."planeten_schiffe
 		WHERE
 			(schiffeBergbau IS NULL AND schiffeTerraformer IS NULL)
 			OR
 			(schiffeBergbauUpdate < ".(time()-259200)." AND schiffeTerraformerUpdate < ".(time()-259200).")
-	", $conn) OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
+	") OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
 	
-	mysql_query("
+	query("
 		UPDATE ".$prefix."planeten_schiffe
 		SET
 			schiffeBergbau = NULL
 		WHERE
 			schiffeBergbauUpdate < ".(time()-259200)."
-	", $conn) OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
+	") OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
 	
-	mysql_query("
+	query("
 		UPDATE ".$prefix."planeten_schiffe
 		SET
 			schiffeTerraformer = NULL
 		WHERE
 			schiffeTerraformerUpdate < ".(time()-259200)."
-	", $conn) OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
+	") OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
 	
 	//
 	// Tabellen nach ID sortieren (galaxien, systeme, planeten, player)
 	//
-	mysql_query("
+	query("
 		ALTER TABLE ".$prefix."galaxien
 		ORDER BY galaxienID
-	", $conn) OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
+	") OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
 	
-	mysql_query("
+	query("
 		ALTER TABLE ".$prefix."systeme
 		ORDER BY systemeID
-	", $conn) OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
+	") OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
 	
-	mysql_query("
+	query("
 		ALTER TABLE ".$prefix."planeten
 		ORDER BY planetenID
-	", $conn) OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
+	") OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
 }
 
 //
 // neue Spieler eintragen
 //
-$query = mysql_query("
+$query = query("
 	SELECT
 		MIN(playerID) AS minid
 	FROM
 		".GLOBPREFIX."player
 	WHERE
 		playerID > 1000
-", $conn) OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
+") OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
 
 $data = mysql_fetch_assoc($query);
 
@@ -466,7 +417,7 @@ if($minid AND $od_up) {
 	$ids = array();
 	
 	// Spieler abfragen
-	$query = mysql_query("
+	$query = query("
 		SELECT
 			playerID
 		FROM
@@ -475,7 +426,7 @@ if($minid AND $od_up) {
 			playerID > 1000
 		ORDER BY
 			playerID ASC
-	", $conn) OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
+	") OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
 	
 	while($row = mysql_fetch_assoc($query)) {
 		
@@ -493,13 +444,13 @@ if($minid AND $od_up) {
 		
 		// Spieler nicht gefunden: Leeren Spieler eintragen
 		if(!odrequest($id, false, 0, true)) {
-			mysql_query("
+			query("
 				INSERT INTO
 					".GLOBPREFIX."player
 				SET
 					playerID = ".$id.",
 					playerDeleted = 1
-			", $conn) OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
+			") OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
 		}
 		
 		$c++;
@@ -514,9 +465,12 @@ if($minid AND $od_up) {
 //
 // globale Tabellen sortieren
 //
-mysql_query("
+query("
 	ALTER TABLE ".GLOBPREFIX."player
 	ORDER BY playerID
-", $conn) OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
+") OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
+
+
+echo "Cronjob erfolgreich.";
 
 ?>

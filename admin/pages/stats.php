@@ -53,73 +53,26 @@ else {
 		$data = array();
 		$data['time'] = time();
 		
-		// normale MySQL-Klasse umgehen
+		// MySQL-Verbindung
 		$mysql_conn = new mysql;
-		$mysql_conn->connected = true;
-
-		$mysqlconns = array();
 		
 		// Instanzen durchgehen
 		foreach($dbs as $instance=>$instance_name) {
-			// Konfigurationsdatei einbinden
-			$config = $gconfig;
-			
-			if(!(@include('../config/config'.$instance.'.php'))) {
-				continue;
-			}
 			
 			$data[$instance] = array(
 				'name'=>$instance_name
 			);
 			
-			// MySQL-Verbindung
-			$mysqlhash = $config['mysql_host'].'-'.$config['mysql_user'];
 			
-			// Verbindung besteht schon
-			if(in_array($mysqlhash, $mysqlconns)) {
-				$conn =& ${'mysqlconn'.array_search($mysqlhash, $mysqlconns)};
-			}
-			// Verbindung aufbauen
-			else {
-				${'mysqlconn'.$instance} = @mysql_connect(
-					$config['mysql_host'],
-					$config['mysql_user'],
-					$config['mysql_pw']
-				);
-				
-				// Verbindung fehlgeschlagen
-				if(!${'mysqlconn'.$instance}) {
-					continue;
-				}
-				
-				$conn =& ${'mysqlconn'.$instance};
-				$mysqlconns[$instance] = $mysqlhash;
-				
-				// MySQL auf UTF-8 stellen
-				if(function_exists('mysql_set_charset')) {
-					mysql_set_charset('utf8', $conn);
-				}
-				else {
-					mysql_query("
-						SET NAMES 'UTF8'
-					", $conn) OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
-				}
-			}
-			
-			// Datenbank auswählen
-			if(!mysql_select_db($config['mysql_db'], $conn)) {
-				continue;
-			}
-			
-			$prefix = $config['mysql_globprefix'].$instance.'_';
+			$prefix = mysql::getPrefix($instance);
 			
 			// angemeldete User
-			$query = mysql_query("
+			$query = query("
 				SELECT
 					COUNT(*)
 				FROM
 					".$prefix."user
-			", $conn);
+			");
 			
 			if($query) {
 				$row = mysql_fetch_array($query);
@@ -127,14 +80,14 @@ else {
 			}
 			
 			// User heute online
-			$query = mysql_query("
+			$query = query("
 				SELECT
 					COUNT(*)
 				FROM
 					".$prefix."user
 				WHERE
 					userOnlineDB > ".$heute."
-			", $conn);
+			");
 			
 			if($query) {
 				$row = mysql_fetch_array($query);
@@ -142,14 +95,14 @@ else {
 			}
 			
 			// User heute Plugin
-			$query = mysql_query("
+			$query = query("
 				SELECT
 					COUNT(*)
 				FROM
 					".$prefix."user
 				WHERE
 					userOnlinePlugin > ".$heute."
-			", $conn);
+			");
 			
 			if($query) {
 				$row = mysql_fetch_array($query);
@@ -161,12 +114,12 @@ else {
 			$sys_aktuell = 0;
 			
 			// Systeme
-			$query = mysql_query("
+			$query = query("
 				SELECT
 					COUNT(*)
 				FROM
 					".$prefix."systeme
-			", $conn);
+			");
 			
 			if($query) {
 				$row = mysql_fetch_array($query);
@@ -174,14 +127,14 @@ else {
 			}
 			
 			// Systeme gescannt
-			$query = mysql_query("
+			$query = query("
 				SELECT
 					COUNT(*)
 				FROM
 					".$prefix."systeme
 				WHERE
 					systemeUpdate > 0
-			", $conn);
+			");
 			
 			if($query) {
 				$row = mysql_fetch_array($query);
@@ -189,14 +142,14 @@ else {
 			}
 			
 			// Systeme
-			$query = mysql_query("
+			$query = query("
 				SELECT
 					COUNT(*)
 				FROM
 					".$prefix."systeme
 				WHERE
 					systemeUpdate > ".(time()-21*86400)."
-			", $conn);
+			");
 			
 			if($query) {
 				$row = mysql_fetch_array($query);
@@ -236,7 +189,7 @@ else {
 			<br /><br />';
 	}
 	
-	 // Z�hler
+	 // Zähler
 	$count_user = 0;
 	$count_online = 0;
 	$count_plugin = 0;

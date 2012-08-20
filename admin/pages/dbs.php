@@ -151,47 +151,25 @@ else if($_GET['sp'] == 'add_send') {
 			$config[$key] = $val;
 		}
 		
-		$prefix = $config['mysql_globprefix'].$instance.'_';
+		$prefix = mysql::getPrefix($instance);
 		
-		// normale MySQL-Klasse umgehen
+		// MySQL-Verbindung
 		$mysql_conn = new mysql;
-		$mysql_conn->connected = true;
 		
-		// MySQL-Verbindung testen
-		if(!($conn = @mysql_connect($config['mysql_host'], $config['mysql_user'], $config['mysql_pw']))) {
-			$tmpl->error = 'MySQL-Verbindung fehlgeschlagen: '.mysql_error();
+		// Tabellen schon vorhanden?
+		$query = query("
+			SHOW TABLES LIKE '".$prefix."planeten'
+		") OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
+		
+		// vorhanden
+		if(mysql_num_rows($query)) {
+			// nicht ignoriert
+			if(!$mysql_use) {
+				$tmpl->error = 'Es sind bereits MySQL-Tabellen mit diesem Pr&auml;fix vorhanden!<br />Bitte f&uuml;hre die Funktion zum Erkennen neuer Instanzen aus!';
+			}
 		}
 		else {
-			// MySQL auf UTF-8 stellen
-			if(function_exists('mysql_set_charset')) {
-				mysql_set_charset('utf8');
-			}
-			else {
-				mysql_query("
-					SET NAMES 'UTF8'
-				");
-			}
-			
-			if(!mysql_select_db($config['mysql_db'])) {
-				$tmpl->error = 'Datenbank konnte nicht ausgewählt werden: '.mysql_error();
-			}
-			else {
-				// Tabellen schon vorhanden?
-				$query = mysql_query("
-					SHOW TABLES LIKE '".$prefix."planeten'
-				") OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
-				
-				// vorhanden
-				if(mysql_num_rows($query)) {
-					// nicht ignoriert
-					if(!$mysql_use) {
-						$tmpl->error = 'Es sind bereits MySQL-Tabellen mit diesem Pr&auml;fix vorhanden!<br />&Auml;ndere es oder aktiviere die Option zum Benutzen vorhandener Installationen!';
-					}
-				}
-				else {
-					$mysql_use = false;
-				}
-			}
+			$mysql_use = false;
 		}
 		
 		// Vorhandensein des Administrators
@@ -230,192 +208,167 @@ else if($_GET['sp'] == 'add_send') {
 			$copyerror = '';
 			
 			if(!$tmpl->error AND $data_copy AND isset($dbs[$data_copy])) {
+				
 				// Zeitlimit erhöhen
 				@set_time_limit(300);
 				
-				// Konfiguration einbinden
-				if($dconfig = getconfig($data_copy)) {
-					$dprefix = $dconfig['mysql_globprefix'].$data_copy.'_';
+				
+				$dprefix = mysql::getPrefix($data_copy);
+				
+				
+				// Galaxien übertragen
+				$query = query("
+					SELECT
+						galaxienID,
+						galaxienSysteme
+					FROM
+						".$dprefix."galaxien
+				");
+				
+				if($query) {
+					$copyarray = array();
 					
-					if($dataconn = @mysql_connect($dconfig['mysql_host'], $dconfig['mysql_user'], $dconfig['mysql_pw'])) {
-						// MySQL auf UTF-8 stellen
-						if(function_exists('mysql_set_charset')) {
-							mysql_set_charset('utf8', $dataconn);
-						}
-						else {
-							mysql_query("
-								SET NAMES 'UTF8'
-							", $dataconn);
-						}
+					while($row = mysql_fetch_assoc($query)) {
+						$copyarray[] = "(".$row['galaxienID'].",".$row['galaxienSysteme'].")";
+					}
+					
+					if(count($copyarray)) {
+						$copyarray = "INSERT INTO ".$prefix."galaxien
+								(galaxienID, galaxienSysteme)
+								VALUES
+								".implode(', ', $copyarray);
 						
-						// DB auswählen
-						if(mysql_select_db($dconfig['mysql_db'], $dataconn)) {
-							
-							// Galaxien übertragen
-							$query = mysql_query("
-								SELECT
-									galaxienID,
-									galaxienSysteme
-								FROM
-									".$dprefix."galaxien
-							", $dataconn);
-							
-							if($query) {
-								$copyarray = array();
-								
-								while($row = mysql_fetch_assoc($query)) {
-									$copyarray[] = "(".$row['galaxienID'].",".$row['galaxienSysteme'].")";
-								}
-								
-								if(count($copyarray)) {
-									$copyarray = "INSERT INTO ".$prefix."galaxien
-											(galaxienID, galaxienSysteme)
-											VALUES
-											".implode(', ', $copyarray);
-									
-									if(!mysql_query($copyarray, $conn)) {
-										$copyerror = 'Kopieren der Grunddaten fehlgeschlagen [Galaxien2]! (Fehler: '.mysql_error().')';
-									}
-								}
-								
-								mysql_free_result($query);
-							}
-							else {
-								$copyerror = 'Kopieren der Grunddaten fehlgeschlagen [Galaxien]! (Fehler: '.mysql_error().')';
-							}
-							
-							// Systeme übertragen
-							$query = mysql_query("
-								SELECT
-									systemeID,
-									systeme_galaxienID,
-									systemeName,
-									systemeX,
-									systemeY,
-									systemeZ,
-									systemeUpdateHidden
-								FROM
-									".$dprefix."systeme
-							", $dataconn);
-							
-							$i = 1;
-							
-							if($query) {
-								$copyarray = array();
-								
-								while($row = mysql_fetch_assoc($query)) {
-									$copyarray[] = "(".$row['systemeID'].",".$row['systeme_galaxienID'].",'".mysql_real_escape_string($row['systemeName'])."',".$row['systemeX'].",".$row['systemeY'].",".$row['systemeZ'].",".($row['systemeUpdateHidden'] ? 1 : 0).")";
-									
-									if($i == 5000) {
-										$copyarray = "INSERT INTO ".$prefix."systeme
-											(systemeID, systeme_galaxienID, systemeName, systemeX, systemeY, systemeZ, systemeUpdateHidden)
-											VALUES
-											".implode(', ', $copyarray);
-									
-										if(!mysql_query($copyarray, $conn)) {
-											$copyerror = 'Kopieren der Grunddaten fehlgeschlagen [Systeme3]! (Fehler: '.mysql_error().')';
-										}
-										
-										$copyarray = array();
-										$i = 0;
-									}
-									
-									$i++;
-								}
-								
-								if(count($copyarray)) {
-									$copyarray = "INSERT INTO ".$prefix."systeme
-											(systemeID, systeme_galaxienID, systemeName, systemeX, systemeY, systemeZ, systemeUpdateHidden)
-											VALUES
-											".implode(', ', $copyarray);
-									
-									if(!mysql_query($copyarray, $conn)) {
-										$copyerror = 'Kopieren der Grunddaten fehlgeschlagen [Systeme2]! (Fehler: '.mysql_error().')';
-									}
-								}
-								
-								mysql_free_result($query);
-							}
-							else {
-								$copyerror = 'Kopieren der Grunddaten fehlgeschlagen [Systeme]! (Fehler: '.mysql_error().')';
-							}
-							
-							echo $copyerror;
-							
-							// Planeten übertragen
-							$query = mysql_query("
-								SELECT
-									planetenID,
-									planeten_systemeID,
-									planetenPosition,
-									planetenName,
-									planetenTyp,
-									planetenGroesse,
-									planetenRWErz,
-									planetenRWWolfram,
-									planetenRWKristall,
-									planetenRWFluor,
-									planetenBevoelkerung
-								FROM
-									".$dprefix."planeten
-							", $dataconn);
-							
-							if($query) {
-								$copyarray = array();
-								
-								$i = 1;
-								
-								while($row = mysql_fetch_assoc($query)) {
-									$copyarray[] = "(".$row['planetenID'].",".$row['planeten_systemeID'].",".$row['planetenPosition'].",'".mysql_real_escape_string($row['planetenName'])."',".$row['planetenTyp'].",".$row['planetenGroesse'].",".$row['planetenRWErz'].",".$row['planetenRWWolfram'].",".$row['planetenRWKristall'].",".$row['planetenRWFluor'].",".$row['planetenBevoelkerung'].",-1)";
-									
-									// alle 5000 Planeten Query absetzen
-									if($i == 5000) {
-										
-										$copyarray = "INSERT INTO ".$prefix."planeten
-											(planetenID, planeten_systemeID, planetenPosition, planetenName, planetenTyp, planetenGroesse, planetenRWErz, planetenRWWolfram, planetenRWKristall, planetenRWFluor, planetenBevoelkerung, planeten_playerID)
-											VALUES
-											".implode(', ', $copyarray);
-									
-											if(!mysql_query($copyarray, $conn)) {
-												$copyerror = 'Kopieren der Grunddaten fehlgeschlagen [Planeten3]! (Fehler: '.mysql_error().')';
-											}
-										
-										$i = 0;
-										$copyarray = array();
-									}
-									
-									$i++;
-								}
-								
-								if(count($copyarray)) {
-									$copyarray = "INSERT INTO ".$prefix."planeten
-											(planetenID, planeten_systemeID, planetenPosition, planetenName, planetenTyp, planetenGroesse, planetenRWErz, planetenRWWolfram, planetenRWKristall, planetenRWFluor, planetenBevoelkerung, planeten_playerID)
-											VALUES
-											".implode(', ', $copyarray);
-									
-									if(!mysql_query($copyarray, $conn)) {
-										$copyerror = 'Kopieren der Grunddaten fehlgeschlagen [Planeten2]! (Fehler: '.mysql_error().')';
-									}
-								}
-								
-								mysql_free_result($query);
-							}
-							else {
-								$copyerror = 'Kopieren der Grunddaten fehlgeschlagen [Planeten]! (Fehler: '.mysql_error().')';
-							}
-							
-						}
-						else {
-							$copyerror = 'Kopieren der Grunddaten fehlgeschlagen! (Konnte Datenbank nicht ausw&auml;hlen: '.mysql_error().')';
+						if(!query($copyarray)) {
+							$copyerror = 'Kopieren der Grunddaten fehlgeschlagen [Galaxien2]! (Fehler: '.mysql_error().')';
 						}
 					}
-					else {
-						$copyerror = 'Kopieren der Grunddaten fehlgeschlagen! (MySQL-Verbindung fehlgeschlagen: '.mysql_error().')';
-					}
+					
+					mysql_free_result($query);
 				}
 				else {
-					$copyerror = 'Kopieren der Grunddaten fehlgeschlagen! (Konnte Konfigurationsdatei nicht &ouml;ffnen)';
+					$copyerror = 'Kopieren der Grunddaten fehlgeschlagen [Galaxien]! (Fehler: '.mysql_error().')';
 				}
+				
+				// Systeme übertragen
+				$query = query("
+					SELECT
+						systemeID,
+						systeme_galaxienID,
+						systemeName,
+						systemeX,
+						systemeY,
+						systemeZ,
+						systemeUpdateHidden
+					FROM
+						".$dprefix."systeme
+				");
+				
+				$i = 1;
+				
+				if($query) {
+					$copyarray = array();
+					
+					while($row = mysql_fetch_assoc($query)) {
+						$copyarray[] = "(".$row['systemeID'].",".$row['systeme_galaxienID'].",'".mysql_real_escape_string($row['systemeName'])."',".$row['systemeX'].",".$row['systemeY'].",".$row['systemeZ'].",".($row['systemeUpdateHidden'] ? 1 : 0).")";
+						
+						if($i == 5000) {
+							$copyarray = "INSERT INTO ".$prefix."systeme
+								(systemeID, systeme_galaxienID, systemeName, systemeX, systemeY, systemeZ, systemeUpdateHidden)
+								VALUES
+								".implode(', ', $copyarray);
+						
+							if(!query($copyarray)) {
+								$copyerror = 'Kopieren der Grunddaten fehlgeschlagen [Systeme3]! (Fehler: '.mysql_error().')';
+							}
+							
+							$copyarray = array();
+							$i = 0;
+						}
+						
+						$i++;
+					}
+					
+					if(count($copyarray)) {
+						$copyarray = "INSERT INTO ".$prefix."systeme
+								(systemeID, systeme_galaxienID, systemeName, systemeX, systemeY, systemeZ, systemeUpdateHidden)
+								VALUES
+								".implode(', ', $copyarray);
+						
+						if(!query($copyarray)) {
+							$copyerror = 'Kopieren der Grunddaten fehlgeschlagen [Systeme2]! (Fehler: '.mysql_error().')';
+						}
+					}
+					
+					mysql_free_result($query);
+				}
+				else {
+					$copyerror = 'Kopieren der Grunddaten fehlgeschlagen [Systeme]! (Fehler: '.mysql_error().')';
+				}
+				
+				echo $copyerror;
+				
+				// Planeten übertragen
+				$query = query("
+					SELECT
+						planetenID,
+						planeten_systemeID,
+						planetenPosition,
+						planetenName,
+						planetenTyp,
+						planetenGroesse,
+						planetenRWErz,
+						planetenRWWolfram,
+						planetenRWKristall,
+						planetenRWFluor,
+						planetenBevoelkerung
+					FROM
+						".$dprefix."planeten
+				");
+				
+				if($query) {
+					$copyarray = array();
+					
+					$i = 1;
+					
+					while($row = mysql_fetch_assoc($query)) {
+						$copyarray[] = "(".$row['planetenID'].",".$row['planeten_systemeID'].",".$row['planetenPosition'].",'".mysql_real_escape_string($row['planetenName'])."',".$row['planetenTyp'].",".$row['planetenGroesse'].",".$row['planetenRWErz'].",".$row['planetenRWWolfram'].",".$row['planetenRWKristall'].",".$row['planetenRWFluor'].",".$row['planetenBevoelkerung'].",-1)";
+						
+						// alle 5000 Planeten Query absetzen
+						if($i == 5000) {
+							
+							$copyarray = "INSERT INTO ".$prefix."planeten
+								(planetenID, planeten_systemeID, planetenPosition, planetenName, planetenTyp, planetenGroesse, planetenRWErz, planetenRWWolfram, planetenRWKristall, planetenRWFluor, planetenBevoelkerung, planeten_playerID)
+								VALUES
+								".implode(', ', $copyarray);
+						
+								if(!query($copyarray)) {
+									$copyerror = 'Kopieren der Grunddaten fehlgeschlagen [Planeten3]! (Fehler: '.mysql_error().')';
+								}
+							
+							$i = 0;
+							$copyarray = array();
+						}
+						
+						$i++;
+					}
+					
+					if(count($copyarray)) {
+						$copyarray = "INSERT INTO ".$prefix."planeten
+								(planetenID, planeten_systemeID, planetenPosition, planetenName, planetenTyp, planetenGroesse, planetenRWErz, planetenRWWolfram, planetenRWKristall, planetenRWFluor, planetenBevoelkerung, planeten_playerID)
+								VALUES
+								".implode(', ', $copyarray);
+						
+						if(!query($copyarray)) {
+							$copyerror = 'Kopieren der Grunddaten fehlgeschlagen [Planeten2]! (Fehler: '.mysql_error().')';
+						}
+					}
+					
+					mysql_free_result($query);
+				}
+				else {
+					$copyerror = 'Kopieren der Grunddaten fehlgeschlagen [Planeten]! (Fehler: '.mysql_error().')';
+				}
+				
 			}
 		}
 		
@@ -664,38 +617,17 @@ else if($_GET['sp'] == 'del') {
 		// MySQL-Tabellen löschen
 		$prefix = $config['mysql_globprefix'].$_GET['id'].'_';
 		
-		// normale MySQL-Klasse umgehen
+		// MySQL-Verbindung
 		$mysql_conn = new mysql;
-		$mysql_conn->connected = true;
 		
-		// MySQL-Verbindung testen
-		if(!(@mysql_connect($config['mysql_host'], $config['mysql_user'], $config['mysql_pw']))) {
-			$tmpl->error = 'MySQL-Verbindung fehlgeschlagen: '.mysql_error();
-		}
-		else {
-			// MySQL auf UTF-8 stellen
-			if(function_exists('mysql_set_charset')) {
-				mysql_set_charset('utf8');
-			}
-			else {
-				mysql_query("
-					SET NAMES 'UTF8'
-				") OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
-			}
-			
-			if(!mysql_select_db($config['mysql_db'])) {
-				$tmpl->error = 'Datenbank konnte nicht ausgewählt werden: '.mysql_error();
-			}
-			else {
-				include '../common/mysql_tables.php';
-			
-				foreach($tables_del as $sql) {
-					$query = query($sql);
-					if(!$query) {
-						$tmpl->error = 'Löschen der MySQL-Tabellen fehlgeschlagen: '.mysql_error().'<br /><br />(Query '.htmlspecialchars($sql, ENT_COMPAT, 'UTF-8').')';
-						break;
-					}
-				}
+		
+		include '../common/mysql_tables.php';
+	
+		foreach($tables_del as $sql) {
+			$query = query($sql);
+			if(!$query) {
+				$tmpl->error = 'Löschen der MySQL-Tabellen fehlgeschlagen: '.mysql_error().'<br /><br />(Query '.htmlspecialchars($sql, ENT_COMPAT, 'UTF-8').')';
+				break;
 			}
 		}
 		
@@ -1070,7 +1002,7 @@ else {
 		<tr class="dbrow'.$instance.'">
 			<td>'.$instance.'</td>
 			<td>'.(trim($instance_name) != '' ? htmlspecialchars($instance_name, ENT_COMPAT, 'UTF-8') : ' - ').'</td>
-			<td>'.($c ? htmlspecialchars($c['mysql_user'].'@'.$c['mysql_host'].' - [DB] '.$c['mysql_db'].' [Prefix] '.$c['mysql_prefix'], ENT_COMPAT, 'UTF-8') : '<i>unbekannt</i>').'</td>
+			<td>'.($c ? 'Tabellen-Pr&auml;fix '.mysql::getPrefix($instance) : '<i>unbekannt</i>').'</td>
 			<td>'.($c ? ($c['active'] ? 'ja' : '<span class="tooltip" tooltip="'.htmlspecialchars($c['offlinemsg'], ENT_COMPAT, 'UTF-8').'">nein</span>') : '<i>unbekannt</i>').'</td>
 			<td class="userlistaction">
 				<img src="../img/layout/leer.gif" style="background-position:-1020px -91px" class="link winlink contextmenu hoverbutton" data-link="index.php?p=dbs&amp;sp=edit&amp;id='.$instance.'" title="Datenbank bearbeiten" />

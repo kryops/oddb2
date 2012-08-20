@@ -35,13 +35,13 @@ header('Last-Modified: ' . gmdate('D, d M Y H:i:s') . ' GMT');
 header('Cache-Control: no-store, no-cache, must-revalidate');
 header('Cache-Control: post-check=0, pre-check=0', false);
 
+// Funktionsdateien einbinden
+include '../common.php';
+
 // in der Downtime abbrechen
 if(DOWNTIME AND date('G') == 4) {
 	die('Downtime!');
 }
-
-// Funktionsdateien einbinden
-include '../common.php';
 
 // nicht installiert
 if(!@include('../config/global.php')) {
@@ -62,46 +62,8 @@ if(!isset($_GET['key']) OR $_GET['key'] != $config['key']) {
 if(!$dbs) $dbs = array(1=>'');
 $dbs = array_keys($dbs);
 
-// normale MySQL-Klasse umgehen
+// MySQL-Verbindung
 $mysql_conn = new mysql;
-$mysql_conn->connected = true;
-
-$mysqlconns = array();
-$instance = 0;
-
-$mysqlhash = $config['mysql_host'].'-'.$config['mysql_user'];
-
-${'mysqlconn'.$instance} = @mysql_connect(
-	$config['mysql_host'],
-	$config['mysql_user'],
-	$config['mysql_pw']
-);
-
-// Verbindung fehlgeschlagen
-if(!${'mysqlconn'.$instance}) {
-	echo 'MySQL-Verbindung fehlgeschlagen: '.$mysqlhash.' ('.$instance.')<br />';
-	continue;
-}
-
-$conn =& ${'mysqlconn'.$instance};
-$mysqlconns[0] = $mysqlhash;
-
-// MySQL auf UTF-8 stellen
-if(function_exists('mysql_set_charset')) {
-	mysql_set_charset('utf8', $conn);
-}
-else {
-	mysql_query("
-		SET NAMES 'UTF8'
-	", $conn) OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
-}
-
-// Datenbank auswählen
-if(!mysql_select_db($config['mysql_db'], $conn)) {
-	echo 'Datenbank konnte nicht ausgewählt werden: '.$mysqlhash.'-'.$config['mysql_db'].' ('.$instance.')<br />';
-	continue;
-}
-
 
 // Caching initialisieren
 $cache = new cache();
@@ -116,10 +78,10 @@ $cache = new cache();
 //
 
 if(!$config['caching']) {
-	mysql_query("
+	query("
 		DELETE FROM ".GLOBPREFIX."flooding
 		WHERE floodingTime < ".(time()-300)."
-	", $conn) OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
+	") OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
 }
 
 //
@@ -129,7 +91,7 @@ if(!$config['caching']) {
 // Allianzen und Metas für das odrequest zurücksetzen
 $odrallies = array();
 
-$query = mysql_query("
+$query = query("
 	SELECT
 		playerID
 	FROM ".GLOBPREFIX."player
@@ -141,7 +103,7 @@ $query = mysql_query("
 		playerID ASC
 	LIMIT
 		".$gconfig['odrequest_max']."
-", $conn) OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
+") OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
 
 while($row = mysql_fetch_assoc($query)) {
 	// nach 50 Sekunden odrequests abbrechen
@@ -156,7 +118,7 @@ while($row = mysql_fetch_assoc($query)) {
 // Spieler mit kürlichen Allywechseln ermitteln
 //
 
-$query = mysql_query("
+$query = query("
 	SELECT
 		allyhistory_playerID,
 		allyhistory_allianzenID
@@ -167,7 +129,7 @@ $query = mysql_query("
 		AND allyhistoryLastAlly IS NOT NULL
 	ORDER BY
 		allyhistoryTime ASC
-", $conn) OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
+") OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
 
 $allywechsel = array();
 
@@ -176,14 +138,14 @@ while($row = mysql_fetch_assoc($query)) {
 }
 
 // bei allen auf übertragen setzen
-mysql_query("
+query("
 	UPDATE
 		".GLOBPREFIX."player_allyhistory
 	SET
 		allyhistoryFinal = 1
 	WHERE
 		allyhistoryFinal = 0
-", $conn) OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
+") OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
 
 
 
@@ -192,54 +154,8 @@ mysql_query("
  * Instanzen durchgehen
  */
 foreach($dbs as $instance) {
-	// Konfigurationsdatei einbinden
-	$config = $gconfig;
-	if(!(@include('../config/config'.$instance.'.php'))) {
-		continue;
-	}
 	
-	// MySQL-Verbindung
-	$mysqlhash = $config['mysql_host'].'-'.$config['mysql_user'];
-	
-	// Verbindung besteht schon
-	if(in_array($mysqlhash, $mysqlconns)) {
-		$conn =& ${'mysqlconn'.array_search($mysqlhash, $mysqlconns)};
-	}
-	// Verbindung aufbauen
-	else {
-		${'mysqlconn'.$instance} = @mysql_connect(
-			$config['mysql_host'],
-			$config['mysql_user'],
-			$config['mysql_pw']
-		);
-		
-		// Verbindung fehlgeschlagen
-		if(!${'mysqlconn'.$instance}) {
-			echo 'MySQL-Verbindung fehlgeschlagen: '.$mysqlhash.' ('.$instance.')<br />';
-			continue;
-		}
-		
-		$conn =& ${'mysqlconn'.$instance};
-		$mysqlconns[$instance] = $mysqlhash;
-		
-		// MySQL auf UTF-8 stellen
-		if(function_exists('mysql_set_charset')) {
-			mysql_set_charset('utf8', $conn);
-		}
-		else {
-			mysql_query("
-				SET NAMES 'UTF8'
-			", $conn) OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
-		}
-	}
-	
-	// Datenbank auswählen
-	if(!mysql_select_db($config['mysql_db'], $conn)) {
-		echo 'Datenbank konnte nicht ausgewählt werden: '.$mysqlhash.'-'.$config['mysql_db'].' ('.$instance.')<br />';
-		continue;
-	}
-	
-	$prefix = $config['mysql_prefix'];
+	$prefix = mysql::getPrefix($instance);
 	
 	//
 	// Allianzwechsel in die Usertabellen übertragen
@@ -249,13 +165,13 @@ foreach($dbs as $instance) {
 	$register_player = array();
 	$register_allies = array();
 	
-	$query = mysql_query("
+	$query = query("
 		SELECT
 			register_playerID,
 			register_allianzenID
 		FROM
 			".$prefix."register
-	", $conn) OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
+	") OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
 	
 	while($row = mysql_fetch_assoc($query)) {
 		if($row['register_playerID']) {
@@ -269,14 +185,14 @@ foreach($dbs as $instance) {
 	// Allianzwechsel übertragen
 	foreach($allywechsel as $row) {
 		// Sperr-Status überprüfen
-		$query = mysql_query("
+		$query = query("
 			SELECT
 				userBanned
 			FROM
 				".$prefix."user
 			WHERE
 				user_playerID = ".(int)$row['allyhistory_playerID']."
-		", $conn) OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
+		") OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
 		
 		if(mysql_num_rows($query)) {
 			// darf der Spieler die Instanz benutzen?
@@ -302,7 +218,7 @@ foreach($dbs as $instance) {
 			}
 			
 			// in DB übernehmen
-			mysql_query("
+			query("
 				UPDATE
 					".$prefix."user
 				SET
@@ -310,7 +226,7 @@ foreach($dbs as $instance) {
 					userBanned = ".$banned."
 				WHERE
 					user_playerID = ".(int)$row['allyhistory_playerID']."
-			", $conn) OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
+			") OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
 		}
 	}
 	
@@ -319,7 +235,7 @@ foreach($dbs as $instance) {
 	//
 	if($config['caching']) {
 		// Invasionen
-		$query = mysql_query("
+		$query = query("
 			SELECT
 				COUNT(*) AS invasionenCount
 			FROM
@@ -328,14 +244,14 @@ foreach($dbs as $instance) {
 				(invasionenEnde = 0 OR invasionenEnde > ".time().")
 				AND invasionenFremd = 0
 				AND invasionenTyp != 5
-		", $conn) OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
+		") OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
 		
 		$data = mysql_fetch_assoc($query);
 		
 		$cache->setglobal($instance.'invas', $data['invasionenCount'], 120);
 		
 		// Spieler noch nicht freigeschaltet oder gesperrt
-		$query = mysql_query("
+		$query = query("
 			SELECT
 				COUNT(*) AS userCount
 			FROM
@@ -343,7 +259,7 @@ foreach($dbs as $instance) {
 			WHERE
 				userBanned = 2
 				OR userBanned = 3
-		", $conn) OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
+		") OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
 		
 		$data = mysql_fetch_assoc($query);
 		
@@ -351,6 +267,8 @@ foreach($dbs as $instance) {
 	}
 }
 
+
+echo "Cronjob erfolgreich.";
 
 
 ?>

@@ -1248,6 +1248,21 @@ class mysql {
 			") OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
 		}
 	}
+	
+	
+	/**
+	 * Instanzspezifischen Tabellenpräfix generieren
+	 * Format: [globaler Präfix][Instanz]_
+	 * @param int $instance
+	 * @return string Präfix
+	 */
+	public static function getPrefix($instance) {
+		
+		global $config;
+		
+		return $config['mysql_globprefix'].$instance.'_';
+		
+	}
 }
 
 /**

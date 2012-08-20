@@ -40,11 +40,8 @@ else if($_GET['sp'] == 'send') {
 		$_POST['query'] = str_replace('[globprefix]', GLOBPREFIX, $_POST['query']);
 		
 		
-		// normale MySQL-Klasse umgehen
+		// MySQL-Verbindung
 		$mysql_conn = new mysql;
-		$mysql_conn->connected = true;
-		
-		$mysqlconns = array();
 		
 		// Instanzen durchgehen
 		foreach($dbs as $instance=>$instance_name) {
@@ -60,86 +57,41 @@ else if($_GET['sp'] == 'send') {
 			<div class="icontent">';
 			}
 			
-			// Konfigurationsdatei einbinden
-			$config = $gconfig;
 			
-			if(!(@include('../config/config'.$instance.'.php'))) {
-				$tmpl->content .= '<b>Konnte Konfigurationsdatei nicht einbinden!</b>
-				</div>';
-				continue;
-			}
-			
-			// MySQL-Verbindung
-			$mysqlhash = $config['mysql_host'].'-'.$config['mysql_user'];
-			
-			// Verbindung besteht schon
-			if(in_array($mysqlhash, $mysqlconns)) {
-				$conn =& ${'mysqlconn'.array_search($mysqlhash, $mysqlconns)};
-			}
-			// Verbindung aufbauen
-			else {
-				${'mysqlconn'.$instance} = @mysql_connect(
-					$config['mysql_host'],
-					$config['mysql_user'],
-					$config['mysql_pw']
-				);
-				
-				// Verbindung fehlgeschlagen
-				if(!${'mysqlconn'.$instance}) {
-					$tmpl->content .= '<b>MySQL-Verbindung fehlgeschlagen: '.$mysqlhash.'</b>
-					</div>';
-					continue;
-				}
-				
-				$conn =& ${'mysqlconn'.$instance};
-				$mysqlconns[$instance] = $mysqlhash;
-				
-				// MySQL auf UTF-8 stellen
-				if(function_exists('mysql_set_charset')) {
-					mysql_set_charset('utf8', $conn);
-				}
-				else {
-					mysql_query("
-						SET NAMES 'UTF8'
-					", $conn) OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
-				}
-			}
-			
-			// Datenbank auswählen
-			if(!mysql_select_db($config['mysql_db'], $conn)) {
-				$tmpl->content .= '<b>Datenbank konnte nicht ausgewählt werden: '.$mysqlhash.'-'.$config['mysql_db'].'</b>
-					</div>';
-				continue;
-			}
-			
-			$prefix = $config['mysql_globprefix'].$instance.'_';
+			$prefix = mysql::getPrefix($instance);
 			
 			
 			// Präfix-Platzhalter ersetzen
 			$q = trim(str_replace('[prefix]', $prefix, $_POST['query']));
 			
 			// Query absetzen
-			$query = mysql_query($q, $conn);
+			$query = query($q);
 			
 			// Query fehlgeschlagen
 			if(!$query) {
 				$tmpl->content .= '<b>Query fehlgeschlagen: '.mysql_error().'</b>
 				</div>';
+				
+				// bei globalem Query abbrechen
+				if($_POST['mode']) {
+					break;
+				}
+				
 				continue;
 			}
 			
 			// Query-Ausgabe
 			// Update
 			if(strtoupper(substr($q, 0, 6)) == 'UPDATE') {
-				$tmpl->content .= 'Zeilen aktualisiert: '.mysql_affected_rows($conn);
+				$tmpl->content .= 'Zeilen aktualisiert: '.mysql_affected_rows();
 			}
 			// Delete
 			else if(strtoupper(substr($q, 0, 6)) == 'DELETE') {
-				$tmpl->content .= 'Zeilen gel&ouml;scht: '.mysql_affected_rows($conn);
+				$tmpl->content .= 'Zeilen gel&ouml;scht: '.mysql_affected_rows();
 			}
 			// Insert
 			else if(strtoupper(substr($q, 0, 6)) == 'INSERT') {
-				$tmpl->content .= 'Zeilen eingef&uuml;gt: '.mysql_affected_rows($conn);
+				$tmpl->content .= 'Zeilen eingef&uuml;gt: '.mysql_affected_rows();
 			}
 			// Select
 			else if(strtoupper(substr($q, 0, 6)) == 'SELECT' OR strtoupper(substr($q, 0, 7)) == 'EXPLAIN') {
