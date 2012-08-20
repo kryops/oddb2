@@ -10,6 +10,9 @@ if(!defined('ODDB')) die('unerlaubter Zugriff!');
 // default-Unterseite definieren
 if(!isset($_GET['sp'])) $_GET['sp'] = '';
 
+// Routen-Klasse ladem
+General::loadClass('route');
+
 // Template initialisieren
 $tmpl = new template;
 $tmpl->name = 'Routen';

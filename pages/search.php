@@ -344,6 +344,9 @@ Suchergebnisse hinzuf&uuml;gen zu <select name="route" size="1">'.$select.'</sel
 
 // markierte Suchergebnisse zu Route hinzufügen -> abschicken
 else if($_GET['sp'] == 'route_send') {
+	
+	General::loadClass('route');
+	
 	// keine Berechtigung
 	if(!$user->rechte['routen']) {
 		$tmpl->error = 'Du hast keine Berechtigung!';
@@ -900,6 +903,9 @@ else {
 			// alle Suchergebnisse zu einer Route hinzufügen
 			$route = false;
 			if(isset($_GET['add2route'], $_POST['route'])) {
+				
+				General::loadClass('route');
+				
 				// Daten sichern
 				$_POST['route'] = (int)$_POST['route'];
 				

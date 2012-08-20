@@ -61,8 +61,8 @@ else if($_GET['sp'] == 'send') {
 			}
 			
 			// Konfigurationsdatei einbinden
-			$config = $bconfig;
-			include '../config/global.php';
+			$config = $gconfig;
+			
 			if(!(@include('../config/config'.$instance.'.php'))) {
 				$tmpl->content .= '<b>Konnte Konfigurationsdatei nicht einbinden!</b>
 				</div>';

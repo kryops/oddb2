@@ -62,8 +62,8 @@ else {
 		// Instanzen durchgehen
 		foreach($dbs as $instance=>$instance_name) {
 			// Konfigurationsdatei einbinden
-			$config = $bconfig;
-			include '../config/global.php';
+			$config = $gconfig;
+			
 			if(!(@include('../config/config'.$instance.'.php'))) {
 				continue;
 			}

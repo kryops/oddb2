@@ -10,6 +10,9 @@
 if(!defined('ODDB')) die('unerlaubter Zugriff!');
 
 
+General::loadClass('route');
+
+
 // Planeten zu Route hinzufügen (Planet, Spieler, Ally, Meta) -> Auswahl anzeigen
 if($_GET['sp'] == 'add2route') {
 	

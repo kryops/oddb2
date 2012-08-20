@@ -1519,6 +1519,9 @@ if(count($fow) OR !$showr) {
 	
 	// Routen und Listen
 	if(isset($fow['routen']) AND count($fow['routen']) AND $user->rechte['routen']) {
+		
+		General::loadClass('route');
+		
 		$rids = array_keys($fow['routen']);
 		
 		$routen = array();
@@ -1567,6 +1570,7 @@ if(count($fow) OR !$showr) {
 		foreach($rids as $id) {
 			if(isset($routen[$id])) {
 				// Routen-Klasse laden
+				General::loadClass('route');
 				$route = new route;
 				if($route->load($id, $routen[$id]) === true) {
 					$rziele[$id] = $route->compute_next($_GET['id'], $fow['routen'][$id]);

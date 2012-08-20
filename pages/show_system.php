@@ -1147,6 +1147,9 @@ else if($_GET['sp'] == '') {
 		
 		// Routen und Listen
 		if(isset($fow['routen']) AND count($fow['routen']) AND $user->rechte['routen']) {
+			
+			General::loadClass('route');
+			
 			$rids = array_keys($fow['routen']);
 			
 			$routen = array();

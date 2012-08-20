@@ -44,11 +44,9 @@ function generate_key() {
  * @return array/false Konfiguration
  */
 function getconfig($instance) {
-	global $bconfig;
+	global $gconfig;
 	
-	$config = $bconfig;
-	
-	include '../config/global.php';
+	$config = $gconfig;
 	
 	if(@include('../config/config'.$instance.'.php')) {
 		return $config;
@@ -147,8 +145,8 @@ else if($_GET['sp'] == 'add_send') {
 		$dbs[$instance] = $name;
 		
 		// fertige Konfiguration erzeugen
-		$config = $bconfig;
-		include '../config/global.php';
+		$config = $gconfig;
+		
 		foreach($_POST as $key=>$val) {
 			$config[$key] = $val;
 		}
@@ -626,7 +624,7 @@ else if($_GET['sp'] == 'edit_send') {
 			admincache_clear();
 			
 			// Tabelle aktualisieren
-			$c = $bconfig;
+			$c = $gconfig;
 			foreach($config as $key=>$val) {
 				$c[$key] = $val;
 			}
@@ -763,7 +761,7 @@ else if($_GET['sp'] == 'add') {
 	<tr>
 		<td>inaktiv-Nachricht</td>
 		<td><input type="text" class="text tooltip" style="width:300px" name="offlinemsg" tooltip="wird angezeigt, wenn die Datenbank auf inaktiv gesetzt ist" />
-		'.($bconfig['offlinemsg'] ? '<br /><span class="small hint">('.htmlspecialchars($bconfig['offlinemsg'], ENT_COMPAT, 'UTF-8').')</span>' : '').'</td>
+		'.($gconfig['offlinemsg'] ? '<br /><span class="small hint">('.htmlspecialchars($gconfig['offlinemsg'], ENT_COMPAT, 'UTF-8').')</span>' : '').'</td>
 	</tr>
 	<tr>
 		<td colspan="2">&nbsp;</td>
@@ -777,7 +775,7 @@ else if($_GET['sp'] == 'add') {
 		<option value=""></option>
 		<option value="0">nein</option>
 		<option value="1">ja</option>
-		</select> <span class="small hint">('.($bconfig['disable_freischaltung'] ? 'ja' : 'nein').')</span></td>
+		</select> <span class="small hint">('.($gconfig['disable_freischaltung'] ? 'ja' : 'nein').')</span></td>
 	</tr>
 	<tr>
 		<td>Autofreischaltung Rechtelevel</td>
@@ -788,7 +786,7 @@ else if($_GET['sp'] == 'add') {
 		<option value="'.$key.'">'.htmlspecialchars($data['name'], ENT_COMPAT, 'UTF-8').'</option>';
 	}
 	$tmpl->content .= '
-		</select> <span class="small hint">('.htmlspecialchars($rechte[$bconfig['disable_freischaltung_level']]['name'], ENT_COMPAT, 'UTF-8').')</span></td>
+		</select> <span class="small hint">('.htmlspecialchars($rechte[$gconfig['disable_freischaltung_level']]['name'], ENT_COMPAT, 'UTF-8').')</span></td>
 	</tr>
 	<tr>
 		<td>Logging-Stufe</td>
@@ -805,11 +803,11 @@ else if($_GET['sp'] == 'add') {
 		2=>'vorsichtig',
 		3=>'paranoid'
 	);
-	$tmpl->content .= $data[$bconfig['logging']].')</span></td>
+	$tmpl->content .= $data[$gconfig['logging']].')</span></td>
 	</tr>
 	<tr>
 		<td>Speicherdauer des Logs (Tage)</td>
-		<td><input type="text" class="text tooltip" name="logging_time" tooltip="Zeit in Tagen, wie lange Log-Eintr&auml;ge gespeichert bleiben sollen" /> <span class="small hint">('.htmlspecialchars($bconfig['logging_time'], ENT_COMPAT, 'UTF-8').')</span></td>
+		<td><input type="text" class="text tooltip" name="logging_time" tooltip="Zeit in Tagen, wie lange Log-Eintr&auml;ge gespeichert bleiben sollen" /> <span class="small hint">('.htmlspecialchars($gconfig['logging_time'], ENT_COMPAT, 'UTF-8').')</span></td>
 	</tr>
 	<tr>
 		<td colspan="2">&nbsp;</td>
@@ -891,10 +889,10 @@ else if($_GET['sp'] == 'edit') {
 		
 		$newconfig = $config;
 		
-		$config = array_merge($bconfig, $newconfig);
+		$config = array_merge($gconfig, $newconfig);
 		
 		// nicht besetze Werte mit leeren Strings füllen
-		$config2 = $bconfig;
+		$config2 = $gconfig;
 		foreach($config2 as $key=>$val) {
 			$config2[$key] = '';
 		}
@@ -928,7 +926,7 @@ else if($_GET['sp'] == 'edit') {
 		<tr>
 			<td>inaktiv-Nachricht</td>
 			<td><input type="text" class="text tooltip" style="width:300px" name="offlinemsg" tooltip="wird angezeigt, wenn die Datenbank auf inaktiv gesetzt ist" value="'.htmlspecialchars($config2['offlinemsg'], ENT_COMPAT, 'UTF-8').'" />
-			'.($bconfig['offlinemsg'] ? '<br /><span class="small hint">('.htmlspecialchars($bconfig['offlinemsg'], ENT_COMPAT, 'UTF-8').')</span>' : '').'</td>
+			'.($gconfig['offlinemsg'] ? '<br /><span class="small hint">('.htmlspecialchars($gconfig['offlinemsg'], ENT_COMPAT, 'UTF-8').')</span>' : '').'</td>
 		</tr>
 		<tr>
 			<td colspan="2">&nbsp;</td>
@@ -942,7 +940,7 @@ else if($_GET['sp'] == 'edit') {
 			<option value=""></option>
 			<option value="0"'.($config2['disable_freischaltung'] === false ? ' selected="selected"' : '').'>nein</option>
 			<option value="1"'.($config2['disable_freischaltung'] ? ' selected="selected"' : '').'>ja</option>
-			</select> <span class="small hint">('.($bconfig['disable_freischaltung'] ? 'ja' : 'nein').')</span></td>
+			</select> <span class="small hint">('.($gconfig['disable_freischaltung'] ? 'ja' : 'nein').')</span></td>
 		</tr>
 		<tr>
 			<td>Autofreischaltung Rechtelevel</td>
@@ -953,7 +951,7 @@ else if($_GET['sp'] == 'edit') {
 			<option value="'.$key.'"'.(($config2['disable_freischaltung_level'] !== '' AND $config2['disable_freischaltung_level'] == $key) ? ' selected="selected"' : '').'>'.htmlspecialchars($data['name'], ENT_COMPAT, 'UTF-8').'</option>';
 		}
 		$tmpl->content .= '
-			</select> <span class="small hint">('.htmlspecialchars($rechte[$bconfig['disable_freischaltung_level']]['name'], ENT_COMPAT, 'UTF-8').')</span></td>
+			</select> <span class="small hint">('.htmlspecialchars($rechte[$gconfig['disable_freischaltung_level']]['name'], ENT_COMPAT, 'UTF-8').')</span></td>
 		</tr>
 		<tr>
 			<td>Logging-Stufe</td>
@@ -970,11 +968,11 @@ else if($_GET['sp'] == 'edit') {
 			2=>'vorsichtig',
 			3=>'paranoid'
 		);
-		$tmpl->content .= $data[$bconfig['logging']].')</span></td>
+		$tmpl->content .= $data[$gconfig['logging']].')</span></td>
 		</tr>
 		<tr>
 			<td>Speicherdauer des Logs (Tage)</td>
-			<td><input type="text" class="text tooltip" name="logging_time" value="'.htmlspecialchars($config2['logging_time'], ENT_COMPAT, 'UTF-8').'" tooltip="Zeit in Tagen, wie lange Log-Eintr&auml;ge gespeichert bleiben sollen" /> <span class="small hint">('.htmlspecialchars($bconfig['logging_time'], ENT_COMPAT, 'UTF-8').')</span></td>
+			<td><input type="text" class="text tooltip" name="logging_time" value="'.htmlspecialchars($config2['logging_time'], ENT_COMPAT, 'UTF-8').'" tooltip="Zeit in Tagen, wie lange Log-Eintr&auml;ge gespeichert bleiben sollen" /> <span class="small hint">('.htmlspecialchars($gconfig['logging_time'], ENT_COMPAT, 'UTF-8').')</span></td>
 		</tr>
 		</table>
 		
@@ -1019,8 +1017,8 @@ else {
 		// Instanzen durchgehen
 		foreach($dbs as $instance=>$instance_name) {
 			// Konfigurationsdatei einbinden
-			$config = $bconfig;
-			include '../config/global.php';
+			$config = $gconfig;
+			
 			if(!(@include('../config/config'.$instance.'.php'))) {
 				continue;
 			}

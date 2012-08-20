@@ -53,7 +53,6 @@ if($_GET['p'] == 'logout') {
 
 // Umgebungsdaten und globale Funktionen einbinden
 include '../common.php';
-include '../common/general.php';
 include './common.php';
 
 // Einstellungen einbinden
@@ -61,6 +60,8 @@ include './common.php';
 if(!@include('../config/global.php')) {
 	die('Die ODDB wurde noch nicht installiert!');
 }
+
+$gconfig = $config;
 
 define('GLOBPREFIX', $config['mysql_globprefix']);
 define('KEY', $config['key']);

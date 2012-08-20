@@ -22,10 +22,9 @@ class config {
 			return false;
 		}
 		
-		global $bconfig;
+		global $gconfig;
 		
-		$config = $bconfig;
-		include (ODDBADMIN ? '.' : '').'./config/global.php';
+		$config = $gconfig;
 		
 		if(@include((ODDBADMIN ? '.' : '').'./config/config'.$instance.'.php')) {
 			return $config;

@@ -506,7 +506,6 @@ $bconfig = array(
 );
 
 $config = $bconfig;
-$gconfig = $bconfig;
 
 // Default-Settings für neue Accounts
 /**
@@ -1305,6 +1304,8 @@ function escape($var) {
 // globale Klasse und Funktionen einbinden
 //
 
+// Klasse mit generellen Funktionen
+include (ODDBADMIN ? '.' : '').'./common/general.php';
 
 // User-Klasse
 include (ODDBADMIN ? '.' : '').'./common/user.php';
@@ -1313,11 +1314,12 @@ include (ODDBADMIN ? '.' : '').'./common/user.php';
 include (ODDBADMIN ? '.' : '').'./common/cache.php';
 
 
+
+
 if(!ODDBADMIN) {
 	// Template-Klasse
 	include './common/template.php';
-	// Routen-Klasse
-	include './common/route.php';
+	
 	// Entfernungs- und Flugfunktionen
 	include './common/entf.php';
 }

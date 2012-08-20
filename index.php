@@ -91,7 +91,6 @@ if($_GET['p'] == 'logout') {
 
 // Umgebungsdaten und globale Funktionen einbinden
 include './common.php';
-include './common/general.php';
 
 
 // globale Einstellungen einbinden
@@ -115,6 +114,8 @@ else {
 	header('Location: install/');
 	die();
 }
+
+$gconfig = $config;
 
 
 // Instanz-Konstante definieren

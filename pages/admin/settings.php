@@ -16,7 +16,7 @@ if(!class_exists('config')) {
 }
 
 // Konfiguration laden, nicht besetze Werte mit leeren Strings füllen
-$c = $bconfig;
+$c = $gconfig;
 foreach($c as $key=>$val) {
 	$c[$key] = '';
 }
@@ -31,7 +31,7 @@ $content = '
 	<br />
 	L&auml;sst du diese Felder leer, nimmt die Konfiguration die eingeklammerten Werte an (k&ouml;nnen im Administrationsbereich ge&auml;ndert werden).
 	<br /><br />
-	<form onsubmit="return false">
+	<form onsubmit="form_send(this, \'index.php?p=admin&amp;sp=settings_send&amp;ajax\', $(this).siblings(\'.ajax\'));return false">
 	<div style="width:80%;margin:auto">
 		Nachricht, die f&uuml;r alle auf der &Uuml;bersichtsseite angezeigt werden soll:
 		<textarea name="oviewmsg" style="width:100%;margin:auto;margin-top:10px;height:50px">'.(isset($config['oviewmsg']) ? htmlspecialchars($config['oviewmsg']) : '').'</textarea>
@@ -46,27 +46,27 @@ $content = '
 	</tr>
 	<tr>
 		<td style="width:55%">normale Scans veraltet nach (Tage)</td>
-		<td><input type="text" class="smalltext tooltip" name="scan_veraltet" value="'.htmlspecialchars($c['scan_veraltet'], ENT_COMPAT, 'UTF-8').'" tooltip="0 = IP-Ban deaktivieren" /> <span class="small hint">('.htmlspecialchars($bconfig['scan_veraltet'], ENT_COMPAT, 'UTF-8').')</span></td>
+		<td><input type="text" class="smalltext tooltip" name="scan_veraltet" value="'.htmlspecialchars($c['scan_veraltet'], ENT_COMPAT, 'UTF-8').'" tooltip="0 = IP-Ban deaktivieren" /> <span class="small hint">('.htmlspecialchars($gconfig['scan_veraltet'], ENT_COMPAT, 'UTF-8').')</span></td>
 	</tr>
 	<tr>
 		<td>Ally-Scans veraltet nach (Tage)</td>
-		<td><input type="text" class="smalltext tooltip" name="scan_veraltet_ally" value="'.htmlspecialchars($c['scan_veraltet_ally'], ENT_COMPAT, 'UTF-8').'" tooltip="0 = IP-Ban deaktivieren" /> <span class="small hint">('.htmlspecialchars($bconfig['scan_veraltet_ally'], ENT_COMPAT, 'UTF-8').')</span></td>
+		<td><input type="text" class="smalltext tooltip" name="scan_veraltet_ally" value="'.htmlspecialchars($c['scan_veraltet_ally'], ENT_COMPAT, 'UTF-8').'" tooltip="0 = IP-Ban deaktivieren" /> <span class="small hint">('.htmlspecialchars($gconfig['scan_veraltet_ally'], ENT_COMPAT, 'UTF-8').')</span></td>
 	</tr>
 	<tr>
 		<td>Planeten&uuml;bersicht veraltet nach (Stunden)</td>
-		<td><input type="text" class="smalltext tooltip" name="scan_veraltet_oview" value="'.htmlspecialchars($c['scan_veraltet_oview'], ENT_COMPAT, 'UTF-8').'" tooltip="0 = IP-Ban deaktivieren" /> <span class="small hint">('.htmlspecialchars($bconfig['scan_veraltet_oview'], ENT_COMPAT, 'UTF-8').')</span></td>
+		<td><input type="text" class="smalltext tooltip" name="scan_veraltet_oview" value="'.htmlspecialchars($c['scan_veraltet_oview'], ENT_COMPAT, 'UTF-8').'" tooltip="0 = IP-Ban deaktivieren" /> <span class="small hint">('.htmlspecialchars($gconfig['scan_veraltet_oview'], ENT_COMPAT, 'UTF-8').')</span></td>
 	</tr>
 	<tr>
 		<td>Einstellungen und Sitter veraltet nach (Tage)</td>
-		<td><input type="text" class="smalltext tooltip" name="scan_veraltet_einst" value="'.htmlspecialchars($c['scan_veraltet_einst'], ENT_COMPAT, 'UTF-8').'" tooltip="0 = IP-Ban deaktivieren" /> <span class="small hint">('.htmlspecialchars($bconfig['scan_veraltet_einst'], ENT_COMPAT, 'UTF-8').')</span></td>
+		<td><input type="text" class="smalltext tooltip" name="scan_veraltet_einst" value="'.htmlspecialchars($c['scan_veraltet_einst'], ENT_COMPAT, 'UTF-8').'" tooltip="0 = IP-Ban deaktivieren" /> <span class="small hint">('.htmlspecialchars($gconfig['scan_veraltet_einst'], ENT_COMPAT, 'UTF-8').')</span></td>
 	</tr>
 	<tr>
 		<td>Flotten&uuml;bersicht veraltet nach (Tage)</td>
-		<td><input type="text" class="smalltext tooltip" name="scan_veraltet_flotten" value="'.htmlspecialchars($c['scan_veraltet_flotten'], ENT_COMPAT, 'UTF-8').'" tooltip="0 = IP-Ban deaktivieren" /> <span class="small hint">('.htmlspecialchars($bconfig['scan_veraltet_flotten'], ENT_COMPAT, 'UTF-8').')</span></td>
+		<td><input type="text" class="smalltext tooltip" name="scan_veraltet_flotten" value="'.htmlspecialchars($c['scan_veraltet_flotten'], ENT_COMPAT, 'UTF-8').'" tooltip="0 = IP-Ban deaktivieren" /> <span class="small hint">('.htmlspecialchars($gconfig['scan_veraltet_flotten'], ENT_COMPAT, 'UTF-8').')</span></td>
 	</tr>
 	<tr>
 		<td>Scan der Einnahmen veraltet nach (Tage)</td>
-		<td><input type="text" class="smalltext tooltip" name="scan_veraltet_geld" value="'.htmlspecialchars($c['scan_veraltet_geld'], ENT_COMPAT, 'UTF-8').'" tooltip="0 = IP-Ban deaktivieren" /> <span class="small hint">('.htmlspecialchars($bconfig['scan_veraltet_geld'], ENT_COMPAT, 'UTF-8').')</span></td>
+		<td><input type="text" class="smalltext tooltip" name="scan_veraltet_geld" value="'.htmlspecialchars($c['scan_veraltet_geld'], ENT_COMPAT, 'UTF-8').'" tooltip="0 = IP-Ban deaktivieren" /> <span class="small hint">('.htmlspecialchars($gconfig['scan_veraltet_geld'], ENT_COMPAT, 'UTF-8').')</span></td>
 	</tr>
 	<tr>
 		<td colspan="2">&nbsp;</td>
@@ -80,7 +80,7 @@ $content = '
 		<option value=""></option>
 		<option value="0"'.($c['disable_freischaltung'] === false ? ' selected="selected"' : '').'>nein</option>
 		<option value="1"'.($c['disable_freischaltung'] ? ' selected="selected"' : '').'>ja</option>
-		</select> <span class="small hint">('.($bconfig['disable_freischaltung'] ? 'ja' : 'nein').')</span></td>
+		</select> <span class="small hint">('.($gconfig['disable_freischaltung'] ? 'ja' : 'nein').')</span></td>
 	</tr>
 	<tr>
 		<td>Autofreischaltung Rechtelevel</td>
@@ -91,7 +91,7 @@ $content = '
 		<option value="'.$key.'"'.($c['disable_freischaltung_level'] === $key ? ' selected="selected"' : '').'>'.htmlspecialchars($data['name'], ENT_COMPAT, 'UTF-8').'</option>';
 	}
 	$content .= '
-		</select> <span class="small hint">('.htmlspecialchars($rechte[$bconfig['disable_freischaltung_level']]['name'], ENT_COMPAT, 'UTF-8').')</span></td>
+		</select> <span class="small hint">('.htmlspecialchars($rechte[$gconfig['disable_freischaltung_level']]['name'], ENT_COMPAT, 'UTF-8').')</span></td>
 	</tr>
 	<tr>
 		<td>Logging-Stufe</td>
@@ -108,17 +108,17 @@ $content = '
 		2=>'vorsichtig',
 		3=>'paranoid'
 	);
-	$content .= $data[$bconfig['logging']].')</span></td>
+	$content .= $data[$gconfig['logging']].')</span></td>
 	</tr>
 	<tr>
 		<td>Speicherdauer des Logs (Tage)</td>
-		<td><input type="text" class="smalltext tooltip" name="logging_time" value="'.htmlspecialchars($c['logging_time'], ENT_COMPAT, 'UTF-8').'" tooltip="Zeit in Tagen, wie lange Log-Eintr&auml;ge gespeichert bleiben sollen" /> <span class="small hint">('.htmlspecialchars($bconfig['logging_time'], ENT_COMPAT, 'UTF-8').')</span></td>
+		<td><input type="text" class="smalltext tooltip" name="logging_time" value="'.htmlspecialchars($c['logging_time'], ENT_COMPAT, 'UTF-8').'" tooltip="Zeit in Tagen, wie lange Log-Eintr&auml;ge gespeichert bleiben sollen" /> <span class="small hint">('.htmlspecialchars($gconfig['logging_time'], ENT_COMPAT, 'UTF-8').')</span></td>
 	</tr>
 	</table>
 	
 	<br /><br />
 	<div class="center">
-		<input type="button" class="button" style="width:150px" value="Konfiguration speichern" onclick="form_send(this.parentNode.parentNode, \'index.php?p=admin&amp;sp=settings_send&amp;ajax\', $(this.parentNode.parentNode).siblings(\'.ajax\'))" />
+		<input type="submit" class="button" style="width:150px" value="Konfiguration speichern" />
 	</div>
 	</form>
 	<br />
