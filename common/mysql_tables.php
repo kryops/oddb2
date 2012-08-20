@@ -16,9 +16,25 @@ if(!isset($globprefix)) {
 }
 
 
-//
-// Register-Table /////////////////////////////////////////////////////////////////////////////////////
-//
+// Array mit allen Instanztabellen
+$instancetables = array(
+	'allianzen_status',
+	'favoriten',
+	'galaxien',
+	'invasionen',
+	'invasionen_archiv',
+	'invasionen_log',
+	'log',
+	'myrigates',
+	'planeten',
+	'planeten_history',
+	'planeten_schiffe',
+	'register',
+	'routen',
+	'systeme',
+	'user'
+);
+
 
 
 // globale Tabellen

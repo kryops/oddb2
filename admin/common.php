@@ -12,6 +12,7 @@ if(!defined('ODDBADMIN')) die('unerlaubter Zugriff!');
 $pages = array(
 	'oview'=>true,
 	'dbs'=>true,
+	'settings'=>true,
 	'mysql'=>true,
 	'stats'=>true
 );
@@ -94,9 +95,10 @@ class template_admin {
 </div>
 
 <div id="menu">
-	<a data-link="index.php?p=dbs">DBs VERWALTEN</a>
-	<a data-link="index.php?p=mysql">MySQL-BEFEHLE</a>
-	<a data-link="index.php?p=stats">STATISTIKEN</a>
+	<a data-link="index.php?p=dbs"'.($_GET['p'] == 'dbs' ? ' class="active"' : '').'>DBs VERWALTEN</a>
+	<a data-link="index.php?p=settings"'.($_GET['p'] == 'settings' ? ' class="active"' : '').'>EINSTELLUNGEN</a>
+	<a data-link="index.php?p=mysql"'.($_GET['p'] == 'mysql' ? ' class="active"' : '').'>MySQL-BEFEHLE</a>
+	<a data-link="index.php?p=stats"'.($_GET['p'] == 'stats' ? ' class="active"' : '').'>STATISTIKEN</a>
 </div>
 
 <div id="contentc">

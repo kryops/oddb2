@@ -238,7 +238,7 @@ if(!defined(\'ODDB\')) die(\'unerlaubter Zugriff!\');
 		if(file_exists($path)) {
 			// restliche Konfiguration auslesen
 			if($merge) {
-				$data = array_merge(self::getcustom_global($filename, $varname), $data);
+				$data = array_merge(self::getcustomGlobal($filename, $varname), $data);
 			}
 			
 			// benutzerdefinierte Einstellungen beachten
