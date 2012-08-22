@@ -168,7 +168,7 @@ if($_GET['p'] == 'impressum') {
 $mysql_conn = new mysql;
 
 // MySQL-Präfix als Konstante definieren
-$config['mysql_prefix'] = $config['mysql_globprefix'].INSTANCE.'_';
+$config['mysql_prefix'] = mysql::getPrefix(INSTANCE);
 define('PREFIX', $config['mysql_prefix']);
 
 // Cache-Klasse initialisieren
