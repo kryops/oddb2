@@ -4125,3 +4125,45 @@ function mgate_filter(el, val) {
 	}
 }
 
+
+/**
+ * Funktionen für die Einstellungen-Seite
+ */
+var settingsPage = {
+	
+	/**
+	 * Eintrag zu den FoW-Suchfilter-Einstellungen hinzufügen
+	 * @param el Parent-Element der Suchfilter
+	 */
+	addFoWSearch : function(el) {
+		
+		// ID des neuen Containers generieren
+		el.data('max', el.data('max')+1);
+		var id = el.data('timestamp')+el.data('max');
+		
+		el.append('<div id="'+id+'"><div class="closebutton" title="Eintrag l&ouml;schen" onclick="$(this.parentNode).remove()"></div><div class="fowsearch1">Name: <input type="text" class="text" name="sname[]" value="" /><br />die <input type="text" class="text smalltext" style="width:30px" name="scount[]" value="1" /> <select name="sorder[]" size="1"><option value="0">n&auml;chsten</option><option value="1">entferntesten</option></select> Treffer</div><div class="fowsearch3"><a onclick="page_load(5, \'FoW-Suchfilter konfigurieren\', \'index.php?p=settings&amp;sp=fow_editsearch&amp;target='+id+'\', false, {filter : $(this.parentNode.parentNode).find(\'input[type=hidden]\').val()})"><img src="img/layout/leer.gif" class="icon hoverbutton configbutton" title="konfigurieren" /> </a></div><div class="fowsearch2"><a onclick="page_load(5, \'FoW-Suchfilter konfigurieren\', \'index.php?p=settings&amp;sp=fow_editsearch&amp;target='+id+'\', false, {filter : $(this.parentNode.parentNode).find(\'input[type=hidden]\').val()})"><img src="img/layout/leer.gif" class="icon hoverbutton configbutton" title="konfigurieren" /> <i>noch nicht konfiguriert</i></a></div><input type="hidden" name="sval[]" value="" /></div>');
+		
+	},
+	
+	/**
+	 * Suchfilter-Einstellung abschicken
+	 * @param form DOM Formular
+	 * @param target string ID des Filter-Containers
+	 */
+	editFoWSearch : function(form, target) {
+		
+		// Such-String generieren
+		var val = $(form).find('[value!=]').serialize();
+		$('#'+target+' input[type=hidden]').val(val);
+		
+		// Beschreibung laden
+		ajaxcall('index.php?p=settings&sp=fow_searchdesc', $('#'+target+' .fowsearch2'), {filter : val}, true);
+		
+		// Fenster schließen
+		parentwin_close(form);
+		
+		return false;
+	}
+	
+}
+

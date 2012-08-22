@@ -10,18 +10,14 @@
 // Sicherheitsabfrage
 if(!defined('ODDB')) die('unerlaubter Zugriff!');
 
+
+General::loadClass('Search');
+
+
+
 /**
  * Umgebungsdaten
  */
-
-// Planeten-Typen
-$pltypen = 62;
-$pltypnot = array(46,48);
-
-// Planetentyp validieren
-if(isset($_GET['t']) AND ((int)$_GET['t'] < 1 OR (int)$_GET['t'] > $pltypen OR in_array((int)$_GET['t'], $pltypnot))) {
-	unset($_GET['t']);
-}
 
 // Suchspalten
 $spalten = array(
@@ -461,334 +457,8 @@ else {
 		
 		// Suchformular nur im normalen Modus anzeigen
 		if(!isset($_GET['hide'])) {
-			$content = '
-<form action="#" onsubmit="return form_sendget(this, \'index.php?p=search&amp;s=1\')" class="searchform">
-	<table>
-	<tr>
-		<td style="width:80px;font-weight:bold">
-			System
-		</td>
-		<td style="vertical-align:top">
-			Galaxie <input type="text" class="smalltext" style="width:40px" name="g" value="'.(isset($_GET['g']) ? htmlspecialchars($_GET['g'], ENT_COMPAT, 'UTF-8') : '').'" /> &nbsp; &nbsp;
-			Sektor 
-			<select name="sek" size="1">
-				<option value="">alle</option>
-				<option value="1"'.((isset($_GET['sek']) AND $_GET['sek'] == 1) ? ' selected="selected"' : '').'>rot</option>
-				<option value="2"'.((isset($_GET['sek']) AND $_GET['sek'] == 2) ? ' selected="selected"' : '').'>gr&uuml;n</option>
-				<option value="3"'.((isset($_GET['sek']) AND $_GET['sek'] == 3) ? ' selected="selected"' : '').'>blau</option>
-				<option value="4"'.((isset($_GET['sek']) AND $_GET['sek'] == 4) ? ' selected="selected"' : '').'>gelb</option>
-			</select> &nbsp; &nbsp;
-			System-ID <input type="text" class="smalltext" name="sid" value="'.(isset($_GET['sid']) ? htmlspecialchars($_GET['sid'], ENT_COMPAT, 'UTF-8') : '').'" /> &nbsp; &nbsp;
-			System-Name <input type="text" class="text" style="width:80px" name="sn" value="'.(isset($_GET['sn']) ? htmlspecialchars($_GET['sn'], ENT_COMPAT, 'UTF-8') : '').'" /> &nbsp; &nbsp;
-			<span style="white-space:nowrap">Scan 
-			<select name="ssc" size="1" onchange="if(this.value>=3){$(this).siblings(\'.ssct\').show().select();}else{$(this).siblings(\'.ssct\').hide();}">
-				<option value="">egal</option>
-				<option value="1"'.((isset($_GET['ssc']) AND $_GET['ssc'] == 1) ? ' selected="selected"' : '').'>nicht gescannt</option>
-				<option value="2"'.((isset($_GET['ssc']) AND $_GET['ssc'] == 2) ? ' selected="selected"' : '').'>irgendwann</option>
-				<option value="3"'.((isset($_GET['ssc']) AND $_GET['ssc'] == 3) ? ' selected="selected"' : '').'>neuer als (Tage)</option>
-				<option value="4"'.((isset($_GET['ssc']) AND $_GET['ssc'] == 4) ? ' selected="selected"' : '').'>&auml;lter als (Tage)</option>
-			</select> 
-			<input type="text" class="smalltext ssct" name="ssct" value="'.(isset($_GET['ssct']) ? htmlspecialchars($_GET['ssct'], ENT_COMPAT, 'UTF-8') : '').'" style="'.((!isset($_GET['ssc']) OR $_GET['ssc'] < 3) ? 'display:none;' : '').'width:40px" /></span>
-		</td>
-	</tr>
-	</table>
-	<hr />
-	<table>
-	<tr>
-		<td style="width:80px;font-weight:bold">
-			Planet
-		</td>
-		<td style="vertical-align:top">
-			Planeten-ID <input type="text" class="smalltext" name="pid" value="'.(isset($_GET['pid']) ? htmlspecialchars($_GET['pid'], ENT_COMPAT, 'UTF-8') : '').'" /> &nbsp; &nbsp;
-			Planeten-Name <input type="text" class="text" name="pn" value="'.(isset($_GET['pn']) ? htmlspecialchars($_GET['pn'], ENT_COMPAT, 'UTF-8') : '').'" /> &nbsp; &nbsp;
-			<input type="checkbox" name="pon"'.(isset($_GET['pon']) ? ' checked="checked"' : '').' /> <span class="togglecheckbox" data-name="pon">Original-Name</span> &nbsp; &nbsp;
-			Gr&ouml;&szlig;e 
-			<select name="gr_" size="1">
-				<option value="">=</option>
-				<option value="1"'.((isset($_GET['gr_']) AND $_GET['gr_'] == 1) ? ' selected="selected"' : '').'>&gt;</option>
-				<option value="2"'.((isset($_GET['gr_']) AND $_GET['gr_'] == 2) ? ' selected="selected"' : '').'>&lt;</option>
-			</select> 
-			<input type="text" class="smalltext" name="gr" value="'.(isset($_GET['gr']) ? htmlspecialchars($_GET['gr'], ENT_COMPAT, 'UTF-8') : '').'" />
-			<br />
-			<span style="cursor:pointer" onclick="$(this).siblings(\'.searchpltyplist\').slideToggle(250)">Typ</span> &nbsp;
-			<input type="hidden" name="t" value="'.(isset($_GET['t']) ? h($_GET['t']) : '').'" />
-			<span class="searchpltyp" onclick="$(this).siblings(\'.searchpltyplist\').slideToggle(250)">'.(isset($_GET['t']) ? '<img src="img/planeten/'.(int)$_GET['t'].'.jpg" alt="" />' : '<i>alle</i>').'</span> &nbsp; &nbsp;
-			Scan 
-			<select name="sc" size="1" onchange="if(this.value>=3){$(this).siblings(\'.sct\').show().select();}else{$(this).siblings(\'.sct\').hide();}">
-				<option value="">egal</option>
-				<option value="1"'.((isset($_GET['sc']) AND $_GET['sc'] == 1) ? ' selected="selected"' : '').'>nicht gescannt</option>
-				<option value="2"'.((isset($_GET['sc']) AND $_GET['sc'] == 2) ? ' selected="selected"' : '').'>irgendwann</option>
-				<option value="3"'.((isset($_GET['sc']) AND $_GET['sc'] == 3) ? ' selected="selected"' : '').'>neuer als (Tage)</option>
-				<option value="4"'.((isset($_GET['sc']) AND $_GET['sc'] == 4) ? ' selected="selected"' : '').'>&auml;lter als (Tage)</option>
-			</select> 
-			<input type="text" class="smalltext sct" name="sct" value="'.(isset($_GET['sct']) ? htmlspecialchars($_GET['sct'], ENT_COMPAT, 'UTF-8') : '').'" style="'.((!isset($_GET['sc']) OR $_GET['sc'] < 3) ? 'display:none;' : '').'width:40px" /> &nbsp; &nbsp;
-			<input type="checkbox" name="usc"'.(isset($_GET['usc']) ? ' checked="checked"' : '').' /> <span class="togglecheckbox" data-name="usc">unscannbar</span> &nbsp; &nbsp;
-			kategorisiert 
-			<select name="k">
-				<option value=""></option>
-				<option value="0"'.((isset($_GET['k']) AND $_GET['k'] == 0) ? ' selected="selected"' : '').'>nicht kategorisiert</option>
-				<option value="13"'.((isset($_GET['k']) AND $_GET['k'] == 13) ? ' selected="selected"' : '').'>Werft</option>
-				<option value="15"'.((isset($_GET['k']) AND $_GET['k'] == 15) ? ' selected="selected"' : '').'>- Ressplanis und Werften -</option>
-				<option value="14"'.((isset($_GET['k']) AND $_GET['k'] == 14) ? ' selected="selected"' : '').'>- alle Ressplaneten -</option>
-				<option value="1"'.((isset($_GET['k']) AND $_GET['k'] == 1) ? ' selected="selected"' : '').'>Erz</option>
-				<option value="2"'.((isset($_GET['k']) AND $_GET['k'] == 2) ? ' selected="selected"' : '').'>Metall</option>
-				<option value="3"'.((isset($_GET['k']) AND $_GET['k'] == 3) ? ' selected="selected"' : '').'>Wolfram</option>
-				<option value="4"'.((isset($_GET['k']) AND $_GET['k'] == 4) ? ' selected="selected"' : '').'>Kristall</option>
-				<option value="5"'.((isset($_GET['k']) AND $_GET['k'] == 5) ? ' selected="selected"' : '').'>Fluor</option>
-				<option value="12"'.((isset($_GET['k']) AND $_GET['k'] == 12) ? ' selected="selected"' : '').'>Umsatzfabriken</option>
-				<option value="16"'.((isset($_GET['k']) AND $_GET['k'] == 16) ? ' selected="selected"' : '').'>- alle  Forschungsplaneten -</option>
-				<option value="6"'.((isset($_GET['k']) AND $_GET['k'] == 6) ? ' selected="selected"' : '').'>Forschungseinrichtungen</option>
-				<option value="7"'.((isset($_GET['k']) AND $_GET['k'] == 7) ? ' selected="selected"' : '').'>UNI-Labore</option>
-				<option value="8"'.((isset($_GET['k']) AND $_GET['k'] == 8) ? ' selected="selected"' : '').'>Forschungszentren</option>
-				<option value="9"'.((isset($_GET['k']) AND $_GET['k'] == 9) ? ' selected="selected"' : '').'>Myriforschung</option>
-				<option value="10"'.((isset($_GET['k']) AND $_GET['k'] == 10) ? ' selected="selected"' : '').'>orbitale Forschung</option>
-				<option value="11"'.((isset($_GET['k']) AND $_GET['k'] == 11) ? ' selected="selected"' : '').'>Gedankenkonzentratoren</option>
-			</select>
-			<br />
-			<div class="searchpltyplist fcbox" style="display:none">';
 			
-			// Planetentypen ausgeben
-			for($i=1; $i <= 62; $i++) {
-				if(!in_array($i, $pltypnot)) {
-					$content .= '<img src="img/planeten/'.$i.'.jpg" alt="" /> ';
-				}
-			}
-			
-			$content .= ' <a onclick="$(this).parents(\'form\').find(\'input[name=t]\').val(\'\').siblings(\'.searchpltyp\').html(\'&lt;i&gt;alle&lt;/i&gt;\');$(this.parentNode).slideUp(250);" style="font-style:italic"> [alle]</a>
-			</div>
-			
-			<span style="cursor:pointer" onclick="$(this).siblings(\'.searchgeblist\').slideToggle(250)">Geb&auml;ude-Filter</span> &nbsp;
-			<input type="hidden" name="geb" value="'.(isset($_GET['geb']) ? h($_GET['geb']) : '').'" />
-			<span class="searchgeb" onclick="$(this).siblings(\'.searchgeblist\').slideToggle(250)">';
-			
-			if(!count($searchgeb)) {
-				$content .= '<i>alle</i>';
-			}
-			else {
-				// ausgewählte Gebäude anzeigen
-				foreach($searchgeb as $geb) {
-					$content .= '<img src="img/gebaeude/'.$gebaeude[$geb].'" alt="" /> ';
-				}
-			}
-			
-			$content .= '</span> &nbsp; &nbsp;
-			<input type="checkbox" name="mg"'.(isset($_GET['mg']) ? ' checked="checked"' : '').' /> <span class="togglecheckbox" data-name="mg">Myrigate</span> &nbsp; &nbsp;';
-			
-			$content .= '
-			Orbiter 
-			<select name="o" size="1">
-				<option value="">egal</option>
-				<option value="1"'.((isset($_GET['o']) AND $_GET['o'] == 1) ? ' selected="selected"' : '').'>keine</option>
-				<option value="6"'.((isset($_GET['o']) AND $_GET['o'] == 6) ? ' selected="selected"' : '').'>ja</option>
-				<option value="2"'.((isset($_GET['o']) AND $_GET['o'] == 2) ? ' selected="selected"' : '').'>max. Stufe 1</option>
-				<option value="3"'.((isset($_GET['o']) AND $_GET['o'] == 3) ? ' selected="selected"' : '').'>max. Stufe 2</option>
-				<option value="4"'.((isset($_GET['o']) AND $_GET['o'] == 4) ? ' selected="selected"' : '').'>mind. Stufe 2</option>
-				<option value="5"'.((isset($_GET['o']) AND $_GET['o'] == 5) ? ' selected="selected"' : '').'>mind. Stufe 3</option>
-			</select>
-			&nbsp; &nbsp;
-			Natives 
-			<select name="na_" size="1">
-				<option value="">=</option>
-				<option value="1"'.((isset($_GET['na_']) AND $_GET['na_'] == 1) ? ' selected="selected"' : '').'>&gt;</option>
-				<option value="2"'.((isset($_GET['na_']) AND $_GET['na_'] == 2) ? ' selected="selected"' : '').'>&lt;</option>
-			</select> 
-			<input type="text" class="smalltext" name="na" value="'.(isset($_GET['na']) ? htmlspecialchars($_GET['na'], ENT_COMPAT, 'UTF-8') : '').'" />
-			<br />
-			
-			<div class="searchgeblist fcbox" style="display:none">';
-			
-			foreach($gebaeude as $key=>$val) {
-				if($key > 0) {
-					$content .= '<img src="img/gebaeude/'.$val.'" alt="" data-id="'.$key.'"'.(in_array($key, $searchgeb) ? ' class="active"' : '').' /> ';
-				}
-			}
-			
-			$content .= ' <a onclick="$(this).parents(\'form\').find(\'input[name=geb]\').val(\'\').siblings(\'.searchgeb\').html(\'&lt;i&gt;alle&lt;/i&gt;\');$(this).siblings(\'.active\').removeClass(\'active\');" style="font-style:italic"> [alle]</a>
-			</div>
-			
-			Bev&ouml;lkerung <input type="text" class="text" style="width:80px" name="bev" value="'.(isset($_GET['bev']) ? htmlspecialchars($_GET['bev'], ENT_COMPAT, 'UTF-8') : '').'" /> &nbsp; &nbsp;
-			Forschung <input type="text" class="text" style="width:80px" name="f" value="'.(isset($_GET['f']) ? htmlspecialchars($_GET['f'], ENT_COMPAT, 'UTF-8') : '').'" /> &nbsp; &nbsp;
-			Industrie <input type="text" class="text" style="width:80px" name="i" value="'.(isset($_GET['i']) ? htmlspecialchars($_GET['i'], ENT_COMPAT, 'UTF-8') : '').'" /> &nbsp; &nbsp;
-			Punkte <input type="text" class="text" style="width:80px" name="pu" value="'.(isset($_GET['pu']) ? htmlspecialchars($_GET['pu'], ENT_COMPAT, 'UTF-8') : '').'" />
-			<br />
-			eingetragen als &nbsp;
-			<input type="checkbox" name="rpl"'.(isset($_GET['rpl']) ? ' checked="checked"' : '').' /> <span class="togglecheckbox" data-name="rpl">Ressplanet</span> &nbsp; &nbsp;
-			<input type="checkbox" name="we"'.(isset($_GET['we']) ? ' checked="checked"' : '').' /> <span class="togglecheckbox" data-name="we">Werft</span> &nbsp; &nbsp;
-			<input type="checkbox" name="bu"'.(isset($_GET['bu']) ? ' checked="checked"' : '').' /> <span class="togglecheckbox" data-name="bu">Bunker</span> 
-			&nbsp; &nbsp; 
-			Bergbau / Terraformer
-			<select name="bb" size="1">
-				<option value="">egal</option>
-				<option value="1"'.((isset($_GET['bb']) AND $_GET['bb'] == 1) ? ' selected="selected"' : '').'>eins von beiden</option>
-				<option value="2"'.((isset($_GET['bb']) AND $_GET['bb'] == 2) ? ' selected="selected"' : '').'>keins von beiden</option>
-				<option value="3"'.((isset($_GET['bb']) AND $_GET['bb'] == 3) ? ' selected="selected"' : '').'>Bergbau</option>
-				<option value="4"'.((isset($_GET['bb']) AND $_GET['bb'] == 4) ? ' selected="selected"' : '').'>Terraformer</option>
-			</select>
-			
-			<br />
-			<table class="searchress">
-			<tr class="searchresstr">
-				<td></td>
-				<td><div class="ress erz"></div></td>
-				<td><div class="ress metall"></div></td>
-				<td><div class="ress wolfram"></div></td>
-				<td><div class="ress kristall"></div></td>
-				<td><div class="ress fluor"></div></td>
-				<td rowspan="4" style="width:260px;padding-left:25px">
-					Summe der Resswerte <input type="text" class="smalltext" name="rw" value="'.(isset($_GET['rw']) ? htmlspecialchars($_GET['rw'], ENT_COMPAT, 'UTF-8') : '').'" />
-					<br />
-					gesamte Ressproduktion <input type="text" class="smalltext" name="rp" value="'.(isset($_GET['rp']) ? htmlspecialchars($_GET['rp'], ENT_COMPAT, 'UTF-8') : '').'" />
-					<br />
-					gesamter Ressvorrat <input type="text" class="smalltext" name="rv" value="'.(isset($_GET['rv']) ? htmlspecialchars($_GET['rv'], ENT_COMPAT, 'UTF-8') : '').'" />
-				</td>
-			</tr>
-			<tr>
-				<td>Werte</td>
-				<td><input type="text" class="smalltext" name="rwe" value="'.(isset($_GET['rwe']) ? htmlspecialchars($_GET['rwe'], ENT_COMPAT, 'UTF-8') : '').'" /></td>
-				<td class="small hint center">(= Erz-Wert)</td>
-				<td><input type="text" class="smalltext" name="rww" value="'.(isset($_GET['rww']) ? htmlspecialchars($_GET['rww'], ENT_COMPAT, 'UTF-8') : '').'" /></td>
-				<td><input type="text" class="smalltext" name="rwk" value="'.(isset($_GET['rwk']) ? htmlspecialchars($_GET['rwk'], ENT_COMPAT, 'UTF-8') : '').'" /></td>
-				<td><input type="text" class="smalltext" name="rwf" value="'.(isset($_GET['rwf']) ? htmlspecialchars($_GET['rwf'], ENT_COMPAT, 'UTF-8') : '').'" /></td>
-			</tr>
-			<tr>
-				<td>Produktion</td>
-				<td><input type="text" class="smalltext" name="rpe" value="'.(isset($_GET['rpe']) ? htmlspecialchars($_GET['rpe'], ENT_COMPAT, 'UTF-8') : '').'" /></td>
-				<td><input type="text" class="smalltext" name="rpm" value="'.(isset($_GET['rpm']) ? htmlspecialchars($_GET['rpm'], ENT_COMPAT, 'UTF-8') : '').'" /></td>
-				<td><input type="text" class="smalltext" name="rpw" value="'.(isset($_GET['rpw']) ? htmlspecialchars($_GET['rpw'], ENT_COMPAT, 'UTF-8') : '').'" /></td>
-				<td><input type="text" class="smalltext" name="rpk" value="'.(isset($_GET['rpk']) ? htmlspecialchars($_GET['rpk'], ENT_COMPAT, 'UTF-8') : '').'" /></td>
-				<td><input type="text" class="smalltext" name="rpf" value="'.(isset($_GET['rpf']) ? htmlspecialchars($_GET['rpf'], ENT_COMPAT, 'UTF-8') : '').'" /></td>
-			</tr>
-			<tr>
-				<td>Vorrat</td>
-				<td><input type="text" class="smalltext" name="rve" value="'.(isset($_GET['rve']) ? htmlspecialchars($_GET['rve'], ENT_COMPAT, 'UTF-8') : '').'" /></td>
-				<td><input type="text" class="smalltext" name="rvm" value="'.(isset($_GET['rvm']) ? htmlspecialchars($_GET['rvm'], ENT_COMPAT, 'UTF-8') : '').'" /></td>
-				<td><input type="text" class="smalltext" name="rvw" value="'.(isset($_GET['rvw']) ? htmlspecialchars($_GET['rvw'], ENT_COMPAT, 'UTF-8') : '').'" /></td>
-				<td><input type="text" class="smalltext" name="rvk" value="'.(isset($_GET['rvk']) ? htmlspecialchars($_GET['rvk'], ENT_COMPAT, 'UTF-8') : '').'" /></td>
-				<td><input type="text" class="smalltext" name="rvf" value="'.(isset($_GET['rvf']) ? htmlspecialchars($_GET['rvf'], ENT_COMPAT, 'UTF-8') : '').'" /></td>
-			</tr>
-			</table>
-			'.($user->rechte['toxxraid'] ? '
-			geraidet (Tage) <input type="text" class="smalltext" name="rai" value="'.(isset($_GET['rai']) ? htmlspecialchars($_GET['rai'], ENT_COMPAT, 'UTF-8') : '').'" /> &nbsp; &nbsp;
-			getoxxt <select name="tox" size="1">
-				<option value="">egal</option>
-				<option value="0"'.((isset($_GET['tox']) AND $_GET['tox'] == 0) ? ' selected="selected"' : '').'>nein</option>
-				<option value="1"'.((isset($_GET['tox']) AND $_GET['tox'] == 1) ? ' selected="selected"' : '').'>ja</option>
-			</select> &nbsp; &nbsp; ' : '').'
-			Kommentar enth&auml;lt <input type="text" class="text" style="width:160px" name="ko" value="'.(isset($_GET['ko']) ? htmlspecialchars($_GET['ko'], ENT_COMPAT, 'UTF-8') : '').'" />
-		</td>
-	</tr>
-	</table>
-	<hr />
-	<table>
-	<tr>
-		<td style="width:80px;font-weight:bold">
-			Inhaber
-		</td>
-		<td style="vertical-align:top">
-			User-ID <input type="text" class="text" style="width:80px" name="uid" value="'.(isset($_GET['uid']) ? htmlspecialchars($_GET['uid'], ENT_COMPAT, 'UTF-8') : '').'" /> &nbsp; &nbsp;
-			Username <input type="text" class="text" name="un" value="'.(isset($_GET['un']) ? htmlspecialchars($_GET['un'], ENT_COMPAT, 'UTF-8') : '').'" /> &nbsp; &nbsp;
-			Rasse <select name="ra" size="1">
-				<option value="">egal</option>
-				<option value="0"'.((isset($_GET['ra']) AND $_GET['ra'] == 0) ? ' selected="selected"' : '').'>alle Altrassen</option>';
-			foreach($rassen as $key=>$val) {
-				$content .= '
-				<option value="'.$key.'"'.((isset($_GET['ra']) AND $_GET['ra'] == $key) ? ' selected="selected"' : '').'>'.$val.'</option>';
-			}
-			$content .= '
-				<option value="11"'.((isset($_GET['ra']) AND $_GET['ra'] == 11) ? ' selected="selected"' : '').'>Lux ohne NPC</option>
-			</select> &nbsp; &nbsp;
-			frei 
-			<select name="fr" size="1">
-				<option value="">egal</option>
-				<option value="1"'.((isset($_GET['fr']) AND $_GET['fr'] == 1) ? ' selected="selected"' : '').'>ja</option>
-				<option value="2"'.((isset($_GET['fr']) AND $_GET['fr'] == 2) ? ' selected="selected"' : '').'>nein</option>
-			</select>
-			&nbsp; &nbsp;
-			<input type="checkbox" name="kbar" value="1"'.(isset($_GET['kbar']) ? ' checked="checked"' : '').' /> <span class="togglecheckbox" data-name="kbar">kolonisierbar</span>
-			<br />
-			Urlaubsmodus 
-			<select name="umod" size="1">
-				<option value="">egal</option>
-				<option value="1"'.((isset($_GET['umod']) AND $_GET['umod'] == 1) ? ' selected="selected"' : '').'>ja</option>
-				<option value="2"'.((isset($_GET['umod']) AND $_GET['umod'] == 2) ? ' selected="selected"' : '').'>nein</option>
-			</select> &nbsp; &nbsp;
-			Planeten
-			<select name="pl_" size="1">
-				<option value="">h&ouml;chstens</option>
-				<option value="1"'.((isset($_GET['pl_']) AND $_GET['pl_'] == 1) ? ' selected="selected"' : '').'>mindestens</option>
-			</select> 
-			<input type="text" class="smalltext" name="pl" value="'.(isset($_GET['pl']) ? htmlspecialchars($_GET['pl'], ENT_COMPAT, 'UTF-8') : '').'" /> &nbsp; &nbsp;
-			inaktiv seit mindestens
-			&nbsp;<input type="text" class="smalltext" name="ina" value="'.(isset($_GET['ina']) ? htmlspecialchars($_GET['ina'], ENT_COMPAT, 'UTF-8') : '').'" />&nbsp;
-			Tagen
-			<br />
-			Allianz-ID <input type="text" class="text" style="width:80px" name="aid" value="'.(isset($_GET['aid']) ? htmlspecialchars($_GET['aid'], ENT_COMPAT, 'UTF-8') : '').'" /> &nbsp; &nbsp;
-			Allianz-Tag <input type="text" class="text" style="width:80px" name="at" value="'.(isset($_GET['at']) ? htmlspecialchars($_GET['at'], ENT_COMPAT, 'UTF-8') : '').'" /> &nbsp; &nbsp;
-			Allianz-Name <input type="text" class="text" name="an" value="'.(isset($_GET['an']) ? htmlspecialchars($_GET['an'], ENT_COMPAT, 'UTF-8') : '').'" /> &nbsp; &nbsp;
-			<span class="as_simple"'.(isset($_GET['as2']) ? ' style="display:none"' : '').'>
-			Status
-			<select name="as" size="1">
-				<option value="">egal</option>
-				<option value="-1"'.((isset($_GET['as']) AND $_GET['as'] == -1) ? ' selected="selected"' : '').'>- Freunde -</option>
-				<option value="-2"'.((isset($_GET['as']) AND $_GET['as'] == -2) ? ' selected="selected"' : '').'>- Feinde -</option>';
-			// Allianz-Status-Select erzeugen
-			foreach($status as $key=>$val) {
-				$content .= '
-				<option value="'.$key.'"'.((isset($_GET['as']) AND $_GET['as'] == $key) ? ' selected="selected"' : '').'>'.$val.'</option>';
-			}
-			$content .= '
-			</select>
-			&nbsp; <a class="small2" style="font-style:italic" onclick="$(this.parentNode).siblings(\'.as_advanced\').show().find(\'input\').val(\'1\');$(this.parentNode).hide().find(\'select\').val(\'\');">(erweitert)</a>
-			</span>
-			<br />
-			<div class="as_advanced" '.(!isset($_GET['as2']) ? ' style="display:none"' : '').'>
-			Status &nbsp;
-			<span class="small2">';
-			// Allianz-Status-Checkboxen erzeugen
-			foreach($status as $key=>$val) {
-				$checked = true;
-				if(isset($_GET['as2']) AND !isset($_GET['as2'][$key])) {
-					$checked = false;
-				}
-				else if(isset($_GET['as'])) {
-					if($_GET['as'] == -1) {
-						if(!in_array($key, $status_freund)) $checked = false;
-					}
-					else if($_GET['as'] == -2) {
-						if(!in_array($key, $status_feind))  $checked = false;
-					}
-					else if($key != $_GET['as']) {
-						$checked = false;
-					}
-				}
-				
-				$content .= '
-				<input type="checkbox" name="as2['.$key.']" value="'.(isset($_GET['as2']) ? '1' : '').'"'.($checked ? ' checked="checked"' : '').'> <span class="togglecheckbox" data-name="as2['.$key.']">'.$val.'</span> &nbsp;';
-			}
-			$content .= '
-			&nbsp; <a class="small2" style="font-style:italic" onclick="$(this.parentNode.parentNode).siblings(\'.as_simple\').show();$(this.parentNode.parentNode).hide().find(\'input\').val(\'\');">(einfach)</a>
-			</span>
-			</div>
-		</td>
-	</tr>
-	</table>
-	<hr />
-	<table>
-	<tr>
-		<td style="width:80px;font-weight:bold">
-			History
-		</td>
-		<td style="vertical-align:top">
-			der Planet hat einmal &nbsp;
-			<select name="his_" size="1">
-				<option value="">Username</option>
-				<option value="1"'.((isset($_GET['his_']) AND $_GET['his_'] == 1) ? ' selected="selected"' : '').'>User-ID</option>
-			</select> 
-			<input type="text" class="text" name="his" value="'.(isset($_GET['his']) ? htmlspecialchars($_GET['his'], ENT_COMPAT, 'UTF-8') : '').'" /> &nbsp;
-			geh&ouml;rt
-		</td>
-	</tr>
-	</table>
+			$form_additional = '
 	<hr />
 	<table>
 	<tr>
@@ -801,10 +471,10 @@ else {
 			// Sortierspalten erzeugen
 			foreach($sortol as $key=>$val) {
 				if($key == 1) $key = '';
-				$content .= '
+				$form_additional .= '
 				<option value="'.$key.'"'.((isset($_GET['sort']) AND $_GET['sort'] == $key) ? ' selected="selected"' : '').'>'.$val.'</option>';
 			}
-			$content .= '
+			$form_additional .= '
 			</select> &nbsp;
 			<select name="sorto" size="1">
 				<option value="">aufsteigend</option>
@@ -815,10 +485,10 @@ else {
 			// Sortierspalten erzeugen (2. Stufe)
 			foreach($sortol as $key=>$val) {
 				if($key == 1) $key = '';
-				$content .= '
+				$form_additional .= '
 				<option value="'.$key.'"'.((isset($_GET['sort2']) AND $_GET['sort2'] == $key) ? ' selected="selected"' : '').'>'.$val.'</option>';
 			}
-			$content .= '
+			$form_additional .= '
 			</select> &nbsp;
 			<select name="sorto2" size="1">
 				<option value="">aufsteigend</option>
@@ -872,7 +542,7 @@ else {
 			// angekreuzte Suchspalten zuerst
 			foreach($sp as $key) {
 				if($key != '') {
-					$content .= '
+					$form_additional .= '
 			<div class="filter_'.$key.'" style="opacity:1;filter:alpha(opacity=100)"><input type="checkbox" class="ssp'.$key.'" checked="checked" /> <span>'.$spalten[$key].'</span></div>';
 					// aus den verbleibenden Spalten löschen
 					if(isset($spalten2[$key])) {
@@ -882,19 +552,15 @@ else {
 			}
 			// nicht angekreuzte Spalten
 			foreach($spalten2 as $key=>$val) {
-				$content .= '
+				$form_additional .= '
 		<div class="filter_'.$key.'" style="opacity:0.5;filter:alpha(opacity=50)"><input type="checkbox" class="ssp'.$key.'" /> <span>'.$val.'</span></div>';
 			}
-			$content .= '
+			$form_additional .= '
 	</div>
-	<br /><br />
-	</div>
-	
-	<br />
-	<div class="center">
-		<input type="submit" class="button" style="width:120px" value="Suche starten" />
-	</div>
-</form>';
+	</div>';
+			
+			$content .= Search::createSearchForm($_GET, $form_additional);
+			
 		}
 		
 		// Suche gesartet
@@ -1004,556 +670,10 @@ else {
 				53=>'Punkte'
 			);
 			
-			// heutigen Timestamp ermitteln
 			$heute = strtotime('today');
 			
-			// Bedingungen aufstellen
-			$conds = array();
-			
-			// Einschränkungen und Sperrungen der Rechte
-			if($user->protectedAllies) {
-				$conds[] = '(player_allianzenID IS NULL OR player_allianzenID NOT IN ('.implode(', ', $user->protectedAllies).'))';
-			}
-			if($user->protectedGalas) {
-				$conds[] = 'systeme_galaxienID NOT IN ('.implode(', ', $user->protectedGalas).')';
-			}
-			if(!$user->rechte['search_ally'] AND $user->allianz) {
-				$conds[] = '(planeten_playerID = '.$user->id.' OR player_allianzenID IS NULL OR player_allianzenID != '.$user->allianz.')';
-			}
-			if(!$user->rechte['search_meta'] AND $user->allianz) {
-				$conds[] = '(planeten_playerID = '.$user->id.' OR statusStatus IS NULL OR statusStatus != '.$status_meta.')';
-			}
-			if(!$user->rechte['search_register']) {
-				$conds[] = '(statusStatus = '.$status_meta.' OR allianzenID IS NULL OR register_allianzenID IS NULL)';
-			}
-			
-			// eingegebene Bedingungen
-			
-			// Galaxie
-			if(isset($_GET['g'])) {
-				$conds[] = 'systeme_galaxienID'.db_multiple($_GET['g']);
-			}
-			
-			// Sektor
-			if(isset($_GET['sek'])) {
-				if($_GET['sek'] == 1) $conds[] = 'systemeX > 0 AND systemeZ > 0';
-				else if($_GET['sek'] == 2) $conds[] = 'systemeX < 0 AND systemeZ > 0';
-				else if($_GET['sek'] == 3) $conds[] = 'systemeX < 0 AND systemeZ < 0';
-				else $conds[] = 'systemeX > 0 AND systemeZ < 0';
-			}
-			// System-ID
-			if(isset($_GET['sid'])) {
-				$conds[] = 'planeten_systemeID'.db_multiple($_GET['sid']);
-			}
-			// System-Name
-			if(isset($_GET['sn'])) {
-				$conds[] = "systemeName LIKE '".escape(escape(str_replace('*', '%', $_GET['sn'])))."'";
-			}
-			// System-Scan
-			if(isset($_GET['ssc'])) {
-				if(isset($_GET['ssct'])) {
-					$_GET['ssct'] = (int)$_GET['ssct'];
-				}
-				else $_GET['ssct'] = 0;
-				
-				// nicht gescannt
-				if($_GET['ssc'] == 1) {
-					$conds[] = 'systemeUpdate = 0';
-				}
-				// irgendwann
-				else if($_GET['ssc'] == 2) {
-					$conds[] = 'systemeUpdate != 0';
-				}
-				// älter / neuer als
-				else if($_GET['ssct'] > 0) {
-					$conds[] = 'systemeUpdate '.(($_GET['ssc'] == 3) ? '>' : '<').' '.(time()-$_GET['ssct']*86400);
-				}
-			}
-			
-			// Planeten-ID
-			if(isset($_GET['pid'])) {
-				$conds[] = 'planetenID'.db_multiple($_GET['pid']);
-			}
-			// Planeten-Name
-			if(isset($_GET['pn'])) {
-				$conds[] = "planetenName LIKE '".escape(escape(str_replace('*', '%', $_GET['pn'])))."'";
-			}
-			// Original-Name
-			if(isset($_GET['pon'])) {
-				$conds[] = "planetenName = CONCAT('P',systeme_galaxienID,'_',planeten_systemeID,planetenPosition)";
-			}
-			// Größe
-			if(isset($_GET['gr'])) {
-				$val = '=';
-				if(isset($_GET['gr_'])) {
-					if($_GET['gr_'] == 1) $val = '>';
-					else $val = '<';
-				}
-				$_GET['gr'] = (int)$_GET['gr'];
-				$conds[] = 'planetenGroesse '.$val.' '.$_GET['gr'];
-			}
-			// Planeten-Typ
-			if(isset($_GET['t'])) {
-				$_GET['t'] = (int)$_GET['t'];
-				$conds[] = 'planetenTyp = '.$_GET['t'];
-			}
-			// Planeten-Scan (Oberfläche)
-			if(isset($_GET['sc'])) {
-				if(isset($_GET['sct'])) {
-					$_GET['sct'] = (int)$_GET['sct'];
-				}
-				else $_GET['sct'] = 0;
-				
-				// nicht gescannt
-				if($_GET['sc'] == 1) {
-					$conds[] = 'planetenUpdateOverview = 0';
-				}
-				// irgendwann
-				else if($_GET['sc'] == 2) {
-					$conds[] = 'planetenUpdateOverview != 0';
-				}
-				// älter / neuer als
-				else if($_GET['sct'] > 0) {
-					$conds[] = 'planetenUpdateOverview '.(($_GET['sc'] == 3) ? '>' : '<').' '.(time()-$_GET['sct']*86400);
-				}
-			}
-			// unscannbar
-			if(isset($_GET['usc'])) {
-				$conds[] = 'planetenUnscannbar > planetenUpdateOverview';
-			}
-			// Kategorie
-			if(isset($_GET['k'])) {
-				$_GET['k'] = (int)$_GET['k'];
-				// normale Kategorie
-				if($_GET['k'] >= 0 AND $_GET['k'] <= 13) {
-					$conds[] = 'planetenKategorie = '.$_GET['k'];
-				}
-				// Sammelkategorien
-				// alle Ressplaneten
-				else if($_GET['k'] == 14) {
-					$conds[] = 'planetenKategorie IN(1,2,3,4,5,12)';
-				}
-				// Ressplaneten und Werften
-				else if($_GET['k'] == 15) {
-					$conds[] = 'planetenKategorie IN(1,2,3,4,5,12,13)';
-				}
-				// alle Forschungsplaneten
-				else {
-					$conds[] = 'planetenKategorie >= 6 AND planetenKategorie <= 11';
-				}
-			}
-			// Gebäude
-			if(count($searchgeb)) {
-				foreach($searchgeb as $geb) {
-					$conds[] = "(planetenGebPlanet LIKE '%".$geb."%' OR planetenGebOrbit LIKE '%".$geb."%')";
-				}
-			}
-			// Myrigate
-			if(isset($_GET['mg'])) {
-				$conds[] = 'planetenMyrigate > 0';
-				// Berechtigungs-Einschränkungen
-				if(!$user->rechte['show_myrigates_ally'] AND $user->allianz) {
-					$conds[] = '(planeten_playerID = '.$user->id.' OR player_allianzenID != '.$user->allianz.')';
-				}
-				if(!$user->rechte['show_myrigates_meta'] AND $user->allianz) {
-					$conds[] = '(planeten_playerID = '.$user->id.' OR statusStatus IS NULL OR statusStatus != '.$status_meta.')';
-				}
-				if(!$user->rechte['show_myrigates_register']) {
-					$conds[] = '(register_allianzenID IS NULL OR statusStatus = '.$status_meta.')';
-				}
-			}
-			
-			// Orbiter
-			if(isset($_GET['o'])) {
-				if($_GET['o'] == 1) {
-					$conds[] = 'planetenOrbiter = 0 AND planetenUpdateOverview > 0';
-				}
-				else if($_GET['o'] == 2) {
-					$conds[] = 'planetenOrbiter <= 1 AND planetenUpdateOverview > 0';
-				}
-				else if($_GET['o'] == 3) {
-					$conds[] = 'planetenOrbiter <= 2 AND planetenUpdateOverview > 0';
-				}
-				else if($_GET['o'] == 4) {
-					$conds[] = 'planetenOrbiter >= 2';
-				}
-				else if($_GET['o'] == 5) {
-					$conds[] = 'planetenOrbiter >= 3';
-				}
-				else {
-					$conds[] = 'planetenOrbiter >= 1';
-				}
-			}
-			// Natives
-			if(isset($_GET['na'])) {
-				$val = '=';
-				if(isset($_GET['na_'])) {
-					if($_GET['na_'] == 1) $val = '>';
-					else $val = '<';
-				}
-				$_GET['na'] = (int)$_GET['na'];
-				$conds[] = 'planetenNatives '.$val.' '.$_GET['na'];
-				if($_GET['na']) {
-					// nur freie Planeten -> Performance
-					$conds[] = 'planeten_playerID = 0';
-					// Planeten mit 0 Natives ausblenden
-					$conds[] = 'planetenNatives > 0';
-				}
-			}
-			// Bevölkerung
-			if(isset($_GET['bev'])) {
-				$_GET['bev'] = (int)$_GET['bev'];
-				$conds[] = 'planetenBevoelkerung >= '.$_GET['bev'];
-			}
-			// Forschung
-			if(isset($_GET['f'])) {
-				$_GET['f'] = (int)$_GET['f'];
-				$conds[] = 'planetenForschung >= '.$_GET['f'];
-			}
-			// Industrie
-			if(isset($_GET['i'])) {
-				$_GET['i'] = (int)$_GET['i'];
-				$conds[] = 'planetenIndustrie >= '.$_GET['i'];
-			}
-			// Punkte
-			if(isset($_GET['pu'])) {
-				$_GET['pu'] = (int)$_GET['pu'];
-				$conds[] = imppunkte_mysql().' >= '.$_GET['pu'];
-			}
-			// Ressplanet
-			if(isset($_GET['rpl'])) {
-				$conds[] = 'planetenRessplani = 1';
-				// Berechtigungs-Einschränkungen
-				if(!$user->rechte['ressplani_ally'] AND $user->allianz) {
-					$conds[] = '(planeten_playerID = '.$user->id.' OR player_allianzenID != '.$user->allianz.')';
-				}
-				if(!$user->rechte['ressplani_meta'] AND $user->allianz) {
-					$conds[] = '(planeten_playerID = '.$user->id.' OR statusStatus IS NULL OR statusStatus != '.$status_meta.')';
-				}
-				if(!$user->rechte['ressplani_register']) {
-					$conds[] = '(register_allianzenID IS NULL OR statusStatus = '.$status_meta.')';
-				}
-			}
-			// Werft
-			if(isset($_GET['we'])) {
-				$conds[] = 'planetenWerft = 1';
-				// Berechtigungs-Einschränkungen
-				if(!$user->rechte['werft_ally'] AND $user->allianz) {
-					$conds[] = '(planeten_playerID = '.$user->id.' OR player_allianzenID != '.$user->allianz.')';
-				}
-				if(!$user->rechte['werft_meta'] AND $user->allianz) {
-					$conds[] = '(planeten_playerID = '.$user->id.' OR statusStatus IS NULL OR statusStatus != '.$status_meta.')';
-				}
-				if(!$user->rechte['werft_register']) {
-					$conds[] = '(register_allianzenID IS NULL OR statusStatus = '.$status_meta.')';
-				}
-			}
-			// Bunker
-			if(isset($_GET['bu'])) {
-				$conds[] = 'planetenBunker = 1';
-				// Berechtigungs-Einschränkungen
-				if(!$user->rechte['bunker_ally'] AND $user->allianz) {
-					$conds[] = '(planeten_playerID = '.$user->id.' OR player_allianzenID != '.$user->allianz.')';
-				}
-				if(!$user->rechte['bunker_meta'] AND $user->allianz) {
-					$conds[] = '(planeten_playerID = '.$user->id.' OR statusStatus IS NULL OR statusStatus != '.$status_meta.')';
-				}
-				if(!$user->rechte['bunker_register']) {
-					$conds[] = '(register_allianzenID IS NULL OR statusStatus = '.$status_meta.')';
-				}
-			}
-			// Bergbau
-			if(isset($_GET['bb']) AND $user->rechte['fremdinvakolos']) {
-				// BBS oder TF
-				if($_GET['bb'] == 1) {
-					$conds[] = "(schiffeBergbau IS NOT NULL OR schiffeTerraformer IS NOT NULL)";
-				}
-				// keins
-				else if($_GET['bb'] == 2) {
-					$conds[] = "schiffeBergbau IS NULL";
-					$conds[] = "schiffeTerraformer IS NULL";
-				}
-				// BBS
-				else if($_GET['bb'] == 3) {
-					$conds[] = "schiffeBergbau IS NOT NULL";
-				}
-				// TF
-				else {
-					$conds[] = "schiffeTerraformer IS NOT NULL";
-				}
-			}
-			// Summe aller Resswerte
-			if(isset($_GET['rw'])) {
-				$_GET['rw'] = (int)$_GET['rw'];
-				$conds[] = 'planetenRWErz+planetenRWWolfram+planetenRWKristall+planetenRWFluor >= '.$_GET['rw'];
-			}
-			// gesamte Ressproduktion
-			if(isset($_GET['rp'])) {
-				$_GET['rp'] = (int)$_GET['rp'];
-				$conds[] = 'planetenRPGesamt >= '.$_GET['rp'];
-			}
-			// gesamter Ressvorrat
-			if(isset($_GET['rv'])) {
-				$_GET['rv'] = (int)$_GET['rv'];
-				$conds[] = 'planetenRMGesamt >= '.$_GET['rv'];
-			}
-			// Resswerte
-			if(isset($_GET['rwe'])) {
-				$_GET['rwe'] = (int)$_GET['rwe'];
-				$conds[] = 'planetenRWErz >= '.$_GET['rwe'];
-			}
-			if(isset($_GET['rww'])) {
-				$_GET['rww'] = (int)$_GET['rww'];
-				$conds[] = 'planetenRWWolfram >= '.$_GET['rww'];
-			}
-			if(isset($_GET['rwk'])) {
-				$_GET['rwk'] = (int)$_GET['rwk'];
-				$conds[] = 'planetenRWKristall >= '.$_GET['rwk'];
-			}
-			if(isset($_GET['rwf'])) {
-				$_GET['rwf'] = (int)$_GET['rwf'];
-				$conds[] = 'planetenRWFluor >= '.$_GET['rwf'];
-			}
-			// Ressproduktion
-			if(isset($_GET['rpe'])) {
-				$_GET['rpe'] = (int)$_GET['rpe'];
-				$conds[] = 'planetenRPErz >= '.$_GET['rpe'];
-			}
-			if(isset($_GET['rpm'])) {
-				$_GET['rpm'] = (int)$_GET['rpm'];
-				$conds[] = 'planetenRPMetall >= '.$_GET['rpm'];
-			}
-			if(isset($_GET['rpw'])) {
-				$_GET['rpw'] = (int)$_GET['rpw'];
-				$conds[] = 'planetenRPWolfram >= '.$_GET['rpw'];
-			}
-			if(isset($_GET['rpk'])) {
-				$_GET['rpk'] = (int)$_GET['rpk'];
-				$conds[] = 'planetenRPKristall >= '.$_GET['rpk'];
-			}
-			if(isset($_GET['rpf'])) {
-				$_GET['rpf'] = (int)$_GET['rpf'];
-				$conds[] = 'planetenRPFluor >= '.$_GET['rpf'];
-			}
-			// Ressvorrat
-			if(isset($_GET['rve'])) {
-				$_GET['rve'] = (int)$_GET['rve'];
-				$conds[] = 'planetenRMErz >= '.$_GET['rve'];
-			}
-			if(isset($_GET['rvm'])) {
-				$_GET['rvm'] = (int)$_GET['rvm'];
-				$conds[] = 'planetenRMMetall >= '.$_GET['rvm'];
-			}
-			if(isset($_GET['rvw'])) {
-				$_GET['rvw'] = (int)$_GET['rvw'];
-				$conds[] = 'planetenRMWolfram >= '.$_GET['rvw'];
-			}
-			if(isset($_GET['rvk'])) {
-				$_GET['rvk'] = (int)$_GET['rvk'];
-				$conds[] = 'planetenRMKristall >= '.$_GET['rvk'];
-			}
-			if(isset($_GET['rvf'])) {
-				$_GET['rvf'] = (int)$_GET['rvf'];
-				$conds[] = 'planetenRMFluor >= '.$_GET['rvf'];
-			}
-			// geraidet
-			if(isset($_GET['rai']) AND $user->rechte['toxxraid']) {
-				$_GET['rai'] = (int)$_GET['rai'];
-				$conds[] = 'planetenGeraidet < '.(time()-86400*$_GET['rai']);
-			}
-			// getoxxt
-			if(isset($_GET['tox']) AND $user->rechte['toxxraid']) {
-				if($_GET['tox']) {
-					$conds[] = 'planetenGetoxxt > '.time();
-				}
-				else {
-					$conds[] = 'planetenGetoxxt < '.time();
-				}
-			}
-			// Kommentar
-			if(isset($_GET['ko'])) {
-				$conds[] = "planetenKommentar LIKE '%".escape(escape(str_replace('*', '%', $_GET['ko'])))."%'";
-			}
-			// User-ID
-			if(isset($_GET['uid'])) {
-				$conds[] = 'planeten_playerID'.db_multiple($_GET['uid']);
-			}
-			// User-Name
-			if(isset($_GET['un'])) {
-				$conds[] = "playerName LIKE '".escape(escape(str_replace('*', '%', $_GET['un'])))."'";
-			}
-			// Rasse
-			if(isset($_GET['ra'])) {
-				$_GET['ra'] = (int)$_GET['ra'];
-				// alle Altrassen
-				if($_GET['ra'] == 0) $conds[] = '((playerRasse != 10 AND planeten_playerID != 0) OR planeten_playerID = -3)';
-				// Lux
-				else if($_GET['ra'] == 10) $conds[] = '(playerRasse = '.$_GET['ra'].' OR planeten_playerID = -2)';
-				// Lux ohne NPC
-				else if($_GET['ra'] == 11) $conds[] = '((playerRasse = 10 AND planeten_playerID > 2) OR planeten_playerID = -2)';
-				// bestimmte Altrasse
-				else $conds[] = 'playerRasse = '.$_GET['ra'];
-			}
-			// frei
-			if(isset($_GET['fr'])) {
-				// frei
-				if($_GET['fr'] == 1) $conds[] = 'planeten_playerID = 0';
-				// nicht frei
-				else $conds[] = '(planeten_playerID > 0 OR planeten_playerID < -1)';
-			}
-			// kolonisierbar
-			if(isset($_GET['kbar'])) {
-				$conds[] = 'planeten_playerID = 0';
-				$conds[] = 'planetenNatives = 0';
-				$conds[] = 'planetenGroesse > 3';
-				
-				// laufende Aktionen abfragen
-				$q = query("
-					SELECT
-						invasionen_planetenID
-					FROM
-						".PREFIX."invasionen
-				") OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
-				
-				$ids = array();
-				
-				while($d = mysql_fetch_assoc($q)) {
-					$ids[] = $d['invasionen_planetenID'];
-				}
-				
-				if(count($ids)) {
-					$conds[] = "planetenID NOT IN(".implode(',', $ids).")";
-				}
-			}
-			// Urlaubsmodus
-			if(isset($_GET['umod'])) {
-				// ja
-				if($_GET['umod'] == 1) $conds[] = 'playerUmod = 1';
-				// nein
-				else $conds[] = 'playerUmod = 0';
-			}
-			// Planeten
-			if(isset($_GET['pl'])) {
-				$_GET['pl'] = (int)$_GET['pl'];
-				$conds[] = 'playerPlaneten '.(isset($_GET['pl_']) ? '>' : '<').'= '.$_GET['pl'];
-				$conds[] = 'planeten_playerID > 2';
-			}
-			// Inaktiv
-			if(isset($_GET['ina'])) {
-				$_GET['ina'] = (int)$_GET['ina'];
-				$_GET['ina'] = time()-$_GET['ina']*86400;
-				$conds[] = 'playerActivity < '.$_GET['ina'];
-				$conds[] = 'playerActivity > 0';
-				$conds[] = 'planeten_playerID > 2';
-			}
-			// Allianz-ID
-			if(isset($_GET['aid'])) {
-				$conds[] = 'player_allianzenID'.db_multiple($_GET['aid']);
-			}
-			// Allianz-Tag
-			if(isset($_GET['at'])) {
-				$conds[] = "allianzenTag LIKE '".escape(escape(str_replace('*', '%', $_GET['at'])))."'";
-			}
-			// Allianz-Name
-			if(isset($_GET['an'])) {
-				$conds[] = "allianzenName LIKE '".escape(escape(str_replace('*', '%', $_GET['an'])))."'";
-			}
-			// Allianz-Status
-			if(isset($_GET['as'])) {
-				$_GET['as'] = (int)$_GET['as'];
-				// Freunde
-				if($_GET['as'] == -1) {
-					$conds[] = 'statusStatus IN('.implode(',', $status_freund).')';
-				}
-				// Feinde
-				else if($_GET['as'] == -2) {
-					$conds[] = 'statusStatus IN('.implode(',', $status_feind).')';
-				}
-				// neutral
-				else if($_GET['as'] == 0) {
-					$conds[] = '(statusStatus = 0 OR statusStatus IS NULL)';
-				}
-				// normaler Status
-				else if(isset($status[$_GET['as']])) {
-					$conds[] = 'statusStatus = '.$_GET['as'];
-				}
-			}
-			// Allianz-Status (erweitert)
-			if(isset($_GET['as2'])) {
-				foreach($_GET['as2'] as $key=>$val) {
-					if(!isset($status[$key])) {
-						unset($_GET['as2'][$key]);
-					}
-				}
-				
-				if(count($_GET['as2']) AND count($_GET['as2']) < count($status)) {
-					$as2 = array_keys($_GET['as2']);
-					
-					// neutral dabei -> NULL
-					if(isset($_GET['as2'][0])) {
-						$conds[] = '(statusStatus IN('.implode(',', $as2).') OR statusStatus IS NULL)';
-					}
-					else {
-						$conds[] = 'statusStatus IN('.implode(',', $as2).')';
-					}
-				}
-			}
-			// History
-			if(isset($_GET['his'])) {
-				// User-ID
-				if(isset($_GET['his_'])) {
-					$_GET['his'] = (int)$_GET['his'];
-					// jeder Planet war mal frei
-					if($_GET['his'] == 0) $_GET['his'] = -2;
-					
-					$query = query("
-						SELECT DISTINCT
-							history_planetenID
-						FROM
-							".PREFIX."planeten_history
-						WHERE
-							history_playerID = ".$_GET['his']."
-					") OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
-				}
-				// Username
-				else {
-					$query = query("
-						SELECT
-							playerID
-						FROM
-							".GLOBPREFIX."player
-						WHERE
-							playerName LIKE '".escape(escape(str_replace('*', '%', $_GET['his'])))."'
-						ORDER BY playerID ASC
-						LIMIT 1
-					") OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
-					
-					if(mysql_num_rows($query)) {
-						$data = mysql_fetch_assoc($query);
-						
-						$query = query("
-							SELECT DISTINCT
-								history_planetenID
-							FROM
-								".PREFIX."planeten_history
-							WHERE
-								history_playerID = ".$data['playerID']."
-						") OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
-					}
-				}
-				// auswerten und Bedingung hinzufügen
-				if(mysql_num_rows($query)) {
-					$val = array();
-					while($row = mysql_fetch_assoc($query)) {
-						$val[] = $row['history_planetenID'];
-					}
-					$conds[] = 'planetenID IN('.implode(',', $val).')';
-				}
-				// keine Planeten gefunden
-				else {
-					$conds[] = 'planetenID = 0';
-				}
-			}
+			// Bedingungen generieren
+			$conds = Search::buildConditions($_GET);
 			
 			// Routen-Bedingungen
 			if($route) {
@@ -1581,7 +701,7 @@ else {
 					if(is_array($entf1)) {
 						$entf = entf_mysql("systemeX", "systemeY", "systemeZ", "planetenPosition", $entf1[1], $entf1[2], $entf1[3], $entf1[4]);
 						// Galaxie filtern
-						$conds[] = 'systeme_galaxienID = '.$entf1[0];
+						//$conds[] = 'systeme_galaxienID = '.$entf1[0];
 					}
 				}
 				if(isset($_GET['entf2'])) {
@@ -1589,7 +709,7 @@ else {
 					if(is_array($entf2)) {
 						// Galaxie filtern
 						if(!$entf) {
-							$conds[] = 'systeme_galaxienID = '.$entf2[0];
+							//$conds[] = 'systeme_galaxienID = '.$entf2[0];
 						}
 						$entf2 = entf_mysql("systemeX", "systemeY", "systemeZ", "planetenPosition", $entf2[1], $entf2[2], $entf2[3], $entf2[4]);
 						// zwei Entfernungen koppeln
@@ -1599,20 +719,6 @@ else {
 						else $entf = $entf2;
 					}
 				}
-			}
-			
-			// Entfernungsfilter
-			if($entf AND (isset($_GET['ef1']) OR isset($_GET['ef2']))) {
-				$ef1 = isset($_GET['ef1']) ? (int)$_GET['ef1'] : 0;
-				$ef2 = isset($_GET['ef2']) ? (int)$_GET['ef2'] : 0;
-				$ef3 = isset($_GET['ef3']) ? (int)$_GET['ef3'] : 2; // default +- 2 min
-				
-				$ef = (3600*$ef1)+(60*$ef2);
-				
-				$ef3 *= 60;
-				
-				$conds[] = $entf.' > '.entffdauer($ef-$ef3, $antr);
-				$conds[] = $entf.' < '.entffdauer($ef+$ef3, $antr);
 			}
 			
 			// Entfernung-Spalte ausblenden, wenn keine Entfernung berechnet
@@ -1638,30 +744,6 @@ else {
 			}
 			
 			
-			// Abfrage vorbereiten
-			$sql = "
-					".PREFIX."planeten
-					LEFT JOIN ".PREFIX."systeme
-						ON systemeID = planeten_systemeID
-					LEFT JOIN ".GLOBPREFIX."player
-						ON playerID = planeten_playerID
-					LEFT JOIN ".GLOBPREFIX."allianzen
-						ON allianzenID = player_allianzenID
-					LEFT JOIN ".PREFIX."register
-						ON register_allianzenID = allianzenID
-					LEFT JOIN ".PREFIX."galaxien
-						ON galaxienID = systeme_galaxienID
-						AND galaxienGate = planetenID
-					LEFT JOIN ".PREFIX."planeten_schiffe
-						ON schiffe_planetenID = planetenID
-					LEFT JOIN ".PREFIX."allianzen_status
-						ON statusDBAllianz = ".$user->allianz."
-						AND status_allianzenID = allianzenID";
-			
-			$conds = implode(' AND ', $conds);
-			if($conds == '') $conds = '1';
-			
-			
 			$t = time();
 			
 			
@@ -1671,18 +753,10 @@ else {
 				$_GET['tcount'] = 1;
 			}
 			if(!isset($_GET['tcount']) OR (int)$_GET['tcount'] < 1 OR (isset($_GET['time']) AND $_GET['time'] < $t-3600)) {
-				$query = query("
-					SELECT
-						COUNT(*)
-					FROM
-						".$sql."
-					WHERE
-						".$conds."
-				") OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
 				
-				$data = mysql_fetch_array($query);
+				$tcount = Search::getCount($conds);
 				
-				$_GET['tcount'] = $data[0];
+				$_GET['tcount'] = $tcount;
 				$_GET['time'] = $t;
 				$_SERVER['QUERY_STRING'] = preg_replace('/&time=(\d+)/', '', $_SERVER['QUERY_STRING']);
 				$_SERVER['QUERY_STRING'] .= '&tcount='.$_GET['tcount'].'&time='.$t;
@@ -1810,87 +884,10 @@ else {
 					$sysids = array();
 				}
 				
-				// Daten abfragen
-				$query = query("
-					SELECT
-						planetenID,
-						planetenName,
-						planetenUpdateOverview,
-						planetenUpdate,
-						planetenUnscannbar,
-						planetenTyp,
-						planetenGroesse,
-						planetenKategorie,
-						planetenGebPlanet,
-						planetenGebOrbit,
-						planetenMyrigate,
-						planetenGateEntf,
-						planetenRWErz,
-						planetenRWWolfram,
-						planetenRWKristall,
-						planetenRWFluor,
-						planetenRPErz,
-						planetenRPMetall,
-						planetenRPWolfram,
-						planetenRPKristall,
-						planetenRPFluor,
-						planetenRMErz,
-						planetenRMMetall,
-						planetenRMWolfram,
-						planetenRMKristall,
-						planetenRMFluor,
-						planetenRPGesamt,
-						planetenRMGesamt,
-						planetenForschung,
-						planetenIndustrie,
-						planetenBevoelkerung,
-						planetenRessplani,
-						planetenWerft,
-						planetenBunker,
-						planetenGeraidet,
-						planetenGetoxxt,
-						planetenKommentar,
-						planeten_playerID,
-						planetenNatives,
-						
-						".($entf ? $entf." AS planetenEntfernung," : '')."
-						
-						systemeID,
-						systeme_galaxienID,
-						systemeX,
-						systemeZ,
-						systemeUpdate,
-						systemeAllianzen,
-						
-						galaxienGate,
-						
-						playerName,
-						playerPlaneten,
-						playerRasse,
-						playerImppunkte,
-						playerUmod,
-						playerDeleted,
-						playerActivity,
-						player_allianzenID,
-						
-						allianzenTag,
-						allianzenName,
-						
-						register_allianzenID,
-						
-						schiffeBergbau,
-						schiffeTerraformer,
-						
-						statusStatus
-					FROM
-						".$sql."
-					WHERE
-						".$conds."
-					ORDER BY
-						".$sort."
-					LIMIT
-						".$offset.",".$limit."
-				") OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
+				
+				// Ergebnisse abfragen
+				$results = Search::getSearchAsMySQL($conds, $entf, $sort, $offset, $limit);
+				
 				
 				// ID-Liste für Ergebnis-Navigation
 				$ids = array();
@@ -1898,7 +895,7 @@ else {
 				// erste Galaxie
 				$firstgala = false;
 				
-				while($row = mysql_fetch_assoc($query)) {
+				while($row = mysql_fetch_assoc($results)) {
 					// zu Route hinzufügen
 					if($route) {
 						$route->add($row['planetenID'], false);

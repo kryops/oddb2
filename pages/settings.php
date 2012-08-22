@@ -26,6 +26,8 @@ $pages = array(
 	'pw'=>true,
 	'save_pw'=>true,
 	'fow'=>true,
+	'fow_editsearch'=>true,
+	'fow_searchdesc'=>true,
 	'save_fow'=>true,
 	'dbdata'=>true
 );
@@ -48,6 +50,16 @@ else if($_GET['sp'] == 'save') {
 // Passwort ändern
 else if($_GET['sp'] == 'save_pw') {
 	include './pages/settings/save_pw.php';
+}
+
+// FoW-Suchfilter konfigurieren
+else if($_GET['sp'] == 'fow_editsearch') {
+	include './pages/settings/fow.php';
+}
+
+// Suchfilter-Beschreibung
+else if($_GET['sp'] == 'fow_searchdesc') {
+	include './pages/settings/fow.php';
 }
 
 // FoW-Einstellungen speichern

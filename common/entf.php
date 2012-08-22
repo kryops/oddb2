@@ -133,6 +133,22 @@ function entffdauer($dauer, $antr) {
  *			array -> Koordinaten-Array
  */
 function flug_point($val) {
+	
+	$oval = $val;
+	
+	// aus dem Cache holen
+	global $flug_point_cache;
+	
+	if($flug_point_cache == null) {
+		$flug_point_cache = array();
+	}
+	
+	if(isset($flug_point_cache[$val])) {
+		return $flug_point_cache[$val];
+	}
+	
+	
+	
 	$val = trim($val);
 	
 	// Koordinaten
@@ -140,6 +156,7 @@ function flug_point($val) {
 		$val = explode('|', $val);
 		// ungültig
 		if(count($val) != 4) {
+			$flug_point_cache[$oval] = 'coords';
 			return 'coords';
 		}
 		// sichern
@@ -149,6 +166,7 @@ function flug_point($val) {
 		// Platzhalter für planetenPosition und systemeID
 		$val[] = 1;
 		$val[] = 0;
+		$flug_point_cache[$oval] = $val;
 		return $val;
 	}
 	// Planet oder System
@@ -174,7 +192,7 @@ function flug_point($val) {
 			// System gefunden
 			if(mysql_num_rows($query)) {
 				$val2 = mysql_fetch_assoc($query);
-				return array(
+				$val2 = array(
 					$val2['systeme_galaxienID'],
 					$val2['systemeX'],
 					$val2['systemeY'],
@@ -182,9 +200,13 @@ function flug_point($val) {
 					1,
 					$val
 				);
+				
+				$flug_point_cache[$oval] = $val2;
+				return $val2;
 			}
 			// kein System gefunden
 			else {
+				$flug_point_cache[$oval] = 'found';
 				return 'found';
 			}
 		}
@@ -211,7 +233,7 @@ function flug_point($val) {
 			// Planet gefunden
 			if(mysql_num_rows($query)) {
 				$val = mysql_fetch_assoc($query);
-				return array(
+				$val = array(
 					$val['systeme_galaxienID'],
 					$val['systemeX'],
 					$val['systemeY'],
@@ -219,6 +241,9 @@ function flug_point($val) {
 					$val['planetenPosition'],
 					$val['systemeID']
 				);
+				
+				$flug_point_cache[$oval] = $val;
+				return $val;
 			}
 			// kein Planet gefunden -> System suchen
 			else {
@@ -237,7 +262,7 @@ function flug_point($val) {
 				// System gefunden
 				if(mysql_num_rows($query)) {
 					$val2 = mysql_fetch_assoc($query);
-					return array(
+					$val2 = array(
 						$val2['systeme_galaxienID'],
 						$val2['systemeX'],
 						$val2['systemeY'],
@@ -245,9 +270,13 @@ function flug_point($val) {
 						1,
 						$val
 					);
+					
+					$flug_point_cache[$oval] = $val2;
+					return $val2;
 				}
 				// nichts gefunden
 				else {
+					$flug_point_cache[$oval] = 'found';
 					return 'found';
 				}
 			}

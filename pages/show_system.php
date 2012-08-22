@@ -15,9 +15,7 @@ $tmpl = new template;
 
 
 // Tabellenklasse laden
-if(!class_exists('datatable')) {
-	include './common/datatable.php';
-}
+General::loadClass('datatable');
 
 
 /**
@@ -988,163 +986,6 @@ else if($_GET['sp'] == '') {
 			}
 		}
 		
-		// Ressplaneten
-		if(isset($fow['ress'])) {
-			// Zuordnung des Filters auf
-			// MySQL-Spalten
-			$ressmap = array(
-				0=>'planetenRMGesamt',
-				1=>'planetenRMErz',
-				2=>'planetenRMMetall',
-				3=>'planetenRMWolfram',
-				4=>'planetenRMKristall',
-				5=>'planetenRMFluor'
-			);
-			// Suchfilter
-			$ressmap2 = array(
-				0=>'rv',
-				1=>'rve',
-				2=>'rvm',
-				3=>'rvw',
-				4=>'rvk',
-				5=>'rvf'
-			);
-			// Ressplani-Bereich-Filter
-			$ressmap3 = array(
-				0=>'ress',
-				1=>'erz',
-				2=>'metall',
-				3=>'wolfram',
-				4=>'kristall',
-				5=>'fluor'
-			);
-			
-			foreach($fow['ress'] as $val) {
-				/*
-				$fow['ress'][] = array(
-					$_POST['ressname'][$key],
-					$_POST['resstyp'][$key],
-					$_POST['ressfilter'][$key],
-					$_POST['ressmenge'][$key]
-				);
-				*/
-				// Berechtigungen
-				if(!$user->rechte['ressplani_ally'] AND $val[1] == 2) {
-					continue;
-				}
-				if(!$user->rechte['ressplani_meta'] AND $val[1] == 3) {
-					continue;
-				}
-				
-				
-				// Bedingungen aufstellen
-				$conds = array(
-					"systeme_galaxienID = ".$data['systeme_galaxienID'],
-					"systemeID != ".$_GET['id'],
-					"planetenRessplani = 1"
-				);
-				
-				
-				// eigener Planet
-				if($val[1] == 1) {
-					$conds[] = "planeten_playerID = ".$user->id;
-					$link = 'p=search&amp;s=1&amp;uid='.$user->id.'&amp;rpl=on&amp;g='.$data['systeme_galaxienID'];
-				}
-				// Planet der Allianz
-				else if($val[1] == 2) {
-					$conds[] = "player_allianzenID = ".($user->allianz ? $user->allianz : "-2");
-					$link = 'p=ress&amp;sp=ally&amp;s=1&amp;g='.$data['systeme_galaxienID'];
-				}
-				// Planet der Meta
-				else {
-					$conds[] = "statusStatus = ".$status_meta;
-					$link = 'p=ress&amp;sp=ally&amp;s=1&amp;meta=1&amp;g='.$data['systeme_galaxienID'];
-				}
-				
-				// Filter
-				if($val[3]) {
-					$conds[] = $ressmap[$val[2]]." >= ".$val[3];
-					
-					// eigener Planet - Suche
-					if($val[1] == 1) {
-						$link .= '&'.$ressmap2[$val[2]].'='.$val[3];
-					}
-					// verbündeter Planet - Ressplanibereich
-					else {
-						$link .= '&'.$ressmap3[$val[2]].'='.$val[3];
-					}
-				}
-				
-			
-				// gesperrte Allianzen ausblenden
-				if($user->protectedAllies) {
-					$conds[] = "(player_allianzenID IS NULL OR player_allianzenID NOT IN (".implode(', ', $user->protectedAllies)."))";
-				}
-				
-				// System abfragen
-				$query = query("
-					SELECT
-						systemeID,
-						systemeUpdate,
-						".entf_mysql("systemeX", "systemeY", "systemeZ", "planetenPosition", $data['systemeX'], $data['systemeY'], $data['systemeZ'], "1")." AS planetenEntfernung,
-						
-						planetenID,
-						planeten_playerID,
-						
-						playerName,
-						player_allianzenID,
-						
-						allianzenTag,
-						
-						statusStatus
-					FROM
-						".PREFIX."systeme
-						LEFT JOIN ".PREFIX."planeten
-							ON planeten_systemeID = systemeID
-						LEFT JOIN ".GLOBPREFIX."player
-							ON playerID = planeten_playerID
-						LEFT JOIN ".GLOBPREFIX."allianzen
-							ON allianzenID = player_allianzenID
-						LEFT JOIN ".PREFIX."register
-							ON register_allianzenID = allianzenID
-						LEFT JOIN ".PREFIX."allianzen_status
-							ON statusDBAllianz = ".$user->allianz."
-							AND status_allianzenID = allianzenID
-					WHERE
-						".implode(" AND ", $conds)."
-					ORDER BY
-						planetenEntfernung ASC,
-						planetenID ASC
-					LIMIT 1
-				") OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
-				
-				// keinen Planeten gefunden
-				if(!mysql_num_rows($query)) {
-					$tmpl->content .= '
-		<tr>
-			<td>'.htmlspecialchars($val[0], ENT_COMPAT, 'UTF-8').'</td>
-			<td colspan="7">kein Planet gefunden</td>
-		</tr>';
-				}
-				// Planet gefunden
-				else {
-					$row = mysql_fetch_assoc($query);
-					
-					$tmpl->content .= '
-		<tr>
-			<td>'.htmlspecialchars($val[0], ENT_COMPAT, 'UTF-8').'</td>
-			<td>'.datatable::system($row['systemeID']).'</td>
-			<td>'.datatable::planet($row['planetenID']).'</td>
-			<td>'.datatable::inhaber($row['planeten_playerID'], $row['playerName']).'</td>
-			<td>'.datatable::allianz($row['player_allianzenID'], $row['allianzenTag'], $row['statusStatus']).'</td>
-			<td>'.flugdauer($row['planetenEntfernung'], $user->settings['antrieb']).'</td>
-			<td>'.datatable::scan($row['systemeUpdate'], $config['scan_veraltet']).'</td>
-			<td><a class="link winlink contextmenu hint" data-link="index.php?'.$link.'">[weitere]</a>
-		</tr>';
-				}
-			}
-		}
-		
 		// Routen und Listen
 		if(isset($fow['routen']) AND count($fow['routen']) AND $user->rechte['routen']) {
 			
@@ -1314,122 +1155,35 @@ else if($_GET['sp'] == '') {
 		}
 		
 		
-		// benutzerdefinierte Einträge
-		if(isset($fow['udef'])) {
-			foreach($fow['udef'] as $val) {
-				/*
-				$fow['udef'][] = array(
-					$_POST['searchname'][$key],
-					$_POST['search'][$key],
-					$_POST['searchtyp'][$key],
-					$_POST['searchid'][$key]
-				);
-				*/
-				// Bedingungen aufstellen
-				$conds = array();
-				
-				$cond = strpos($val[3], ',') ? "IN(".$val[3].")" : "= ".$val[3];
-				
-				// eigener Planet
-				if($val[2] == 1) {
-					$conds[] = "planeten_playerID = ".$user->id;
-					$link = 'uid='.$user->id;
-				}
-				// Planet der Allianz
-				else if($val[2] == 2) {
-					$conds[] = "player_allianzenID = ".($user->allianz ? $user->allianz : "-2");
-					$link = 'aid='.($user->allianz ? $user->allianz : "-2");
-				}
-				// Planet der Meta
-				else if($val[2] == 3) {
-					$conds[] = "statusStatus = ".$status_meta;
-					$link = 'as='.$status_meta;
-				}
-				// feindlicher Planet
-				else if($val[2] == 4) {
-					$conds[] = "statusStatus IN(".implode(', ', $status_feind).")";
-					$link = 'as=-2';
-				}
-				// Planet von Spieler
-				else if($val[2] == 5) {
-					$conds[] = "planeten_playerID ".$cond;
-					$link = 'uid='.$val[3];
-				}
-				// Planet von Allianz
-				else if($val[2] == 6) {
-					$conds[] = "player_allianzenID ".$cond;
-					$link = 'aid='.$val[3];
-				}
-				// Planet von Lux
-				else if($val[2] == 7) {
-					$conds[] = "(planeten_playerID = -2 OR (playerRasse = 10 AND planeten_playerID > 2))";
-					$link = 'ra=11';
-				}
-				// Planet von Altrasse
-				else if($val[2] == 8) {
-					$conds[] = "(planeten_playerID = -3 OR (playerRasse != 10 AND planeten_playerID > 2))";
-					$link = 'ra=0';
-				}
-				
-				// außerhalb des Systems
-				if(isset($val[4])) {
-					$conds[] = "systemeID != ".$_GET['id'];
-				}
+		// Suchfilter
+		if(isset($fow['search'])) {
 			
-				// gesperrte Allianzen ausblenden
-				if($user->protectedAllies) {
-					$conds[] = "(player_allianzenID IS NULL OR player_allianzenID NOT IN (".implode(', ', $user->protectedAllies)."))";
-				}
+			General::loadClass('Search');
+			
+			$entf = entf_mysql("systemeX", "systemeY", "systemeZ", "planetenPosition", $data['systemeX'], $data['systemeY'], $data['systemeZ'], "1");
+			
+			foreach($fow['search'] as $val) {
 				
-				// fehlende Berechtigungen
-				if(!$user->rechte['search_ally'] AND $user->allianz) {
-					$conds[] = "(planeten_playerID = ".$user->id." OR player_allianzenID IS NULL OR player_allianzenID != ".$user->allianz.")";
-				}
-				if(!$user->rechte['search_meta'] AND $user->allianz) {
-					$conds[] = "(statusStatus IS NULL OR statusStatus != ".$status_meta." OR player_allianzenID = ".$user->allianz.")";
-				}
-				if(!$user->rechte['search_register'] AND $user->allianz) {
-					$conds[] = "(allianzenID IS NULL OR register_allianzenID IS NULL OR statusStatus = ".$status_meta.")";
-				}
+				/*
+				 * 0 - Name
+				 * 1 - Anzahl
+				 * 2 - Sortierung
+				 * 3 - Wert
+				 */
 				
-				// System abfragen
-				$query = query("
-					SELECT
-						systemeID,
-						systemeUpdate,
-						".entf_mysql("systemeX", "systemeY", "systemeZ", "planetenPosition", $data['systemeX'], $data['systemeY'], $data['systemeZ'], "1")." AS planetenEntfernung,
-						
-						planetenID,
-						planeten_playerID,
-						
-						playerName,
-						playerUmod,
-						player_allianzenID,
-						
-						allianzenTag,
-						
-						statusStatus
-					FROM
-						".PREFIX."systeme
-						LEFT JOIN ".PREFIX."planeten
-							ON planeten_systemeID = systemeID
-						LEFT JOIN ".GLOBPREFIX."player
-							ON playerID = planeten_playerID
-						LEFT JOIN ".GLOBPREFIX."allianzen
-							ON allianzenID = player_allianzenID
-						LEFT JOIN ".PREFIX."register
-							ON register_allianzenID = allianzenID
-						LEFT JOIN ".PREFIX."allianzen_status
-							ON statusDBAllianz = ".$user->allianz."
-							AND status_allianzenID = allianzenID
-					WHERE
-						systeme_galaxienID = ".$data['systeme_galaxienID']."
-						AND ".implode(" AND ", $conds)."
-					ORDER BY
-						planetenEntfernung ".($val[1] ? "DESC" : "ASC").",
-						planetenID ASC
-					LIMIT 1
-				") OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
+				
+				// Filter erstellen
+				$filter = array();
+				parse_str($val[3], $filter);
+				
+				// auch nach Galaxie filtern
+				$filter['g'] = $data['systeme_galaxienID'];
+				
+				$conds = Search::buildConditions($filter);
+				
+				$sort = $entf." ".($val[2] ? "DESC" : "ASC");
+				
+				$query = Search::getSearchAsMySQL($conds, $entf, $sort, 0, $val[1]);
 				
 				// keinen Planeten gefunden
 				if(!mysql_num_rows($query)) {
@@ -1439,21 +1193,26 @@ else if($_GET['sp'] == '') {
 			<td colspan="7"><i>kein Planet gefunden</i></td>
 		</tr>';
 				}
-				// Planet gefunden
+				// Planeten gefunden
 				else {
-					$row = mysql_fetch_assoc($query);
+					$first = true;
 					
-					$tmpl->content .= '
+					while($row = mysql_fetch_assoc($query)) {
+						
+						$tmpl->content .= '
 		<tr>
-			<td>'.htmlspecialchars($val[0], ENT_COMPAT, 'UTF-8').'</td>
+			<td>'.($first ? htmlspecialchars($val[0], ENT_COMPAT, 'UTF-8') : '&nbsp;').'</td>
 			<td>'.datatable::system($row['systemeID']).'</td>
 			<td>'.datatable::planet($row['planetenID']).'</a></td>
 			<td>'.datatable::inhaber($row['planeten_playerID'], $row['playerName'], $row['playerUmod']).'</td>
 			<td>'.datatable::allianz($row['player_allianzenID'], $row['allianzenTag'], $row['statusStatus'], true).'</td>
 			<td>'.flugdauer($row['planetenEntfernung'], $user->settings['antrieb']).'</td>
 			<td>'.datatable::scan($row['systemeUpdate'], $config['scan_veraltet']).'</td>
-			<td><a class="link winlink contextmenu hint" data-link="index.php?p=search&amp;sp=planet&amp;s=1&amp;sortt=1&amp;entf=sys'.$_GET['id'].'&amp;'.$link.'">[weitere]</a></td>
+			<td>'.($first ? '<a class="link winlink contextmenu hint" data-link="index.php?p=search&amp;sp=planet&amp;s=1&amp;hide&amp;'.h($val[3]).'&amp;g='.$data['systeme_galaxienID'].'&amp;sortt=1&amp;entf=sys'.$_GET['id'].($val[2] ? '&amp;sorto3=1' : '').'">[weitere]</a>' : '&nbsp;').'</td>
 		</tr>';
+						
+						$first = false;
+					}
 				}
 			}
 		}

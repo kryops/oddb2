@@ -1,4 +1,4 @@
-Ôªø/* General */
+/* General */
 body {
 	margin:0;
 	padding:0;
@@ -76,7 +76,7 @@ ul {
 	top:10px;
 }
 
-/* Men√º */
+/* Men¸ */
 #menu {
 	position:absolute;
 	top:105px;
@@ -989,7 +989,7 @@ hr {
 	display:block;
 }
 
-/* √úbersicht */
+/* ‹bersicht */
 .oviewtbl {
 	width:100%;
 	border-top:1px solid #333333;
@@ -1341,6 +1341,29 @@ hr {
 	cursor:move;
 }
 
+.fowsearch > div {
+	min-height:90px;
+}
+
+.fowsearch1 {
+	float:left;
+	width:225px;
+}
+
+.fowsearch2 {
+	text-align:center;
+	margin-left:235px;
+	margin-right:40px;
+	padding:0.5em 0;
+	line-height:2em;
+}
+
+.fowsearch3 {
+	width:30px;
+	float:right;
+	margin-top:1px;
+}
+
 /* Spieler / Allianzen */
 .userlistaction, .buttons {
 	white-space:nowrap;
@@ -1525,7 +1548,7 @@ td, th {
 
 }
 
-/* gro√üe CSWs auf kleinen Bildschirmen runterskalieren */
+/* groﬂe CSWs auf kleinen Bildschirmen runterskalieren */
 @media screen and (max-width:970px) {
 .cswbig {
 	min-width:900px !important;

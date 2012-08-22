@@ -12,6 +12,11 @@ if(!isset($_GET['sp'])) {
 	$_GET['sp'] = 'raid';
 }
 
+
+// Routen-Klasse laden
+General::loadClass('route');
+
+
 // Template initialisieren
 $tmpl = new template;
 $tmpl->name = 'Raiden & Toxxen';
