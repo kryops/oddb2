@@ -1178,6 +1178,7 @@ if(count($fow) OR !$showr) {
 				allianzenTag
 			FROM
 				".PREFIX."systeme
+				USE INDEX (systeme_galaxienID)
 				LEFT JOIN ".PREFIX."planeten
 					ON planeten_systemeID = systemeID
 				LEFT JOIN ".GLOBPREFIX."player
@@ -1274,6 +1275,7 @@ if(count($fow) OR !$showr) {
 				allianzenTag
 			FROM
 				".PREFIX."systeme
+				USE INDEX (systeme_galaxienID)
 				LEFT JOIN ".PREFIX."planeten
 					ON planeten_systemeID = systemeID
 				LEFT JOIN ".GLOBPREFIX."player
