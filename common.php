@@ -1279,21 +1279,36 @@ function query($sql) {
 		$mysql_conn->connect();
 	}
 	
-	//debug-Ausgabe
-	//echo $sql."<br /><br />";
-	if(DEBUG) {
-		global $mysql_stack;
-		if($mysql_stack === NULL) {
-			$mysql_stack = array();
-		}
-		$mysql_stack[] = str_replace(array('-->', '---', '--'), array('-- >', '- - -', '- -'), $sql);
-	}
-	
 	// Zähler erhöhen
 	$queries++;
 	
-	// Query abschicken
-	return mysql_query($sql);
+	
+	if(!DEBUG) {
+		// Query abschicken
+		return mysql_query($sql);
+	}
+	else {
+		
+		$t1 = microtime(true);
+		
+		$query = mysql_query($sql);
+		
+		$t = number_format(microtime(true)-$t1, 6);
+		
+		// loggen
+		global $mysql_stack;
+		
+		if($mysql_stack === NULL) {
+			$mysql_stack = array();
+		}
+		
+		$mysql_stack[] = array(
+			str_replace(array('-->', '---', '--'), array('-- >', '- - -', '- -'), $sql),
+			$t
+		);
+		
+		return $query;
+	}
 }
 
 /**

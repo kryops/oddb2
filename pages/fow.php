@@ -32,7 +32,7 @@ function fowoutput($scandate, $planinfo, $sysinfo) {
 		$sysinfo = utf8_decode($sysinfo);
 	}
 	
-	return '<?xml version="1.0" encoding="'.$charset.'" standalone="yes" ?>
+	$out = '<?xml version="1.0" encoding="'.$charset.'" standalone="yes" ?>
 <odh:odhelper xmlns="http://unzureichende.info/odhelp/ns/fog.of.war/2007" xmlns:odh="http://unzureichende.info/odhelp/ns/api">
   <odh:head>
     <odh:auth>true</odh:auth>
@@ -50,6 +50,18 @@ function fowoutput($scandate, $planinfo, $sysinfo) {
  <time><![CDATA['.$time.']]></time>
  <queries><![CDATA['.$queries.']]></queries>
 </odh:odhelper>';
+	
+	// Debug-Ausgabe der MySQL-Queries
+	if(DEBUG) {
+		global $mysql_stack;
+		if($mysql_stack !== NULL) {
+			$out .= '<!--
+'.print_r($mysql_stack, true).'
+-->';
+		}
+	}
+	
+	return $out;
 }
 /**
  * gibt einen Fehler aus
