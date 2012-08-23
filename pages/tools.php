@@ -78,8 +78,6 @@ else {
 		
 		<div class="icontent">
 			Das ODDB Tool ist ein Addon f&uuml;r Firefox und Google Chrome, das speziell f&uuml;r die ODDB programmiert wurde. Es beinhaltet einen FoW-Ausgleich mit direkter Anzeige der Bebauung in der Systemansicht und einen automatischen Parser.
-			<br />
-			<b>Die ODDB ist nicht kompatibel zu Parsern anderer Addons wie dem OD Helper oder dem db.moz.plugin, weshalb zum Parsen das ODDB Tool benutzt werden muss!</b>
 			<br /><br />';
 	
 	if($chrome) {
@@ -87,7 +85,19 @@ else {
 			<a href="plugin/'.ODDBTOOLPATH_CHROME.'" style="font-weight:bold;color:#03d2ff">
 				<img src="img/tools/chrome.png" alt="" style="width:48px;height:48px;vertical-align:middle;margin-right:5px" />
 				Installation ODDB Tool V'.ODDBTOOL.' f&uuml;r Google Chrome
-			</a>';
+			</a>
+			
+			<br /><br />
+			
+			<b>Bitte beachte: Chrome blockiert die Installation von Erweiterungen, die nicht aus dem Google Chrome Webstore stammen.<br />
+			Um das ODDB Tool zu installieren, musst du
+		
+			<ul>
+			<li>die .crx-Datei herunterladen</li>
+			<li>in Chrome die Erweiterungsseite &ouml;ffnen <i>(Einstellungen &rarr; Tools &rarr; Erweiterungen)</i></li>
+			<li>die heruntergeladene Datei in Chrome hineinziehen</li>
+			</ul>
+			</b>';
 	}
 	else {
 		$tmpl->content .= '
@@ -101,8 +111,14 @@ else {
 			<br /><br />
 			Adresse der ODDB, die eingestellt werden muss: <input type="text" class="text" value="'.ADDR.'" style="width:400px" onmouseover="this.select()" />
 			
-			<br /><br /><br />
 		</div>
+		<br /><br />';
+	
+
+	
+	
+	$tmpl->content .= '
+		
 	</div>
 	';
 	
