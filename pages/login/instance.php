@@ -18,6 +18,11 @@ Du bist nicht mehr eingeloggt!
 <a href="index.php">neu einloggen</a>
 ';
 }
+// Ungültiger API-Key
+else if(isset($_GET['p']) AND $_GET['p'] == 'api') {
+	$tmpl = new template;
+	$tmpl->error = 'API-Key ungültig';
+}
 // FoW abfangen
 else if(isset($_GET['p']) AND $_GET['p'] == 'fow') {
 	diefow();

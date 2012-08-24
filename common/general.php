@@ -83,6 +83,16 @@ class General {
 		}
 		
 	}
+	
+	/**
+	 * zufälligen API-Key generieren
+	 * @return API-Key
+	 */
+	public static function generateApiKey() {
+		
+		return md5(microtime(true));
+		
+	}
 		
 }
 

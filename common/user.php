@@ -36,6 +36,136 @@ class user {
 	public $settings;
 	// array Rechte des Users
 	public $rechte;
+	
+	
+	/**
+	 * Benutzer-Objekt mit Daten füllen
+	 * @param array $data MySQL-Datensatz
+	 */
+	public function populateData($data) {
+		
+		// Userdaten verarbeiten
+		$this->name = $data['user_playerName'];
+		$this->allianz = $data['user_allianzenID'];
+		
+		/* userBanned
+		   1 - manuell gebannt
+		   2 - automatisch gebannt (Allywechsel, keine Registriererlaubnis mehr)
+		   3 - noch nicht freigeschaltet
+		*/
+		$this->banned = $data['userBanned'];
+		$this->settings = unserialize($data['userSettings']);
+		
+		// Berechtigungen
+		$r = getrechte(
+			$data['userRechtelevel'],
+			$data['registerProtectedAllies'],
+			$data['registerProtectedGalas'],
+			$data['registerAllyRechte'],
+			$data['userRechte']
+		);
+		
+		$this->rechte = $r[1];
+		$this->protectedAllies = $r[2];
+		$this->protectedGalas = $r[3];
+		
+	}
+	
+	/**
+	 * Ermittelt, ob der Flooding-Schutz greift
+	 * und zählt einen Seitenaufruf dazu
+	 */
+	public function flooding() {
+		
+		global $config, $cache;
+		
+		// Flooding-Schutz deaktiviert
+		if(!$config['flooding']) {
+			return false;	
+		}
+		
+		// Cache benutzen
+		if(CACHING) {
+			// bisherige Aufrufe fetchen
+			if($data = $cache->get('flooding'.$this->id)) {
+				$p = 0;
+				$max = time()-$config['flooding_time'];
+				foreach($data as $key=>$val) {
+					if($val > $max) $p++;
+					else unset($data[$key]);
+				}
+				$data[] = time();
+				// bei starkem Flooding Array kürzen
+				if($p > 2*$config['flooding_pages']) {
+					$data = array_slice($data, -1.5*$config['flooding_pages']);
+				}
+				// wieder in den Cache laden
+				$cache->set('flooding'.$this->id, $data, $config['flooding_time']);
+				
+				// wenn es zu viele sind, sperren
+				if($p > $config['flooding_pages']) {
+					return true;
+				}
+			}
+			// neuen Eintrag
+			else {
+				$data = array(time());
+				$cache->set('flooding'.$this->id, $data, $config['flooding_time']);
+			}
+		}
+		// MySQL benutzen
+		else {
+			// Seitenaufrufe auslesen
+			$query = query("
+				SELECT COUNT(*) FROM ".GLOBPREFIX."flooding
+				WHERE
+					flooding_playerID = ".$this->id."
+					AND floodingTime > ".(time()-$config['flooding_time'])."
+			") OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
+			
+			$data = mysql_fetch_array($query);
+			
+			// wenn es zu viele sind, sperren
+			if($data[0] > $config['flooding_pages']) {
+				return true;
+			}
+			
+			// nur neuen Seitenaufruf hinzufügen, wenn kein starkes Flooding
+			if($data[0] < 2*$config['flooding_pages']) {
+				query("
+					INSERT INTO ".GLOBPREFIX."flooding
+					SET
+						flooding_playerID = ".$this->id.",
+						floodingTime = ".time()."
+				") OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
+			}
+		}
+		
+		// Flooding-Schutz greift nicht
+		return false;
+	}
+	
+	/**
+	 * API-Key abfragen
+	 * @return string API-Key
+	 */
+	public function getApiKey() {
+		$query = query("
+			SELECT
+				userApiKey
+			FROM
+				".PREFIX."user
+			WHERE
+				user_playerID = ".$this->id."
+		") OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
+		
+		$data = mysql_fetch_assoc($query);
+		
+		$apikey = INSTANCE.'-'.$this->id.'-'.$data['userApiKey'];
+		
+		return $apikey;
+	}
+	
 }
 
 

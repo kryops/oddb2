@@ -225,7 +225,8 @@ else {
 				user_allianzenID = ".$data['player_allianzenID'].",
 				userRechtelevel = 4,
 				userPassword = '".$pw."',
-				userSettings = '".escape($settings)."'
+				userSettings = '".escape($settings)."',
+				userApiKey = '".General::generateApiKey()."'
 		");
 		if(!$query) {
 			$tmpl->error = 'Fehler beim Anlegen des Administrator-Accounts! '.mysql_error().'<br />';

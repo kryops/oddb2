@@ -119,6 +119,10 @@ if(!$config['active']) {
 	else if(isset($_GET['p']) AND $_GET['p'] == 'fow') {
 		diefow('Die Datenbank ist momentan deaktiviert! Grund: '.htmlspecialchars($config['offlinemsg'], ENT_COMPAT, 'utf-8'));
 	}
+	// API abfangen
+	else if(isset($_GET['p']) AND $_GET['p'] == 'api') {
+		die(json_encode(array('error'=>'Die Datenbank ist momentan deaktiviert! Grund: '.$config['offlinemsg'])));
+	}
 	else {
 		$tmpl = new template_login;
 		$tmpl->content = '

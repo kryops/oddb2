@@ -132,7 +132,8 @@ else {
 						userSettings = '".escape($settings)."',
 						userEmail = '".$_POST['email']."',
 						userBanned = ".$banned.",
-						userRechtelevel = ".$rechtelevel."
+						userRechtelevel = ".$rechtelevel.",
+						userApiKey = '".General::generateApiKey()."'
 				") OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
 				
 				// UID in die Session laden

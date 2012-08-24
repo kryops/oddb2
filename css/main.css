@@ -1416,6 +1416,18 @@ label {
 }
 
 
+/* Tools */
+.apidoc {
+	margin-top:5px;
+}
+
+.apidoc td {
+	vertical-align:top;
+}
+
+.apidoc td:first-child {
+	font-weight:bold;
+}
 
 
 /* Netbook-Design */

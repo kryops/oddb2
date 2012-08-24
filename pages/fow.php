@@ -169,37 +169,6 @@ function fowerror($err) {
 	die(fowoutput('<scanDate current="2"></scanDate>', $additional, $err));
 }
 
-/**
- * Erzeugt den Pfad zu einem OD-Planeten-Thumbnail
- * @param $typ int Planeten-Typ
- * @param $gpl string Gebäude auf dem Planeten
- * @param $gor string Gebäude im Orbit
- *
- * @return string Pfad zum Thumbnail
- */
-function odscreen($typ, $gpl, $gor) {
-	// Gebäude-Strngs in Arrays umwandeln
-	$gpl = explode('+', $gpl);
-	$gor = explode('+', $gor);
-	
-	$addr = 'http://www.omega-day.com/game/planet/planet_overviewimg.php?planetimg=grafik/planeten/planet';
-	if($typ < 10) $addr .= '0';
-	$addr .= $typ.'_s.jpg&world='.ODWORLD;
-	// Gebäude auf dem Planet
-	for($i=1;$i<=36;$i++) {
-		if(isset($gpl[$i-1])) {
-			$addr .= '&s'.$i.'='.$gpl[$i-1];
-		}
-	}
-	// Gebäude im Orbit
-	for($i=1;$i<=12;$i++) {
-		if(isset($gor[$i-1])) {
-			$addr .= '&s'.($i+36).'='.$gor[$i-1];
-		}
-	}
-	// Pfad zurückgeben
-	return $addr;
-}
 
 /**
  * ermittelt die Berechtigung, ein Myrigate zu sehen

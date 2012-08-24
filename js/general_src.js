@@ -4165,5 +4165,22 @@ var settingsPage = {
 		return false;
 	}
 	
-}
+};
 
+/**
+ * Funktionen für die Tools-Seite
+ */
+var toolsPage = {
+	
+	/**
+	 * API-Key ändern mit vorheriger Bestätigung
+	 */
+	changeApiKey : function() {
+		
+		if(window.confirm("Möchtest du deinen API-Key wirklich ändern?")) {
+			ajaxcall('index.php?p=tools&sp=apikey', false, false, false)
+		}
+		
+	}	
+	
+};

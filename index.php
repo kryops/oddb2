@@ -66,6 +66,7 @@ header('Expires: Mon, 26 Jul 1997 05:00:00 GMT');
 header('Last-Modified: ' . gmdate('D, d M Y H:i:s') . ' GMT');
 header('Cache-Control: no-store, no-cache, must-revalidate');
 header('Cache-Control: post-check=0, pre-check=0', false);
+header('Access-Control-Allow-Origin: *');
 
 // magic quotes abfangen
 if(get_magic_quotes_gpc()) {
@@ -126,6 +127,24 @@ if(!$dbs) {
 else if(count($dbs == 1)) {
 	define('INSTANCE', array_shift(array_keys($dbs)));
 }
+// über den API-Key
+else if($_GET['p'] == 'api') {
+	
+	if(!isset($_GET['key'])) {
+		define('INSTANCE', 0);
+	}
+	else {
+		$instance = explode('-', $_GET['key']);
+		
+		if(count($instance)) {
+			define('INSTANCE', (int)$instance[0]);
+		}
+		else {
+			define('INSTANCE', 0);
+		}
+	}
+	
+}
 // Instanz in der Session gespeichert
 else if(isset($_SESSION['inst']) AND isset($dbs[$_SESSION['inst']])) {
 	define('INSTANCE', $_SESSION['inst']);
@@ -178,6 +197,15 @@ $ucache = true;
 
 // Patches installieren
 General::patchApplication();
+
+
+
+// API
+if($_GET['p'] == 'api') {
+	include './pages/api.php';
+	ODDBApi::runApi();
+}
+
 
 
 // Login überprüfen
@@ -350,30 +378,9 @@ $flooding = false;
 // - Online-Zeit updaten
 // - Flooding-Schutz
 if($user->login) {
-	// Userdaten verarbeiten
-	$user->name = $data['user_playerName'];
-	$user->allianz = $data['user_allianzenID'];
 	
-	/* userBanned
-	   1 - manuell gebannt
-	   2 - automatisch gebannt (Allywechsel, keine Registriererlaubnis mehr)
-	   3 - noch nicht freigeschaltet
-	*/
-	$user->banned = $data['userBanned'];
-	$user->settings = unserialize($data['userSettings']);
-	
-	// Berechtigungen
-	$r = getrechte(
-		$data['userRechtelevel'],
-		$data['registerProtectedAllies'],
-		$data['registerProtectedGalas'],
-		$data['registerAllyRechte'],
-		$data['userRechte']
-	);
-	
-	$user->rechte = $r[1];
-	$user->protectedAllies = $r[2];
-	$user->protectedGalas = $r[3];
+	// Benutzer-Objekt mit Daten füllen
+	$user->populateData($data);
 	
 	// Online-Zeit updaten, wenn nicht gebannt
 	if(!$user->banned) {
@@ -407,66 +414,8 @@ if($user->login) {
 			$cache->set('user'.$user->id, $data, 60);
 		}
 		
-		// Flooding-Schutz
-		if($config['flooding']) {
-			// Cache benutzen
-			if(CACHING) {
-				// bisherige Aufrufe fetchen
-				if($data = $cache->get('flooding'.$user->id)) {
-					$p = 0;
-					$max = time()-$config['flooding_time'];
-					foreach($data as $key=>$val) {
-						if($val > $max) $p++;
-						else unset($data[$key]);
-					}
-					$data[] = time();
-					// bei starkem Flooding Array kürzen
-					if($p > 2*$config['flooding_pages']) {
-						$data = array_slice($data, -1.5*$config['flooding_pages']);
-					}
-					// wieder in den Cache laden
-					$cache->set('flooding'.$user->id, $data, $config['flooding_time']);
-					
-					// wenn es zu viele sind, sperren
-					if($p > $config['flooding_pages']) {
-						$flooding = true;
-					}
-				}
-				// neuen Eintrag
-				else {
-					$data = array(time());
-					$cache->set('flooding'.$user->id, $data, $config['flooding_time']);
-				}
-			}
-			// MySQL benutzen
-			else {
-				// Seitenaufrufe auslesen
-				$query = query("
-					SELECT COUNT(*) FROM ".GLOBPREFIX."flooding
-					WHERE
-						flooding_playerID = ".$user->id."
-						AND floodingTime > ".(time()-$config['flooding_time'])."
-				") OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
-				$queries++;
-				
-				$data = mysql_fetch_array($query);
-				
-				// wenn es zu viele sind, sperren
-				if($data[0] > $config['flooding_pages']) {
-					$flooding = true;
-				}
-				
-				// nur neuen Seitenaufruf hinzufügen, wenn kein starkes Flooding
-				if($data[0] < 2*$config['flooding_pages']) {
-					query("
-						INSERT INTO ".GLOBPREFIX."flooding
-						SET
-							flooding_playerID = ".$user->id.",
-							floodingTime = ".time()."
-					") OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
-				}
-			}
-		}
+		$flooding = $user->flooding();
+		
 	}
 	// Userdaten auch cachen wenn gebannt (1min)
 	else if($ucache) {

@@ -16,6 +16,50 @@ class Search {
 	const DEFAULT_ACTION = 'return form_sendget(this, \'index.php?p=search&amp;s=1\')';
 	
 	
+	public static $sorto = array(
+		1=>'planetenID',
+		2=>'playerName',
+		3=>'player_allianzenID',
+		4=>'planetenGroesse',
+		5=>'planetenBevoelkerung',
+		6=>'planetenRPErz',
+		7=>'planetenRPMetall',
+		8=>'planetenRPWolfram',
+		9=>'planetenRPKristall',
+		10=>'planetenRPFluor',
+		11=>'planetenRMErz',
+		12=>'planetenRMMetall',
+		13=>'planetenRMWolfram',
+		14=>'planetenRMKristall',
+		15=>'planetenRMFluor',
+		16=>'planetenForschung',
+		17=>'planetenIndustrie',
+		18=>'planetenRWErz',
+		20=>'planetenRWWolfram',
+		21=>'planetenRWKristall',
+		22=>'planetenRWFluor',
+		23=>'planetenName',
+		24=>'planetenRPGesamt',
+		25=>'planetenRMGesamt',
+		26=>'planetenGateEntf',
+		27=>'planetenNatives',
+		28=>'planetenTyp',
+		29=>'planetenUpdateOverview',
+		30=>'planetenGetoxxt',
+		31=>'planetenGeraidet',
+		32=>'statusStatus',
+		33=>'playerPlaneten',
+		34=>'playerImppunkte',
+		35=>'playerActivity',
+		36=>'systemeUpdate',
+		37=>'FLOOR(
+				(planetenBevoelkerung/100000) * planetenGroesse
+				+ GREATEST(planetenRWErz, planetenRWWolfram, planetenRWKristall, planetenRWFluor)
+				+ planetenRWFluor*3
+			)'
+	);
+	
+	
 	/**
 	 * Suchformular generieren und mit Werten füllen
 	 * @param array $filter
@@ -1042,6 +1086,70 @@ class Search {
 	}
 	
 	
+	/**
+	 * Sortierung der Suchergebnisse ermitteln
+	 * @param array $filter
+	 * @param string|false $entf
+	 * 		Entfernungspunkt
+	 * 		wird benötigt, wenn nach Entfernung sortiert werden soll
+	 * @return string Sortierung für MySQL
+	 */
+	public static function getSort($filter, $entf=false) {
+		// nach Entfernung sortieren
+		if(isset($filter['sortt']) AND $entf) {
+			$sort = 'planetenEntfernung '.(isset($filter['sorto3']) ? 'DESC' : 'ASC');
+		}
+		// nach Spalte sortieren
+		else {
+			if(!isset($filter['sort']) OR !isset(self::$sorto[$filter['sort']])) $filter['sort'] = 1;
+			if(!isset($filter['sort2']) OR !isset(self::$sorto[$filter['sort2']])) $filter['sort2'] = 1;
+			
+			$sort = self::$sorto[$filter['sort']].' '.(isset($filter['sorto']) ? 'DESC' : 'ASC');
+			// 2. Stufe, wenn nicht gleich wie 1. Stufe
+			if($filter['sort2'] != $filter['sort']) {
+				$sort .= ', '.self::$sorto[$filter['sort2']].' '.(isset($filter['sorto2']) ? 'DESC' : 'ASC');
+			}
+		}
+		
+		return $sort;
+	}
+	
+	
+	/**
+	 * Berechnung der Entfernungs-Spalte ermitteln
+	 * @param array $filter
+	 * @return string|false Entfernungs-Spalte (MySQL)
+	 */
+	public static function getEntf($filter) {
+		$entf = false;
+		
+		if(isset($filter['entf']) OR isset($filter['entf2'])) {
+			if(isset($filter['entf'])) {
+				$entf1 = flug_point($filter['entf']);
+				if(is_array($entf1)) {
+					$entf = entf_mysql("systemeX", "systemeY", "systemeZ", "planetenPosition", $entf1[1], $entf1[2], $entf1[3], $entf1[4]);
+				}
+			}
+			if(isset($filter['entf2'])) {
+				$entf2 = flug_point($filter['entf2']);
+				if(is_array($entf2)) {
+					$entf2 = entf_mysql("systemeX", "systemeY", "systemeZ", "planetenPosition", $entf2[1], $entf2[2], $entf2[3], $entf2[4]);
+					// zwei Entfernungen koppeln
+					if($entf) {
+						$entf .= " + ".$entf2;
+					}
+					else $entf = $entf2;
+				}
+			}
+		}
+		
+		return $entf;
+	}
+	
+	
+	/**
+	 * MySQL-Tabellen zurückgeben, die für die Suche benötigt werden
+	 */
 	public static function getTables() {
 		
 		global $user;
@@ -1121,6 +1229,7 @@ class Search {
 				planetenGebPlanet,
 				planetenGebOrbit,
 				planetenMyrigate,
+				planetenRiss,
 				planetenGateEntf,
 				planetenRWErz,
 				planetenRWWolfram,
@@ -1155,6 +1264,7 @@ class Search {
 				systemeID,
 				systeme_galaxienID,
 				systemeX,
+				systemeY,
 				systemeZ,
 				systemeUpdate,
 				systemeAllianzen,

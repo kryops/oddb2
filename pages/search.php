@@ -99,44 +99,7 @@ else $sp = explode('-', $user->settings['suchspalten']);
 $sp2 = array_flip($sp);
 
 // Sortier-Felder
-$sorto = array(
-	1=>'planetenID',
-	2=>'playerName',
-	3=>'player_allianzenID',
-	4=>'planetenGroesse',
-	5=>'planetenBevoelkerung',
-	6=>'planetenRPErz',
-	7=>'planetenRPMetall',
-	8=>'planetenRPWolfram',
-	9=>'planetenRPKristall',
-	10=>'planetenRPFluor',
-	11=>'planetenRMErz',
-	12=>'planetenRMMetall',
-	13=>'planetenRMWolfram',
-	14=>'planetenRMKristall',
-	15=>'planetenRMFluor',
-	16=>'planetenForschung',
-	17=>'planetenIndustrie',
-	18=>'planetenRWErz',
-	20=>'planetenRWWolfram',
-	21=>'planetenRWKristall',
-	22=>'planetenRWFluor',
-	23=>'planetenName',
-	24=>'planetenRPGesamt',
-	25=>'planetenRMGesamt',
-	26=>'planetenGateEntf',
-	27=>'planetenNatives',
-	28=>'planetenTyp',
-	29=>'planetenUpdateOverview',
-	30=>'planetenGetoxxt',
-	31=>'planetenGeraidet',
-	32=>'statusStatus',
-	33=>'playerPlaneten',
-	34=>'playerImppunkte',
-	35=>'playerActivity',
-	36=>'systemeUpdate',
-	37=>imppunkte_mysql()
-);
+$sorto = Search::$sorto;
 
 $sortol = array(
 	1=>'ID',
@@ -693,33 +656,7 @@ else {
 			}
 			
 			// Entfernung und Sortierung
-			$entf = false;
-			
-			if(isset($_GET['entf']) OR isset($_GET['entf2'])) {
-				if(isset($_GET['entf'])) {
-					$entf1 = flug_point($_GET['entf']);
-					if(is_array($entf1)) {
-						$entf = entf_mysql("systemeX", "systemeY", "systemeZ", "planetenPosition", $entf1[1], $entf1[2], $entf1[3], $entf1[4]);
-						// Galaxie filtern
-						//$conds[] = 'systeme_galaxienID = '.$entf1[0];
-					}
-				}
-				if(isset($_GET['entf2'])) {
-					$entf2 = flug_point($_GET['entf2']);
-					if(is_array($entf2)) {
-						// Galaxie filtern
-						if(!$entf) {
-							//$conds[] = 'systeme_galaxienID = '.$entf2[0];
-						}
-						$entf2 = entf_mysql("systemeX", "systemeY", "systemeZ", "planetenPosition", $entf2[1], $entf2[2], $entf2[3], $entf2[4]);
-						// zwei Entfernungen koppeln
-						if($entf) {
-							$entf .= " + ".$entf2;
-						}
-						else $entf = $entf2;
-					}
-				}
-			}
+			$entf = Search::getEntf($_GET);
 			
 			// Entfernung-Spalte ausblenden, wenn keine Entfernung berechnet
 			if(!$entf AND isset($sp2[10])) {
@@ -727,21 +664,8 @@ else {
 				unset($sp[array_search(10, $sp)]);
 			}
 			
-			// nach Entfernung sortieren
-			if(isset($_GET['sortt']) AND $entf) {
-				$sort = 'planetenEntfernung '.(isset($_GET['sorto3']) ? 'DESC' : 'ASC');
-			}
-			// nach Spalte sortieren
-			else {
-				if(!isset($_GET['sort']) OR !isset($sorto[$_GET['sort']])) $_GET['sort'] = 1;
-				if(!isset($_GET['sort2']) OR !isset($sorto[$_GET['sort2']])) $_GET['sort2'] = 1;
-				
-				$sort = $sorto[$_GET['sort']].' '.(isset($_GET['sorto']) ? 'DESC' : 'ASC');
-				// 2. Stufe, wenn nicht gleich wie 1. Stufe
-				if($_GET['sort2'] != $_GET['sort']) {
-					$sort .= ', '.$sorto[$_GET['sort2']].' '.(isset($_GET['sorto2']) ? 'DESC' : 'ASC');
-				}
-			}
+			// Sortierung
+			$sort = Search::getSort($_GET, $entf);
 			
 			
 			$t = time();

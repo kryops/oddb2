@@ -203,6 +203,9 @@ $rechtenamen = array(
 	'verwaltung_settings'=>'Grundeinstellungen der DB ändern',
 	'verwaltung_backup'=>'Backups der DB speichern oder einspielen',
 	
+	// API
+	'api'=>'ODDB-API benutzen',
+		
 	// Allianz-Sperren überschreiben
 	'override_allies'=>'Allianz-Sichtbarkeitssperren aufgehoben',
 	'override_galas'=>'Galaxie-Sichtbarkeitssperren aufgehoben'
@@ -687,7 +690,9 @@ $brechte = array(
 		'verwaltung_rechte'=>false,			// Rechtelevel bearbeiten
 		'verwaltung_logfile'=>false,			// Logfile ansehen
 		'verwaltung_settings'=>false,		// Grundeinstellungen der DB ändern
-		'verwaltung_backup'=>false			// Backups der DB speichern oder einspielen
+		'verwaltung_backup'=>false,			// Backups der DB speichern oder einspielen
+		
+		'api'=>false						// ODDB-API benutzen
 	),
 	// Level 1: User
 	1 => array(
@@ -815,7 +820,9 @@ $brechte = array(
 		'verwaltung_rechte'=>false,			// Rechtelevel bearbeiten
 		'verwaltung_logfile'=>false,			// Logfile ansehen
 		'verwaltung_settings'=>false,		// Grundeinstellungen der DB ändern
-		'verwaltung_backup'=>false			// Backups der DB speichern oder einspielen
+		'verwaltung_backup'=>false,			// Backups der DB speichern oder einspielen
+		
+		'api'=>false						// ODDB-API benutzen
 	),
 	// Level 2: FA
 	2 => array(
@@ -943,7 +950,9 @@ $brechte = array(
 		'verwaltung_rechte'=>false,			// Rechtelevel bearbeiten
 		'verwaltung_logfile'=>false,			// Logfile ansehen
 		'verwaltung_settings'=>false,		// Grundeinstellungen der DB ändern
-		'verwaltung_backup'=>false			// Backups der DB speichern oder einspielen
+		'verwaltung_backup'=>false,			// Backups der DB speichern oder einspielen
+		
+		'api'=>true							// ODDB-API benutzen
 	),
 	// Level 3: Leader
 	3 => array(
@@ -1071,7 +1080,9 @@ $brechte = array(
 		'verwaltung_rechte'=>false,			// Rechtelevel bearbeiten
 		'verwaltung_logfile'=>true,			// Logfile ansehen
 		'verwaltung_settings'=>false,		// Grundeinstellungen der DB ändern
-		'verwaltung_backup'=>false			// Backups der DB speichern oder einspielen
+		'verwaltung_backup'=>false,			// Backups der DB speichern oder einspielen
+		
+		'api'=>true							// ODDB-API benutzen
 	),
 	// Level 4: Administrator
 	4 => array(
@@ -1199,7 +1210,9 @@ $brechte = array(
 		'verwaltung_rechte'=>true,			// Rechtelevel bearbeiten
 		'verwaltung_logfile'=>true,			// Logfile ansehen
 		'verwaltung_settings'=>true,		// Grundeinstellungen der DB ändern
-		'verwaltung_backup'=>true			// Backups der DB speichern oder einspielen
+		'verwaltung_backup'=>true,			// Backups der DB speichern oder einspielen
+		
+		'api'=>true							// ODDB-API benutzen
 	)
 );
 
@@ -2024,5 +2037,37 @@ function sysallianzen($id, $return=false) {
 }
 
 
+
+/**
+ * Erzeugt den Pfad zu einem OD-Planeten-Thumbnail
+ * @param $typ int Planeten-Typ
+ * @param $gpl string Gebäude auf dem Planeten
+ * @param $gor string Gebäude im Orbit
+ *
+ * @return string Pfad zum Thumbnail
+ */
+function odscreen($typ, $gpl, $gor) {
+	// Gebäude-Strngs in Arrays umwandeln
+	$gpl = explode('+', $gpl);
+	$gor = explode('+', $gor);
+	
+	$addr = 'http://www.omega-day.com/game/planet/planet_overviewimg.php?planetimg=grafik/planeten/planet';
+	if($typ < 10) $addr .= '0';
+	$addr .= $typ.'_s.jpg&world='.ODWORLD;
+	// Gebäude auf dem Planet
+	for($i=1;$i<=36;$i++) {
+		if(isset($gpl[$i-1])) {
+			$addr .= '&s'.$i.'='.$gpl[$i-1];
+		}
+	}
+	// Gebäude im Orbit
+	for($i=1;$i<=12;$i++) {
+		if(isset($gor[$i-1])) {
+			$addr .= '&s'.($i+36).'='.$gor[$i-1];
+		}
+	}
+	// Pfad zurückgeben
+	return $addr;
+}
 
 ?>

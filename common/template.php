@@ -37,6 +37,27 @@ class template {
 	public function output() {
 		global $user, $time_start, $queries, $cache, $config;
 		
+		/*
+		 * Fehler bei seitenexternen Ausgaben abfangen
+		 */
+		// FoW-Abgleich
+		if($_GET['p'] == 'fow') {
+			diefow($this->error);
+		}
+		
+		// API
+		if($_GET['p'] == 'api') {
+			header('Content-Type: application/json; charset=utf-8');
+			
+			$output = array(
+				'error' => $this->error
+			);
+			
+			die(json_encode($output));
+		}
+		
+		
+		
 		// normale Seite
 		// Ausgabe als HTML
 		if(!isset($_GET['ajax'])) {

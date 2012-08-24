@@ -353,6 +353,7 @@ $tables_add = array(
   `userPlanUpdated` mediumint(8) unsigned NOT NULL,
   `userOnlineDB` int(10) unsigned NOT NULL,
   `userOnlinePlugin` int(10) unsigned NOT NULL,
+  `userApiKey` char(32) NOT NULL,
   PRIMARY KEY (`user_playerID`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8"
 );
