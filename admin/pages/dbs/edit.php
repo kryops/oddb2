@@ -48,6 +48,11 @@ else if($_GET['sp'] == 'edit_send') {
 		
 		$_POST['active'] = isset($_POST['active']);
 		
+		if($_POST['active']) {
+			unset($_POST['active']);
+		}
+		
+		
 		$name = '';
 		if(isset($_POST['name'])) {
 			$name = $_POST['name'];

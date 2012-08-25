@@ -32,6 +32,10 @@ else if($_GET['sp'] == 'add_send') {
 		
 		$_POST['active'] = isset($_POST['active']);
 		
+		if($_POST['active']) {
+			unset($_POST['active']);
+		}
+		
 		$name = $_POST['name'];
 		unset($_POST['name']);
 		

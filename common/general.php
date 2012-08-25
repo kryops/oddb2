@@ -60,26 +60,50 @@ class General {
 		global $config, $cache;
 		
 		// Anwendung nicht aktuell
-		if(PATCH_VERSION < $config['patchversion']) {
+		if(PATCH_VERSION > $config['patchversion']) {
 			
 			// Doppeltes Patchen verhindern
 			if($cache->getglobal('patch')) {
-				return false;
+				$tmpl = new template;
+				$tmpl->error = 'Die ODDB wird derzeit aktualisiert. Bitte warte einen Moment!';
+				$tmpl->output();
+				die();
 			}
 			
 			$cache->setglobal('patch', true, 60);
 			
+			// Datenbank sperren
+			General::loadClass('config');
+			config::saveGlobal('global', 'config', array(
+				'active'=>false,
+				'offlinemsg'=>'Die ODDB wird derzeit aktualisiert. Bitte warte einen Moment!'
+			), true);
 			
-			// Patches einbinden
+			// 5 Sekunden pausieren, wenn die Patch-Dateien noch nicht hochgeladen wurden
 			for($i = $config['patchversion']+1; $i <= PATCH_VERSION; $i++) {
-				include './patch/patch'.$i.'.php';
+				if(!file_exists('./patch/patch'.$i.'.php')) {
+					sleep(5);
+					break;
+				}
 			}
 			
 			
-			// Konfiguration speichern
-			General::loadClass('config');
-			config::saveGlobal('global', 'config', array('patchversion'=>PATCH_VERSION), true);
+			// Patches einbinden
+			for($i = $config['patchversion']+1; $i <= PATCH_VERSION; $i++) {
+				@include './patch/patch'.$i.'.php';
+			}
 			
+			
+			// Konfiguration speichern und Datenbank wieder entsperren
+			$c = config::getcustomGlobal('global', 'config');
+			unset($c['active']);
+			unset($c['offlinemsg']);
+			$c['patchversion'] = $config['patchversion'];
+			
+			config::saveGlobal('global', 'config', $c);
+			
+			// aus dem Cache löschen
+			$cache->removeglobal('patch');
 		}
 		
 	}
