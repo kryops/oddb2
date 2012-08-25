@@ -940,26 +940,9 @@ else {
 					}
 					// Miniaturansicht
 					if(isset($sp2[13])) {
-						// Berechtigung überprüfen, den Scan zu sehen
-						$r = $user->rechte['show_planet'];
+						General::loadClass('Rechte');
 						
-						// bei eigenen Planeten immer Berechtigung, falls globale Berechtigung
-						if($r AND $row['planeten_playerID'] != $user->id) {
-							// keine Berechtigung (Ally)
-							if(!$user->rechte['show_planet_ally'] AND $user->allianz AND $row['player_allianzenID'] == $user->allianz) {
-								$r = false;
-							}
-							// keine Berechtigung (Meta)
-							else if($user->allianz AND !$user->rechte['show_planet_meta'] AND $row['statusStatus'] == $status_meta AND $row['player_allianzenID'] != $user->allianz) {
-								$r = false;
-							}
-							// keine Berechtigung (registrierte Allianzen)
-							else if(!$user->rechte['show_planet_register'] AND $row['register_allianzenID'] !== NULL AND $row['statusStatus'] != $status_meta) {
-								$r = false;
-							}
-						}
-						
-						if($row['planetenUpdateOverview'] AND $r) {
+						if($row['planetenUpdateOverview'] AND Rechte::getRechteShowPlanet($row)) {
 							$color = (time()-($config['scan_veraltet']*86400) > $row['planetenUpdateOverview']) ? 'red' : 'green';
 							$scan = strftime('%d.%m.%y', $row['planetenUpdateOverview']);
 							if($row['planetenUpdateOverview'] >= $heute) $scan = 'heute';
@@ -1041,26 +1024,10 @@ else {
 					}
 					// Myrigate
 					if(isset($sp2[23])) {
-						$r = true;
-	
-						// keine Berechtigung (global)
-						if(!$user->rechte['show_myrigates']) {
-							$r = false;
-						}
-						// Myrigates eigener Planeten ansonsten immer sichtbar
-						else if($user->id == $row['planeten_playerID']) {}
-						// keine Berechtigung (Allianz)
-						else if($user->allianz AND !$user->rechte['show_myrigates_ally'] AND $user->allianz == $row['player_allianzenID']) {
-							$r = false;
-						}
-						// keine Berechtigung (Meta)
-						else if($user->allianz AND !$user->rechte['show_myrigates_meta'] AND $row['statusStatus'] == $status_meta) {
-							$r = false;
-						}
-						// keine Berechtigung (registrierte Allianzen)
-						else if(!$user->rechte['show_myrigates_register'] AND $row['register_allianzenID'] !== NULL) {
-							$r = false;
-						}
+						
+						General::loadClass('Rechte');
+						
+						$r = Rechte::getRechteShowMyrigate($row);
 						
 						if($r) $spv[23] = $row['planetenMyrigate'] ? 'ja' : '<span class="hint">nein</span>';
 						else $spv[23] = '&nbsp;';
@@ -1091,22 +1058,10 @@ else {
 					}
 					// Ressplanet
 					if(isset($sp2[26])) {
-						$r = true;
-	
-						// eigener Planeten ansonsten immer sichtbar
-						if($user->id == $row['planeten_playerID']) {}
-						// keine Berechtigung (Allianz)
-						else if($user->allianz AND !$user->rechte['ressplani_ally'] AND $user->allianz == $row['player_allianzenID']) {
-							$r = false;
-						}
-						// keine Berechtigung (Meta)
-						else if($user->allianz AND !$user->rechte['ressplani_meta'] AND $row['statusStatus'] == $status_meta) {
-							$r = false;
-						}
-						// keine Berechtigung (registrierte Allianzen)
-						else if(!$user->rechte['ressplani_register'] AND $row['register_allianzenID'] !== NULL) {
-							$r = false;
-						}
+						
+						General::loadClass('Rechte');
+						
+						$r = Rechte::getRechteRessplanet($row);
 						
 						// Berechtigung
 						if($r) {
@@ -1116,22 +1071,10 @@ else {
 					}
 					// Bunker
 					if(isset($sp2[27])) {
-						$r = true;
-	
-						// eigener Planeten ansonsten immer sichtbar
-						if($user->id == $row['planeten_playerID']) {}
-						// keine Berechtigung (Allianz)
-						else if($user->allianz AND !$user->rechte['bunker_ally'] AND $user->allianz == $row['player_allianzenID']) {
-							$r = false;
-						}
-						// keine Berechtigung (Meta)
-						else if($user->allianz AND !$user->rechte['bunker_meta'] AND $row['statusStatus'] == $status_meta) {
-							$r = false;
-						}
-						// keine Berechtigung (registrierte Allianzen)
-						else if(!$user->rechte['bunker_register'] AND $row['register_allianzenID'] !== NULL) {
-							$r = false;
-						}
+						
+						General::loadClass('Rechte');
+						
+						$r = Rechte::getRechteBunker($row);
 						
 						// Berechtigung
 						if($r) {
@@ -1141,22 +1084,10 @@ else {
 					}
 					// Werft
 					if(isset($sp2[28])) {
-						$r = true;
-	
-						// eigener Planeten ansonsten immer sichtbar
-						if($user->id == $row['planeten_playerID']) {}
-						// keine Berechtigung (Allianz)
-						else if($user->allianz AND !$user->rechte['werft_ally'] AND $user->allianz == $row['player_allianzenID']) {
-							$r = false;
-						}
-						// keine Berechtigung (Meta)
-						else if($user->allianz AND !$user->rechte['werft_meta'] AND $row['statusStatus'] == $status_meta) {
-							$r = false;
-						}
-						// keine Berechtigung (registrierte Allianzen)
-						else if(!$user->rechte['werft_register'] AND $row['register_allianzenID'] !== NULL) {
-							$r = false;
-						}
+						
+						General::loadClass('Rechte');
+						
+						$r = Rechte::getRechteWerft($row);
 						
 						// Berechtigung
 						if($r) {

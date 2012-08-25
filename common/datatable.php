@@ -286,23 +286,8 @@ class datatable {
 		}
 		
 		// Berechtigung überprüfen, den Scan zu sehen
-		$r_show = $user->rechte['show_planet'];
-		
-		// bei eigenen Planeten immer Berechtigung, falls globale Berechtigung
-		if($r_show AND $row['planeten_playerID'] != $user->id) {
-			// keine Berechtigung (Ally)
-			if(!$user->rechte['show_planet_ally'] AND $user->allianz AND $row['player_allianzenID'] == $user->allianz) {
-				$r_show = false;
-			}
-			// keine Berechtigung (Meta)
-			else if($user->allianz AND !$user->rechte['show_planet_meta'] AND $row['statusStatus'] == $status_meta AND $row['player_allianzenID'] != $user->allianz) {
-				$r_show = false;
-			}
-			// keine Berechtigung (registrierte Allianzen)
-			else if(!$user->rechte['show_planet_register'] AND $row['register_allianzenID'] AND $row['statusStatus'] != $status_meta) {
-				$r_show = false;
-			}
-		}
+		General::loadClass('Rechte');
+		$r_show = Rechte::getRechteShowPlanet($row);
 		
 		if($row['planetenUpdateOverview'] AND $r_show) {
 			$color = (time()-($days*86400) > $row['planetenUpdateOverview']) ? 'red' : 'green';

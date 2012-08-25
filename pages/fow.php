@@ -7,6 +7,10 @@
 // Sicherheitsabfrage
 if(!defined('ODDB')) die('unerlaubter Zugriff!');
 
+
+General::loadClass('Rechte');
+
+
 /**
  * Funktionen
  */
@@ -167,44 +171,6 @@ function fowerror($err) {
 	
 	// ausgeben und anhalten
 	die(fowoutput('<scanDate current="2"></scanDate>', $additional, $err));
-}
-
-
-/**
- * ermittelt die Berechtigung, ein Myrigate zu sehen
- * @param $pl Array Planeten-Datensatz
- *
- * @return bool Berechtigung
- */
-function show_system_mgaterechte($pl) {
-	global $user, $status_meta;
-	
-	$r = true;
-	
-	// keine Berechtigung (global)
-	if(!$user->rechte['show_myrigates']) {
-		$r = false;
-	}
-	// Myrigates eigener Planeten ansonsten immer sichtbar
-	else if($user->id == $pl['planeten_playerID']) {}
-	// keine Berechtigung (Allianz)
-	else if($user->allianz AND !$user->rechte['show_myrigates_ally'] AND $user->allianz == $pl['player_allianzenID']) {
-		$r = false;
-	}
-	// keine Berechtigung (Meta)
-	else if($user->allianz AND !$user->rechte['show_myrigates_meta'] AND $pl['statusStatus'] == $status_meta AND $user->allianz != $pl['player_allianzenID']) {
-		$r = false;
-	}
-	// keine Berechtigung (Allianz gesperrt)
-	else if($user->protectedAllies AND in_array($pl['player_allianzenID'], $user->protectedAllies)) {
-		$r = false;
-	}
-	// keine Berechtigung (registrierte Allianzen)
-	else if(!$user->rechte['show_myrigates_register'] AND $pl['register_allianzenID'] !== NULL AND $pl['statusStatus'] != $status_meta) {
-		$r = false;
-	}
-	
-	return $r;
 }
 
 /**
@@ -648,27 +614,7 @@ if($showr) {
 			$pl =& $pldata[$i];
 			
 			// Berechtigung überprüfen, den Scan zu sehen
-			$r = $user->rechte['show_planet'];
-			
-			// bei eigenen Planeten immer Berechtigung, falls globale Berechtigung
-			if($r AND $pl['planeten_playerID'] != $user->id) {
-				// keine Berechtigung (Ally)
-				if(!$user->rechte['show_planet_ally'] AND $user->allianz AND $pl['player_allianzenID'] == $user->allianz) {
-					$r = false;
-				}
-				// keine Berechtigung (Meta)
-				else if($user->allianz AND !$user->rechte['show_planet_meta'] AND $pl['statusStatus'] == $status_meta) {
-					$r = false;
-				}
-				// keine Berechtigung (Allianz gesperrt)
-				else if($user->protectedAllies AND in_array($pl['player_allianzenID'], $user->protectedAllies)) {
-					$r = false;
-				}
-				// keine Berechtigung (registrierte Allianzen)
-				else if(!$user->rechte['show_planet_register'] AND $pl['register_allianzenID'] !== NULL) {
-					$r = false;
-				}
-			}
+			$r = Rechte::getRechteShowPlanet($pl);
 			
 			// Planet bei der ODDB immer ausgeben, ansonsten nur wenn System oder Planet gescannt
 			if($oddb OR $data['systemeUpdate'] OR $pl['planetenUpdate']) {
@@ -710,7 +656,7 @@ if($showr) {
 				// Myrigate
 				else if($pl['planetenMyrigate']) {
 					// Berechtigungen ermitteln
-					$rm = show_system_mgaterechte($pl);
+					$rm = Rechte::getRechteShowMyrigate($pl);
 					
 					// Berechtigung
 					if($rm) {
@@ -991,7 +937,7 @@ if(count($fow) OR !$showr) {
 			
 			while($row = mysql_fetch_assoc($query)) {
 				// Berechtigung
-				$r = show_system_mgaterechte($row);
+				$r = Rechte::getRechteShowMyrigate($row);
 				
 				// nächstes Myrigate
 				if($r AND $mg === false) {
