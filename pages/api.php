@@ -159,8 +159,8 @@ class ODDBApi {
 		$antr = isset($filter['antr']) ? $filter['antr'] : $user->settings['antrieb'];
 		
 		// Entfernung und Sortierung
-		$entf = Search::getEntf($_GET);
-		$sort = Search::getSort($_GET, $entf);
+		$entf = Search::getEntf($filter);
+		$sort = Search::getSort($filter, $entf);
 		
 		// Invasionen abfragen
 		$invasionen = Invasionen::get();
@@ -169,7 +169,7 @@ class ODDBApi {
 		$conds = Search::buildConditions($filter);
 		
 		// Limit und Offset
-		$limit = isset($_GET['limit']) ? (int)$_GET['limit'] : 100;
+		$limit = isset($filter['limit']) ? (int)$filter['limit'] : 100;
 		if($limit < 1) {
 			$limit = 1;
 		}
@@ -177,7 +177,7 @@ class ODDBApi {
 			$limit = 1000;
 		}
 		
-		$offset = isset($_GET['offset']) ? (int)$_GET['offset'] : 0;
+		$offset = isset($filter['offset']) ? (int)$filter['offset'] : 0;
 		
 		
 		$search = Search::getSearchAsArray($conds, $entf, $sort, $offset, $limit);
