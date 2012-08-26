@@ -102,6 +102,20 @@ for($i=1;$i<=12;$i++) {
 	//else $gor[] = '';  --> Platz sparen
 }
 
+// Schiffbau
+$werftfinish = 0;
+
+if(isset($_POST['schiff'])) {
+	
+	$schiff = explode(':', $_POST['schiff']);
+	
+	if(count($schiff) == 4) {
+		$werftfinish = time() + $schiff[0]*86400 + $schiff[1]*3600 + $schiff[2]*60 + $schiff[3];
+	}
+	
+}
+
+
 // Existenz überprüfen
 $query = query("
 	SELECT
@@ -231,7 +245,8 @@ else {
 			planetenOrbiter = ".$orb.",
 			".$getoxxt."
 			".$inhaber."
-			planetenKategorie = ".$cat."
+			planetenKategorie = ".$cat.",
+			planetenWerftFinish = ".$werftfinish."
 		WHERE
 			planetenID = ".$_POST['id']."
 	") OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());

@@ -3256,6 +3256,11 @@ function quelltext(f, r) {
 					throw 'Konnte Einnahmen und Gesamtforschung nicht ermitteln!'+e;
 				}
 			}
+			
+			// Schiffbau
+			if(ctree.find('table[width="821"] td:last-child img[src*="schiffe"]').length) {
+				out['schiff'] = ctree.find('input[name="bauzeit"]').val();
+			}
 		}
 		//
 		// Planetenübersicht
