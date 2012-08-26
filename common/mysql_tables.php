@@ -194,6 +194,7 @@ $tables_add = array(
   `myrigates_planetenID` int(10) unsigned NOT NULL,
   `myrigates_galaxienID` smallint(5) unsigned NOT NULL,
   `myrigatesSprung` int(10) unsigned NOT NULL,
+  `myrigatesSprungFeind` tinyint(1) NOT NULL,
   PRIMARY KEY (`myrigates_planetenID`),
   KEY `myrigates_galaxienID` (`myrigates_galaxienID`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8",

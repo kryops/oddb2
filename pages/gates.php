@@ -21,7 +21,8 @@ $tmpl->name = 'Gates & Myrigates';
 // vorhandene Seiten (key = $_GET['sp'])
 $pages = array(
 	'gates'=>true,
-	'mgates'=>true
+	'mgates'=>true,
+	'sprung_change'=>true
 );
 
 
@@ -69,6 +70,55 @@ if(!isset($pages[$_GET['sp']])) {
 	$tmpl->error = 'Die Seite existiert nicht!';
 	$tmpl->output();
 }
+
+/**
+ * AJAX-Funktionen
+ */
+
+// Sprunggenerator als (un)benutzbar markieren
+else if($_GET['sp'] == 'sprung_change') {
+	
+	// Daten vorhanden
+	if(!isset($_GET['id'], $_GET['set'])) {
+		$tmpl->error = 'Daten unvollständig!';
+		$tmpl->output();
+	}
+	
+	// Berechtigungen
+	if(!$user->rechte['show_myrigates']) {
+		$tmpl->error = 'Du hast keine Berechtigung!';
+		$tmpl->output();
+	}
+	
+	// Daten sichern
+	$_GET['id'] = (int)$_GET['id'];
+	$_GET['set'] = (int)$_GET['set'];
+	
+	// speichern
+	query("
+		UPDATE
+			".PREFIX."myrigates
+		SET
+			myrigatesSprungFeind = ".$_GET['set']."
+		WHERE
+			myrigates_planetenID = ".$_GET['id']."
+	") OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
+	
+	
+	// Anzeige ändern
+	$tmpl->content = '<a class="italic" onclick="ajaxcall(\'index.php?p=gates&amp;sp=sprung_change&amp;id='.$_GET['id'].'&amp;set='.($_GET['set'] ? 0 : 1).'\', this.parentNode, false, false)">';
+	
+	if($_GET['set']) {
+		$tmpl->content .= '<span class="bold red">unbenutzbar</span>';
+	}
+	else {
+		$tmpl->content .= '<span class="green">benutzbar</span>';
+	}
+	$tmpl->content .= '</a>';
+	
+	$tmpl->output();
+}
+
 
 /**
  * normale Seiten
@@ -184,6 +234,7 @@ else {
 				myrigates_galaxienID,
 				myrigates_planetenID,
 				myrigatesSprung,
+				myrigatesSprungFeind,
 				
 				planetenMyrigate,
 				planeten_systemeID,
@@ -253,6 +304,7 @@ else {
 				<th>Sys-Scan</th>
 				<th>Typ</th>
 				<th>Ziel</th>
+				<th>&nbsp;</th>
 				<th>&nbsp;</th>
 			</tr>';
 			while($row = mysql_fetch_assoc($query)) {
@@ -339,6 +391,27 @@ else {
 				// Kommentar
 				$content .= '
 				<td>'.datatable::kommentar($row['planetenKommentar'], $row['myrigates_planetenID']).'</td>
+				<td class="sprungfeind'.$row['myrigates_planetenID'].'">';
+				
+				// feindlicher Sprunggenerator
+				if($row['myrigatesSprung']) {
+					
+					$content .= '<a class="italic" onclick="ajaxcall(\'index.php?p=gates&amp;sp=sprung_change&amp;id='.$row['myrigates_planetenID'].'&amp;set='.($row['myrigatesSprungFeind'] ? 0 : 1).'\', this.parentNode, false, false)">';
+					
+					if($row['myrigatesSprungFeind']) {
+						$content .= '<span class="bold red">unbenutzbar</span>';
+					}
+					else {
+						$content .= '<span class="green">benutzbar</span>';
+					}
+					$content .= '</a>';
+				
+				}
+				else {
+					$content .= '&nbsp;';
+				}
+				
+				$content .= '</td>
 			</tr>';
 			}
 			$content .= '
