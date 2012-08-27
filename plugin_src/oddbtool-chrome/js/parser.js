@@ -652,18 +652,13 @@ oddbtool.parsePage = function(page, manual) {
 			
 			// Besatzung
 			if(input.indexOf('<b>Dieser Planet ist gerade besetzt!') != -1 || input.indexOf('<b>Dieser Planet wird gerade besetzt!') != -1 || input.indexOf('<b>This planet is occupied at present!') != -1) {
-				// neu
+				
 				out['bes'] = 1;
-				// alt
-				out['inva'] = 4;
 				
 				// Besatzer
 				data = ctree.find('img[src*="warn.gif"]').parent().next().find('a[href*="usershow"]');
 				if(data.length) {
-					// neu
 					out['besuser'] = data.attr('href').replace(/[^\d]/g, '');
-					// alt
-					out['user'] = out['besuser'];
 				}
 			}
 			
@@ -672,63 +667,47 @@ oddbtool.parsePage = function(page, manual) {
 			
 			// Kolo
 			if(input.indexOf('<b>Dieser Planet wird gerade kolonisiert.') != -1  || input.indexOf('<b>This planet is currently being colonised') != -1) {
-				// neu
+				
 				out['kolo'] = 1;
-				// alt
-				out['inva'] = 5;
 				
 				// Ende
 				data = p.exec(input);
 				if(data == null) {
 					throw 'Konnte Kolodaten nicht ermitteln!';
 				}
-				// neu
+				
 				out['koloende'] = data[1];
-				// alt
-				out['ende'] = data[1];
 				
 				// Kolonisator
 				data = ctree.find('div[name="alldiv"] a[href*="usershow"]');
 				if(data.length) {
-					// neu
 					out['kolouser'] = data.attr('href').replace(/[^\d]/g, '');
-					// alt
-					out['user'] = out['kolouser'];
 				}
 			}
 			
 			// Inva
 			if(input.indexOf('<b>Dieser Planet wird gerade invadiert!') != -1 || input.indexOf('<b>This planet is currently being invaded') != -1) {
-				// neu
+				
 				out['inv'] = 1;
-				// alt
-				out['inva'] = 1;
 				
 				data = p.exec(input);
 				if(data == null) {
 					throw 'Konnte Invadaten nicht ermitteln!';
 				}
-				// neu
+				
 				out['invende'] = data[1];
-				// alt
-				out['ende'] = data[1];
 				
 				// Aggressor
 				data = ctree.find('div[name="alldiv"] a[href*="usershow"]');
 				if(data.length) {
-					// neu
 					out['invauser'] = data.attr('href').replace(/[^\d]/g, '');
-					// alt
-					out['user'] = out['invauser'];
 				}
 			}
 			
 			// Genesis
 			if(input.indexOf('An diesem Planeten wird ein Genesis-Projekt gestartet.') != -1 || input.indexOf('At this planet a genesis project is initiated.') != -1) {
-				// neu
+				
 				out['gen'] = 1;
-				// alt
-				out['inva'] = 3;
 				
 				p = /(?:ndung|Firing): (?:.{3}), ([^<]+)<br/;
 				
@@ -737,25 +716,19 @@ oddbtool.parsePage = function(page, manual) {
 					throw 'Konnte Genesis-Daten nicht ermitteln!';
 				}
 				
-				// neu
 				out['genende'] = data[1];
-				// alt
-				out['ende'] = data[1];
 				
 				// Genesis-Benutzer
 				var genuser = ctree.find('.box td:contains("enesis") a[href^="?op=usershow"]'); 
 				if(genuser.length) {
 					out['genuser'] = genuser.attr('href').replace(/[^\d]/g, '');
-					out['user'] = out['genuser'];
 				}
 			}
 			
 			// Reso
 			if(input.indexOf('sich gerade ein Resonator auf, um diesen Planeten und alle Schiffe im Orbit zu vernichten!') != -1 || input.indexOf('<b>A resonator is currently charging up so that it can destroy this planet and all ships in orbit around it') != -1) {
-				// neu
+				
 				out['reso'] = 1;
-				// alt
-				out['inva'] = 2;
 				
 				p = /(?:ndung|Firing): (?:.{3}), ([^<]+)</;
 				data = p.exec(input);
@@ -764,10 +737,7 @@ oddbtool.parsePage = function(page, manual) {
 					throw 'Konnte Reso-Daten nicht ermitteln!';
 				}
 				
-				// neu
 				out['resoende'] = data[1];
-				// alt
-				out['ende'] = data[1];
 			}
 			
 			// Natives

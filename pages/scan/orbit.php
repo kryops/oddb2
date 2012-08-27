@@ -8,6 +8,23 @@
 if(!defined('ODDB')) die('unerlaubter Zugriff!');
 
 
+class ScanOrbit {
+	
+	/**
+	 * Aktionstypen auf die Werte des Parsers mappen
+	 * @var array
+	 */
+	public static $inva_map = array(
+		1=>array('inv', 'invende', 'invauser'),
+		2=>array('reso', 'resoende', false),
+		3=>array('gen', 'genende', 'genuser'),
+		4=>array('bes', false, 'besuer'),
+		5=>array('kolo', 'koloende', 'kolouser')
+	);
+	
+}
+
+
 
 // Flooding-Schutz 2 Minuten
 if($c = $cache->get('scanorbit'.$_POST['id']) AND !isset($_GET['force'])) {
@@ -127,8 +144,15 @@ else {
 		}
 	}
 	
-	// eingetragene Aktion ermitteln (Inva, Reso, Genesis, Besatzung, Kolo)
-	$inva = false;
+	
+	/*
+	 * laufende Aktionen
+	 */
+	
+	$openinvas_reset = false;
+	
+	// eingetragene Aktionen ermitteln (Inva, Reso, Genesis, Besatzung, Kolo)
+	$inva = array();
 	
 	$query = query("
 		SELECT
@@ -143,146 +167,172 @@ else {
 			invasionen_planetenID = ".$_POST['id']."
 	") OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
 	
-	if(mysql_num_rows($query)) {
-		$inva = mysql_fetch_assoc($query);
-	}
-	
-	/*
-		1 - Invasion
-		2 - Resonation
-		3 - Genesis-Projekt
-		4 - Besatzung
-		5 - Kolo
-	*/
-	
-	// bei invalidem Invasionstyp Inva entfernen
-	if(isset($_POST['inva'])) {
-		$_POST['inva'] = (int)$_POST['inva'];
-		if($_POST['inva'] < 1 OR $_POST['inva'] > 5) unset($_POST['inva']);
+	while($row = mysql_fetch_assoc($query)) {
+		$inva[$row['invasionenTyp']] = $row;
 	}
 	
 	// Daten aufbereiten
 	$opfer = $inhaber;
 	
-	if(isset($_POST['inva'])) {
-		// Ende
-		if($_POST['inva'] != 4) {
-			$ende = (int)strtotime($_POST['ende']);
-		}
-		else $ende = 0;
+	
+	// laufende Aktionen durchgehen
+	foreach(ScanOrbit::$inva_map as $ityp=>$ifields) {
 		
-		// Aggressor aktualisieren
-		$aggr = 0;
-		$aggr_ally = 0;
-		
-		if(isset($_POST['user'])) {
-			$_POST['user'] = (int)$_POST['user'];
-			if($_POST['user']) {
-				odrequest($_POST['user']);
+		if(isset($_POST[$ifields[0]])) {
+			
+			// Ende
+			if($ifields[1] AND isset($_POST[$ifields[1]])) {
+				$ende = (int)strtotime($_POST[$ifields[1]]);
+			}
+			else {
+				$ende = 0;
+			}
 				
-				$query = query("
-					SELECT
-						playerID,
-						player_allianzenID
-					FROM ".GLOBPREFIX."player
-					WHERE
-						playerID = ".$_POST['user']."
+			// Aggressor
+			$aggr = 0;
+			$aggr_ally = 0;
+			
+			if($ifields[2] AND isset($_POST[$ifields[2]])) {
+				$aggr = (int)$_POST[$ifields[2]];
+				
+				if($aggr) {
+					odrequest($aggr);
+					
+					$query = query("
+						SELECT
+							playerID,
+							player_allianzenID
+						FROM ".GLOBPREFIX."player
+						WHERE
+							playerID = ".$aggr."
+					") OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
+					
+					if(mysql_num_rows($query)) {
+						$data2 = mysql_fetch_assoc($query);
+						$aggr_ally = $data2['player_allianzenID'];
+					}
+					
+				}
+			}
+			
+			// fremde Aktion?
+			$fremd = $registered ? 0 : 1;
+			
+			// offen, wenn Opfer registriert und keine Kolo
+			$open = ($registered AND $ityp != 5) ? 1 : 0;
+			
+			// freundlich, wenn Aggressor und Opfer in derselben Ally
+			$freundlich = 0;
+			if($aggr_ally AND $aggr_ally == $opfer_ally) {
+				$freundlich = 1;
+				$open = 0;
+			}
+			
+			
+			// neu eintragen (noch nicht eingetragen oder anderer Aggressor)
+			if(!isset($inva[$ityp]) OR ($inva[$ityp]['invasionenAggressor'] AND $inva[$ityp]['invasionenAggressor'] != $aggr)) {
+				
+				query("
+					INSERT INTO ".PREFIX."invasionen
+					SET
+						invasionenTime = ".time().",
+						invasionen_playerID = ".$opfer.",
+						invasionen_planetenID = ".$_POST['id'].",
+						invasionen_systemeID = ".$data['planeten_systemeID'].",
+						invasionenTyp = ".$ityp.",
+						invasionenFremd = ".$fremd.",
+						invasionenOpen = ".$open.",
+						invasionenFreundlich = ".$freundlich.",
+						invasionenAggressor = ".$aggr.",
+						invasionenEnde = ".$ende.",
+						invasionenSchiffe = ".$_POST['frs']."
 				") OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
 				
-				if(mysql_num_rows($query)) {
-					$data2 = mysql_fetch_assoc($query);
-					$aggr = $data2['playerID'];
-					$aggr_ally = $data2['player_allianzenID'];
+				// falls keine Kolo, InvaLog-Eintrag
+				if($ityp != 5) {
+					$id = mysql_insert_id();
+					
+					query("
+						INSERT INTO ".PREFIX."invasionen_log
+						SET
+							invalog_invasionenID = ".$id.",
+							invalogTime = ".time().",
+							invalog_playerID = ".$user->id.",
+							invalogText = 'erfasst die Aktion durch Einscannen des Orbits'
+					") OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
 				}
 				
 			}
+			// Aktion aktualisieren
+			else {
+				
+				$oldinva = $inva[$ityp];
+				
+				// manuell gesetzte Werte nicht überschreiben
+				if(!$freundlich) {
+					$freundlich = $oldinva['invasionenFreundlich'];
+				}
+				if($open) {
+					$open = $oldinva['invasionenOpen'];
+				}
+				
+				query("
+					UPDATE ".PREFIX."invasionen
+					SET
+						invasionenTime = ".time().",
+						invasionenAggressor = ".$aggr.",
+						invasionenEnde = ".$ende.",
+						invasionenSchiffe = ".$_POST['frs'].",
+						invasionenOpen = ".$open.",
+						invasionenFreundlich = ".$freundlich."
+					WHERE
+						invasionenID = ".$oldinva['invasionenID']."
+				") OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
+				
+				// aus dem Array der zu archivierenden Aktionen löschen
+				unset($inva[$ityp]);
+			}
+			
+			
+			// Aggressor-Aktivität aktualisieren
+			if($aggr) {
+				query("
+					UPDATE ".GLOBPREFIX."player
+					SET
+						playerActivity = ".time()."
+					WHERE
+						playerID = ".$aggr."
+				") OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
+			}
+			
+			$openinvas_reset = true;
+			
 		}
+		
 	}
 	
-	// läuft eine andere Aktion als eingetragen?
-	$other = (isset($_POST['inva'])
-			AND $inva
-			AND $inva['invasionenTyp'] != $_POST['inva']) ? true : false;
 	
-	// Invasion, Resonation, Genesis, Besatzung, Kolo löschen
-	// (wenn keine AutoInva)
-	if($other OR (!isset($_POST['inva']) AND $inva AND ($inva['invasionenEnde'] OR $inva['invasionenTyp'] == 4))) {
-		if($inva['invasionenTyp'] != 5) {
-			// falls keine Kolo, Aktion ins Archiv verschieben
-			inva_archiv($inva['invasionenID'], 'löscht die Aktion durch Einscannen des Orbits');
-		}
-		else {
-			// ansonsten nur Eintrag aus den Invasionen löschen
+	// nicht mehr laufende Aktionen archivieren
+	foreach($inva as $ityp=>$row) {
+		
+		// Kolos nur löschen
+		if($ityp == 5) {
 			query("
 				DELETE FROM ".PREFIX."invasionen
 				WHERE
-					invasionenID = ".$inva['invasionenID']."
+					invasionenID = ".$row['invasionenID']."
 			") OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
 		}
+		else {
+			inva_archiv($row['invasionenID'], 'löscht die Aktion durch Einscannen des Orbits');
+		}
+		
+		$openinvas_reset = true;
+		
 	}
 	
-	if(isset($_POST['inva'])) {
-		// fremde Aktion?
-		$fremd = $registered ? 0 : 1;
-		// offen, wenn Opfer registriert und keine Kolo
-		$open = ($registered AND $_POST['inva'] != 5) ? 1 : 0;
-		// freundlich, wenn Aggressor und Opfer in derselben Ally
-		$freundlich = 0;
-		if($aggr_ally AND $aggr_ally == $opfer_ally) {
-			$freundlich = 1;
-			$open = 0;
-		}
-	}
-	
-	// Invasion, Resonation, Genesis, Besatzung, Kolo eintragen
-	if($other OR (isset($_POST['inva']) AND !$inva)) {
-		// bei Kolo immer frei
-		if($_POST['inva'] == 5) {
-			$opfer = 0;
-		}
-		
-		// Aktion eintragen
-		query("
-			INSERT INTO ".PREFIX."invasionen
-			SET
-				invasionenTime = ".time().",
-				invasionen_playerID = ".$opfer.",
-				invasionen_planetenID = ".$_POST['id'].",
-				invasionen_systemeID = ".$data['planeten_systemeID'].",
-				invasionenTyp = ".$_POST['inva'].",
-				invasionenFremd = ".$fremd.",
-				invasionenOpen = ".$open.",
-				invasionenFreundlich = ".$freundlich.",
-				invasionenAggressor = ".$aggr.",
-				invasionenEnde = ".$ende.",
-				invasionenSchiffe = ".$_POST['frs']."
-		") OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
-		
-		// falls keine Kolo, InvaLog-Eintrag
-		if($_POST['inva'] != 5) {
-			$id = mysql_insert_id();
-			
-			query("
-				INSERT INTO ".PREFIX."invasionen_log
-				SET
-					invalog_invasionenID = ".$id.",
-					invalogTime = ".time().",
-					invalog_playerID = ".$user->id.",
-					invalogText = 'erfasst die Aktion durch Einscannen des Orbits'
-			") OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
-		}
-		
-		// Aggressor-Aktivität aktualisieren
-		if($aggr) {
-			query("
-				UPDATE ".GLOBPREFIX."player
-				SET
-					playerActivity = ".time()."
-				WHERE
-					playerID = ".$aggr."
-			") OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
-		}
-		
+	// Anzeige offener Invasionen zurücksetzen
+	if($openinvas_reset) {
 		// offene Invasionen aus dem Cache löschen
 		$cache->remove('openinvas');
 		
@@ -291,29 +341,7 @@ else {
 		}
 	}
 	
-	// Invasion aktualisieren
-	if(!$other AND isset($_POST['inva']) AND $inva) {
-		// manuell gesetzte Werte nicht überschreiben
-		if(!$freundlich) {
-			$freundlich = $inva['invasionenFreundlich'];
-		}
-		if($open) {
-			$open = $inva['invasionenOpen'];
-		}
-		
-		query("
-			UPDATE ".PREFIX."invasionen
-			SET
-				invasionenTime = ".time().",
-				invasionenAggressor = ".$aggr.",
-				invasionenEnde = ".$ende.",
-				invasionenSchiffe = ".$_POST['frs'].",
-				invasionenOpen = ".$open.",
-				invasionenFreundlich = ".$freundlich."
-			WHERE
-				invasionenID = ".$inva['invasionenID']."
-		") OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
-	}
+	
 	
 	
 	// Sprunggenerator

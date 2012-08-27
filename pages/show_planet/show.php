@@ -232,8 +232,7 @@ if($user->rechte['invasionen'] OR $user->rechte['fremdinvakolos']) {
 			".implode(' AND ', $conds)."
 	") OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
 	
-	if(mysql_num_rows($query)) {
-		$inva = mysql_fetch_assoc($query);
+	while($inva = mysql_fetch_assoc($query)) {
 		
 		if(isset($ilabels[$inva['invasionenTyp']])) {
 			$tmpl->content .= '<div class="fcbox center small2 red userlistaction">'.$ilabels[$inva['invasionenTyp']];

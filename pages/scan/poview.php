@@ -9,6 +9,25 @@ if(!defined('ODDB')) die('unerlaubter Zugriff!');
 
 
 
+class ScanOverview {
+	
+	/**
+	 * Aktionstypen aus der Planetenübersicht einer Invasions-Typ-ID zuordnen
+	 * @var array
+	 */
+	public static $inva_map = array(
+		'Inv'=>1,
+		'Res'=>2,
+		'Gen'=>3,
+		'Bes'=>4
+	);
+	
+	
+}
+
+
+
+
 // Flooding-Schutz 5 Minuten
 if($cache->get('scanpoview'.$_POST['uid']) AND !isset($_GET['force'])) {
 	$tmpl->error = 'Die Planeten&uuml;bersicht wurde in den letzten 5 Minuten schon eingescannt!';
@@ -93,22 +112,17 @@ foreach($_POST['pl'] as $key=>$data) {
 			$terraformer_unset[] = $_POST['pl'][$key]['id'];
 		}
 		
+		// Invasionen
+		$inva = array();
 		
-		if(strpos($_POST['pl'][$key]['inva'], 'Inv') !== false) {
-			$_POST['pl'][$key]['inva'] = 1;
+		foreach(ScanOverview::$inva_map as $imap=>$ityp) {
+			if(strpos($_POST['pl'][$key]['inva'], $imap) !== false) {
+				$inva[] = $ityp;
+			}
 		}
-		else if(strpos($_POST['pl'][$key]['inva'], 'Res') !== false) {
-			$_POST['pl'][$key]['inva'] = 2;
-		}
-		else if(strpos($_POST['pl'][$key]['inva'], 'Gen') !== false) {
-			$_POST['pl'][$key]['inva'] = 3;
-		}
-		else if(strpos($_POST['pl'][$key]['inva'], 'Bes') !== false) {
-			$_POST['pl'][$key]['inva'] = 4;
-		}
-		else {
-			unset($_POST['pl'][$key]['inva']);
-		}
+		
+		$_POST['pl'][$key]['inva'] = $inva;
+		
 	}
 	// keine laufende Aktion -> Terraformer entfernen
 	else {
@@ -177,7 +191,11 @@ $query = query("
 ") OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
 
 while($row = mysql_fetch_assoc($query)) {
-	$invas[$row['invasionen_planetenID']] = array($row['invasionenID'], $row['invasionenTyp']);
+	if(!isset($invas[$row['invasionen_planetenID']])) {
+		$invas[$row['invasionen_planetenID']] = array();
+	}
+	
+	$invas[$row['invasionen_planetenID']][$row['invasionenTyp']] = $row['invasionenID'];
 }
 
 $sys = array();
@@ -261,48 +279,30 @@ foreach($_POST['pl'] as $data) {
 				planetenID = ".$data['id']."
 		") OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
 		
-		// bei invalidem Invasionstyp Inva entfernen
-		if(isset($data['inva'])) {
-			$data['inva'] = (int)$data['inva'];
-			if(!$data['inva'] OR $data['inva'] > 5) unset($data['inva']);
-		}
 		
-		// läuft eine andere Aktion als eingetragen?
-		$other = (isset($data['inva'])
-				AND isset($invas[$data['id']])
-				AND $invas[$data['id']][1] != $data['inva']) ? true : false;
-		
-		// Invasion, Resonation, Genesis, Besatzung löschen
-		if($other OR (!isset($data['inva']) AND isset($invas[$data['id']]))) {	
-			// Aktion ins Archiv verschieben
-			if($invas[$data['id']][1] != 5) {
-				inva_archiv($invas[$data['id']][0], 'löscht die Aktion durch Einscannen der Planetenübersicht');
-			}
-			// Kolo nur löschen
-			else {
-				query("
-						DELETE FROM ".PREFIX."invasionen
-						WHERE
-							invasionenID = ".$invas[$data['id']][0]."
-					") OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
-			}
-		}
-		// Invasion, Resonation, Genesis, Besatzung eintragen
-		if($other OR (isset($data['inva']) AND !isset($invas[$data['id']]))) {
-			/*
-				1 - Invasion
-				2 - Resonation
-				3 - Genesis-Projekt
-				4 - Besatzung
-				5 - Kolo
-			*/
+		// laufende Aktionen durchgehen
+		foreach($data['inva'] as $ityp) {
 			
-			// alles außer fremde Besatzungen eintragen
-			if($registered OR $data['inva'] != 4) {
+			// bereits eingetragen
+			if(isset($invas[$row['invasionen_planetenID']][$ityp])) {
+				unset($invas[$row['invasionen_planetenID']][$ityp]);
+			}
+			
+			// neue Aktionen eintragen
+			else {
+				// invalider Invasionstyp
+				if($ityp < 1 OR $ityp > 5) {
+					continue;
+				}
+				
 				// fremde Aktion?
 				$fremd = $registered ? 0 : 1;
-				// offen, wenn Opfer registriert
-				$open = $registered ? 1 : 0;
+				// offen, wenn Opfer registriert und keine Kolo
+				$open = ($registered AND $ityp != 5) ? 1 : 0;
+				
+				if($ityp == 5) {
+					$open = 0;
+				}
 				
 				// Aktion eintragen
 				query("
@@ -312,7 +312,7 @@ foreach($_POST['pl'] as $data) {
 						invasionen_playerID = ".$_POST['uid'].",
 						invasionen_planetenID = ".$data['id'].",
 						invasionen_systemeID = ".$data['sid'].",
-						invasionenTyp = ".$data['inva'].",
+						invasionenTyp = ".$ityp.",
 						invasionenFremd = ".$fremd.",
 						invasionenOpen = ".$open."
 				") OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
@@ -332,8 +332,27 @@ foreach($_POST['pl'] as $data) {
 				// offene Invasionen aus dem Cache löschen
 				$cache->remove('openinvas');
 				
-				if(!isset($_GET['plugin']) AND $user->rechte['invasionen']) {
+				if(!isset($_GET['plugin']) AND $user->rechte['invasionen'] AND $tmpl->script == '') {
 					$tmpl->script = 'openinvas();';
+				}
+				
+			}
+			
+		}
+		
+		// nicht mehr existente Aktionen archivieren
+		if(isset($invas[$data['id']])) {
+			foreach($invas[$data['id']] as $ityp=>$id) {
+				// Kolos nur löschen
+				if($ityp == 5) {
+					query("
+						DELETE FROM ".PREFIX."invasionen
+						WHERE
+							invasionenID = ".$id."
+					") OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
+				}
+				else {
+					inva_archiv($id, 'löscht die Aktion durch Einscannen der Planetenübersicht');
 				}
 			}
 		}

@@ -589,7 +589,11 @@ if($showr AND ($user->rechte['invasionen'] OR $user->rechte['fremdinvakolos'])) 
 	") OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
 	
 	while($row = mysql_fetch_assoc($query)) {
-		$invasionen[$row['invasionen_planetenID']] = $row;
+		if(!isset($invasionen[$row['invasionen_planetenID']])) {
+			$invasionen[$row['invasionen_planetenID']] = array();
+		}
+		
+		$invasionen[$row['invasionen_planetenID']][] = $row;
 	}
 }
 
@@ -773,33 +777,39 @@ if($showr) {
 		<additional2><![CDATA[';
 				// Orbit-Zusatz
 				// laufende Invasion etc
-				if(isset($invasionen[$pl['planetenID']]) AND isset($ilabels[$invasionen[$pl['planetenID']]['invasionenTyp']])) {
-					$inva =& $invasionen[$pl['planetenID']];
+				if(isset($invasionen[$pl['planetenID']])) {
+					foreach($invasionen[$pl['planetenID']] as $inva) {
 					
-					$planeten .= '<span style="color:#ff3322">'.$ilabels[$inva['invasionenTyp']].'<br>';
-					if($inva['playerName'] != NULL) {
-						$planeten .= htmlspecialchars($inva['playerName'], ENT_COMPAT, $charset);
-						if($inva['allianzenTag'] != NULL) {
-							$planeten .= ' '.htmlspecialchars($inva['allianzenTag'], ENT_COMPAT, $charset);
+						if(!isset($ilabels[$inva['invasionenTyp']])) {
+							continue;
 						}
-					}
-					// Ende bei Besatzungen nicht anzeigen
-					if($inva['invasionenTyp'] != 4) {
-						$planeten .= '<br>Ende: '.($inva['invasionenEnde'] ? datum($inva['invasionenEnde']) : '<i>unbekannt</i>').'</span>';
-					}
-					else {
-						$planeten .= '</span>';
+						
+						$planeten .= '<div style="color:#ff3322;margin-bottom:0.5em">'.$ilabels[$inva['invasionenTyp']].'<br>';
+						if($inva['playerName'] != NULL) {
+							$planeten .= htmlspecialchars($inva['playerName'], ENT_COMPAT, $charset);
+							if($inva['allianzenTag'] != NULL) {
+								$planeten .= ' '.htmlspecialchars($inva['allianzenTag'], ENT_COMPAT, $charset);
+							}
+						}
+						
+						// Ende bei Besatzungen nicht anzeigen
+						if($inva['invasionenTyp'] != 4) {
+							$planeten .= '<br>Ende: '.($inva['invasionenEnde'] ? datum($inva['invasionenEnde']) : '<i>unbekannt</i>').'</span>';
+						}
+						
+						$planeten .= '</div>';
+						
 					}
 				}
 				
 				// Bergbau
 				if($user->rechte['fremdinvakolos'] AND $pl['schiffeBergbau'] !== NULL) {
-					$planeten .= '<br><span style="color:#55ff33">Bergbau</span>';
+					$planeten .= '<span style="color:#55ff33">Bergbau</span>';
 				}
 				
 				// Terraformer
 				if($user->rechte['fremdinvakolos'] AND $pl['schiffeTerraformer']) {
-					$planeten .= '<br><span style="color:#55ff33">Terraformer</span>';
+					$planeten .= '<span style="color:#55ff33">Terraformer</span>';
 				}
 				
 				$planeten .= ']]></additional2>

@@ -371,7 +371,11 @@ else if($_GET['sp'] == '') {
 				") OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
 				
 				while($row = mysql_fetch_assoc($query)) {
-					$invasionen[$row['invasionen_planetenID']] = $row;
+					if(!isset($invasionen[$row['invasionen_planetenID']])) {
+						$invasionen[$row['invasionen_planetenID']] = array();
+					}
+					
+					$invasionen[$row['invasionen_planetenID']][] = $row;
 				}
 			}
 			
@@ -660,32 +664,39 @@ else if($_GET['sp'] == '') {
 					if($user->rechte['fremdinvakolos']) {
 						// Bergbau
 						if($pl['schiffeBergbau'] !== NULL) {
-							$bergbau_tf .= '<br /><span class="lightgreen">Bergbau</span>';
+							$bergbau_tf .= '<span class="lightgreen">Bergbau</span>';
 						}
 						// Terraformer
 						if($pl['schiffeTerraformer']) {
-							$bergbau_tf .= '<br /><span class="lightgreen">Terraformer</span>';
+							$bergbau_tf .= '<span class="lightgreen">Terraformer</span>';
 						}
 					}
 					
 					// Invasionen etc
-					if(isset($invasionen[$pl['planetenID']]) AND isset($ilabels[$invasionen[$pl['planetenID']]['invasionenTyp']])) {
-						$inva =& $invasionen[$pl['planetenID']];
+					if(isset($invasionen[$pl['planetenID']])) {
 						
-						$tmpl->content .= '<div class="orbitinva'.($o ? '2' : '1').'">
-							<span style="color:#ff3322">'.$ilabels[$inva['invasionenTyp']].'<br />';
-						if($inva['playerName'] != NULL) {
-							$tmpl->content .= htmlspecialchars($inva['playerName'], ENT_COMPAT, 'UTF-8');
-							if($inva['allianzenTag'] != NULL) {
-								$tmpl->content .= ' '.htmlspecialchars($inva['allianzenTag'], ENT_COMPAT, 'UTF-8');
+						$tmpl->content .= '<div class="orbitinva'.($o ? '2' : '1').'">';
+						
+						foreach($invasionen[$pl['planetenID']] as $inva) {
+						
+							if(!isset($ilabels[$inva['invasionenTyp']])) {
+								continue;
 							}
-						}
-						// Ende bei Besatzungen nicht anzeigen
-						if($inva['invasionenTyp'] != 4) {
-							$tmpl->content .= '<br />Ende: '.($inva['invasionenEnde'] ? datum($inva['invasionenEnde']) : '<i>unbekannt</i>').'</span>';
-						}
-						else {
-							$tmpl->content .= '</span>';
+						
+							$tmpl->content .= '
+								<div style="color:#ff3322;margin-bottom:0.5em">'.$ilabels[$inva['invasionenTyp']].'<br />';
+							if($inva['playerName'] != NULL) {
+								$tmpl->content .= htmlspecialchars($inva['playerName'], ENT_COMPAT, 'UTF-8');
+								if($inva['allianzenTag'] != NULL) {
+									$tmpl->content .= ' '.htmlspecialchars($inva['allianzenTag'], ENT_COMPAT, 'UTF-8');
+								}
+							}
+							// Ende bei Besatzungen nicht anzeigen
+							if($inva['invasionenTyp'] != 4) {
+								$tmpl->content .= '<br />Ende: '.($inva['invasionenEnde'] ? datum($inva['invasionenEnde']) : '<i>unbekannt</i>');
+							}
+							
+							$tmpl->content .= '</div>';
 						}
 						
 						// Bergbau und Terraformer anhängen

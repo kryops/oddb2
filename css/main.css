@@ -1102,7 +1102,7 @@ hr {
 }
 
 .orbitinva2 {
-	position:absolute;
+	position:relative;
 	width:110px;
 	text-align:center;
 	margin-top:-70px;
