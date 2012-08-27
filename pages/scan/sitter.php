@@ -10,7 +10,7 @@ if(!defined('ODDB')) die('unerlaubter Zugriff!');
 
 
 // Flooding-Schutz 10 Minuten
-if($cache->get('scansitter'.$_POST['uid'])) {
+if($cache->get('scansitter'.$_POST['uid']) AND !isset($_GET['force'])) {
 	$tmpl->error = 'Die Sitter wurden in den letzten 10 Minuten schon eingescannt!';
 	$tmpl->output();
 	die();

@@ -3751,7 +3751,7 @@ function quelltext(f, r) {
 	f.input.value = '';
 	
 	// Daten senden
-	ajaxcall('index.php?p=scan&sp=scan', r, out, true);
+	ajaxcall('index.php?p=scan&sp=scan&force', r, out, true);
 }
 
 /**

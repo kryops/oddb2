@@ -10,7 +10,7 @@ if(!defined('ODDB')) die('unerlaubter Zugriff!');
 
 
 // Flooding-Schutz 5 Minuten
-if($cache->get('scanpoview'.$_POST['uid'])) {
+if($cache->get('scanpoview'.$_POST['uid']) AND !isset($_GET['force'])) {
 	$tmpl->error = 'Die Planeten&uuml;bersicht wurde in den letzten 5 Minuten schon eingescannt!';
 	$tmpl->output();
 	die();

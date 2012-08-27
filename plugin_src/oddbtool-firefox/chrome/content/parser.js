@@ -21,13 +21,11 @@ oddbtool.parser = function(page, pdata, manual) {
 		}
 	}
 	
-	// doppeltes Parsen verhindern
-	if($('body',page).find('#oddbtoolparser').attr('id') != null) {
-		return false;
-	}
-	
 	// Parser-Link verstecken
 	$('#oddbtoolparselink',page).hide();
+	
+	// vorherigen Parser-Container entfernen
+	$('#oddbtoolparser',page).remove();
 	
 	// Meldung anzeigen
 	$('#oddbtoolwin',page).append('<span id="oddbtoolparser">Parse Quelltext... </span>');
@@ -54,6 +52,11 @@ oddbtool.parser = function(page, pdata, manual) {
 	
 	var addr = oddbtool.prefs.url+'index.php?p=scan&sp=scan&plugin&version='+oddbtool.version+'&ajax';
 	
+	// die ODDB zwingen, den Scan anzunehmen
+	if(manual) {
+		addr += '&force';
+	}
+	
 	// Request absenden
 	jQuery.ajax({
 		type: 'post',
@@ -68,6 +71,11 @@ oddbtool.parser = function(page, pdata, manual) {
 				
 				// ausgeben
 				$('#oddbtoolparser',page).append('<span style="color:red">'+error+'</span>');
+				
+				// "trotzdem parsen"-Link
+				if(error.indexOf('schon eingescannt') != -1) {
+					$('#oddbtoolparser',page).append(' <a href="javascript:void(0)" id="oddbtoolparselink">[trotzdem parsen]</a>');
+				}
 			}
 			else {
 				// Content ermitteln

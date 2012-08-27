@@ -62,7 +62,7 @@ else {
 	$data = mysql_fetch_assoc($query);
 	
 	// Flooding-Schutz 10 Minuten
-	if(time()-$data['systemeUpdateHidden'] < 600) {
+	if(time()-$data['systemeUpdateHidden'] < 600 AND !isset($_GET['force'])) {
 		$tmpl->error = 'Das verdeckte System wurde in den letzten 10 Minuten schon eingescannt!';
 		$tmpl->output();
 		die();

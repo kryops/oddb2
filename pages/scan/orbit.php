@@ -10,7 +10,7 @@ if(!defined('ODDB')) die('unerlaubter Zugriff!');
 
 
 // Flooding-Schutz 2 Minuten
-if($c = $cache->get('scanorbit'.$_POST['id'])) {
+if($c = $cache->get('scanorbit'.$_POST['id']) AND !isset($_GET['force'])) {
 	if($c == 2) $tmpl->error = 'Der Orbit wurde in den letzten 30 Sekunden schon eingescannt!';
 	else $tmpl->error = 'Der Planet ist nicht eingetragen. Zuerst muss das System gescannt werden!';
 	$tmpl->output();

@@ -186,7 +186,7 @@ else {
 	$data = mysql_fetch_assoc($query);
 	
 	// Flooding-Schutz 5 Minuten
-	if(time()-$data['systemeUpdate'] < 300) {
+	if(time()-$data['systemeUpdate'] < 300 AND !isset($_GET['force'])) {
 		$tmpl->error = 'Das System wurde in den letzten 5 Minuten schon eingescannt!';
 		$tmpl->output();
 		die();
