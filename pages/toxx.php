@@ -141,26 +141,7 @@ else if($_GET['sp'] == 'send') {
 				}
 				// toxxen
 				if(isset($_POST['toxx'])) {
-					// eigene Rasse herausfinden
-					$query = query("
-						SELECT
-							playerRasse
-						FROM
-							".GLOBPREFIX."player
-						WHERE
-							playerID = ".$user->id."
-					") OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
-					
-					$lux = false;
-					
-					if(mysql_num_rows($query)) {
-						$data = mysql_fetch_assoc($query);
-						if($data['playerRasse'] == 10) {
-							$lux = true;
-						}
-					}
-					
-					$modeconds[] = "(planetenGetoxxt < ".time()." AND (playerRasse ".($lux ? "!" : "")."= 10 OR player_allianzenID = 0 OR statusStatus = ".$status_krieg." OR planeten_playerID = ".($lux ? "-3" : "-2")."))";
+					$modeconds[] = "planetenGetoxxt < ".time();
 				}
 				if(count($modeconds)) {
 					$conds[] = "(".implode(" OR ", $modeconds).")";
@@ -231,15 +212,7 @@ else if($_GET['sp'] == 'send') {
 				
 				// Rasse
 				if($_POST['rasse'] != -1) {
-					if($_POST['rasse'] == 0) {
-						$conds[] = "(playerRasse != 10 OR planeten_playerID = -3)";
-					}
-					if($_POST['rasse'] == 10) {
-						$conds[] = "(playerRasse = 10 OR planeten_playerID = -2)";
-					}
-					else {
-						$conds[] = "playerRasse = ".$_POST['rasse'];
-					}
+					$conds[] = "playerRasse = ".$_POST['rasse'];
 				}
 				
 				// Kategorie
@@ -591,8 +564,7 @@ else {
 		</select>
 		<br />
 		der Rasse <select name="rasse" size="1">
-		<option value="-1">alle</option>
-		<option value="0"'.((isset($_GET['rasse']) AND $_GET['rasse'] == 0) ? ' selected="selected"' : '').'>alle Altrassen</option>';
+		<option value="-1">alle</option>';
 	foreach($rassen as $key=>$name) {
 		$tmpl->content .= '<option value="'.$key.'"'.((isset($_GET['rasse']) AND $_GET['rasse']) == $key ? ' selected="selected"' : '').'>'.$name.'</option>';
 	}

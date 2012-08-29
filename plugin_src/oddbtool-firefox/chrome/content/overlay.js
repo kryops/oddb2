@@ -120,7 +120,8 @@ var oddbtool = {
 		'Trado':'trado',
 		'Bera':'bera',
 		'Myri':'myri',
-		'Lux':'lux'
+		'Lux':'lux',
+		'Revisker':'revisker'
 	},
 	
 	// Sonderzeichen im FoW ersetzen
@@ -421,6 +422,7 @@ var oddbtool = {
 		'.oddbtoolrmensch {background-position:-107px 0px;}',
 		'.oddbtoolrmyri {background-position:-137px 0px;}',
 		'.oddbtoolrtrado {background-position:-197px 0px;}',
+		'.oddbtoolrrevisker {background-position:-227px 0px;}',
 		'.oddbtoolrtiroc {background-position:-167px 0px;}',
 		'#oddbtoolkommentar {position:absolute; top:350px; left:400px; background-color:rgba(30,30,30,0.9); padding:8px; font-size:11px; -moz-border-radius:8px; border-radius:8px; text-align:right; display:none; z-index:4;}',
 		'#oddbtoolkommentar iframe {width:160px; height:85px; border:none;}',

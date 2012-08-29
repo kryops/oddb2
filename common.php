@@ -219,7 +219,7 @@ $rassen = array(
 	3=>'Tradoner',
 	4=>'Beralut',
 	5=>'Myrianer',
-	10=>'Se´ze Lux'
+	11=>'Revisker'
 );
 
 // Rassen-CSS-Klassen
@@ -229,7 +229,7 @@ $rassen2 = array(
 	3=>'trado',
 	4=>'bera',
 	5=>'myri',
-	10=>'lux'
+	11=>'revisker'
 );
 
 // Gebaeude-Pfade

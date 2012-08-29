@@ -318,8 +318,7 @@ class Search {
 		User-ID <input type="text" class="text" style="width:80px" name="uid" value="'.(isset($filter['uid']) ? htmlspecialchars($filter['uid'], ENT_COMPAT, 'UTF-8') : '').'" /> &nbsp; &nbsp;
 		Username <input type="text" class="text" name="un" value="'.(isset($filter['un']) ? htmlspecialchars($filter['un'], ENT_COMPAT, 'UTF-8') : '').'" /> &nbsp; &nbsp;
 		Rasse <select name="ra" size="1">
-			<option value="">egal</option>
-			<option value="0"'.((isset($filter['ra']) AND $filter['ra'] == 0) ? ' selected="selected"' : '').'>alle Altrassen</option>';
+			<option value="">egal</option>';
 		
 		foreach($rassen as $key=>$val) {
 			$content .= '
@@ -327,7 +326,6 @@ class Search {
 		}
 		
 		$content .= '
-			<option value="11"'.((isset($filter['ra']) AND $filter['ra'] == 11) ? ' selected="selected"' : '').'>Lux ohne NPC</option>
 		</select> &nbsp; &nbsp;
 		frei 
 		<select name="fr" size="1">
@@ -840,15 +838,7 @@ class Search {
 		}
 		// Rasse
 		if(isset($filter['ra'])) {
-			$filter['ra'] = (int)$filter['ra'];
-			// alle Altrassen
-			if($filter['ra'] == 0) $conds[] = '((playerRasse != 10 AND planeten_playerID != 0) OR planeten_playerID = -3)';
-			// Lux
-			else if($filter['ra'] == 10) $conds[] = '(playerRasse = '.$filter['ra'].' OR planeten_playerID = -2)';
-			// Lux ohne NPC
-			else if($filter['ra'] == 11) $conds[] = '((playerRasse = 10 AND planeten_playerID > 2) OR planeten_playerID = -2)';
-			// bestimmte Altrasse
-			else $conds[] = 'playerRasse = '.$filter['ra'];
+			$conds[] = 'playerRasse = '.(int)$filter['ra'];
 		}
 		// frei
 		if(isset($filter['fr'])) {
@@ -1671,14 +1661,8 @@ class Search {
 			global $rassen;
 			
 			$filter['ra'] = (int)$filter['ra'];
-			// alle Altrassen
-			if($filter['ra'] == 0) $desc[] = 'alle Altrassen';
-			// Lux
-			else if($filter['ra'] == 10) $desc[] = 'Lux';
-			// Lux ohne NPC
-			else if($filter['ra'] == 11) $desc[] = 'Lux ohne NPC';
-			// bestimmte Altrasse
-			else if(isset($rassen[$filter['ra']])) {
+			
+			if(isset($rassen[$filter['ra']])) {
 				$desc[] = 'Rasse '.$rassen[$filter['ra']];
 			}
 		}

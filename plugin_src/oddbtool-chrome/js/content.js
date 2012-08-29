@@ -99,7 +99,8 @@
 		'Trado':'trado',
 		'Bera':'bera',
 		'Myri':'myri',
-		'Lux':'lux'
+		'Lux':'lux',
+		'Revisker':'revisker'
 	},
 	
 	// Sonderzeichen im FoW ersetzen

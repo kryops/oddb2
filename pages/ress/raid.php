@@ -43,9 +43,11 @@ Allianz(en):
 &nbsp;<input type="text" class="smalltext tooltip" name="aid" value="'.(isset($_GET['aid']) ? htmlspecialchars($_GET['aid'], ENT_COMPAT, 'UTF-8') : '').'" data-tooltip="IDs mit Komma getrennt" /> &nbsp; &nbsp;
 Rasse:
 &nbsp;<select name="rasse">
-<option value="">alle</option>
-<option value="10"'.((isset($_GET['rasse']) AND $_GET['rasse'] == 10) ? ' selected="selected"' : '').'>Se´ze Lux</option>
-<option value="0"'.((isset($_GET['rasse']) AND $_GET['rasse'] == 0) ? ' selected="selected"' : '').'>Altrassen</option>
+<option value="">alle</option>';
+	foreach($rassen as $key=>$name) {
+		$content .= '<option value="'.$key.'"'.((isset($_GET['rasse']) AND $_GET['rasse']) == $key ? ' selected="selected"' : '').'>'.$name.'</option>';
+	}
+	$content .= '
 </select>
 <br />
 Mindestmengen: 
@@ -74,7 +76,7 @@ gesamter Ressvorrat:
 // Bedingungen
 $conds = array(
 	"(statusStatus IS NULL OR statusStatus NOT IN(".implode(", ", $status_freund).", 5))",
-	"(playerUmod = 0 OR planeten_playerID = -2 OR planeten_playerID = -3)"
+	"playerUmod = 0"
 );
 
 // eingeschränkte Berechtigungen
@@ -124,14 +126,7 @@ if(isset($_GET['aid'])) {
 
 // Rasse
 if(isset($_GET['rasse'])) {
-	// Lux
-	if($_GET['rasse'] == 10) {
-		$conds[] = "(playerRasse = 10 OR planeten_playerID = -2)";
-	}
-	// Altrassen
-	else {
-		$conds[] = "(playerRasse != 10 OR planeten_playerID = -3)";
-	}
+	$conds[] = "playerRasse = ".(int)$_GET['rasse'];
 }
 
 // Ressmengen
