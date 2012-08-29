@@ -1715,7 +1715,7 @@ function insertlog($typ, $msg) {
 	global $user;
 	
 	/*
-	=== höchste besetzte ID: 27
+	=== höchste besetzte ID: 28
 	
 	Log-Typen: ID Name Stufe
 	
@@ -1729,6 +1729,7 @@ function insertlog($typ, $msg) {
 	5 Anzeige (3)
 	
 	15 FoW-Ausgleich (2)
+	28 API (2)
 	
 	-- Suche
 	16 benutzt die Suchfunktion (2)

@@ -356,11 +356,19 @@ class ODDBApi {
 	 */
 	public static function runApi() {
 		
+		global $config;
+		
 		if(!isset($_GET['key'])) {
 			self::outputError('Kein API-Key angegeben!');
 		}
 		
 		self::verifyKey($_GET['key']);
+		
+		// Log-Eintrag
+		if($config['logging'] >= 2) {
+			General::loadClass('Search');
+			insertlog(28, 'benutzt die API ('.Search::getSearchDescription($_GET).')');
+		}
 		
 		self::searchPlanets($_GET);
 		

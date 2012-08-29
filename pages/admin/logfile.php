@@ -20,6 +20,7 @@ $logfilter = array(
 	8=>array(27), // Invasionen
 	9=>array(12), // Ressplaneten und Werften
 	10=>array(22, 23, 18, 19, 20), // Spieler, Allianzen und Einstellungen
+	12=>array(28),	// API
 	11=>array(5) // Seiten anzeigen
 );
 
@@ -53,6 +54,7 @@ $content = '
 		<option value="8"'.((isset($_GET['typ']) AND $_GET['typ'] == 8) ? ' selected="selected"' : '').'>Invasionen</option>
 		<option value="9"'.((isset($_GET['typ']) AND $_GET['typ'] == 9) ? ' selected="selected"' : '').'>Ressplaneten und Werften</option>
 		<option value="10"'.((isset($_GET['typ']) AND $_GET['typ'] == 10) ? ' selected="selected"' : '').'>Spieler, Allianzen und Einstellungen</option>
+		<option value="12"'.((isset($_GET['typ']) AND $_GET['typ'] == 12) ? ' selected="selected"' : '').'>ODDB-API</option>
 		<option value="11"'.((isset($_GET['typ']) AND $_GET['typ'] == 11) ? ' selected="selected"' : '').'>Seiten anzeigen</option>
 	</select>
 	<br />
