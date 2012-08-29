@@ -383,9 +383,9 @@ if($data['userODSettings'] != '' AND strlen($data['userODSettings']) == 6) {
 				Handel: '.$handel.'
 				<br />
 				Kampftaktik: ';
-	if($data['userODSettings'][4] == 1) $tmpl->content .= 'Keilformation';
-	else if($data['userODSettings'][4] == 2) $tmpl->content .= 'Staffelung';
-	else $tmpl->content .= 'Schwarmangriff';
+	if($data['userODSettings'][4] == 1) $tmpl->content .= 'Kapern';
+	else if($data['userODSettings'][4] == 2) $tmpl->content .= 'Fernkampf';
+	else $tmpl->content .= 'Nahkampf';
 	$tmpl->content .= '
 				<br />
 				Steuern: ';

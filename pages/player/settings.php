@@ -226,9 +226,9 @@ else {
 				$content2 .= '
 			<td>'.$handel.'</td>
 			<td>';
-				if($row['userODSettings'][4] == 1) $content2 .= 'Keil';
-				else if($row['userODSettings'][4] == 2) $content2 .= 'Staffel';
-				else $content2 .= 'Schwarm';
+				if($row['userODSettings'][4] == 1) $content2 .= 'Kapern';
+				else if($row['userODSettings'][4] == 2) $content2 .= 'Fernkampf';
+				else $content2 .= 'Nahkampf';
 				$content2 .= '</td>
 			<td>';
 				if($row['userODSettings'][5] == 1) $content2 .= 'niedrig';

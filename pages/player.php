@@ -615,9 +615,9 @@ else {
 					Kampftaktik 
 					<select name="kampf" size="1">
 						<option value="-1">egal</option>
-						<option value="1">Keilformation</option>
-						<option value="2">Staffelung</option>
-						<option value="3">Schwarmangriff</option>
+						<option value="1">Kapern</option>
+						<option value="2">Fernkampf</option>
+						<option value="3">Nahkampf</option>
 					</select> &nbsp; &nbsp; 
 					Steuern 
 					<select name="steuern" size="1">
