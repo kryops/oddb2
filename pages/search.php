@@ -1355,7 +1355,7 @@ else {
 				// Log-Eintrag
 				if($config['logging'] >=2 ) {
 					$querystring = htmlspecialchars(str_replace(array('&hide', '&edit', "'"), array('', '', "\\'"), $_SERVER['QUERY_STRING']).'&hide&fav', ENT_COMPAT, 'UTF-8');
-					insertlog(16, 'benutzt die Suchfunktion <a class="link contextmenu" data-link="index.php?'.$querystring.'">(Link)</a>');
+					insertlog(16, 'benutzt die Suchfunktion ('.Search::getSearchDescription($_GET).')');
 				}
 			}
 		}
