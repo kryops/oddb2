@@ -45,11 +45,10 @@ ul {
 /* Layout */
 
 #bgpic {
-	position:absolute;
-	top:0px;
-	left:0px;
-	max-width:100%;
-	overflow:hidden;
+	height:650px;
+	background-image:url(../img/bg/milchstrasse.jpg);
+	background-repeat:no-repeat;
+	min-width:900px;
 }
 
 #ajax {
