@@ -40,8 +40,8 @@ function categorize($gpl, $gor, $gr) {
 	$erz = array(1003, 1016, 1017, 1058, 1062, 1067, 1072);
 	$metall = array(1005, 1006, 1025, 1059, 1063, 1068, 1070);
 	$wolfram = array(1008, 1018, 1019, 1055, 1061, 1064, 1069);
-	$kristall = array(1007, 1014, 1031, 1060, 1065, 1073);
-	$fluor = array(1042, 1043, 1044, 1057, 1066, 1071, 1074);
+	$kristall = array(1007, 1031, 1060, 1065, 1073);
+	$fluor = array(1042, 1044, 1057, 1066, 1071, 1074);
 	// Umsatzfabrik
 	$umsf = 1045;
 	// Fabrikgebäude

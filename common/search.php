@@ -80,7 +80,7 @@ class Search {
 		
 		// Planeten-Typen
 		$pltypen = 62;
-		$pltypnot = array(46,48);
+		$pltypnot = array();
 		
 		// Planetentyp validieren
 		if(isset($filter['t']) AND ((int)$filter['t'] < 1 OR (int)$filter['t'] > $pltypen OR in_array((int)$filter['t'], $pltypnot))) {
