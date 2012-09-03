@@ -131,7 +131,7 @@ if(isset($_GET['player']) AND $_GET['player'] != '') {
 	else if(strpos($_GET['player'], ',') === false) {
 		$_GET['player'] = (int)$_GET['player'];
 		if($_GET['player'] > 0) {
-			$conds[] = "planeten_playerID = ".$_GET['player'];
+			$conds[] = "(planeten_playerID = ".$_GET['player']." OR playerName = '".$_GET['player']."')";
 		}
 	}
 	// mehrere IDs eingegeben

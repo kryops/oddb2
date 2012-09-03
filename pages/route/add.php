@@ -283,7 +283,7 @@ else if($_GET['sp'] == 'add') {
 					else if(strpos($_POST['player'], ',') === false) {
 						$_POST['player'] = (int)$_POST['player'];
 						if($_POST['player'] > 0) {
-							$conds[] = "planeten_playerID = ".$_POST['player'];
+							$conds[] = "(planeten_playerID = ".$_POST['player']." OR playerName = '".$_POST['player']."')";
 						}
 					}
 					// mehrere IDs eingegeben
@@ -318,8 +318,8 @@ else if($_GET['sp'] == 'add') {
 								".PREFIX."planeten
 								".($route->gala ? "LEFT JOIN ".PREFIX."systeme
 									ON systemeID = planeten_systemeID" : "")."
-								".($user->protectedAllies ? "LEFT JOIN ".GLOBPREFIX."player
-									ON playerID = planeten_playerID" : "")."
+								LEFT JOIN ".GLOBPREFIX."player
+									ON playerID = planeten_playerID
 							WHERE
 								".implode(" AND ", $conds)."
 							LIMIT 4000
@@ -394,7 +394,7 @@ else if($_GET['sp'] == 'add') {
 							$tmpl->error = 'Du hast keinen Zugriff auf diese Allianz!';
 						}
 						else if($_POST['ally'] > 0) {
-							$conds[] = "player_allianzenID = ".$_POST['ally'];
+							$conds[] = "(player_allianzenID = ".$_POST['ally']." OR allianzenTag = '".$_POST['ally']."' OR allianzenName = '".$_POST['ally']."')";
 						}
 					}
 					// mehrere IDs eingegeben

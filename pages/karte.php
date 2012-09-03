@@ -43,12 +43,12 @@ else {
 	// welche Galaxie?
 	$gala = 0;
 	
-	// übergeben
+	// ï¿½bergeben
 	if(isset($_GET['gala'])) {
 		$gala = (int)$_GET['gala'];
 		
 		if(!$gala) {
-			$tmpl->error = 'Ungültige Galaxie eingegeben!';
+			$tmpl->error = 'Ungï¿½ltige Galaxie eingegeben!';
 		}
 		
 		$query = query("
@@ -171,7 +171,7 @@ else {
 					else if(!$row['systemeUpdate']) {
 						$color[$row['systemeID']] = '#ff0000';
 					}
-					// grade noch aktuell (grün -> gelb)
+					// grade noch aktuell (grï¿½n -> gelb)
 					else if($row['systemeUpdate'] > $old) {
 						$c = dechex(round(255*(1-($row['systemeUpdate']-$old)/$old2diff)));
 						if(strlen($c) == 1) $c = '0'.$c;
