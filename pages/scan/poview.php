@@ -281,63 +281,65 @@ foreach($_POST['pl'] as $data) {
 		
 		
 		// laufende Aktionen durchgehen
-		foreach($data['inva'] as $ityp) {
-			
-			// bereits eingetragen
-			if(isset($invas[$row['invasionen_planetenID']][$ityp])) {
-				unset($invas[$row['invasionen_planetenID']][$ityp]);
+		if(isset($data['inva'])) {
+			foreach($data['inva'] as $ityp) {
+				
+				// bereits eingetragen
+				if(isset($invas[$row['invasionen_planetenID']][$ityp])) {
+					unset($invas[$row['invasionen_planetenID']][$ityp]);
+				}
+				
+				// neue Aktionen eintragen
+				else {
+					// invalider Invasionstyp
+					if($ityp < 1 OR $ityp > 5) {
+						continue;
+					}
+					
+					// fremde Aktion?
+					$fremd = $registered ? 0 : 1;
+					// offen, wenn Opfer registriert und keine Kolo
+					$open = ($registered AND $ityp != 5) ? 1 : 0;
+					
+					if($ityp == 5) {
+						$open = 0;
+					}
+					
+					// Aktion eintragen
+					query("
+						INSERT INTO ".PREFIX."invasionen
+						SET
+							invasionenTime = ".time().",
+							invasionen_playerID = ".$_POST['uid'].",
+							invasionen_planetenID = ".$data['id'].",
+							invasionen_systemeID = ".$data['sid'].",
+							invasionenTyp = ".$ityp.",
+							invasionenFremd = ".$fremd.",
+							invasionenOpen = ".$open."
+					") OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
+					
+					$id = mysql_insert_id();
+					
+					// InvaLog-Eintrag
+					query("
+						INSERT INTO ".PREFIX."invasionen_log
+						SET
+							invalog_invasionenID = ".$id.",
+							invalogTime = ".time().",
+							invalog_playerID = ".$user->id.",
+							invalogText = 'erfasst die Aktion durch Einscannen der Planetenübersicht'
+					") OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
+					
+					// offene Invasionen aus dem Cache löschen
+					$cache->remove('openinvas');
+					
+					if(!isset($_GET['plugin']) AND $user->rechte['invasionen'] AND $tmpl->script == '') {
+						$tmpl->script = 'openinvas();';
+					}
+					
+				}
+				
 			}
-			
-			// neue Aktionen eintragen
-			else {
-				// invalider Invasionstyp
-				if($ityp < 1 OR $ityp > 5) {
-					continue;
-				}
-				
-				// fremde Aktion?
-				$fremd = $registered ? 0 : 1;
-				// offen, wenn Opfer registriert und keine Kolo
-				$open = ($registered AND $ityp != 5) ? 1 : 0;
-				
-				if($ityp == 5) {
-					$open = 0;
-				}
-				
-				// Aktion eintragen
-				query("
-					INSERT INTO ".PREFIX."invasionen
-					SET
-						invasionenTime = ".time().",
-						invasionen_playerID = ".$_POST['uid'].",
-						invasionen_planetenID = ".$data['id'].",
-						invasionen_systemeID = ".$data['sid'].",
-						invasionenTyp = ".$ityp.",
-						invasionenFremd = ".$fremd.",
-						invasionenOpen = ".$open."
-				") OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
-				
-				$id = mysql_insert_id();
-				
-				// InvaLog-Eintrag
-				query("
-					INSERT INTO ".PREFIX."invasionen_log
-					SET
-						invalog_invasionenID = ".$id.",
-						invalogTime = ".time().",
-						invalog_playerID = ".$user->id.",
-						invalogText = 'erfasst die Aktion durch Einscannen der Planetenübersicht'
-				") OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
-				
-				// offene Invasionen aus dem Cache löschen
-				$cache->remove('openinvas');
-				
-				if(!isset($_GET['plugin']) AND $user->rechte['invasionen'] AND $tmpl->script == '') {
-					$tmpl->script = 'openinvas();';
-				}
-				
-			}
-			
 		}
 		
 		// nicht mehr existente Aktionen archivieren
