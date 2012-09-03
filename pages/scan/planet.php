@@ -137,8 +137,8 @@ else {
 	$data = mysql_fetch_assoc($query);
 	
 	// Flooding-Schutz 15 Sekunden
-	if(time()-$data['planetenUpdate'] < 15 AND !isset($_GET['force'])) {
-		$tmpl->error = 'Der Planet wurde in den letzten 15 Sekunden schon eingescannt!';
+	if(time()-$data['planetenUpdate'] < 300 AND !isset($_GET['force'])) {
+		$tmpl->error = 'Der Planet wurde in den letzten 5 Minuten schon eingescannt!';
 		$tmpl->output();
 		die();
 	}

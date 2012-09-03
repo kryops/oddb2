@@ -28,13 +28,13 @@ class ScanOrbit {
 
 // Flooding-Schutz 2 Minuten
 if($c = $cache->get('scanorbit'.$_POST['id']) AND !isset($_GET['force'])) {
-	if($c == 2) $tmpl->error = 'Der Orbit wurde in den letzten 30 Sekunden schon eingescannt!';
+	if($c == 2) $tmpl->error = 'Der Orbit wurde in den letzten 5 Minuten schon eingescannt!';
 	else $tmpl->error = 'Der Planet ist nicht eingetragen. Zuerst muss das System gescannt werden!';
 	$tmpl->output();
 	die();
 }
 // Flooding-Schutz in den Cache laden
-$cache->set('scanorbit'.$_POST['id'], 2, 30);
+$cache->set('scanorbit'.$_POST['id'], 2, 300);
 
 // Daten sichern
 $_POST['id'] = (int)$_POST['id'];
