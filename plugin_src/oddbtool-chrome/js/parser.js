@@ -913,9 +913,8 @@ oddbtool.parsePage = function(page, manual) {
 			// Bergbauschiffe
 			out['bb'] = [];
 			
-			// CHROME nth-Child 1 weniger als Firefox!
 			try {
-				ctree.find('#div9 .tabletrans td:nth-child(4) > a[href*="orbit"]:first-child').each(function() {
+				ctree.find('#div9 .tabletrans td:nth-child(5) > a[href*="orbit"]:first-child').each(function() {
 					out['bb'].push($(this).attr('href').replace(/[^\d]/g, ''));
 				});
 			}

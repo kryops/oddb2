@@ -118,23 +118,23 @@
 		});
 		
 		// Logo klickbar machen
-		$('#oddbtoollogo',document).live('click', function() {
+		$(document).on('click', '#oddbtoollogo', function() {
 			window.open(chrome.extension.getURL('options.html'));
 		});
 		
 		// Parsen-Link
-		$('#oddbtoolparselink',document).live('click', function() {
+		$(document).on('click', '#oddbtoolparselink', function() {
 			oddbtool.parser(false, false, true);
 		});
 		
 		// Menüs
-		$('div.oddbtoolpfeil',document).live('mousedown', function(){
+		$(document).on('mousedown', 'div.oddbtoolpfeil', function(){
 			var id = $(this).attr('id');
 			id = id.replace(/oddbtoolpfeil/g, '');
 			$('div.oddbtoolmenu').hide();
 			$('#oddbtoolmenu'+id).show();
 		});
-		$('div.oddbtoolmenu',document).live('mouseleave', function(){
+		$(document).on('mouseleave', 'div.oddbtoolmenu', function(){
 			$(this).hide();
 		});
 		
