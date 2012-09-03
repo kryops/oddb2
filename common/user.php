@@ -535,7 +535,7 @@ function getrechte($level, $pallies, $pgalas, $allyrechte, $userrechte) {
  *
  * @return bool Erfolg
  */
-function odrequest($uid, $always = false, $minpunkte = 0, $auto = false) {
+function odrequest($uid, $always = false, $auto = false) {
 	global $odrallies, $dbs, $cache, $gconfig, $config, $odip;
 	
 	/*
@@ -728,10 +728,6 @@ playeratm=4173&userid=602511&name=Kryops&points=34202&titel=&warpoints=8608&gesi
 		}
 		// User neu eintragen
 		else {
-			// nicht eintragen, wenn Imperiumspunkte zu gering
-			if($minpunkte AND $oddata['points'] < $minpunkte) {
-				return false;
-			}
 			
 			query("
 				INSERT INTO ".$config['mysql_globprefix']."player

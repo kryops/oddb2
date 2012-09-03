@@ -54,7 +54,7 @@ else {
 				") OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
 				
 				if(!mysql_num_rows($query)) {
-					$success = odrequest($state, false, 2000);
+					$success = odrequest($state, false);
 					
 					// fehlgeschlagene Requests zurücksetzen
 					if($success) {

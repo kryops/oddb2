@@ -443,7 +443,7 @@ if($minid AND $od_up) {
 	foreach($ids as $id) {
 		
 		// Spieler nicht gefunden: Leeren Spieler eintragen
-		if(!odrequest($id, false, 0, true)) {
+		if(!odrequest($id, false, true)) {
 			query("
 				INSERT INTO
 					".GLOBPREFIX."player

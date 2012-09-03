@@ -40,7 +40,7 @@ $content = '
 <br /><br />
 <div class="hl2">Spielerprofile einlesen</div>
 <div class="icontent">
-	Diese Funktion liest alle Spielerprofile in einem bestimmten ID-Bereich von Omega-Day in die Datenbank ein, die mindestens 2000 Imperiumspunkte haben.
+	Diese Funktion liest alle Spielerprofile in einem bestimmten ID-Bereich von Omega-Day in die Datenbank ein.
 	<br />
 	Ein Spielerprofil wird automatisch eingelesen, wenn ein System des Spielers eingescannt wird.
 	<br /><br />
