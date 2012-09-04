@@ -29,6 +29,7 @@ $pages = array(
 	'edit'=>true,
 	'edit_send'=>true,
 	'edit_all'=>true,
+	'edit_all_ally'=>true,
 	'del'=>true,
 	
 	'ally'=>true
@@ -76,6 +77,11 @@ else if($_GET['sp'] == 'edit_send') {
 
 // Bedarf aller eigener Werften ändern
 else if($_GET['sp'] == 'edit_all') {
+	include './pages/werft/actions.php';
+}
+
+// Bedarf markierter verbündeter Werften ändern
+else if($_GET['sp'] == 'edit_all_ally') {
 	include './pages/werft/actions.php';
 }
 

@@ -1,7 +1,7 @@
 <?php
 /**
- * pages/werft/own.php
- * eigene Werften (Inhalt)
+ * pages/werft/ally.php
+ * verbündete Werften
  */
 
 // Sicherheitsabfrage
@@ -13,13 +13,17 @@ if(!class_exists('datatable')) {
 	include './common/datatable.php';
 }
 
+// Berechtigung, den Bedarf zu bearbeiten
+$rechte_bedarf = ($user->rechte['flags_edit_ally'] OR $user->rechte['flags_edit_meta']);
+
+
 
 $content =& $csw->data['ally']['content'];
 
 $content = '
 <div class="hl2 werft_allyhead">Verb&uuml;ndete Werften</div>
 <div class="icontent">
-<form name="ress_ally" action="#" onsubmit="return form_sendget(this, \'index.php?p=werft&amp;sp=ally&amp;s=1\')">
+<form name="werft_ally" action="#" onsubmit="return form_sendget(this, \'index.php?p=werft&amp;sp=ally&amp;s=1\')">
 <div class="fcbox center formbox">
 beschr&auml;nken auf eingetragene Werften deiner 
 &nbsp;<select name="meta">
@@ -178,7 +182,7 @@ $querystring = preg_replace('/&sort=([a-z]+)/', '', $querystring);
 $querystring = str_replace('&switch', '', $querystring);
 $querystring = htmlspecialchars($querystring, ENT_COMPAT, 'UTF-8');
 
-// eigene Ressplanis abfragen
+// Werften abfragen
 $query = query("
 	SELECT
 		planetenID,
@@ -233,7 +237,7 @@ $query = query("
 
 // Planeten eingetragen
 if(mysql_num_rows($query)) {
-	if($user->rechte['routen']) {
+	if($user->rechte['routen'] OR $rechte_bedarf) {
 		$content .= '
 	<form name="werft_allyroutenform" onsubmit="return false">';
 	}
@@ -254,7 +258,7 @@ if(mysql_num_rows($query)) {
 	<th>&nbsp;</th>
 	<th>&nbsp;</th>
 	<th>&nbsp;</th>';
-	if($user->rechte['routen']) {
+	if($user->rechte['routen'] OR $rechte_bedarf) {
 		$content .= '
 	<th>&nbsp;</th>';
 	}
@@ -266,7 +270,7 @@ if(mysql_num_rows($query)) {
 	while($row = mysql_fetch_assoc($query)) {
 		// Bedarf ausrechnen
 		$bedarf = false;
-		if($row['planetenWerftBedarf'] != '' AND $row['planetenUpdateOverview'] > $t) {
+		if($row['planetenWerftBedarf'] != '') {
 			$b = unserialize($row['planetenWerftBedarf']);
 			if($row['planetenRMErz'] < $b[0] OR $row['planetenRMMetall'] < $b[1] OR $row['planetenRMWolfram'] < $b[2] OR $row['planetenRMKristall'] < $b[3] OR $row['planetenRMFluor'] < $b[4]) {
 				$bedarf = true;
@@ -309,7 +313,7 @@ if(mysql_num_rows($query)) {
 	<td>';
 		// Bedarf
 		// unbekannt
-		if($row['planetenWerftBedarf'] == '' OR $row['planetenUpdateOverview'] <= $t) {
+		if($row['planetenWerftBedarf'] == '' OR $row['planetenUpdateOverview'] == 0) {
 			$content .= '<span class="yellow" style="font-style:italic">unbekannt</span>';
 		}
 		else {
@@ -345,14 +349,29 @@ if(mysql_num_rows($query)) {
 					$tt .= $ress[$key].ressmenge2($val, true).' ';
 				}
 			}
-			$content .= '<span class="'.($bedarf ? 'red' : 'green').' tooltip"'.($bedarf ? ' style="font-weight:bold"' : '').' data-tooltip="'.htmlspecialchars($tt, ENT_COMPAT, 'UTF-8').'">'.($bedarf ? 'ja' : 'nein').'</span>';
+			
+			// Label erzeugen
+			if($row['planetenUpdateOverview'] < $t) {
+				$color = 'yellow italic';
+				$label = 'Scan veraltet';
+			}
+			else if($bedarf) {
+				$color = 'red bold';
+				$label = 'ja';
+			}
+			else {
+				$color = 'green';
+				$label = 'nein';
+			}
+			
+			$content .= '<span class="'.$color.' tooltip" data-tooltip="'.htmlspecialchars($tt, ENT_COMPAT, 'UTF-8').'">'.$label.'</span>';
 		}
 		
 		$content .= '</td>
 	<td>'.datatable::screenshot($row, $config['scan_veraltet']).'</td>
 	<td>'.datatable::kategorie($row['planetenKategorie'], $row['planetenUpdateOverview'], $row).'</td>
 	<td>'.datatable::kommentar($row['planetenKommentar'], $row['planetenID']).'</td>';
-		if($user->rechte['routen']) {
+		if($user->rechte['routen'] OR $rechte_bedarf) {
 			$content .= '<td><input type="checkbox" name="'.$row['planetenID'].'" /></td>';
 		}
 		$content .= '
@@ -362,16 +381,62 @@ if(mysql_num_rows($query)) {
 	$content .= '
 	</table>';
 	
-	if($user->rechte['routen']) {
+	if($user->rechte['routen'] OR $rechte_bedarf) {
 		$content .= '
 	<div style="text-align:right;margin-top:4px">
 	markieren: 
 	<a onclick="$(this).parents(\'form\').find(\'input\').prop(\'checked\', true);" style="font-style:italic">alle</a> /
 	<a onclick="$(this).parents(\'form\').find(\'input\').prop(\'checked\', false);" style="font-style:italic">keine</a> 
-	</div>
+	</div>';
+		if($user->rechte['routen']) {
+			$content .= '
 	<br />
-	<div class="small2" style="text-align:right"><a onclick="ajaxcall(\'index.php?p=ajax_general&amp;sp=route_addmarked&amp;ajax\', this.parentNode, false, true)">markierte Planeten zu einer Route / Liste hinzuf&uuml;gen</a></div>
+	<div class="small2" style="text-align:right"><a onclick="ajaxcall(\'index.php?p=ajax_general&amp;sp=route_addmarked&amp;ajax\', this.parentNode, false, true)">markierte Planeten zu einer Route / Liste hinzuf&uuml;gen</a></div>';
+		}
+		$content .= '
 	</form>';
+	}
+	
+	// Formular zum Ändern des Bedarfs anzeigen
+	if($rechte_bedarf) {
+		
+		$content .= '<br /><br />
+	<div class="hl2">Bedarf aller markierten Werften &auml;ndern</div>
+	';
+		
+		// Hinweise bei fehlenden Berechtigungen
+		if(!$user->rechte['flags_edit_ally']) {
+			$content .= '
+			<span class="small hint">Werften deiner Allianz bleiben unver&auml;ndert, da du hierf&uuml;r keine Berechtigung hast!</span><br />';
+		}
+		if(!$user->rechte['flags_edit_meta']) {
+			$content .= '
+			<span class="small hint">Werften deiner Meta (au&szlig;erhalb deiner Allianz) bleiben unver&auml;ndert, da du hierf&uuml;r keine Berechtigung hast!</span><br />';
+		}
+		
+		$content .= '
+	<br />
+	<form name="werft_editall" action="#" onsubmit="$(this).find(\'[name=ids]\').val($(this).siblings(\'[name=werft_allyroutenform]\').serialize());return form_send(this, \'index.php?p=werft&amp;sp=edit_all_ally\', $(this).siblings(\'.ajax\'))">
+	<input type="hidden" name="ids" value="" />
+	<br />
+	<div class="center">
+		<img src="img/layout/leer.gif" class="ress ress_form erz" /> 
+		<input type="text" class="smalltext" name="erz" /> 
+		<img src="img/layout/leer.gif" class="ress ress_form metall" /> 
+		<input type="text" class="smalltext" name="metall" /> 
+		<img src="img/layout/leer.gif" class="ress ress_form wolfram" /> 
+		<input type="text" class="smalltext" name="wolfram" /> 
+		<img src="img/layout/leer.gif" class="ress ress_form kristall" /> 
+		<input type="text" class="smalltext" name="kristall" /> 
+		<img src="img/layout/leer.gif" class="ress ress_form fluor" /> 
+		<input type="text" class="smalltext" name="fluor" />
+		&nbsp;
+		<input type="submit" class="button" style="width:100px" value="speichern" />
+		<br /><br />
+	</div>
+	</form>
+	<div class="ajax center"></div>';
+		
 	}
 }
 // keine Planeten eingetragen

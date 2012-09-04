@@ -325,6 +325,102 @@ $(\'.plwerftbedarfu'.$user->id.'\').html(\''.$c.'\');';
 	$tmpl->output();
 }
 
+// Bedarf aller markierter verbündeter Werften ändern
+else if($_GET['sp'] == 'edit_all_ally') {
+	// Daten unvollständig
+	if(!isset($_POST['ids'], $_POST['erz'], $_POST['metall'], $_POST['wolfram'], $_POST['kristall'], $_POST['fluor'])) {
+		$tmpl->error = 'Daten unvollständig!';
+	}
+	else {
+		// serialisiertes Array erzeugen
+		$b = array(
+			(int)$_POST['erz'],
+			(int)$_POST['metall'],
+			(int)$_POST['wolfram'],
+			(int)$_POST['kristall'],
+			(int)$_POST['fluor']
+		);
+		
+		$b2 = serialize($b);
+		
+		// Bedingungen aufstellen
+		$conds = array(
+			"planetenWerft = 1",
+			"statusStatus = ".$status_meta
+		);
+		
+		// markierte IDs
+		parse_str($_POST['ids'], $ids);
+		$ids = array_keys($ids);
+		
+		foreach($ids as $key=>$val) {
+			$ids[$key] = (int)$val;
+		}
+		
+		if(!count($ids)) {
+			$ids[] = 0;
+		}
+		
+		$conds[] = "planetenID IN(".implode(", ", $ids).")";
+		
+		// eingeschränkte Berechtigungen
+		if(!$user->rechte['werft_ally'] AND $user->allianz) {
+			$conds[] = "player_allianzenID != ".$user->allianz;
+		}
+		if(!$user->rechte['werft_meta'] AND $user->allianz) {
+			$conds[] = "(player_allianzenID = ".$user->allianz." OR statusStatus IS NULL OR statusStatus != ".$status_meta.")";
+		}
+		if($user->protectedAllies) {
+			$conds[] = "player_allianzenID NOT IN(".implode(", ", $user->protectedAllies).")";
+		}
+		if($user->protectedGalas) {
+			$conds[] = "systeme_galaxienID NOT IN(".implode(", ", $user->protectedGalas).")";
+		}
+		
+		if(!$user->rechte['flags_edit_ally']) {
+			$conds[] = "player_allianzenID != ".$user->allianz; 
+		}
+		if(!$user->rechte['flags_edit_meta']) {
+			$conds[] = "(player_allianzenID = ".$user->allianz." OR statusStatus IS NULL OR statusStatus != ".$status_meta.")";
+		}
+		
+		
+		// speichern
+		query("
+			UPDATE
+				".PREFIX."planeten
+				LEFT JOIN ".PREFIX."systeme
+					ON systemeID = planeten_systemeID
+				LEFT JOIN ".GLOBPREFIX."player
+					ON playerID = planeten_playerID
+				LEFT JOIN ".GLOBPREFIX."allianzen
+					ON allianzenID = player_allianzenID
+				LEFT JOIN ".PREFIX."allianzen_status
+					ON statusDBAllianz = ".$user->allianz."
+					AND status_allianzenID = allianzenID
+			SET
+				planetenWerftBedarf = '".escape($b2)."'
+			WHERE
+				".implode(" AND ", $conds)."
+		") OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
+		
+		// Anzeige aktualisieren
+		$t = time();
+		
+		$tmpl->content = 'Der Bedarf wurde gespeichert.';
+		
+		$tmpl->script = '$("form[name=werft_ally]:visible").trigger("onsubmit");';
+		
+		// Logfile-Eintrag
+		if($config['logging'] >= 2) {
+			insertlog(12, 'ändert den Bedarf verbündeter Werften');
+		}
+	}
+	
+	// Ausgabe
+	$tmpl->output();
+}
+
 // Werft entfernen
 else if($_GET['sp'] == 'del') {
 	// Daten überprüfen
