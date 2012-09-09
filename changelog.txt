@@ -1,4 +1,31 @@
-﻿08.07.2012 - V2.1.6
+﻿28.09.2012 - V2.2 [R10]
+-----------------------
+Core / Admin
+* Installation und Updates über Git möglich
+* Bei der Installation wird jetzt auch das Admin-Passwort gesetzt
+* Verstärkung der Passwort-Verschlüsselung
+* Die Grundeinstellungen der Installation können im Adminbereich geändert werden
+* Rewrite der DB-Abgleich-Funktion, benötigt jetzt weniger Arbeitsspeicher
+
+Neue Funktionen
+* JSON-API für Entwickler (Einbinden der ODDB in Browser-Addons, Greasemonkey-Scripts...)
+
+Parser / FoW
+* Beliebige Suchfilter im FoW einstellbar; ersetzt Ressplani- und benutzerdefinierten Bereich
+* Beim Systemscan werden jetzt laufende Kolos und Genesis eingetragen
+* Beim Planetenscan wird jetzt der Schiffbau eingetragen 
+* Es können nun mehrere gleichzeitige Aktionen pro Planet eingetragen werden (z.B. Invasion und Besatzung)
+* Die Wartezeit zwischen zwei identischen Scans kann nun umgangen werden
+
+Sonstiges
+* Scan-Statistik bewohnter Planeten pro Galaxie
+* Sprunggeneratoren können nun als benutzbar/unbenutzbar markiert werden
+* Verbündete Werften: Der Bedarf kann nun für mehrere Werften verbündeter Spieler gleichzeitig geändert werden
+* Änderungen Runde 10 (neue Rasse, Planeten...)
+
+
+
+08.07.2012 - V2.1.6
 -------------------
 * Routen können jetzt als CSV exportiert werden
 * Verbündete Werften-Filter erweitert

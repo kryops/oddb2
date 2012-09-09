@@ -18,7 +18,7 @@ if(!defined('ODDB')) die('unerlaubter Zugriff!');
 //
 
 // Hauptversion
-define('VERSION', '2.1.6');
+define('VERSION', '2.2');
 // Patch-Version
 define('PATCH_VERSION', 1);
 // Datei-Zusatz (css und js)
@@ -229,6 +229,7 @@ $rassen2 = array(
 	3=>'trado',
 	4=>'bera',
 	5=>'myri',
+	10=>'lux',
 	11=>'revisker'
 );
 
