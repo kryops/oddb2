@@ -22,19 +22,19 @@ define('VERSION', '2.2');
 // Patch-Version
 define('PATCH_VERSION', 1);
 // Datei-Zusatz (css und js)
-define('FILESTAMP', '?8');
+define('FILESTAMP', '?9');
 // OD-Runde
-define('ODWORLD', 'int9');
+define('ODWORLD', 'int10');
 define('DOWNTIME', false);
 // Abgleich-Version
 define('ABGLEICH_VERSION', 1);
 // ODDB Tool-Version
-define('ODDBTOOL', '1.1.5c');
-define('ODDBTOOLPATH', 'oddbtool-1_1_5c.xpi');
-define('ODDBTOOLPATH_CHROME', 'oddbtool-chrome-1_1_5c.crx');
+define('ODDBTOOL', '2.2');
+define('ODDBTOOLPATH', 'oddbtool-2_2.xpi');
+define('ODDBTOOLPATH_CHROME', 'oddbtool-chrome-2_2.crx');
 
 // Debug-Modus
-define('DEBUG', true);
+define('DEBUG', false);
 
 //
 // Umgebungsdaten

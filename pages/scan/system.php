@@ -12,7 +12,7 @@ if(!defined('ODDB')) die('unerlaubter Zugriff!');
 class ScanSystem {
 	
 	/**
-	 * Planeten-Aktion eintragen; erfasst werden Genesis und Kolos
+	 * Planeten-Aktion eintragen; erfasst werden Invasionen, Genesis und Kolos
 	 * @param array $pldata Planetendaten aus dem Scan
 	 * @param array $plrow gespeicherter Planetendatensatz @default false
 	 */
@@ -20,16 +20,28 @@ class ScanSystem {
 		
 		global $invasionen, $cache, $user, $tmpl;
 		
+		// keine Aktion erfasst
+		if(!isset($pldata['inva']) AND !isset($pldata['kolo']) AND !isset($pldata['genesis'])) {
+			return false;
+		}
 		
 		// Abbrechen, wenn schon eine Aktion eingetragen ist
 		if(isset($invasionen[$pldata['id']])) {
-			return false;
+			
+			if(isset($pldata['inva']) AND in_array(1, $invasionen[$pldata['id']])) {
+				return false;
+			}
+			
+			if(isset($pldata['genesis']) AND in_array(3, $invasionen[$pldata['id']])) {
+				return false;
+			}
+			
+			if(isset($pldata['kolo']) AND in_array(5, $invasionen[$pldata['id']])) {
+				return false;
+			}
+			
 		}
 		
-		// keine Aktion erfasst
-		if(!isset($pldata['kolo']) AND !isset($pldata['genesis'])) {
-			return false;
-		}
 		
 		// Planeten-Verschleierung umgehen
 		$inhaber = $pldata['inhaber'];
@@ -39,13 +51,17 @@ class ScanSystem {
 		}
 		
 		
-		// Kolo oder Genesis können erfasst werden
+		// Inva, Kolo oder Genesis können erfasst werden
 		if(isset($pldata['kolo'])) {
 			$invatyp = 5;
 		}
 		
 		else if(isset($pldata['genesis'])) {
 			$invatyp = 3;
+		}
+		
+		else if(isset($pldata['inva'])) {
+			$invatyp = 1;
 		}
 		
 		// frei oder verschleiert
@@ -112,6 +128,43 @@ class ScanSystem {
 		if(!isset($_GET['plugin']) AND $user->rechte['invasionen']) {
 			$tmpl->script = 'openinvas();';
 		}
+	}
+	
+	
+	/**
+	 * Bergbau oder Terraformer eintragen
+	 * @param array $pldata Planeten-Datensatz
+	 */
+	public static function addBergbauTf($pldata) {
+		
+		// Bergbau eintragen
+		if(isset($pldata['bb'])) {
+			query("
+				INSERT INTO ".PREFIX."planeten_schiffe
+				SET
+					schiffe_planetenID = ".$pldata['id'].",
+					schiffeBergbau = -1,
+					schiffeBergbauUpdate = ".time()."
+				ON DUPLICATE KEY UPDATE
+					schiffeBergbau = -1,
+					schiffeBergbauUpdate = ".time()."
+			") OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
+		}
+		
+		// Terraformer eintragen
+		if(isset($pldata['tf'])) {
+			query("
+				INSERT INTO ".PREFIX."planeten_schiffe
+				SET
+					schiffe_planetenID = ".$pldata['id'].",
+					schiffeTerraformer = 1,
+					schiffeTerraformerUpdate = ".time()."
+				ON DUPLICATE KEY UPDATE
+					schiffeTerraformer = 1,
+					schiffeTerraformerUpdate = ".time()."
+			") OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
+		}
+		
 	}
 	
 }
@@ -215,7 +268,13 @@ else {
 	") OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
 	
 	while($row = mysql_fetch_assoc($query)) {
-		$invasionen[$row['invasionen_planetenID']] = $row['invasionenTyp'];
+		
+		if(!isset($invasionen[$row['invasionen_planetenID']])) {
+			$invasionen[$row['invasionen_planetenID']] = array();
+		}
+		
+		$invasionen[$row['invasionen_planetenID']][] = $row['invasionenTyp'];
+		
 	}
 	
 	
@@ -372,20 +431,8 @@ else {
 					$gate = array($pldata['id'], $pos);
 				}
 				
-				// Bergbau eintragen
-				if(isset($pldata['bb'])) {
-					query("
-						INSERT INTO ".PREFIX."planeten_schiffe
-						SET
-							schiffe_planetenID = ".$pldata['id'].",
-							schiffeBergbau = -1,
-							schiffeBergbauUpdate = ".time()."
-						ON DUPLICATE KEY UPDATE
-							schiffeBergbau = -1,
-							schiffeBergbauUpdate = ".time()."
-					") OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
-				}
-				
+				// Bergbau und Terraformer eintragen
+				ScanSystem::addBergbauTf($pldata);
 				
 				// Kolo und Genesis eintragen
 				ScanSystem::addInvasion($pldata);
@@ -497,21 +544,10 @@ else {
 						") OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
 					}
 					
-					// Bergbau eintragen
-					if(isset($pldata['bb'])) {
-						query("
-							INSERT INTO ".PREFIX."planeten_schiffe
-							SET
-								schiffe_planetenID = ".$pldata['id'].",
-								schiffeBergbau = -1,
-								schiffeBergbauUpdate = ".time()."
-							ON DUPLICATE KEY UPDATE
-								schiffeBergbau = -1,
-								schiffeBergbauUpdate = ".time()."
-						") OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
-					}
+					// Bergbau und Terraformer eintragen
+					ScanSystem::addBergbauTf($pldata);
 					
-					// Kolo und Genesis eintragen
+					// Inva, Kolo und Genesis eintragen
 					ScanSystem::addInvasion($pldata);
 					
 				}
@@ -660,19 +696,8 @@ else {
 						") OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
 					}
 					
-					// Bergbau eintragen
-					if(isset($pldata['bb'])) {
-						query("
-							INSERT INTO ".PREFIX."planeten_schiffe
-							SET
-								schiffe_planetenID = ".$pldata['id'].",
-								schiffeBergbau = -1,
-								schiffeBergbauUpdate = ".time()."
-							ON DUPLICATE KEY UPDATE
-								".($pl[$pldata['id']]['schiffeBergbau'] ? "" : "schiffeBergbau = -1,")."
-								schiffeBergbauUpdate = ".time()."
-						") OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
-					}
+					// Bergbau und Terraformer eintragen
+					ScanSystem::addBergbauTf($pldata);
 					
 					// Kolo und Genesis eintragen
 					ScanSystem::addInvasion($pldata, $pl[$pldata['id']]);
@@ -726,7 +751,7 @@ else {
 					schiffe_planetenID IN(".$ids.")
 			") OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
 			
-			// Invasionen ins Archiv verschieben
+			//  ins Archiv verschieben
 			$query = query("
 				SELECT
 					invasionenID,

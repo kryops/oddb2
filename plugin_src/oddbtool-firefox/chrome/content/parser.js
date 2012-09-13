@@ -348,6 +348,16 @@ oddbtool.parsePage = function(page, manual) {
 					if($(this).find('tr:last-child img[src*="flotte-genesis.gif"]').length) {
 						pl[i]['genesis'] = 1;
 					}
+					
+					// Terraformer
+					if($(this).find('tr:last-child img[src*="flotte_terraform.gif"]').length) {
+						pl[i]['tf'] = 1;
+					}
+					
+					// Invasion
+					if($(this).find('tr:last-child img[src*="flotte_invasion.gif"]').length) {
+						pl[i]['inva'] = 1;
+					}
 				}
 				// Kein Planet vorhanden
 				else {

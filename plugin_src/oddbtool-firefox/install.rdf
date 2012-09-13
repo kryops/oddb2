@@ -5,7 +5,7 @@
     <em:type>2</em:type>
     
 	<em:name>ODDB Tool</em:name>
-    <em:version>1.1.5c</em:version>
+    <em:version>2.2</em:version>
     <em:creator>Kryops</em:creator>
     <em:contributor></em:contributor>
     <em:description>Das Firefox-Addon für die ODDB V2</em:description>
@@ -19,21 +19,9 @@
       <Description>
         <em:id>{ec8030f7-c20a-464f-9b0e-13a3a9e97384}</em:id>
         <em:minVersion>2.0.0</em:minVersion>
-        <em:maxVersion>19.9</em:maxVersion>
+        <em:maxVersion>29.9</em:maxVersion>
       </Description>
     </em:targetApplication>
-	
-	<!-- Fennec / Firefox Mobile -->
-	<!-- nicht in dieser Version
-	<em:targetApplication>
-	  
-	  <Description>
-		<em:id>{a23983c0-fd0e-11dc-95ff-0800200c9a66}</em:id>
-		<em:minVersion>4.0</em:minVersion>
-		<em:maxVersion>19.9</em:maxVersion>
-	  </Description>
-	</em:targetApplication>
-	-->
 	
   </Description>
 </RDF>
