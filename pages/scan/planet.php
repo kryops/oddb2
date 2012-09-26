@@ -147,9 +147,7 @@ else {
 	$cat = categorize($gpl, $gor, $_POST['groesse']);
 	
 	// gesamte Ressproduktion und Ressmenge berechnen
-	$rp = $_POST['erzp']-$_POST['metallp'];
-	if($rp < 0) $rp = 0;
-	$rp += $_POST['metallp']+$_POST['wolframp']+$_POST['kristallp']+$_POST['fluorp'];
+	$rp = $_POST['erzp']+$_POST['metallp']+$_POST['wolframp']+$_POST['kristallp']+$_POST['fluorp'];
 	
 	$rm = $_POST['erzm']+$_POST['metallm']+$_POST['wolframm']+$_POST['kristallm']+$_POST['fluorm'];
 	

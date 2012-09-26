@@ -376,7 +376,7 @@ $tmpl->content .= '
 if($data['planetenUpdate']) {
 	$tmpl->content .= '
 				<td style="width:20%">
-					<img src="img/layout/leer.gif" alt="Erz" class="ress erzprod" /> &nbsp; '.ressmenge($data['planetenRPErz']).'
+					<img src="img/layout/leer.gif" alt="Erz" class="ress erzprod" /> &nbsp; '.($data['planetenRPErz'] < 0 ? '<span class="red">' : '').ressmenge($data['planetenRPErz']).($data['planetenRPErz'] < 0 ? '</span>' : '').'
 					<br />
 					<img src="img/layout/leer.gif" alt="Metall" class="ress metallprod" /> &nbsp; '.ressmenge($data['planetenRPMetall']).'
 					<br />

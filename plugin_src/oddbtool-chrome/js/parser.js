@@ -431,7 +431,13 @@ oddbtool.parsePage = function(page, manual) {
 			
 			try {
 				// Ressproduktion
-				out['erzp'] = ctree.find('#erzproduktion').html().replace(/[^\d]/g, '');
+				if(ctree.find('#erzproduktion > font').length) {
+					out['erzp'] = ctree.find('#erzproduktion > font').html().replace(/[^\-\d]/g, '');
+				}
+				else {
+					out['erzp'] = ctree.find('#erzproduktion').html().replace(/[^\-\d]/g, '');
+				}
+				
 				out['metallp'] = ctree.find('#metallproduktion').html().replace(/[^\d]/g, '');
 				out['wolframp'] = ctree.find('#wolframproduktion').html().replace(/[^\d]/g, '');
 				out['kristallp'] = ctree.find('#kristallproduktion').html().replace(/[^\d]/g, '');

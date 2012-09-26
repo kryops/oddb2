@@ -221,7 +221,7 @@ $tables_add = array(
   `planetenRWWolfram` smallint(5) unsigned NOT NULL,
   `planetenRWKristall` smallint(5) unsigned NOT NULL,
   `planetenRWFluor` smallint(5) unsigned NOT NULL,
-  `planetenRPErz` mediumint(8) unsigned NOT NULL,
+  `planetenRPErz` mediumint(9) NOT NULL,
   `planetenRPMetall` mediumint(8) unsigned NOT NULL,
   `planetenRPWolfram` mediumint(8) unsigned NOT NULL,
   `planetenRPKristall` mediumint(8) unsigned NOT NULL,
