@@ -46,7 +46,7 @@ $globtables_add = array(
   `allianzenMember` smallint(5) unsigned NOT NULL,
   `allianzenUpdate` int(10) unsigned NOT NULL,
   PRIMARY KEY (`allianzenID`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8",
+) ENGINE=InnoDB DEFAULT CHARSET=utf8",
 	
 "CREATE TABLE IF NOT EXISTS `".$globprefix."ban` (
   `banIP` int(10) unsigned NOT NULL,
@@ -75,7 +75,7 @@ $globtables_add = array(
   PRIMARY KEY (`playerID`),
   KEY `player_allianzenID` (`player_allianzenID`),
   KEY `playerName` (`playerName`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8",
+) ENGINE=InnoDB DEFAULT CHARSET=utf8",
 
 "CREATE TABLE IF NOT EXISTS `".$globprefix."player_allyhistory` (
   `allyhistory_playerID` int(10) unsigned NOT NULL,
@@ -84,7 +84,7 @@ $globtables_add = array(
   `allyhistoryLastAlly` int(10) unsigned DEFAULT NULL,
   `allyhistoryFinal` tinyint(1) unsigned NOT NULL,
   KEY `allyhistory_playerID` (`allyhistory_playerID`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8",
+) ENGINE=InnoDB DEFAULT CHARSET=utf8",
 
 "INSERT INTO
 	".$globprefix."player
@@ -111,7 +111,7 @@ $tables_add = array(
   `status_allianzenID` int(10) unsigned NOT NULL,
   `statusStatus` tinyint(3) unsigned NOT NULL,
   KEY `statusDBAllianz` (`statusDBAllianz`,`status_allianzenID`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8",
+) ENGINE=InnoDB DEFAULT CHARSET=utf8",
 
 "CREATE TABLE IF NOT EXISTS `".$prefix."favoriten` (
   `favoritenID` int(10) unsigned NOT NULL AUTO_INCREMENT,
@@ -121,7 +121,7 @@ $tables_add = array(
   `favoritenTyp` tinyint(3) unsigned NOT NULL,
   PRIMARY KEY (`favoritenID`),
   KEY `favoriten_playerID` (`favoriten_playerID`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8",
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8",
 
 "CREATE TABLE IF NOT EXISTS `".$prefix."galaxien` (
   `galaxienID` smallint(5) unsigned NOT NULL,
@@ -134,7 +134,7 @@ $tables_add = array(
   `galaxienGateZ` smallint(6) NOT NULL,
   `galaxienGatePos` tinyint(3) unsigned NOT NULL,
   PRIMARY KEY (`galaxienID`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8",
+) ENGINE=InnoDB DEFAULT CHARSET=utf8",
 
 "CREATE TABLE IF NOT EXISTS `".$prefix."invasionen` (
   `invasionenID` int(10) unsigned NOT NULL AUTO_INCREMENT,
@@ -154,7 +154,7 @@ $tables_add = array(
   PRIMARY KEY (`invasionenID`),
   KEY `invasionenOpen` (`invasionenOpen`),
   KEY `invasionen_planetenID` (`invasionen_planetenID`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8",
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8",
 
 "CREATE TABLE IF NOT EXISTS `".$prefix."invasionen_archiv` (
   `archivID` int(10) unsigned NOT NULL,
@@ -169,7 +169,7 @@ $tables_add = array(
   `archivSchiffe` smallint(6) NOT NULL,
   `archivKommentar` text NOT NULL,
   PRIMARY KEY (`archivID`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8",
+) ENGINE=InnoDB DEFAULT CHARSET=utf8",
 
 "CREATE TABLE IF NOT EXISTS `".$prefix."invasionen_log` (
   `invalog_invasionenID` int(10) unsigned NOT NULL,
@@ -177,7 +177,7 @@ $tables_add = array(
   `invalog_playerID` int(10) unsigned NOT NULL,
   `invalogText` text NOT NULL,
   KEY `invalog_invasionenID` (`invalog_invasionenID`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8",
+) ENGINE=InnoDB DEFAULT CHARSET=utf8",
 
 "CREATE TABLE IF NOT EXISTS `".$prefix."log` (
   `logID` int(11) NOT NULL AUTO_INCREMENT,
@@ -188,7 +188,7 @@ $tables_add = array(
   `logIP` int(10) unsigned NOT NULL,
   PRIMARY KEY (`logID`),
   KEY `log_playerID` (`log_playerID`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8",
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8",
 
 "CREATE TABLE IF NOT EXISTS `".$prefix."myrigates` (
   `myrigates_planetenID` int(10) unsigned NOT NULL,
@@ -197,7 +197,7 @@ $tables_add = array(
   `myrigatesSprungFeind` tinyint(1) NOT NULL,
   PRIMARY KEY (`myrigates_planetenID`),
   KEY `myrigates_galaxienID` (`myrigates_galaxienID`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8",
+) ENGINE=InnoDB DEFAULT CHARSET=utf8",
 
 "CREATE TABLE IF NOT EXISTS `".$prefix."planeten` (
   `planetenID` int(10) unsigned NOT NULL,
@@ -253,7 +253,7 @@ $tables_add = array(
   PRIMARY KEY (`planetenID`),
   KEY `planeten_systemeID` (`planeten_systemeID`),
   KEY `planeten_playerID` (`planeten_playerID`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8",
+) ENGINE=InnoDB DEFAULT CHARSET=utf8",
 
 "CREATE TABLE IF NOT EXISTS `".$prefix."planeten_schiffe` (
   `schiffe_planetenID` int(10) unsigned NOT NULL,
@@ -262,7 +262,7 @@ $tables_add = array(
   `schiffeTerraformer` tinyint(4) DEFAULT NULL,
   `schiffeTerraformerUpdate` int(10) unsigned NOT NULL,
   PRIMARY KEY (`schiffe_planetenID`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8",
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8",
 
 "CREATE TABLE IF NOT EXISTS `".$prefix."planeten_history` (
   `history_planetenID` int(10) unsigned NOT NULL,
@@ -270,7 +270,7 @@ $tables_add = array(
   `historyLast` int(11) NOT NULL,
   `historyTime` int(10) unsigned NOT NULL,
   KEY `history_planetenID` (`history_planetenID`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8",
+) ENGINE=InnoDB DEFAULT CHARSET=utf8",
 
 "CREATE TABLE IF NOT EXISTS `".$prefix."register` (
   `registerID` int(10) unsigned NOT NULL AUTO_INCREMENT,
@@ -281,7 +281,7 @@ $tables_add = array(
   `registerAllyRechte` text NOT NULL,
   PRIMARY KEY (`registerID`),
   KEY `register_allianzenID` (`register_allianzenID`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;",
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;",
 
 "CREATE TABLE IF NOT EXISTS `".$prefix."routen` (
   `routenID` int(10) unsigned NOT NULL AUTO_INCREMENT,
@@ -298,7 +298,7 @@ $tables_add = array(
   `routenMarker` int(10) unsigned NOT NULL,
   `routenAntrieb` smallint(5) unsigned NOT NULL,
   PRIMARY KEY (`routenID`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8;",
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8;",
 
 "CREATE TABLE IF NOT EXISTS `".$prefix."systeme` (
   `systemeID` int(10) unsigned NOT NULL,
@@ -315,7 +315,7 @@ $tables_add = array(
   `systemeReservUser` varchar(50) NOT NULL,
   PRIMARY KEY (`systemeID`),
   KEY `systeme_galaxienID` (`systeme_galaxienID`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8",
+) ENGINE=InnoDB DEFAULT CHARSET=utf8",
 
 "CREATE TABLE IF NOT EXISTS `".$prefix."user` (
   `user_playerID` int(10) unsigned NOT NULL,
@@ -356,7 +356,7 @@ $tables_add = array(
   `userOnlinePlugin` int(10) unsigned NOT NULL,
   `userApiKey` char(32) NOT NULL,
   PRIMARY KEY (`user_playerID`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8"
+) ENGINE=InnoDB DEFAULT CHARSET=utf8"
 );
 
 
