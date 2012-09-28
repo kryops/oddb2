@@ -568,7 +568,7 @@ if($data['planetenWerft'] AND $data['planetenUpdateOverview'] AND $tr['werft']) 
 	}
 	else {
 		// Bedarf ausrechnen
-		$b = unserialize($data['planetenWerftBedarf']);
+		$b = json_decode($data['planetenWerftBedarf'], true);
 		
 		// Ress-Labels
 		$ress = array(

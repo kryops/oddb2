@@ -837,7 +837,7 @@ if($showr) {
 $sysinfo = '';
 
 // Einstellungen ermitteln
-$fow = unserialize($user->settings['fow']);
+$fow = json_decode($user->settings['fow'], true);
 
 if(count($fow) OR !$showr) {
 	// Headline

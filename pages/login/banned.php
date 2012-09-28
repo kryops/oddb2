@@ -80,7 +80,7 @@ if(!($fruser = $cache->get('fruser'.$user->allianz))) {
 		while($row = mysql_fetch_assoc($query)) {
 			$add2user = false;
 			//
-			$urechte = unserialize($row['userRechte']);
+			$urechte = json_decode($row['userRechte'], true);
 			// Gesamt-Freischaltrechte
 			if(isset($urechte['verwaltung_user_register']) AND $urechte['verwaltung_user_register']) {
 				$fruser[] = $row['user_playerName'];

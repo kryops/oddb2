@@ -67,7 +67,7 @@ $settings = array(
 	'winlink2tab'=>false,
 	'closeontransfer'=>true,
 	'suchspalten'=>'1-2-3-4-5-6-8-9-10-11-12-13-14-15',
-	'fow'=>serialize($fow)
+	'fow'=>json_encode($fow)
 );
 */
 $user->settings['antrieb'] = $_POST['antrieb'];
@@ -80,7 +80,7 @@ $user->settings['winlinknew'] = isset($_POST['winlinknew']) ? true : false;
 $user->settings['winlink2tab'] = isset($_POST['winlink2tab']) ? true : false;
 $user->settings['closeontransfer'] = isset($_POST['closeontransfer']) ? true : false;
 
-$settings = escape(serialize($user->settings));
+$settings = escape(json_encode($user->settings));
 
 query("
 	UPDATE

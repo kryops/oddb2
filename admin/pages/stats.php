@@ -41,7 +41,7 @@ else {
 		}
 		else {
 			if(file_exists('./cache/stats-'.KEY) AND filemtime('./cache/stats-'.KEY) > time()-14400) {
-				$data = unserialize(file_get_contents('./cache/stats-'.KEY));
+				$data = json_decode(file_get_contents('./cache/stats-'.KEY), true);
 			}
 		}
 	}
@@ -169,7 +169,7 @@ else {
 		}
 		else {
 			$fp = fopen('./cache/stats-'.KEY, 'w');
-			@fwrite($fp, serialize($data));
+			@fwrite($fp, json_encode($data));
 			@fclose($fp);
 		}
 	}

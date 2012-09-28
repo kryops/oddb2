@@ -735,7 +735,7 @@ else if($_GET['sp'] == '') {
 	
 	
 	// Einstellungen ermitteln
-	$fow = unserialize($user->settings['fow']);
+	$fow = json_decode($user->settings['fow'], true);
 	
 	// FoW-Tabelle
 	if(count($fow)) {

@@ -158,7 +158,7 @@ if($data['userRechte'] != '') {
 		<b>durch User-Berechtigungen modifiziert</b>: 
 		<div style="padding-left:12px">';
 	
-	$ar = unserialize($data['userRechte']);
+	$ar = json_decode($data['userRechte'], true);
 	foreach($ar as $key=>$val) {
 		if(isset($rechtenamen[$key])) $ar[$key] = '<span class="'.($val ? 'green' : 'red').'">'.$rechtenamen[$key].'</span>';
 	}

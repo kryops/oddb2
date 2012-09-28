@@ -271,7 +271,7 @@ if(mysql_num_rows($query)) {
 		// Bedarf ausrechnen
 		$bedarf = false;
 		if($row['planetenWerftBedarf'] != '') {
-			$b = unserialize($row['planetenWerftBedarf']);
+			$b = json_decode($row['planetenWerftBedarf'], true);
 			if($row['planetenRMErz'] < $b[0] OR $row['planetenRMMetall'] < $b[1] OR $row['planetenRMWolfram'] < $b[2] OR $row['planetenRMKristall'] < $b[3] OR $row['planetenRMFluor'] < $b[4]) {
 				$bedarf = true;
 			}

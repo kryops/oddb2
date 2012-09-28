@@ -100,7 +100,7 @@ if(mysql_num_rows($query)) {
 		}
 		else {
 			// Bedarf ausrechnen
-			$b = unserialize($row['planetenWerftBedarf']);
+			$b = json_decode($row['planetenWerftBedarf'], true);
 			
 			foreach($b as $key=>$val) {
 				$content .= $ress[$key].' '.ressmenge2($val, true).' &nbsp; ';

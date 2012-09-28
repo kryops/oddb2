@@ -102,7 +102,7 @@ class route {
 		$this->gala = (int)$data['routen_galaxienID'];
 		$this->count = (int)$data['routenCount'];
 		$this->antrieb = $data['routenAntrieb'] ? $data['routenAntrieb'] : $user->settings['antrieb'];
-		$this->data = unserialize($data['routenData']);
+		$this->data = json_decode($data['routenData'], true);
 		unset($data['routenFinished']);
 		unset($data['routen_galaxienID']);
 		unset($data['routenCount']);
@@ -145,7 +145,7 @@ class route {
 				routenTyp = ".(int)$this->info['routenTyp'].",
 				routenEdit = ".($this->info['routenEdit'] ? '1' : '0').",
 				routenFinished = ".($this->finished ? '1' : '0').",
-				routenData = '".escape(serialize($this->data))."',
+				routenData = '".escape(json_encode($this->data))."',
 				routenCount = ".(int)$this->count.",
 				routenMarker = ".(int)$this->info['routenMarker'].",
 				routenAntrieb = ".(int)$this->info['routenAntrieb']."
@@ -859,7 +859,7 @@ class route {
 			") OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
 			
 			while($row = mysql_fetch_assoc($query)) {
-				$data = unserialize($row['routenData']);
+				$data = json_decode($row['routenData'], true);
 				foreach($data as $key=>$val) {
 					$toxxroute[$key] = true;
 				}

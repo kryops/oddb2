@@ -358,8 +358,8 @@ else if($_GET['sp'] == 'add_send') {
 				
 				$settings = $bsettings;
 				$settings['scout'] = $config['scan_veraltet'];
-				$settings['fow'] = serialize($bfowsettings);
-				$settings = serialize($settings);
+				$settings['fow'] = json_encode($bfowsettings);
+				$settings = json_encode($settings);
 				
 				$query = query("
 					INSERT INTO

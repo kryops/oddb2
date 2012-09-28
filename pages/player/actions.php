@@ -793,7 +793,7 @@ else if($_GET['sp'] == 'rechte') {
 				$r = $r[1];
 				
 				// Daten aufbereiten
-				if($data['userRechte'] != '') $data['userRechte'] = unserialize($data['userRechte']);
+				if($data['userRechte'] != '') $data['userRechte'] = json_decode($data['userRechte'], true);
 				
 				
 				// Rechte bereinigen
@@ -947,7 +947,7 @@ else if($_GET['sp'] == 'rechte_send') {
 			$data = mysql_fetch_assoc($query);
 			
 			if($data['userRechte'] != '') {
-				$data['userRechte'] = unserialize($data['userRechte']);
+				$data['userRechte'] = json_decode($data['userRechte'], true);
 			}
 			else $data['userRechte'] = array();
 			
@@ -1036,7 +1036,7 @@ else if($_GET['sp'] == 'rechte_send') {
 				
 				// serialisieren
 				if(!count($_POST)) $r = '';
-				else $r = escape(serialize($_POST));
+				else $r = escape(json_encode($_POST));
 				
 				// speichern
 				query("

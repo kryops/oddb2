@@ -362,9 +362,9 @@ else if($_GET['sp'] == 'save_fow') {
 		
 	}
 	
-	$user->settings['fow'] = serialize($fow);
+	$user->settings['fow'] = json_encode($fow);
 	
-	$settings = escape(serialize($user->settings));
+	$settings = escape(json_encode($user->settings));
 	
 	// speichern
 	query("

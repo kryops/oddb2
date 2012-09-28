@@ -146,7 +146,7 @@ else {
 		}
 		else {
 			if(file_exists('./cache/dbs-'.KEY) AND filemtime('./cache/dbs-'.KEY) > time()-86400) {
-				$data = unserialize(file_get_contents('./cache/dbs-'.KEY));
+				$data = json_decode(file_get_contents('./cache/dbs-'.KEY), true);
 			}
 		}
 	}
@@ -174,7 +174,7 @@ else {
 		}
 		else {
 			$fp = fopen('./cache/dbs-'.KEY, 'w');
-			@fwrite($fp, serialize($data));
+			@fwrite($fp, json_encode($data));
 			@fclose($fp);
 		}
 	}

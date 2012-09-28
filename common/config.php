@@ -139,7 +139,7 @@ if(!defined(\'ODDB\')) die(\'unerlaubter Zugriff!\');
 						$val[$key2] = '\''.str_replace('\\"', '"', addslashes($val2)).'\'';
 					}
 					else if(is_array($val2)) {
-						$val[$key2] = 'unserialize(\''.str_replace('\\"', '"', addslashes(serialize($val2))).'\')';
+						$val[$key2] = 'json_decode(\''.str_replace('\\"', '"', addslashes(json_encode($val2))).'\', true)';
 					}
 				}
 				$content .= 'array('.implode(', ', $val).')';

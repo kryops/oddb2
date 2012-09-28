@@ -261,7 +261,7 @@ else if($_GET['sp'] == 'spalten') {
 				UPDATE
 					".PREFIX."user
 				SET
-					userSettings = '".escape(serialize($user->settings))."'
+					userSettings = '".escape(json_encode($user->settings))."'
 				WHERE
 					user_playerID = ".$user->id."
 			") OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());

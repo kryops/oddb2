@@ -146,7 +146,7 @@ else if($_GET['sp'] == 'edit') {
 					$b = array(0,0,0,0,0);
 				}
 				else {
-					$b = unserialize($data['planetenWerftBedarf']);
+					$b = json_decode($data['planetenWerftBedarf'], true);
 				}
 				
 				$tmpl->content = '
@@ -243,7 +243,7 @@ else if($_GET['sp'] == 'edit_send') {
 					(int)$_POST['fluor']
 				);
 				
-				$b2 = serialize($b);
+				$b2 = json_encode($b);
 				
 				// speichern
 				query("
@@ -293,7 +293,7 @@ else if($_GET['sp'] == 'edit_all') {
 			(int)$_POST['fluor']
 		);
 		
-		$b2 = serialize($b);
+		$b2 = json_encode($b);
 		
 		// speichern
 		query("
@@ -341,7 +341,7 @@ else if($_GET['sp'] == 'edit_all_ally') {
 			(int)$_POST['fluor']
 		);
 		
-		$b2 = serialize($b);
+		$b2 = json_encode($b);
 		
 		// Bedingungen aufstellen
 		$conds = array(

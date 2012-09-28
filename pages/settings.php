@@ -196,7 +196,7 @@ else {
 	// FoW-Einstellungen
 	if($user->rechte['fow']) {
 		// Einstellungen ermitteln
-		$fow = unserialize($user->settings['fow']);
+		$fow = json_decode($user->settings['fow'], true);
 		
 		$csw->data['fow'] = array(
 		'link'=>'index.php?p=settings&sp=fow',

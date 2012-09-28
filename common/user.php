@@ -54,7 +54,7 @@ class user {
 		   3 - noch nicht freigeschaltet
 		*/
 		$this->banned = $data['userBanned'];
-		$this->settings = unserialize($data['userSettings']);
+		$this->settings = json_decode($data['userSettings'], true);
 		
 		// Berechtigungen
 		$r = getrechte(
@@ -490,7 +490,7 @@ function getrechte($level, $pallies, $pgalas, $allyrechte, $userrechte) {
 	
 	// spezielle Userberechtigungen
 	if($userrechte != '')  {
-		$r = unserialize($userrechte);
+		$r = json_decode($userrechte, true);
 		// Sperren für Allianz- und Galaxie-Sichtbarkeit aufheben
 		if(isset($r['override_allies'])) {
 			$pallies = false;
