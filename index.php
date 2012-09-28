@@ -124,7 +124,7 @@ $gconfig = $config;
 if(!$dbs) {
 	define('INSTANCE', 1);
 }
-else if(count($dbs == 1)) {
+else if(count($dbs) == 1) {
 	$db_keys = array_keys($dbs);
 	$inst = array_shift($db_keys);
 	define('INSTANCE', $inst);
