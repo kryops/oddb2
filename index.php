@@ -125,7 +125,9 @@ if(!$dbs) {
 	define('INSTANCE', 1);
 }
 else if(count($dbs == 1)) {
-	define('INSTANCE', array_shift(array_keys($dbs)));
+	$db_keys = array_keys($dbs);
+	$inst = array_shift($db_keys);
+	define('INSTANCE', $inst);
 }
 // über den API-Key
 else if($_GET['p'] == 'api') {
