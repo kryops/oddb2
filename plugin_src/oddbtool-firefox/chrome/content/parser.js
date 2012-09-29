@@ -207,10 +207,9 @@ oddbtool.parsePage = function(page, manual) {
 							pl[i]['bev'] = data[9].replace(/[^\d+]/g, '');
 							pl[i]['groesse'] = data[11].replace(/[^\d+]/g, '');
 							
-							// Workaround: Unbewohnbare Planis Größe 2
-							if(pl[i]['groesse'] == '') {
-								pl[i]['groesse'] = 2;
-								pl[i]['bev'] = 0;
+							// Workaround: Unbewohnbare Planis Größe 0
+							if(pl[i]['groesse'] == '' || pl[i]['groesse'] == '0000') {
+								pl[i]['groesse'] = 0;
 							}
 						}
 					}
@@ -278,10 +277,9 @@ oddbtool.parsePage = function(page, manual) {
 						pl[i]['bev'] = data[4].replace(/[^\d+]/g, '');
 						pl[i]['groesse'] = data[6].replace(/[^\d+]/g, '');
 						
-						// Workaround: Unbewohnbare Planis Größe 2
-						if(pl[i]['groesse'] == '') {
-							pl[i]['groesse'] = 2;
-							pl[i]['bev'] = 0;
+						// Workaround: Unbewohnbare Planis Größe 0
+						if(pl[i]['groesse'] == '' || pl[i]['groesse'] == '0000') {
+							pl[i]['groesse'] = 0;
 						}
 						
 						data = $(data[3]);

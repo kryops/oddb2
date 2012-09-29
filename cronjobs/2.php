@@ -32,6 +32,7 @@ $queries = 0;
 // Sicherheitskonstante
 define('ODDB', true);
 define('ODDBADMIN', true);
+define('INSTANCE', 0);
 
 // Zeitzone setzen -> Performance
 date_default_timezone_set('Europe/Berlin');

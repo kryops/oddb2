@@ -347,7 +347,7 @@ if($data['playerName'] != NULL) {
 }
 // Größe und Bevölkerung
 $tmpl->content .= ' <br />
-					<b>Gr&ouml;&szlig;e</b>: '.$data['planetenGroesse'].'
+					<b>Gr&ouml;&szlig;e</b>: '.($data['planetenGroesse'] ? $data['planetenGroesse'] : '<span class="red">unbewohnbar</span>').'
 					<br />
 					<b>Bev&ouml;lkerung</b>: '.ressmenge($data['planetenBevoelkerung']);
 if($data['planetenUpdate']) {

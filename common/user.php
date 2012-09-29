@@ -232,6 +232,9 @@ function user_checkban($id) {
 		WHERE
 			allyhistory_playerID = ".$id."
 			AND allyhistoryFinal = 0
+		ORDER BY
+			allyhistoryTime DESC
+		LIMIT 1
 	") OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
 	
 	// Spieler hat die Allianz gewechselt und wurde noch nicht aktualisiert
@@ -305,17 +308,6 @@ function user_checkban($id) {
 				userBanned = ".$banned."
 			WHERE
 				user_playerID = ".$id."
-		") OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
-		
-		
-		// Allywechsel auf übertragen setzen
-		mysql_query("
-			UPDATE
-				".GLOBPREFIX."player_allyhistory
-			SET
-				allyhistoryFinal = 1
-			WHERE
-				allyhistory_playerID = ".$id."
 		") OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
 	}
 }

@@ -27,6 +27,9 @@ if($_GET['sp'] == 'register_addplayer') {
 			$tmpl->error = 'Ung&uuml;ltige ID eingegeben!';
 		}
 		else {
+			
+			odrequest($_POST['id']);
+			
 			// Existenz überprüfen
 			$query = query("
 				SELECT
