@@ -286,6 +286,9 @@ else if($_GET['sp'] == 'route') {
 		$tmpl->error = 'Du hast keine Berechtigung!';
 	}
 	else {
+		
+		General::loadClass('route');
+		
 		$select = route::getselect(0,1);
 		
 		if($select != '') {
