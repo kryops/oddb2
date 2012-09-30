@@ -7,7 +7,7 @@ var oddbtool = {
 	/**
 	 * Version
 	 */
-	version: '2.2',
+	version: '2.2a',
 	
 	
 	jqueryload: false,

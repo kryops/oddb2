@@ -29,9 +29,9 @@ define('DOWNTIME', false);
 // Abgleich-Version
 define('ABGLEICH_VERSION', 1);
 // ODDB Tool-Version
-define('ODDBTOOL', '2.2');
-define('ODDBTOOLPATH', 'oddbtool-2_2.xpi');
-define('ODDBTOOLPATH_CHROME', 'oddbtool-chrome-2_2.crx');
+define('ODDBTOOL', '2.2a');
+define('ODDBTOOLPATH', 'oddbtool-2_2a.xpi');
+define('ODDBTOOLPATH_CHROME', 'oddbtool-chrome-2_2a.crx');
 
 // Debug-Modus
 define('DEBUG', false);
