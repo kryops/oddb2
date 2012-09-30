@@ -219,7 +219,8 @@ $rassen = array(
 	3=>'Tradoner',
 	4=>'Beralut',
 	5=>'Myrianer',
-	11=>'Revisker'
+	11=>'Revisker',
+	10=>'NPC'
 );
 
 // Rassen-CSS-Klassen
