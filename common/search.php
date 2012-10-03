@@ -75,7 +75,7 @@ class Search {
 	 */
 	public static function createSearchForm($filter, $additional='', $action=self::DEFAULT_ACTION, $button='Suche starten') {
 		
-		global $user, $rassen, $gebaeude, $status;
+		global $user, $rassen, $gebaeude, $status, $status_meta, $status_freund, $status_feind;
 		
 		
 		// Planeten-Typen
@@ -450,7 +450,7 @@ class Search {
 	public static function buildConditions($filter) {
 		
 		
-		global $user;
+		global $user, $status, $status_meta, $status_freund, $status_feind;
 		
 		
 		// heutigen Timestamp ermitteln
