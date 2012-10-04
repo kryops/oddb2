@@ -18,7 +18,11 @@ $content = '
 	<br />
 	Au&szlig;erdem kannst du f&uuml;r jede Allianz deren Berechtigungen und die Sichtbarkeit von Galaxien und anderen Allianzen einschr&auml;nken.
 	<br /><br />
-	Beachte aber, dass du dich dadurch auch selbst aus dieser Sektion aussperren kannst, wenn du dir oder deiner Allianz die Registrierungserlaubnis entziehst oder die Berechtigung &quot;<i>alle Spieler sowie Registrierungserlaubnis für Spieler und Allianzen verwalten</i>&quot; f&uuml;r deine Allianz sperrst!
+	<span class="red bold">
+	Diese Einschr&auml;nkungen &uuml;berschreiben das Benutzer-Rechtelevel!
+	<br /><br />
+	Du kannst dich damit aus diesem Bereich aussperren, wenn du dir oder deiner Allianz die Registrierungserlaubnis entziehst oder die Berechtigung &quot;<i>alle Spieler sowie Registrierungserlaubnis für Spieler und Allianzen verwalten</i>&quot; f&uuml;r deine Allianz sperrst!
+	</span>
 </div>
 
 <br />
