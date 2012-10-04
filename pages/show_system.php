@@ -661,6 +661,11 @@ else if($_GET['sp'] == '') {
 					// Bergbau und Terraformer
 					$bergbau_tf = '';
 					
+					// Natives
+					if($pl['planetenNatives'] > 0) {
+						$bergbau_tf .= '<span class="red">Natives</span><br />';
+					}
+					
 					if($user->rechte['fremdinvakolos']) {
 						// Bergbau
 						if($pl['schiffeBergbau'] !== NULL) {

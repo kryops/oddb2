@@ -815,6 +815,8 @@ else {
 				// Ergebnisse abfragen
 				$results = Search::getSearchAsMySQL($conds, $entf, $sort, $offset, $limit);
 				
+				// Invasionen abfragen
+				Search::getInvasionen();
 				
 				// ID-Liste für Ergebnis-Navigation
 				$ids = array();
@@ -844,6 +846,9 @@ else {
 					
 					// ID an Liste anhängen
 					$ids[] = $row['planetenID'];
+					
+					// Invasionen übernehmen
+					$row['invasionen'] = isset(Search::$invasionen[$row['planetenID']]) ? Search::$invasionen[$row['planetenID']] : false;
 					
 					// Werte erzeugen
 					$spv = array();
@@ -893,6 +898,17 @@ else {
 						else if($row['planeten_playerID'] == -2) $spv[5] = '<span style="color:#ffff88;font-weight:bold;font-style:italic">Seze Lux</span>';
 						else if($row['planeten_playerID'] == -3) $spv[5] = '<span style="color:#ffff88;font-weight:bold;font-style:italic">Altrasse</span>';
 						else $spv[5] = '<i>unbekannt</i>';
+						
+						// Natives und Invasionen zum Inhaber
+						if($row['planetenNatives'] > 0) {
+							$spv[5] .= ' <span class="red">(Natives)</span>';
+						}
+						
+						if($row['invasionen'] !== false) {
+							foreach($row['invasionen'] as $inv) {
+								$spv[5] .= ' <span class="red">('.$inv['invasionenTypName'].')</span>';
+							}
+						}
 					}
 					// Allianz-Tag
 					if(isset($sp2[6])) {

@@ -59,6 +59,11 @@ class Search {
 			)'
 	);
 	
+	/**
+	 * laufende Invasionen
+	 */
+	public static $invasionen = false;
+	
 	
 	/**
 	 * Suchformular generieren und mit Werten füllen
@@ -304,7 +309,24 @@ class Search {
 			<option value="0"'.((isset($filter['tox']) AND $filter['tox'] == 0) ? ' selected="selected"' : '').'>nein</option>
 			<option value="1"'.((isset($filter['tox']) AND $filter['tox'] == 1) ? ' selected="selected"' : '').'>ja</option>
 		</select> &nbsp; &nbsp; ' : '').'
-		Kommentar enth&auml;lt <input type="text" class="text" style="width:160px" name="ko" value="'.(isset($filter['ko']) ? htmlspecialchars($filter['ko'], ENT_COMPAT, 'UTF-8') : '').'" />
+		';
+		
+		if($user->rechte['invasionen'] OR $user->rechte['fremdinvakolos']) {
+			$content .= 'laufende Aktion <select name="inv" size="1">
+			<option value="">egal</option>
+			<option value="0"'.((isset($filter['inv']) AND $filter['inv'] == 0) ? ' selected="selected"' : '').'>keine</option>
+			<option value="-1"'.((isset($filter['inv']) AND $filter['inv'] == -1) ? ' selected="selected"' : '').'>irgendeine</option>';
+			
+			General::loadClass('Invasionen');
+			
+			foreach(Invasionen::$invanamen as $ikey=>$iname) {
+				$content .= '<option value="'.$ikey.'"'.((isset($filter['inv']) AND $filter['inv'] == $ikey) ? ' selected="selected"' : '').'>'.$iname.'</option>';
+			}
+			
+			$content .= '</select> &nbsp; &nbsp;';
+		}
+		$content .= '
+		Kommentar <input type="text" class="text" style="width:120px" name="ko" value="'.(isset($filter['ko']) ? htmlspecialchars($filter['ko'], ENT_COMPAT, 'UTF-8') : '').'" />
 	</td>
 </tr>
 </table>
@@ -449,7 +471,7 @@ class Search {
 	 */
 	public static function buildConditions($filter) {
 		
-		
+
 		global $user, $status, $status_meta, $status_freund, $status_feind;
 		
 		
@@ -824,6 +846,51 @@ class Search {
 				$conds[] = 'planetenGetoxxt < '.time();
 			}
 		}
+		// laufende Aktion
+		if(isset($filter['inv'])) {
+			
+			self::getInvasionen();
+			
+			// keine Aktion
+			if($filter['inv'] == 0) {
+				if(count(self::$invasionen)) {
+					$inv_ids = array_keys(self::$invasionen);
+					$conds[] = 'planetenID NOT IN('.implode(',', $inv_ids).')';
+				}
+			}
+			// irgendeine Aktion
+			else if($filter['inv'] == -1) {
+				if(count(self::$invasionen)) {
+					$inv_ids = array_keys(self::$invasionen);
+					$conds[] = 'planetenID IN('.implode(',', $inv_ids).')';
+				}
+				// nirgendwo läuft eine Aktion
+				else {
+					$conds[] = '0';
+				}
+			}
+			// bestimmte Aktion
+			else {
+				$invs = array();
+				
+				foreach(self::$invasionen as $key=>$val) {
+					foreach($val as $key2=>$val2) {
+						if($val2['invasionenTyp'] == $filter['inv']) {
+							$invs[] = $key;
+						}
+					}
+				}
+				
+				if(count($invs)) {
+					$conds[] = 'planetenID IN('.implode(',', $invs).')';
+				}
+				// Aktion läuft nirgendwo
+				else {
+					$conds[] = '0';
+				}
+			}
+			
+		}
 		// Kommentar
 		if(isset($filter['ko'])) {
 			$conds[] = "planetenKommentar LIKE '%".escape(escape(str_replace('*', '%', $filter['ko'])))."%'";
@@ -853,23 +920,9 @@ class Search {
 			$conds[] = 'planetenNatives = 0';
 			$conds[] = 'planetenGroesse > 3';
 			
-			// laufende Aktionen abfragen
-			$q = query("
-				SELECT
-					invasionen_planetenID
-				FROM
-					".PREFIX."invasionen
-			") OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
-			
-			$ids = array();
-			
-			while($d = mysql_fetch_assoc($q)) {
-				$ids[] = $d['invasionen_planetenID'];
-			}
-			
-			if(count($ids)) {
-				$conds[] = "planetenID NOT IN(".implode(',', $ids).")";
-			}
+			self::getInvasionen();
+			$inva_ids = array_keys(self::$invasionen);
+			$conds[] = "planetenID NOT IN(".implode(',', $inva_ids).")";
 		}
 		// Urlaubsmodus
 		if(isset($filter['umod'])) {
@@ -1643,6 +1696,17 @@ class Search {
 		if(isset($filter['tox'])) {
 			$desc[] = 'Planet '.($filter['tox'] ? '' : 'nicht ').'getoxxt';
 		}
+		// laufende Aktion
+		if(isset($filter['inv'])) {
+			if($filter['inv'] == 0) $desc[] = 'keine laufende Aktion';
+			else if($filter['inv'] == -1) $desc[] = 'irgendeine laufende Aktion';
+			else {
+				General::loadClass('Invasionen');
+				if(isset(Invasionen::$invanamen[$filter['inv']])) {
+					$desc[] = Invasionen::$invanamen[$filter['inv']].' aktiv';
+				}
+			}
+		}
 		// Kommentar
 		if(isset($filter['ko'])) {
 			$desc[] = 'Kommentar enthält &quot;<i>'.$filter['ko'].'</i>&quot;';
@@ -1770,6 +1834,21 @@ class Search {
 		
 		
 		return implode(', ', $desc);
+	}
+	
+	/**
+	 * Laufende Invasionen ermitteln
+	 */
+	public static function getInvasionen() {
+		
+		if(self::$invasionen === false) {
+			
+			General::loadClass('Invasionen');
+			self::$invasionen = Invasionen::getForSearch();
+			
+		}
+		
+		return self::$invasionen;
 	}
 	
 	

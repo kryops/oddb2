@@ -148,12 +148,59 @@ foreach($dbs as $instance) {
 	//
 	// veraltete Kolonisationen löschen
 	//
+	
+	// Inhaber auf unbekannt setzen
+	$query = query("
+		SELECT
+			invasionen_planetenID
+		FROM
+			".$prefix."invasionen
+			LEFT JOIN ".$prefix."planeten
+				ON planetenID = invasionen_planetenID
+			LEFT JOIN ".$prefix."systeme
+				ON systemeID = invasionen_systemeID
+		WHERE
+			invasionenTyp = 5
+			AND invasionenEnde < ".time()."
+			AND systemeUpdate < invasionenEnde
+			AND planeten_playerID = 0
+	") OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
+	
+	$kolo_planeten = array();
+	
+	while($row = mysql_fetch_assoc($query)) {
+		$kolo_planeten[] = $row['invasionen_planetenID'];
+	}
+	
+	if(count($kolo_planeten)) {
+		query("
+			UPDATE ".$prefix."planeten
+			SET
+				planeten_playerID = -1
+			WHERE
+				planetenID IN(".implode(",", $kolo_planeten).")
+		") OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
+	}
+	
+	foreach($kolo_planeten as $plid) {
+		query("
+			INSERT INTO ".$prefix."planeten_history
+			SET
+				history_planetenID = ".$plid.",
+				history_playerID = -1,
+				historyLast = 0,
+				historyTime = ".time()."
+		") OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
+	}
+	
+	// alte Kolonisationen löschen
 	$query = query("
 		DELETE FROM ".$prefix."invasionen
 		WHERE
 			invasionenTyp = 5
 			AND invasionenEnde < ".time()."
 	") OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
+	
 	
 	//
 	// veraltete Invasionen und andere Aktionen ins Archiv verschieben,

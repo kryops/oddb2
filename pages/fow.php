@@ -802,6 +802,11 @@ if($showr) {
 					}
 				}
 				
+				// Natives
+				if($pl['planetenNatives'] > 0) {
+					$planeten .= '<span style="color:#ff0000">Natives</span><br />';
+				}
+					
 				// Bergbau
 				if($user->rechte['fremdinvakolos'] AND $pl['schiffeBergbau'] !== NULL) {
 					$planeten .= '<span style="color:#55ff33">Bergbau</span>';
