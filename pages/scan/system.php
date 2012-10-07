@@ -321,6 +321,7 @@ else {
 					galaxienSysScanned = galaxienSysScanned+1
 				WHERE
 					galaxienID = ".$data['systeme_galaxienID']."
+					AND galaxienSysScanned < galaxienSysteme
 			") OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
 		}
 	}
