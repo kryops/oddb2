@@ -795,6 +795,8 @@ playeratm=4173&userid=602511&name=Kryops&points=34202&titel=&warpoints=8608&gesi
 			") OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
 		}
 		else {
+			global $odrequest_delete;
+			$odrequest_delete = true;
 			return false;
 		}
 		
