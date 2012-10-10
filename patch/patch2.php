@@ -21,6 +21,9 @@ if($config['patchversion'] == 1) {
 			playerName = ''
 	") OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
 	
+	
+	$config['patchversion'] = 2;
+	
 }
 
 ?>
