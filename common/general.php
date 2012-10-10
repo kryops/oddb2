@@ -98,7 +98,7 @@ class General {
 			$c = config::getcustomGlobal('global', 'config');
 			unset($c['active']);
 			unset($c['offlinemsg']);
-			$c['patchversion'] = $config['patchversion'];
+			$c['patchversion'] = PATCH_VERSION;
 			
 			config::saveGlobal('global', 'config', $c);
 			

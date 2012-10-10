@@ -1,4 +1,14 @@
-﻿28.09.2012 - V2.2 [R10]
+﻿ 10.10.2012 - V2.2.1
+--------------------
+* Erweiterung der Suchfunktion
+  - Suchfilter für laufende Aktionen
+  - Anzeige von laufenden Aktionen und Natives in der Inhaber-Spalte
+* Beim automatischen Löschen von durchgelaufenen Kolonisationen wird der Planet wieder auf unbekannt gesetzt
+* Mehrere Bugfixes
+
+
+
+28.09.2012 - V2.2 [R10]
 -----------------------
 Core / Admin
 * Installation und Updates über Git möglich
