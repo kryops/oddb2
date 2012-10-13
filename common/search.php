@@ -922,7 +922,9 @@ class Search {
 			
 			self::getInvasionen();
 			$inva_ids = array_keys(self::$invasionen);
-			$conds[] = "planetenID NOT IN(".implode(',', $inva_ids).")";
+			if(count($inva_ids)) {
+				$conds[] = "planetenID NOT IN(".implode(',', $inva_ids).")";
+			}
 		}
 		// Urlaubsmodus
 		if(isset($filter['umod'])) {
