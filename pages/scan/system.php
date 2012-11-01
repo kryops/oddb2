@@ -390,6 +390,7 @@ else {
 						planetenBevoelkerung = ".$pldata['bev'].",
 						planetenMyrigate = ".(isset($pldata['mgate']) ? $pldata['mgate'] : '0').",
 						planetenRiss = ".(isset($pldata['riss']) ? $pldata['riss'] : '0').",
+						planetenNatives = ".(isset($pldata['natives']) ? $pldata['groesse'] : '0').",
 						planetenHistory = 1
 				") OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
 				
@@ -457,6 +458,7 @@ else {
 				planetenMyrigate,
 				planetenRiss,
 				planetenBevoelkerung,
+				planetenNatives,
 				
 				schiffeBergbau,
 				
@@ -496,7 +498,7 @@ else {
 					
 					// eintragen
 					query("
-						INSERT INTO ".PREFIX."planeten
+						INSERT IGNORE INTO ".PREFIX."planeten
 						SET
 							planetenID = ".$pldata['id'].",
 							planeten_systemeID = ".$_POST['id'].",
@@ -513,6 +515,7 @@ else {
 							planetenBevoelkerung = ".$pldata['bev'].",
 							planetenMyrigate = ".(isset($pldata['mgate']) ? $pldata['mgate'] : '0').",
 							planetenRiss = ".(isset($pldata['riss']) ? $pldata['riss'] : '0').",
+							planetenNatives = ".(isset($pldata['natives']) ? $pldata['groesse'] : '0').",
 							planetenHistory = 1
 					") OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
 					
@@ -607,7 +610,8 @@ else {
 							".$his."
 							".(($pldata['inhaber'] != 0) ? "planetenNatives = 0," : "")."
 							planetenMyrigate = ".(isset($pldata['mgate']) ? $pldata['mgate'] : ($pl[$pldata['id']]['planetenMyrigate'] == 2 ? '2' : '0')).",
-							planetenRiss = ".(isset($pldata['riss']) ? $pldata['riss'] : '0')."
+							planetenRiss = ".(isset($pldata['riss']) ? $pldata['riss'] : '0').",
+							planetenNatives = ".((isset($pldata['natives']) AND !$pl[$pldata['id']]['planetenNatives']) ? $pldata['groesse'] : $pl[$pldata['id']]['planetenNatives'])."
 						WHERE
 							planetenID = ".$pldata['id']."
 					") OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());

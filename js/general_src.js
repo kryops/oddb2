@@ -3077,6 +3077,11 @@ function quelltext(f, r) {
 						pl[i]['bb'] = 1;
 					}
 					
+					// Natives
+					if($(this).find('tr:last-child img[src*="flotte_natives.gif"]').length) {
+						pl[i]['natives'] = 1;
+					}
+					
 					// Kolo
 					if($(this).find('tr:last-child img[src*="flotte-kolo.gif"]').length) {
 						pl[i]['kolo'] = 1;
