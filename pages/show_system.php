@@ -1124,6 +1124,7 @@ else if($_GET['sp'] == '') {
 				 * 1 - Anzahl
 				 * 2 - Sortierung
 				 * 3 - Wert
+				 * 4 - außerhalb des Systems (optional)
 				 */
 				
 				
@@ -1135,6 +1136,10 @@ else if($_GET['sp'] == '') {
 				$filter['g'] = $data['systeme_galaxienID'];
 				
 				$conds = Search::buildConditions($filter);
+				
+				if(isset($val[4])) {
+					$conds[] = 'systemeID != '.$_GET['id'];
+				}
 				
 				$sort = $entf." ".($val[2] ? "DESC" : "ASC");
 				

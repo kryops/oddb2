@@ -1481,6 +1481,7 @@ if(count($fow) OR !$showr) {
 			 * 1 - Anzahl
 			 * 2 - Sortierung
 			 * 3 - Wert
+			 * 4 - außerhalb des Systems (optional)
 			 */
 			
 			// Filter erstellen
@@ -1491,6 +1492,10 @@ if(count($fow) OR !$showr) {
 			$filter['g'] = $data['systeme_galaxienID'];
 			
 			$conds = Search::buildConditions($filter);
+			
+			if(isset($val[4])) {
+				$conds[] = 'systemeID != '.$_GET['id'];
+			}
 			
 			$sort = $entf." ".($val[2] ? "DESC" : "ASC");
 			

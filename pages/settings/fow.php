@@ -150,6 +150,7 @@ if($_GET['sp'] == 'fow') {
 			 * 1 - Anzahl
 			 * 2 - Sortierung
 			 * 3 - Wert
+			 * 4 - außerhalb des Systems (optional)
 			 */
 			
 			$target = $t.$i;
@@ -168,6 +169,11 @@ if($_GET['sp'] == 'fow') {
 					<option value="1"'.($val[2] ? ' selected="selected"' : '').'>entferntesten</option>
 				</select> 
 				Treffer
+				<br />
+				<select name="sout[]">
+					<option value="1">nur au&szlig;erhalb des Systems</option>
+					<option value="0"'.(isset($val[4]) ? '' : ' selected="selected"').'>alle Planeten finden</option>
+				</select>
 			</div>
 			
 			<div class="fowsearch3">
@@ -332,7 +338,7 @@ else if($_GET['sp'] == 'save_fow') {
 		foreach($_POST['sname'] AS $key=>$val) {
 			
 			// Vollständigkeit
-			if(!isset($_POST['scount'][$key], $_POST['sorder'][$key], $_POST['sval'][$key])) {
+			if(!isset($_POST['scount'][$key], $_POST['sorder'][$key], $_POST['sval'][$key], $_POST['sout'][$key])) {
 				continue;
 			}
 			
@@ -351,12 +357,18 @@ else if($_GET['sp'] == 'save_fow') {
 			$_POST['sorder'][$key] = (int)$_POST['sorder'][$key];
 			
 			// an das Array anhängen
-			$fow['search'][] = array(
+			$arr = array(
 				$_POST['sname'][$key],
 				$_POST['scount'][$key],
 				$_POST['sorder'][$key],
 				$_POST['sval'][$key]
 			);
+			
+			if($_POST['sout'][$key]) {
+				$arr[] = 1;
+			}
+			
+			$fow['search'][] = $arr;
 			
 		}
 		
