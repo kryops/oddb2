@@ -3,7 +3,7 @@
 	/**
 	 * Version
 	 */
-	version: '2.2a',
+	version: '2.2.2',
 	
 	
 	/**
@@ -166,12 +166,12 @@
 		// Autoparser
 		for(var i in oddbtool.parserRegex) {
 			
-			// Bergbauschiffe auf Flottenübersich mappen
-			if(i == 'floviewbbs') {
-				i = 'floview';
-			}
-			
 			if(oddbtool.parserRegex[i].exec(url) != null) {
+				
+				// Bergbauschiffe auf Flottenübersich mappen
+				if(i == 'floviewbbs') {
+					i = 'floview';
+				}
 				
 				if(typeof(oddbtool.prefs["auto_"+i]) != 'undefined' && oddbtool.prefs["auto_"+i]) {
 					window.setTimeout(
