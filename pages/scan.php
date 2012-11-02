@@ -328,6 +328,10 @@ else if($_GET['sp'] == 'scan') {
 		else if($_POST['typ'] == 'floview') {
 			include './pages/scan/floview.php';
 		}
+		// Flottenübersicht - Bergbauschiffe
+		else if($_POST['typ'] == 'floviewbbs') {
+			include './pages/scan/floview_bbs.php';
+		}
 		// Sitterliste
 		else if($_POST['typ'] == 'sitter') {
 			include './pages/scan/sitter.php';

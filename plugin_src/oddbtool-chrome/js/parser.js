@@ -825,9 +825,9 @@ oddbtool.parsePage = function(page, manual) {
 			}
 		}
 		//
-		// Flottenübersicht
+		// Flottenübersicht - Steuern
 		//
-		else if(ctree.find('a[href="#flott"]').length) {
+		else if(ctree.find('a.active[href*="tab=5"]').length) {
 			out['typ'] = 'floview';
 			
 			// Spieler
@@ -838,20 +838,20 @@ oddbtool.parsePage = function(page, manual) {
 				throw 'Konnte Spieler nicht ermitteln!';
 			}
 			
-			var data = ctree.find('#div4 > .fleet-content');
+			var data = $(ctree.children('.box')[5]);
 			
 			// Tagesabrechnung wird nicht angezeigt
-			if(data.find('b').length < 12) {
+			if(data.find('b').length < 8) {
 				throw 'Tagesabrechnung wird nicht angezeigt!';
 			}
 			
 			data = data.find('b');
 			
 			// zuletzt gezahlte Flottensteuer
-			out['steuer'] = $(data[1]).html().replace(/[^\d+]/g, '');
+			out['steuer'] = $(data[2]).html().replace(/[^\d+]/g, '');
 			
 			/* übernommen aus dem alten Parser */
-			var input = ctree.find('#div4 > .fleet-content').html();
+			var input = $(ctree.children('.box')[5]).html();
 			var p;
 			
 			// privat-KoP
@@ -928,12 +928,26 @@ oddbtool.parsePage = function(page, manual) {
 				out['pkop'] = data[1].replace(/\./g, '');
 				out['kop'] = data[2].replace(/\./g, '');
 			}
+		}
+		//
+		// Bergbauschiffe
+		//
+		else if(ctree.find('a.active[href*="tab=2"]').length) {
+			out['typ'] = 'floviewbbs';
 			
-			// Bergbauschiffe
+			// Spieler
+			try {
+				out['uid'] = tree.find('div.statusbar a.user').attr('href').replace(/^.*=(\d+)$/, '$1');
+			}
+			catch(e) {
+				throw 'Konnte Spieler nicht ermitteln!';
+			}
+			
+			
 			out['bb'] = [];
 			
 			try {
-				ctree.find('#div9 .tabletrans td:nth-child(5) > a[href*="orbit"]:first-child').each(function() {
+				ctree.find('.tabletrans td:nth-child(6) > a[href*=orbit]:first-child').each(function() {
 					out['bb'].push($(this).attr('href').replace(/[^\d]/g, ''));
 				});
 			}

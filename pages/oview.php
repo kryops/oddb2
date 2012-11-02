@@ -287,7 +287,7 @@ else {
 				}
 				// Flottenübersicht
 				if(time()-$data['userFlottenUpdate'] > $config['scan_veraltet_flotten']*86400) {
-					$scans[] = '<a href="http://www.omega-day.com/game/?op=fleet" target="_blank">Flotten&uuml;bersicht</a>';
+					$scans[] = '<a href="http://www.omega-day.com/game/?op=fleet&amp;tab=5" target="_blank">Flotten&uuml;bersicht</a>';
 				}
 				// Sitter
 				if(time()-$data['userSitterUpdate'] > $config['scan_veraltet_einst']*86400) {

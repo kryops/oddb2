@@ -27,11 +27,6 @@ $_POST['kopmax'] = (int)$_POST['kopmax'];
 $_POST['pkop'] = (int)$_POST['pkop'];
 $_POST['pkopmax'] = (int)$_POST['pkopmax'];
 
-$bergbau = explode('-', $_POST['bb']);
-foreach($bergbau as $key=>$val) {
-	$bergbau[$key] = (int)$val;
-}
-$bergbau = array_unique($bergbau);
 
 // Daten eintragen
 query("
@@ -47,44 +42,6 @@ query("
 	WHERE
 		user_playerID = ".$_POST['uid']."
 ") OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
-
-
-// Bergbau aktualisieren
-// alle austragen
-query("
-	UPDATE ".PREFIX."planeten_schiffe
-	SET
-		schiffeBergbau = NULL,
-		schiffeBergbauUpdate = 0
-	WHERE
-		schiffeBergbau = ".$_POST['uid']."
-") OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
-
-if(count($bergbau)) {
-	query("
-		UPDATE ".PREFIX."planeten_schiffe
-		SET
-			schiffeBergbau = ".$_POST['uid'].",
-			schiffeBergbauUpdate = ".time()."
-		WHERE
-			schiffe_planetenID IN(".implode(",", $bergbau).")
-	") OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
-	
-	$sql = "
-		INSERT IGNORE INTO
-			".PREFIX."planeten_schiffe
-			(schiffe_planetenID, schiffeBergbau, schiffeBergbauUpdate)
-		VALUES
-		";
-	
-	foreach($bergbau as $key=>$val) {
-		$bergbau[$key] = "(".$val.", ".$_POST['uid'].", ".time().")";
-	}
-	
-	$sql .= implode(", ", $bergbau);
-	
-	query($sql) OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
-}
 
 
 // Log-Eintrag
@@ -112,7 +69,5 @@ if($config['logging'] >= 2) {
 
 // Ausgabe
 $tmpl->content = 'Flotten&uuml;bersicht erfolgreich eingescannt';
-
-
 
 ?>

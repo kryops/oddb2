@@ -263,7 +263,8 @@ var oddbtool = {
 		orbit: /\?op=orbit&index=\d+$/,
 		einst: /\?op=settings$/,
 		sitter: /\?op=sitter$/,
-		floview: /\?op=fleet$/,
+		floview: /\?op=fleet&tab=5$/,
+		floviewbbs: /\?op=fleet&tab=2$/,
 		toxx: /\?op=orbit&index=\d+&bioatack=1$/
 	},
 	
@@ -443,6 +444,11 @@ var oddbtool = {
 		for(var i in oddbtool.parserRegex) {
 		
 			if(oddbtool.parserRegex[i].exec(url) != null) {
+				
+				// Bergbauschiffe auf Flottenübersich mappen
+				if(i == 'floviewbbs') {
+					i = 'floview';
+				}
 				
 				if(typeof(oddbtool.prefs["auto_"+i]) != 'undefined' && oddbtool.prefs["auto_"+i]) {
 					window.setTimeout(
