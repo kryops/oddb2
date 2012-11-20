@@ -1906,7 +1906,7 @@ function imppunkte($data) {
 		$maxress = $data['planetenRWFluor'];
 	}
 	
-	return floor(($data['planetenBevoelkerung']/100000) * $data['planetenGroesse'] + $maxress + ($data['planetenRWFluor']*3));
+	return floor(($data['planetenBevoelkerung']/100000) * $data['planetenGroesse'] + $maxress + $data['planetenRWFluor']);
 }
 
 /**
@@ -1916,7 +1916,7 @@ function imppunkte_mysql() {
 	return 'FLOOR(
 			(planetenBevoelkerung/100000) * planetenGroesse
 			+ GREATEST(planetenRWErz, planetenRWWolfram, planetenRWKristall, planetenRWFluor)
-			+ planetenRWFluor*3
+			+ planetenRWFluor
 		)';
 }
 
