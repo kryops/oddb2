@@ -25,6 +25,11 @@ var oddbtool = {
 		// Seite laden -> Autoparser
 		oddbtool.tabbrowser = window.getBrowser();
 		oddbtool.tabbrowser.addEventListener('DOMContentLoaded', oddbtool.loadPage, true);
+		
+		// UMTS-Header setzen
+		Components.classes["@mozilla.org/observer-service;1"].getService(Components.interfaces.nsIObserverService ).addObserver({
+		    observe : oddbtool.setUMTSHeaders
+		},"http-on-modify-request",false);
 	},
 	
 	/**
@@ -301,6 +306,20 @@ var oddbtool = {
 		// andere Seite
 		return false;
 	},
+	
+	
+	/**
+	 * UMTS-Header setzen
+	 */
+	setUMTSHeaders: function(subject, topic, data) {
+		var channel = subject.QueryInterface(Components.interfaces.nsIHttpChannel);
+		
+		if (oddbtool.isODPage(subject.URI.spec) && oddbtool.isParsePage(subject.URI.spec)) {
+        	channel.setRequestHeader("Cache-Control", "deny-all, no-cache", false);
+        	channel.setRequestHeader("Pragma", "deny-all, no-cache", false);
+        }
+	},
+	
 	
 	/**
 	 * Seite wird geladen
