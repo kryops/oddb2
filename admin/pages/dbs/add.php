@@ -77,6 +77,14 @@ else if($_GET['sp'] == 'add_send') {
 			}
 		}
 		
+		if(isset($_POST['allianz'])) {
+			$allianz = (int)$_POST['allianz'];
+			unset($_POST['allianz']);
+		}
+		else {
+			$allianz = 0;
+		}
+		
 		// Schlüssel erzeugen
 		$_POST['instancekey'] = generate_key();
 		
@@ -384,6 +392,20 @@ else if($_GET['sp'] == 'add_send') {
 				}
 			}
 			
+			// Registrierungserlaubnis für Allianz
+			if($allianz) {
+				$query = query("
+					INSERT INTO
+						".$prefix."register
+					SET
+						register_allianzenID = ".$allianz."
+				");
+				if(!$query) {
+					$tmpl->error = 'Fehler beim Anlegen des Administrator-Accounts! '.mysql_error().'<br />';
+				}
+			}
+			
+			
 			General::loadClass('config');
 			
 			// Instanz-Konfiguration speichern
@@ -537,11 +559,18 @@ else if($_GET['sp'] == 'add') {
 		<td colspan="2">&nbsp;</td>
 	</tr>
 	<tr>
-		<th colspan="2">Administrator</th>
+		<th colspan="2">Administrator und Registrier-Erlaubnis</th>
 	</tr>
 	<tr>
 		<td>User-ID</td>
 		<td><input type="text" class="text tooltip" name="admin" tooltip="Die OD-User-ID des Spielers, der die Instanz administrieren soll" /></td>
+	</tr>
+	<tr>
+		<td colspan="2">&nbsp;</td>
+	</tr>	
+	<tr>
+		<td>Registrier-Erlaubnis f&uuml;r Allianz-ID (optional)</td>
+		<td><input type="text" class="text tooltip" name="allianz" tooltip="Automatisch Registrier-Erlaubnis f&uuml;r diese Allianz anlegen" /></td>
 	</tr>
 	</table>
 	
