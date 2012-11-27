@@ -15,7 +15,16 @@ if($user->rechte['verwaltung_galaxien']) {
 	Hier kannst du neue Galaxien eintragen, indem du ihren HTML-Mainscreen einscannst. Du kannst auch den Quelltext von verschmolzenen Galaxien einscannen, wenn noch nicht alle Systeme der vorherigen Galaxien in der Datenbank eingetragen waren.
 	<br />
 	Galaxien werden nicht automatisch verschmolzen. Wenn du den Mainscreen einer verschmolzenen Galaxie einscannst, werden dir aber die Galaxien angezeigt, die wahrscheinlich verschmolzen wurden.
-</div>
+</div>';
+	
+	$max_input_vars = (int) @ini_get('max_input_vars');
+	
+	if($max_input_vars != 0 AND $max_input_vars < 2000) {
+		$csw->data['galaxien']['content'] .= '<br /><div class="bold red center">Die PHP-Einstellung max_input_vars sollte auf mindestens 2000 gestellt werden, da sonst neue Galaixen nicht komplett eingetragen werden k&ouml;nnen!</div>';
+	}
+	
+	
+	$csw->data['galaxien']['content'] .= '
 <br />
 <div class="fcbox" style="width:92%;line-height:28px;padding:10px">
 	<form action="#" onsubmit="if(this.gala.value){window.open(\'http://www.omega-day.com/game/?op=main&amp;order=id&amp;first=0&amp;last=100000&amp;gtyp=2&amp;viewgalaxy=\'+this.gala.value)};return false">

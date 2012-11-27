@@ -32,6 +32,15 @@ if(!function_exists('mysql_connect')) {
 if(count($errors)) {
 	$tmpl->name = 'Installation nicht m&ouml;glich';
 	
+	
+	// max_input_vars-Meldung zusätzlich anzeigen
+	$max_input_vars = (int) @ini_get('max_input_vars');
+	
+	if($max_input_vars != 0 AND $max_input_vars < 2000) {
+		$tmpl->content .= 'Die PHP-Einstellung max_input_vars sollte auf mindestens 2000 gestellt werden, da sonst neue Galaixen nicht komplett eingetragen werden k&ouml;nnen!';
+	}
+	
+	
 	$tmpl->error = implode('<br /><br />', $errors);
 }
 
@@ -44,7 +53,16 @@ else {
 Dieses Script speichert die wichtigsten Grundeinstellungen der ODDB und legt die erste Instanz an.
 <br />
 Die Einstellungen &auml;ndern sowie weitere Instanzen anlegen kannst du sp&auml;ter in der Administrationsoberfläche.
-<br /><br />
+<br /><br />';
+	
+	$max_input_vars = (int) @ini_get('max_input_vars');
+	
+	if($max_input_vars != 0 AND $max_input_vars < 2000) {
+		$tmpl->content .= '<div class="bold red center">Die PHP-Einstellung max_input_vars sollte auf mindestens 2000 gestellt werden, da sonst neue Galaixen nicht komplett eingetragen werden k&ouml;nnen!</div>';
+	}
+	
+	
+	$tmpl->content .= '
 	
 '.$tmpl->form();
 	
