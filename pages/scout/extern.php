@@ -254,7 +254,7 @@ else {
 					<td>'.flugdauer($row['systemeEntfernung'], $_POST['antrieb']).'</td>
 					<td>'.datatable::scan($row['systemeUpdate'], $config['scan_veraltet']).'</td>
 					<td class="sysreserv'.$row['systemeID'].'">'.($row['systemeScanReserv'] > time()-86400 ? '<i>'.htmlspecialchars($row['systemeReservUser'], ENT_COMPAT, 'UTF-8').'</i>' : '<a onclick="ajaxcall(\'index.php?p=ajax_general&amp;sp=reserve&amp;sys='.$row['systemeID'].'&amp;ajax\', this.parentNode, false, false)">reservieren</a>').'</td>
-					'.(isset($_GET['scan']) ? '' : '<td class="userlistaction"><img src="img/layout/leer.gif" class="hoverbutton arrowbutton" title="von hier aus weiterscouten" onclick="scout_weiter('.$row['systemeID'].', this)" /></td>').'
+					'.(isset($_GET['scan']) ? '' : '<td class="userlistaction"><img src="img/layout/leer.gif" class="hoverbutton arrowbutton" title="von hier aus weiterscouten" onclick="scout_weiter(\'sys'.$row['systemeID'].'\', this)" /></td>').'
 				</tr>';
 			}
 			
