@@ -191,6 +191,8 @@ class ODDBApi {
 			2 => 'Rebellion'
 		);
 		
+		$out = array();
+		
 		
 		// Suchergebinsse umformen
 		foreach($search as $row) {

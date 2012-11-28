@@ -146,6 +146,12 @@ else if($_GET['p'] == 'api') {
 		}
 	}
 	
+	// Fehler, wenn Instanz nicht vorhanden
+	if(!file_exists(('./config/config'.INSTANCE.'.php'))) {
+		include './pages/api.php';
+		ODDBApi::outputError('API-Key ungültig!');
+	}
+	
 }
 // Instanz in der Session gespeichert
 else if(isset($_SESSION['inst']) AND isset($dbs[$_SESSION['inst']])) {
