@@ -1805,9 +1805,9 @@ function gebaeude($string, $groesse, $thumb) {
 		
 		for($i=1;$i<=36;$i++) {
 			// im Orbit bei 12 abbrechen
-			if(!$groesse AND $i > 12) break;
+			if($groesse === false AND $i > 12) break;
 			// nur so viele Gebäude anzeigen wie Planet groß ist
-			else if($groesse AND $i > $groesse) {
+			else if($groesse !== false AND $i > $groesse) {
 				// Thumbnail
 				if($thumb) $arr[$i] = 0;
 				// große Ansicht
