@@ -89,6 +89,9 @@ if(!$user->rechte['verwaltung_backup']) {
 
 // Import starten
 else if(isset($_FILES['import'])) {
+	
+	$tmpl->form = false;
+	
 	// Memory-Limit erhöhen
 	@ini_set('memory_limit', '768M');
 	@set_time_limit(600);

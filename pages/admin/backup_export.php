@@ -70,7 +70,7 @@ else {
 			
 			// in den Ausgabe-String
 			if($current_sys != 0) {
-				$out .= 'S'.$row['systemeID'].'='.json_encode($o).'""""';
+				$out .= 'S'.$current_sys.'='.json_encode($o).'""""';
 			}
 			
 			$o = array((int)$row['systemeUpdate']);
@@ -95,7 +95,7 @@ else {
 	
 	// in den Ausgabe-String
 	if($current_sys != 0) {
-		$out .= 'S'.$row['systemeID'].'='.json_encode($o).'""""';
+		$out .= 'S'.$current_sys.'='.json_encode($o).'""""';
 	}
 	
 	// Speicher wieder freigeben
