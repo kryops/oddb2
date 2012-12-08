@@ -31,7 +31,7 @@ class template_import {
 		return '
 <form action="index.php?p=admin&amp;sp=backup_import" method="post" enctype="multipart/form-data" class="center">
 Daten-Archiv: 
-<input type="file" name="import" />
+<input type="file" name="import" style="background:#161616" />
 <br /><br />
 <input type="submit" class="button" value="importieren" style="width:120px;margin:20px 0px" onclick="this.style.display=\'none\';document.getElementById(\'importajax\').style.display=\'inline\';" />
 <img src="img/layout/ajax.gif" style="width:24px;height:24px;display:none" id="importajax" />
@@ -67,6 +67,8 @@ Daten-Archiv:
 '.($this->form ? $this->get_form() : '').'
 </div>
 
+<script type="text/javascript" src="js/jquery.js'.FILESTAMP.'"></script>
+<script type="text/javascript" src="js/general'.(DEBUG ? '_src' : '').'.js'.FILESTAMP.'"></script>
 '.($this->script != '' ? '<script type="text/javascript">
 '.$this->script.'
 </script>' : '').'
@@ -77,21 +79,30 @@ Daten-Archiv:
 	}
 }
 
-$tmpl = new template_import;
+// Zeitlimit, wie lange ein Importschritt höchstens dauern darf
+$import_timelimit = 10;
 
 
 // keine Berechtigung
 if(!$user->rechte['verwaltung_backup']) {
+	$tmpl = new template_import;
 	$tmpl->error = 'Du hast keine Berechtigung!';
 	$tmpl->form = false;
 	$tmpl->output();
 }
 
-// Import starten
+// Datei hochladen
 else if(isset($_FILES['import'])) {
+	
+	$tmpl = new template_import;
+	
 	// Memory-Limit erhöhen
 	@ini_set('memory_limit', '768M');
-	@set_time_limit(600);
+	
+	// max_input_vars-Problem
+	@ini_set('max_input_vars', 65536);
+	
+	$tmpl->form = false;
 	
 	// Fehler beim Upload
 	if($_FILES['import']['error']) {
@@ -107,18 +118,63 @@ else if(isset($_FILES['import'])) {
 		die();
 	}
 	
-	// max_input_vars-Problem
-	@ini_set('max_input_vars', 65536);
-	
 	// Dateiinhalt auslesen
 	$data = file_get_contents($_FILES['import']['tmp_name']);
 	
 	// dekomprimieren
 	if(($data = @gzuncompress($data)) === false) {
-		$tmpl->error = 'Ung&uuml;ltige Datei!';
+		$tmpl->error = 'Ung&uuml;ltige Datei! (Komprimierungs-Fehler)';
 		$tmpl->output();
 		die();
 	}
+	
+	/*
+	 * Datei validieren
+	 */
+	$abgleich_runde = 0;
+	$abgleich_version = 0;
+	
+	$data = explode('""""', $data);
+	
+	// Ungültige Daten
+	if(count($data) < 2) {
+		$tmpl->error = 'Ung&uuml;ltige Datei! (< 2 Datensätze)';
+		$tmpl->output();
+		die();
+	}
+	
+	// Datensätze durchgehen
+	for($i=0; $i<=1; $i++) {
+		
+		$val = $data[$i];
+		
+		// Zeile auswerten
+		if(preg_match("/^([A-Z])(\d+)=(.+)$/Uis", $val, $row)) {
+			
+			// Umgebungsdaten
+			if($row[1] == 'C') {
+				if($row[2] == 1) {
+					$abgleich_runde = $row[3];
+				}
+				else if($row[2] == 2) {
+					$abgleich_version = $row[3];
+				}
+			}
+			
+		}
+	}
+	
+	if($abgleich_runde != ODWORLD) {
+		$tmpl->error = 'Die Runde des Abgleichs stimmt nicht mit der aktuellen Runde &uuml;berein!';
+		$tmpl->output();
+		die();
+	}
+	if($abgleich_version != ABGLEICH_VERSION) {
+		$tmpl->error = 'Der Abgleich wurde mit einer anderen, inkompatiblen Version der ODDB erzeugt!';
+		$tmpl->output();
+		die();
+	}
+	
 	
 	// Cache setzen
 	$cache->set('oddb_import', 1, 60);
@@ -128,9 +184,113 @@ else if(isset($_FILES['import'])) {
 		insertlog(25, 'importiert Daten in die Datenbank');
 	}
 	
-	// Counter
-	$syscount = 0;
-	$plcount = 0;
+	// Datei speichern
+	$filename = "import".time().substr(md5(microtime(true)), 0, 6);
+	move_uploaded_file($_FILES['import']['tmp_name'], './admin/cache/'.$filename);
+	
+	
+	$tmpl->content = '
+		<div id="content" class="center">
+			<p>Import läuft. <b>Bitte dieses Fenster nicht schlie&szlig;en!</b></p>
+			<br />
+			<div class="balken" id="import_balken" style="width:300px;height:15px;margin:auto">
+			<div class="balkenfill" style="width:0px"></div>
+			</div>
+			<br />
+			<p id="import_status">&nbsp;</p>
+			<img src="img/layout/ajax.gif" style="width:24px;height:24px;" />
+		</div>
+	';
+	
+	$tmpl->script = '
+window.setTimeout(function() {
+	ajaxcall(\'index.php?p=admin&sp=backup_import&import='.$filename.'\', false, {\'offset\':2, \'sys\':0, \'pl\':0, \'sysmin\':0, \'plmin\':0}, false);
+}, 250);';
+	
+	$tmpl->output();
+	
+}
+
+// Daten importieren
+else if(isset($_GET['import'], $_POST['offset'])) {
+	
+	$tmpl = new template;
+	
+	// Memory-Limit erhöhen
+	@ini_set('memory_limit', '768M');
+	
+	// max_input_vars-Problem
+	@ini_set('max_input_vars', 65536);
+	
+	if(substr($_GET['import'], 0, 6) != 'import' OR !preg_match("/^[a-zA-Z0-9]+$/Uis", $_GET['import'])) {
+		$tmpl->error = 'Ungültiger Dateiname!';
+		$tmpl->output();
+		die();
+	}
+	
+	if(!file_exists('./admin/cache/'.$_GET['import'])) {
+		$tmpl->error = 'Die Datei existiert nicht!';
+		$tmpl->output();
+		die();
+	}
+	
+	$offset = (int)$_POST['offset'];
+	
+	// Statistiken
+	if(!isset($_POST['sys'])) {
+		$_POST['sys'] = 0;
+	}
+	
+	if(!isset($_POST['pl'])) {
+		$_POST['pl'] = 0;
+	}
+	
+	$syscount = $_POST['sys'];
+	$plcount = $_POST['pl'];
+	
+	
+	// Systeme und Planeten, die schon abgeglichen wurden, nicht mehr auslesen
+	if(isset($_POST['sysmin'])) {
+		$sysmin = (int)$_POST['sysmin'];
+	}
+	else {
+		$sysmin = 0;
+	}
+	
+	if(isset($_POST['plmin'])) {
+		$plmin = (int)$_POST['plmin'];
+	}
+	else {
+		$plmin = 0;
+	}
+	
+	
+	// Dateiinhalt auslesen
+	$data = file_get_contents('./admin/cache/'.$_GET['import']);
+	
+	// dekomprimieren
+	if(($data = @gzuncompress($data)) === false) {
+		$tmpl->error = 'Ung&uuml;ltige Datei! (Komprimierungs-Fehler)';
+		$tmpl->output();
+		die();
+	}
+	
+	$data = explode('""""', $data);
+	
+	$count = count($data);
+	
+	// Ungültige Daten
+	if($count < 2) {
+		$tmpl->error = 'Ung&uuml;ltige Datei!';
+		$tmpl->output();
+		die();
+	}
+	
+	if($offset >= $count) {
+		$tmpl->error = 'Ung&uuml;ltige Startposition!';
+		$tmpl->output();
+		die();
+	}
 	
 	// Daten-Container
 	$sys = array();
@@ -146,6 +306,7 @@ else if(isset($_FILES['import'])) {
 			".PREFIX."systeme
 		WHERE
 			systemeUpdateHidden > 0
+			AND systemeID > ".$sysmin."
 	") OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
 	
 	while($row = mysql_fetch_array($query)) {
@@ -167,6 +328,8 @@ else if(isset($_FILES['import'])) {
 			".PREFIX."planeten
 			LEFT JOIN ".GLOBPREFIX."player
 				ON playerID = planeten_playerID
+		WHERE
+			planetenID > ".$plmin."
 	") OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
 	
 	while($row = mysql_fetch_array($query)) {
@@ -195,57 +358,23 @@ else if(isset($_FILES['import'])) {
 	mysql_free_result($query);
 	
 	
-	// Daten abgleichen
-	$abgleich_runde = 0;
-	$abgleich_version = 0;
+	$time = time();
 	
-	$data = explode('""""', $data);
-	
-	// Ungültige Daten
-	if(count($data) < 2) {
-		$tmpl->error = 'Ung&uuml;ltige Datei!';
-		$tmpl->output();
-		die();
-	}
-	
-	$i = 0;
 	
 	// Datensätze durchgehen
-	foreach($data as $val) {
+	for($i=$offset; $i < $count; $i++) {
 		
-		$i++;
-		
-		// Überprüfen, ob Umgebungsdaten richtig waren
-		if($i == 3) {
-			if($abgleich_runde != ODWORLD) {
-				$tmpl->error = 'Die Runde des Abgleichs stimmt nicht mit der aktuellen Runde &uuml;berein!';
-				$tmpl->output();
-				die();
-			}
-			if($abgleich_version != ABGLEICH_VERSION) {
-				$tmpl->error = 'Der Abgleich wurde mit einer anderen, inkompatiblen Version der ODDB erzeugt!';
-				$tmpl->output();
-				die();
-			}
-		}
+		$val = $data[$i];
 		
 		// Zeile auswerten
 		if(preg_match("/^([A-Z])(\d+)=(.+)$/Uis", $val, $row)) {
 			
-			// Umgebungsdaten
-			if($row[1] == 'C') {
-				if($row[2] == 1) {
-					$abgleich_runde = $row[3];
-				}
-				else if($row[2] == 2) {
-					$abgleich_version = $row[3];
-				}
-			}
-			
 			// System-Datensatz
-			else if($row[1] == 'S') {
+			if($row[1] == 'S') {
 				
 				$id = $row[2];
+				$sysmin = $id;
+				
 				$row = json_decode($row[3], true);
 				
 				
@@ -360,6 +489,7 @@ else if(isset($_FILES['import'])) {
 					// Zähler erhöhen
 					$syscount++;
 				}
+				/*
 				// System älter -> nur verschleierte Planeten aktualisieren
 				else if(isset($sys[$id])) {
 					// Planeten durchgehen
@@ -387,13 +517,15 @@ else if(isset($_FILES['import'])) {
 						}
 					}
 				}
-				
+				*/
 			}
 			
 			// Planeten-Datensatz
 			else if($row[1] == 'P') {
 				
 				$id = $row[2];
+				$plmin = $id;
+				
 				$row = json_decode($row[3], true);
 				
 				
@@ -444,6 +576,31 @@ else if(isset($_FILES['import'])) {
 				
 			}
 		}
+		
+		
+		// nach dem Zeitlimit unterbrechen
+		if(time()-$time > $import_timelimit AND $count-$i > 10) {
+			
+			// Balken berechnen
+			$maxwidth = 300;
+			$width = round(($i+1)/$count*$maxwidth);
+			if($width > $maxwidth) {
+				$width = $maxwidth;
+			}
+			else if($width < 0) {
+				$width = 0;
+			}
+			
+			$tmpl->script = '
+$(\'#import_balken > .balkenfill\').css(\'width\', \''.$width.'px\');
+$(\'#import_status\').html(\''.$syscount.' System- und '.$plcount.' Planetenscans wurden &uuml;bernommen.\');
+window.setTimeout(function() {
+	ajaxcall(\'index.php?p=admin&sp=backup_import&import='.$_GET['import'].'\', false, {\'offset\':'.($i+1).', \'sys\':'.$syscount.', \'pl\':'.$plcount.', \'sysmin\':'.$sysmin.', \'plmin\':'.$plmin.'}, false);
+}, 250);';
+			
+			$tmpl->output();
+			die();
+		}
 	}
 	
 	
@@ -484,31 +641,20 @@ else if(isset($_FILES['import'])) {
 			)
 	") OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
 	
+	// Import löschen
+	@unlink('./admin/cache/'.$_GET['import']);
 	
-	/*
-	// DEBUG
-	echo count($queries);
-	echo '<br />';
-	echo ressmenge(memory_get_usage(true)).' Bytes RAM';
-	echo '<br />';
-	echo number_format(microtime(true)-$time_start, 6).' Sekunden';
-	*/
 	
-	// Formular ausblenden
-	$tmpl->form = false;
-	
-	$tmpl->content = '
-<div class="center">
-Der Import wurde erfolgreich abgeschlossen.
-<br /><br />
-'.$syscount.' System- und '.$plcount.' Planetenscans wurden &uuml;bernommen.
-</div>
-<br /><br />';
+	// Ausgabe
+	$tmpl->script = '
+$(\'#content\').html(\'<div class="center">Der Import wurde erfolgreich abgeschlossen.<br /><br />'.$syscount.' System- und '.$plcount.' Planetenscans wurden &uuml;bernommen.</div><br /><br />\');';
+			
 	$tmpl->output();
 }
 
 // Seiteninhalt
 else {
+	$tmpl = new template_import;
 	$tmpl->output();
 }
 
