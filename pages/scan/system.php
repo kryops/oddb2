@@ -12,7 +12,7 @@ if(!defined('ODDB')) die('unerlaubter Zugriff!');
 class ScanSystem {
 	
 	/**
-	 * Planeten-Aktion eintragen; erfasst werden Invasionen, Genesis und Kolos
+	 * Planeten-Aktion eintragen; erfasst werden Invasionen, Besatzungen, Genesis und Kolos
 	 * @param array $pldata Planetendaten aus dem Scan
 	 * @param array $plrow gespeicherter Planetendatensatz @default false
 	 */
@@ -21,7 +21,7 @@ class ScanSystem {
 		global $invasionen, $cache, $user, $tmpl;
 		
 		// keine Aktion erfasst
-		if(!isset($pldata['inva']) AND !isset($pldata['kolo']) AND !isset($pldata['genesis'])) {
+		if(!isset($pldata['inva']) AND !isset($pldata['kolo']) AND !isset($pldata['besatzung']) AND !isset($pldata['genesis'])) {
 			return false;
 		}
 		
@@ -33,6 +33,10 @@ class ScanSystem {
 			}
 			
 			if(isset($pldata['genesis']) AND in_array(3, $invasionen[$pldata['id']])) {
+				return false;
+			}
+			
+			if(isset($pldata['besatzung']) AND in_array(4, $invasionen[$pldata['id']])) {
 				return false;
 			}
 			
@@ -58,6 +62,10 @@ class ScanSystem {
 		
 		else if(isset($pldata['genesis'])) {
 			$invatyp = 3;
+		}
+		
+		else if(isset($pldata['besatzung'])) {
+			$invatyp = 4;
 		}
 		
 		else if(isset($pldata['inva'])) {

@@ -3101,6 +3101,11 @@ function quelltext(f, r) {
 					if($(this).find('tr:last-child img[src*="flotte_invasion.gif"]').length) {
 						pl[i]['inva'] = 1;
 					}
+					
+					// Besatzung
+					if($(this).find('tr:last-child img[src*="flotte-besatzer.gif"]').length) {
+						pl[i]['besatzung'] = 1;
+					}
 				}
 				// Kein Planet vorhanden
 				else {
