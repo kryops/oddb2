@@ -18,7 +18,7 @@ class ScanOrbit {
 		1=>array('inv', 'invende', 'invauser'),
 		2=>array('reso', 'resoende', false),
 		3=>array('gen', 'genende', 'genuser'),
-		4=>array('bes', false, 'besuer'),
+		4=>array('bes', false, 'besuser'),
 		5=>array('kolo', 'koloende', 'kolouser')
 	);
 	
