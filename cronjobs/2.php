@@ -11,7 +11,7 @@
  * - veraltete Toxxrouten löschen
  * - veraltete Sprunggeneratoren löschen
  * - veraltete BBS und Terraformer löschen
- * - Tabellen nach ID sortieren (galaxien, systeme, planeten, player)
+ * - bei fehlgeschlagenen Importen aufräumen
  */
 
 // alle Fehlermeldungen aktivieren
@@ -128,6 +128,20 @@ function inva_archiv($id, $log) {
 //
 if(CACHING) {
 	$cache->removeglobal('odrequest');
+}
+
+
+//
+// liegen gebliebene Importe löschen
+//
+if($dir = @opendir('../admin/cache')) {
+	while($file = readdir($dir)) {
+		if(substr($file, 0, 6) == 'import') {
+			@unlink('../admin/cache/'.$file);
+		}
+	}
+	
+	closedir($dir);
 }
 
 
@@ -368,7 +382,7 @@ foreach($dbs as $instance) {
 	}
 	
 	//
-	// gelöschte oder 3 Tage alte BBS und Terraformer löschen
+	// gelöschte oder 7 Tage alte BBS und Terraformer löschen
 	// 
 	
 	query("
@@ -376,7 +390,7 @@ foreach($dbs as $instance) {
 		WHERE
 			(schiffeBergbau IS NULL AND schiffeTerraformer IS NULL)
 			OR
-			(schiffeBergbauUpdate < ".(time()-259200)." AND schiffeTerraformerUpdate < ".(time()-259200).")
+			(schiffeBergbauUpdate < ".(time()-604800)." AND schiffeTerraformerUpdate < ".(time()-604800).")
 	") OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
 	
 	query("
@@ -384,7 +398,7 @@ foreach($dbs as $instance) {
 		SET
 			schiffeBergbau = NULL
 		WHERE
-			schiffeBergbauUpdate < ".(time()-259200)."
+			schiffeBergbauUpdate < ".(time()-604800)."
 	") OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
 	
 	query("
@@ -392,26 +406,30 @@ foreach($dbs as $instance) {
 		SET
 			schiffeTerraformer = NULL
 		WHERE
-			schiffeTerraformerUpdate < ".(time()-259200)."
+			schiffeTerraformerUpdate < ".(time()-604800)."
 	") OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
+	
 	
 	//
-	// Tabellen nach ID sortieren (galaxien, systeme, planeten, player)
+	// Galaxiestatistiken bei abgebrochenen Importen neu berechnen 
 	//
+	
+	// Galaxien aktualisieren
 	query("
-		ALTER TABLE ".$prefix."galaxien
-		ORDER BY galaxienID
+		UPDATE
+			".$prefix."galaxien
+		SET
+			galaxienSysScanned = (
+				SELECT
+					COUNT(*)
+				FROM
+					".$prefix."systeme
+				WHERE
+					systemeUpdate > 0
+					AND systeme_galaxienID = galaxienID
+			)
 	") OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
 	
-	query("
-		ALTER TABLE ".$prefix."systeme
-		ORDER BY systemeID
-	") OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
-	
-	query("
-		ALTER TABLE ".$prefix."planeten
-		ORDER BY planetenID
-	") OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
 }
 
 //
@@ -511,14 +529,6 @@ if($minid AND $od_up) {
 		}
 	}
 }
-
-//
-// globale Tabellen sortieren
-//
-query("
-	ALTER TABLE ".GLOBPREFIX."player
-	ORDER BY playerID
-") OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
 
 
 echo "Cronjob erfolgreich.";

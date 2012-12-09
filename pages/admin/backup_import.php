@@ -102,8 +102,6 @@ else if(isset($_FILES['import'])) {
 	// max_input_vars-Problem
 	@ini_set('max_input_vars', 65536);
 	
-	$tmpl->form = false;
-	
 	// Fehler beim Upload
 	if($_FILES['import']['error']) {
 		$tmpl->error = 'Fehler beim Upload!';
@@ -127,6 +125,8 @@ else if(isset($_FILES['import'])) {
 		$tmpl->output();
 		die();
 	}
+	
+	$data_raw = $data;
 	
 	/*
 	 * Datei validieren
@@ -186,8 +186,12 @@ else if(isset($_FILES['import'])) {
 	
 	// Datei speichern
 	$filename = "import".time().substr(md5(microtime(true)), 0, 6);
-	move_uploaded_file($_FILES['import']['tmp_name'], './admin/cache/'.$filename);
 	
+	$fp = fopen('./admin/cache/'.$filename, "w");
+	fwrite($fp, $data_raw);
+	fclose($fp);
+	
+	$tmpl->form = false;
 	
 	$tmpl->content = '
 		<div id="content" class="center">
@@ -268,13 +272,6 @@ else if(isset($_GET['import'], $_POST['offset'])) {
 	// Dateiinhalt auslesen
 	$data = file_get_contents('./admin/cache/'.$_GET['import']);
 	
-	// dekomprimieren
-	if(($data = @gzuncompress($data)) === false) {
-		$tmpl->error = 'Ung&uuml;ltige Datei! (Komprimierungs-Fehler)';
-		$tmpl->output();
-		die();
-	}
-	
 	$data = explode('""""', $data);
 	
 	$count = count($data);
@@ -293,55 +290,12 @@ else if(isset($_GET['import'], $_POST['offset'])) {
 	}
 	
 	// Daten-Container
+	$sys_read = false;
+	$pl_read = false;
 	$sys = array();
 	$pl = array();
 	$mgates = array();
 	
-	// System-Aktualität auslesen
-	$query = query("
-		SELECT
-			systemeID,
-			systemeUpdate
-		FROM
-			".PREFIX."systeme
-		WHERE
-			systemeUpdateHidden > 0
-			AND systemeID > ".$sysmin."
-	") OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
-	
-	while($row = mysql_fetch_array($query)) {
-		$sys[$row[0]] = (int)$row[1];
-	}
-	
-	mysql_free_result($query);
-	
-	// Planeten-Aktualität und Inhaber auslesen
-	$query = query("
-		SELECT
-			planetenID,
-			planeten_playerID,
-			planetenUpdateOverview,
-			planetenUpdate,
-			
-			playerRasse
-		FROM
-			".PREFIX."planeten
-			LEFT JOIN ".GLOBPREFIX."player
-				ON playerID = planeten_playerID
-		WHERE
-			planetenID > ".$plmin."
-	") OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
-	
-	while($row = mysql_fetch_array($query)) {
-		$pl[$row[0]] = array(
-			(int)$row[1],
-			(int)$row[2],
-			(int)$row[3],
-			(int)$row[4]
-		);
-	}
-	
-	mysql_free_result($query);
 	
 	// Myrigates auslesen
 	$query = query("
@@ -371,6 +325,29 @@ else if(isset($_GET['import'], $_POST['offset'])) {
 			
 			// System-Datensatz
 			if($row[1] == 'S') {
+				
+				if($sys_read === false) {
+					// System-Aktualität auslesen
+					$query = query("
+						SELECT
+							systemeID,
+							systemeUpdate
+						FROM
+							".PREFIX."systeme
+						WHERE
+							systemeUpdateHidden > 0
+							AND systemeID > ".$sysmin."
+					") OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
+					
+					while($sysrow = mysql_fetch_array($query)) {
+						$sys[$sysrow[0]] = (int)$sysrow[1];
+					}
+					
+					mysql_free_result($query);
+					
+					$sys_read = true;
+				}
+				
 				
 				$id = $row[2];
 				$sysmin = $id;
@@ -522,6 +499,39 @@ else if(isset($_GET['import'], $_POST['offset'])) {
 			
 			// Planeten-Datensatz
 			else if($row[1] == 'P') {
+				
+				if($pl_read === false) {
+					// Planeten-Aktualität und Inhaber auslesen
+					$query = query("
+						SELECT
+							planetenID,
+							planeten_playerID,
+							planetenUpdateOverview,
+							planetenUpdate,
+							
+							playerRasse
+						FROM
+							".PREFIX."planeten
+							LEFT JOIN ".GLOBPREFIX."player
+								ON playerID = planeten_playerID
+						WHERE
+							planetenID > ".$plmin."
+					") OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
+					
+					while($plrow = mysql_fetch_array($query)) {
+						$pl[$plrow[0]] = array(
+							(int)$plrow[1],
+							(int)$plrow[2],
+							(int)$plrow[3],
+							(int)$plrow[4]
+						);
+					}
+					
+					mysql_free_result($query);
+					
+					$pl_read = true;
+				}
+				
 				
 				$id = $row[2];
 				$plmin = $id;
