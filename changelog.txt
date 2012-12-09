@@ -1,4 +1,13 @@
-﻿02.11.2012 - V2.2.2
+﻿09.12.2012 - V2.2.3
+-------------------
+* DB-Abgleiche funktionieren nun korrekt und haben einen Fortschrittsbalken
+* Beim Systemscan werden nun auch Besatzungen eingetragen
+* Bugfix: Beim Orbit-Scan wird der Aggressor bei einer Besatzung wieder korrekt eingetragen
+* Erneuter Versuch, das ODDB Tool UMTS-tauglich zu machen
+
+
+
+02.11.2012 - V2.2.2
 -------------------
 * Anpassung des Parsers an die neue Flottenübersicht
 * FoW-Suchfilter können nun Planeten auch nur außerhalb des Systems finden
