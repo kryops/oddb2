@@ -77,8 +77,6 @@ chrome.webRequest.onBeforeSendHeaders.addListener(
 			return;
 		}
 		
-		alert(details.url);
-		
 		details.requestHeaders.push({name: 'Cache-Control', value: 'deny-all, no-cache'});
 		details.requestHeaders.push({name: 'Pragma', value: 'deny-all, no-cache'});
 		
