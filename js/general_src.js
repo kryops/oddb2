@@ -1101,6 +1101,11 @@ acttab = 1;
  * Tabbar neu laden
  */
 function tab_update() {
+	
+	if(!$('#contentbody').length) {
+		return false;
+	}
+	
 	var outc = '';
 	// Bar nur anzeigen, wenn es mehr als einen Tab gibt
 	if(tabcount > 1) {
