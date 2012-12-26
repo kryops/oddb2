@@ -284,6 +284,9 @@ foreach($stats as $gala=>$data) {
 
 $content .= '
 	</table>
+		
+	<br />
+	<div class="center small hint">Die Scan-Statistik wird alle 15 Minuten neu berechnet</div>
 ';
 
 
