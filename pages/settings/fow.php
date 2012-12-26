@@ -43,8 +43,9 @@ if($_GET['sp'] == 'fow') {
 		<br />
 		<input type="checkbox" name="scan"'.(isset($fow['scan']) ? ' checked="checked"' : '').' /> <span class="togglecheckbox" data-name="scan">nicht erfasste Systeme und veraltete Allianz-Systeme anzeigen</span>
 		<br />
-		<input type="checkbox" name="scout"'.(isset($fow['scout']) ? ' checked="checked"' : '').' /> <span class="togglecheckbox" data-name="scout">die</span> &nbsp;<input type="text" class="smalltext" name="scoutcount" value="'.(isset($fow['scoutcount']) ? $fow['scoutcount'] : '1').'" /> <span class="togglecheckbox" data-name="scout"> &nbsp;n&auml;chsten Scout-Systeme anzeigen &auml;lter als</span> &nbsp;<input type="text" class="smalltext" name="scoutval" value="'.(isset($fow['scout']) ? $fow['scout'] : $config['scan_veraltet']).'" /> &nbsp;<span class="togglecheckbox" data-name="scout">Tage</span>
-		&nbsp; &nbsp;(<input type="checkbox" name="scoutfirst"'.((isset($fow['scoutfirst']) AND $fow['scoutfirst']) ? ' checked="checked"' : '').' /> <span class="togglecheckbox" data-name="scoutfirst">nicht gescannte immer zuerst</span>)
+		<input type="checkbox" name="scout"'.(isset($fow['scout']) ? ' checked="checked"' : '').' /> <span class="togglecheckbox" data-name="scout">die</span> &nbsp;<input type="text" class="smalltext" name="scoutcount" value="'.(isset($fow['scoutcount']) ? $fow['scoutcount'] : '1').'" /> <span class="togglecheckbox" data-name="scout"> &nbsp;n&auml;chsten Scout-Systeme anzeigen &auml;lter als</span> &nbsp;<input type="text" class="smalltext" name="scoutval" value="'.((isset($fow['scout']) AND $fow['scout'] > 0) ? $fow['scout'] : "").'" /> &nbsp;<span class="togglecheckbox" data-name="scout">Tage</span>
+		&nbsp; <span class="small hint">(leer lassen f&uuml;r globalen Standardwert: '.$config['scan_veraltet'].')</span>
+		<br />&nbsp; &nbsp; &nbsp; &nbsp;(<input type="checkbox" name="scoutfirst"'.((isset($fow['scoutfirst']) AND $fow['scoutfirst']) ? ' checked="checked"' : '').' /> <span class="togglecheckbox" data-name="scoutfirst">nicht gescannte immer zuerst</span>)
 		<br />
 		<input type="checkbox" name="next"'.(isset($fow['next']) ? ' checked="checked"' : '').' /> <span class="togglecheckbox" data-name="next">die n&auml;chsten</span> &nbsp;<input type="text" class="smalltext" name="nextval" value="'.(isset($fow['next']) ? $fow['next'] : '1').'" /> &nbsp;<span class="togglecheckbox" data-name="next">Systeme anzeigen</span> &nbsp;
 		<span class="small hint">(max. 10)</span>
@@ -287,7 +288,7 @@ else if($_GET['sp'] == 'save_fow') {
 	
 	// Daten sichern
 	$_POST['scoutval'] = (int)$_POST['scoutval'];
-	if($_POST['scoutval'] < 1) $_POST['scoutval'] = 1;
+	if($_POST['scoutval'] < 0) $_POST['scoutval'] = 0;
 	
 	$_POST['scoutcount'] = (int)$_POST['scoutcount'];
 	if($_POST['scoutcount'] < 1) $_POST['scoutcount'] = 1;

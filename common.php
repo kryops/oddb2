@@ -519,7 +519,8 @@ $bfowsettings = array(
 	'gate'=>true,
 	'mgate'=>true,
 	'scan'=>true,
-	'scout'=>$bconfig['scan_veraltet']
+	'scout'=>0,
+	'scoutcount'=>1
 );
 
 

@@ -871,6 +871,7 @@ else if($_GET['sp'] == '') {
 		// Scoutziel
 		if(isset($fow['scout'])) {
 			$count = isset($fow['scoutcount']) ? $fow['scoutcount'] : 1;
+			$scout_days = $fow['scout'] ? $fow['scout'] : $config['scan_veraltet'];
 			
 			$query = query("
 				SELECT
@@ -901,7 +902,7 @@ else if($_GET['sp'] == '') {
 						AND status_allianzenID = allianzenID
 				WHERE
 					systeme_galaxienID = ".$data['systeme_galaxienID']."
-					AND systemeUpdate < ".(time()-$fow['scout']*86400)."
+					AND systemeUpdate < ".(time()-$scout_days*86400)."
 					AND systemeScanReserv < ".(time()-86400)."
 					AND systemeID != ".$_GET['id']."
 				ORDER BY
