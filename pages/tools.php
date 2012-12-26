@@ -559,15 +559,11 @@ else {
 	$tmpl->content .= '
 		<br />
 		<div style="width:90%;margin:auto;margin-bottom:8px">
-			<span style="font-weight:bold">F&uuml;r alle Tools gelten die Hinweise:</span>
+			<span style="font-weight:bold">F&uuml;r alle Tools gilt der Hinweis:</span>
 			<br />
 			Solltest du einen Loginfehler angezeigt bekommen, obwohl du in der Datenbank eingeloggt bist, musst du unter
 			<br />
 			<span style="font-style:italic">Einstellungen &rarr; Datenschutz</span> &nbsp;Cookies von <span style="font-style:italic">'.SERVER.'</span> &nbsp;explizit erlauben oder einen Haken bei&nbsp; <span style="font-style:italic">Cookies von Drittanbietern akzeptieren</span>&nbsp; setzen.
-			<br /><br />
-			Beim Surfen &uuml;ber UMTS-Anbindungen gibt es h&auml;ufig Probleme beim Parsen, da die Anbieter den Quelltext komprimieren, um Traffic zu sparen.
-			<br />
-			Einen Workaround zumindest f&uuml;r Vodafone bietet z.B. der <a href="http://www.vodafone.de/business/hilfe-support/high-performance-client.html" target="_blank" style="font-weight:bold">HighPerformance Client</a>. Dort muss die Komprimierung ausgeschaltet werden, damit das Parsen korrekt funktioniert.
 		</div>
 		<br />
 		<div class="hl2">
