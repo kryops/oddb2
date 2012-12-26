@@ -3757,10 +3757,8 @@ function quelltext(f, r) {
  * @return false Abbruch bei Fehler
  */
 function quelltext_mainscreen(f, r) {
+	
 	var input = f.input.value;
-	var p;
-	var data;
-	var data2;
 	
 	// Result-Element leeren
 	r.html('');
@@ -3773,53 +3771,55 @@ function quelltext_mainscreen(f, r) {
 		out['repair'] = 1;
 	}
 	
-	// Zeilenumbrüche entfernen
-	input = input.replace(/(\r\n)|(\n)/g, '');
-	
 	// mehrfach kopierten Quelltext entfernen
-	input = input.replace(/<\/html>(.*)$/g, '</html>');
+	input = input.replace(/<\/html>(.*)$/, '</html>');
 	
-	p = /<td align="center" valign="top" class="tablecolor">(?:\s*)(?:&Uuml;bersicht Galaxie|Overview of galaxy) (\d+) <b>/;
+	// Bug (Chrome): fehlendes <
+	input = input.replace(/\std width=/g, '<td width=');
 	
-	// wirklich ein Mainscreen?
-	if(input.search(p) != -1) {
+	
+	var tree = $(input),
+		ctree = tree.find('#layout-main'),
+		link_all = ctree.find("a[href*='op=main&order=id&first=0&last=5000&galax=']");
+	
+	if(link_all.length) {
+		
 		try {
-			// ID ermitteln
-			data = p.exec(input);
-			if(data == null) throw 'Konnte Galaxie nicht ermitteln!';
-			else out['gala'] = data[1];
+			// Galaxie ermitteln
+			out['gala'] = link_all.attr('href').replace(/^.+&galax=/, '');
 			
-			// wie viele Systeme?
-			p = /<td align="center" class="smallletters">(?:\s*)(?:Systeme Gefunden|Systems found): (\d+) <a/;
-			data = p.exec(input);
-			if(data == null) throw 'Konnte Anzahl der Systeme nicht ermitteln!';
-			else var systems = data[1];
+			// Anzahl Systeme
+			var systems = link_all.parent().html().match(/^[a-zA-Z\s]+:\s*(\d+)\s*</)[1];
 			
-			// alle Systeme ermitteln
-			var pattern = '<td width="203"><font size="-1"><a href="\\?op=system&sys=(\\d+)&galx=(?:\\d+)">([^<]*)<\\/a><\\/font><\\/td>(?:\\s*)<td width="55"><font size="-1">([\\d\\-]+)<\\/font><font size="-2"><\\/font><\\/td>(?:\\s*)<td width="53"><font size="-1">([\\d\\-]+)<\\/font><font size="-2"><\\/font><\\/td>(?:\\s*)<td width="47"><font size="-1">([\\d\\-]+)<\\/font><font size="-2"><\\/font><\\/td>';
+			// Systemdaten ermitteln
+			var data = [];
 			
-			p = new RegExp(pattern, 'g');
-			data = input.match(p);
-			if(data == null) throw 'Konnte Systemdaten nicht ermitteln!';
-			else {
-				// Systeme einzeln abarbeiten
-				var data3 = [];
-				p = new RegExp(pattern);
-				for(var i=0;i<data.length;i++) {
-					data2 = p.exec(data[i]);
-					if(data2 == null) throw 'Konnte Systemdaten nicht ermitteln (Stufe 2)';
-					else {
-						data3.push([data2[1], data2[2], data2[3], data2[4], data2[5]]);
-					}
-				}
-				// vollständiger Mainscreen?
-				if(data3.length != systems) {
-					r.html('<div class="error">Der Mainscreen ist nicht vollst&auml;ndig!</div>');
-					return false;
-				}
-				// Daten an Ausgabe-Objekt hängen
-				out['s'] = data3;
+			var sys_data = ctree.find('.tabletrans-fleet, .tabletranslight-fleet');
+			
+			if($(sys_data[0]).children().length != 7 || $(sys_data[0]).find('a').length != 1) {
+				throw 'Mainscreen-Quelltext ungültig!';
 			}
+			
+			if(sys_data.length != systems) {
+				r.html('<div class="error">Der Mainscreen ist nicht vollst&auml;ndig!</div>');
+				return false;
+			}
+			
+			sys_data.each(function() {
+				var $this = $(this),
+					$children = $this.children(),
+					sys = [];
+				
+				data.push([
+				     $this.find('a').attr('href').replace(/^.+&sys=(\d+)&.+$/, '$1'),
+				     $this.find('a').text(),
+				     $children.eq(3).text(),
+				     $children.eq(4).text(),
+				     $children.eq(5).text()
+				]);
+			});
+			
+			out['s'] = data;
 		}
 		// Fehler
 		catch(e) {
