@@ -277,7 +277,7 @@ oddbtool.fow = function(page, data) {
 						
 						// Unscannbar
 						if(data['pl'][i]['unscannbar'] > data['pl'][i]['updateoverview']) {
-							data['pl'][i]['comment'] += '<div style="position:absolute;top:100px;left:10px;font-weight:bold;color:#ff3322">unscannbar!</div>';
+							data['pl'][i]['comment'] += '<div style="position:absolute;top:110px;left:15px;font-weight:bold;color:#ff3322">unscannbar!</div>';
 						}
 						
 						// Planet-Overlay
