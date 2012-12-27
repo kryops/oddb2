@@ -4127,6 +4127,35 @@ function mgate_filter(el, val) {
 
 
 /**
+ * Funktionen für die Werft-Seite
+ */
+var werftPage = {
+	
+	/**
+	 * Werft-Bedarf aus einer Schnellauswahl-Liste übernehmen
+	 * @param el DOM des <select>-Elements
+	 */
+	setBedarf : function(el)  {
+		
+		var $el = $(el),
+			val = $el.val().split('-'),
+			$form = $el.parent().find('form'),
+			
+			inputNames = ['erz', 'metall', 'wolfram', 'kristall', 'fluor'];
+		
+		if(val.length != 5) {
+			return;
+		}
+		
+		for(var i in inputNames) {
+			$form.find('input[name="' + inputNames[i] + '"]').val(val[i]);
+		}
+		
+	}
+	
+};
+ 
+/**
  * Funktionen für die Einstellungen-Seite
  */
 var settingsPage = {

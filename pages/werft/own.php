@@ -23,6 +23,10 @@ if(!isset($_GET['update'])) {
 <div class="werften_own">';
 }
 
+
+$bedarf_list = array();
+
+
 // eigene Werften abfragen
 $query = query("
 	SELECT
@@ -96,7 +100,7 @@ if(mysql_num_rows($query)) {
 		// Bedarf
 		// unbekannt
 		if($row['planetenWerftBedarf'] == '') {
-			$content .= '<span style="font-style:italic">nicht eingetragen</span>';
+			$content .= '<a style="font-style:italic" class="link winlink contextmenu" data-link="index.php?p=werft&amp;sp=edit&amp;id='.$row['planetenID'].'">nicht eingetragen</a>';
 		}
 		else {
 			// Bedarf ausrechnen
@@ -105,6 +109,17 @@ if(mysql_num_rows($query)) {
 			foreach($b as $key=>$val) {
 				$content .= $ress[$key].' '.ressmenge2($val, true).' &nbsp; ';
 			}
+			
+			
+			
+			
+			// zur Schnellauswahl hinzufügen
+			$b2 = $b;
+			foreach($b2 as $key=>$val) {
+				$b2[$key] = ressmenge2($val);
+			}
+			
+			$bedarf_list[implode('-', $b)] = implode(' - ', $b2);
 		}
 		
 		$content .= '</td>
@@ -156,10 +171,18 @@ if(mysql_num_rows($query)) {
 	</form>';
 }
 
+// Bedarf-Schnellauswahlliste
+$bedarf_select = '<option></option>';
+
+foreach($bedarf_list as $value=>$label) {
+	$bedarf_select .= '<option value="'.$value.'">'.$label.'</option>';
+}
+
 
 // reine Aktualisierung der eigenen Werften
 if(isset($_GET['update'])) {
 	$tmpl->content = $content;
+	$tmpl->script = "$('.werft_bedarfselect').html('".$bedarf_select."');";
 	$tmpl->output();
 	die();
 }
@@ -171,6 +194,7 @@ $content .= '
 	<br /><br />
 	<div class="hl2">Bedarf aller eigener Werften &auml;ndern</div>
 	<br />
+		
 	<form name="werft_editall" action="#" onsubmit="return form_send(this, \'index.php?p=werft&amp;sp=edit_all\', $(this).siblings(\'.ajax\'))">
 	<br />
 	<div class="center">
@@ -190,6 +214,11 @@ $content .= '
 	</div>
 	</form>
 	<div class="ajax center"></div>
+	
+	<br />
+	Schnellauswahl: <select size="1" class="werft_bedarfselect" onchange="werftPage.setBedarf(this)">
+		'.$bedarf_select.'
+	</select>
 </div>';
 
 // Logfile-Eintrag

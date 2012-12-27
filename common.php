@@ -22,7 +22,7 @@ define('VERSION', '2.2.3');
 // Patch-Version
 define('PATCH_VERSION', 2);
 // Datei-Zusatz (css und js)
-define('FILESTAMP', '?11');
+define('FILESTAMP', '?12');
 // OD-Runde
 define('ODWORLD', 'int10');
 define('DOWNTIME', false);
@@ -1421,7 +1421,7 @@ function ressmenge2($z, $ceil=false) {
 		return ($ceil ? ceil($z/1000000) : floor($z/1000000)).'M';
 	}
 	// 1.5M
-	if($z > 1000000) {
+	if($z > 999999) {
 		return (($ceil ? ceil($z/100000) : floor($z/100000))/10).'M';
 	}
 	// 123k

@@ -150,7 +150,45 @@ else if($_GET['sp'] == 'edit') {
 				}
 				
 				$tmpl->content = '
-			<div class="icontent werftbedarf'.$_GET['id'].'">
+			<div class="icontent werftbedarf'.$_GET['id'].'">';
+				
+				// Bedarf-Schnellauswahl
+				$bedarf_list = array();
+				
+				$query = query("
+					SELECT
+						planetenWerftBedarf
+					FROM
+						".PREFIX."planeten
+					WHERE
+						planeten_playerID = ".$user->id."
+						AND planetenWerft = 1
+						AND planetenWerftBedarf != ''
+				") OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
+				
+				while($row = mysql_fetch_assoc($query)) {
+					$b3 = json_decode($row['planetenWerftBedarf']);
+					$b2 = $b3;
+					foreach($b2 as $key=>$val) {
+						$b2[$key] = ressmenge2($val);
+					}
+					
+					$bedarf_list[implode('-', $b3)] = implode(' - ', $b2);
+				}
+				
+				$tmpl->content .= '
+					<br />
+					Schnellauswahl: <select size="1" class="werft_bedarfselect" onchange="werftPage.setBedarf(this)">
+						<option></option>';
+				
+				foreach($bedarf_list as $value=>$label) {
+					$tmpl->content .= '
+						<option value="'.$value.'">'.$label.'</option>';
+				}
+				
+				$tmpl->content .= '
+					</select>
+					<br />
 			<form name="werft_edit" action="#" onsubmit="return form_send(this, \'index.php?p=werft&amp;sp=edit_send&amp;id='.$_GET['id'].'\', $(this).siblings(\'.ajax\'))">
 				<br />
 				<div class="center">

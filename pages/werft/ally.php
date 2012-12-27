@@ -299,6 +299,8 @@ if(mysql_num_rows($query)) {
 	$content .= '
 	</tr>';
 	
+	$bedarf_list = array();
+	
 	$heute = strtotime('today');
 	
 	while($row = mysql_fetch_assoc($query)) {
@@ -309,6 +311,14 @@ if(mysql_num_rows($query)) {
 			if($row['planetenRMErz'] < $b[0] OR $row['planetenRMMetall'] < $b[1] OR $row['planetenRMWolfram'] < $b[2] OR $row['planetenRMKristall'] < $b[3] OR $row['planetenRMFluor'] < $b[4]) {
 				$bedarf = true;
 			}
+			
+			// zur Schnellauswahl hinzufügen
+			$b2 = $b;
+			foreach($b2 as $key=>$val) {
+				$b2[$key] = ressmenge2($val);
+			}
+			
+			$bedarf_list[implode('-', $b)] = implode(' - ', $b2);
 		}
 		// Suchfilter Ressbedarf
 		if(isset($_GET['bed']) AND !$bedarf) {
@@ -477,7 +487,19 @@ if(mysql_num_rows($query)) {
 		<br /><br />
 	</div>
 	</form>
-	<div class="ajax center"></div>';
+	<div class="ajax center"></div>
+
+	<br />
+	Schnellauswahl: <select size="1" onchange="werftPage.setBedarf(this)">
+		<option></option>';
+		
+		foreach($bedarf_list as $value=>$label) {
+			$content .= '<option value="'.$value.'">'.$label.'</option>';
+		}
+		
+		$content .= '
+	</select>
+	';
 		
 	}
 }
