@@ -177,8 +177,24 @@ else {
 	$sort = $sort[$_GET['sort']];
 }
 
+// Sortierung nach Entfernung
+$esort = false;
+if(isset($_GET['sort']) AND $_GET['sort'] == 'entf' AND isset($_GET['entf']) AND $_GET['entf'] != '') {
+	$esort = flug_point($_GET['entf']);
+	
+	// Fehler
+	if(!is_array($esort)) {
+		$esort = false;
+	}
+	else {
+		$conds[] = 'systeme_galaxienID = '.$esort[0];
+		$sort = 'planetenEntfernung ASC';
+	}
+}
+
 $querystring = $_SERVER['QUERY_STRING'];
 $querystring = preg_replace('/&sort=([a-z]+)/', '', $querystring);
+$querystring = preg_replace('/&entf=.*(&|$)/', '', $querystring);
 $querystring = str_replace('&switch', '', $querystring);
 $querystring = htmlspecialchars($querystring, ENT_COMPAT, 'UTF-8');
 
@@ -209,6 +225,8 @@ $query = query("
 		systemeZ,
 		systeme_galaxienID,
 		
+		".($esort ? entf_mysql("systemeX", "systemeY", "systemeZ", "1", $esort[1], $esort[2], $esort[3], $esort[4])." AS planetenEntfernung," : "")."
+		
 		playerName,
 		player_allianzenID,
 		playerRasse,
@@ -235,8 +253,23 @@ $query = query("
 ") OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
 
 
+// nach Entfernung sortieren
+$content .= '
+	<div class="center">
+		<form action="#" name="sort_inva" onsubmit="return form_sendget(this, \'index.php?'.$querystring.'&amp;sort=entf\')">
+			<a class="link" style="display:none" data-link=""></a>
+			Werften nach Entfernung zu 
+			&nbsp;<input type="text" class="smalltext tooltip" style="width:80px" name="entf" data-tooltip="bei System-IDs &lt;b&gt;sys&lt;/b&gt; davorsetzen (z.B. sys1234)"'.(isset($_GET['entf']) ? ' value="'.htmlspecialchars($_GET['entf'], ENT_COMPAT, 'UTF-8').'"' : '').' />
+			&nbsp;<input type="submit" class="button" value="sortieren" />
+			&nbsp;<span class="small hint">(Planet, System oder Koordinaten)</span>
+		</form>
+		'.((isset($_GET['entf']) AND $_GET['entf'] != '' AND !$esort) ? '<span class="error">Ausgangspunkt ung&uuml;ltig</span>' : '').'
+	</div>
+	<br /><br />';
+
 // Planeten eingetragen
 if(mysql_num_rows($query)) {
+	
 	if($user->rechte['routen'] OR $rechte_bedarf) {
 		$content .= '
 	<form name="werft_allyroutenform" onsubmit="return false">';
@@ -252,6 +285,7 @@ if(mysql_num_rows($query)) {
 	<th><a class="link" data-link="index.php?'.$querystring.'&amp;sort=ally">Allianz</a></th>
 	<th><a class="link" data-link="index.php?'.$querystring.'&amp;sort=groesse">Gr&ouml;&szlig;e</a></th>
 	<th>&nbsp;</th>
+	'.($esort ? '<th>Entf <span class="small">(A'.$user->settings['antrieb'].')</span></th>' : '').'
 	<th><a class="link" data-link="index.php?'.$querystring.'&amp;sort=scan">Scan</a></th>
 	<th><a class="link" data-link="index.php?'.$querystring.'&amp;sort=standard">fertig</a></th>
 	<th>Bedarf</th>
@@ -290,7 +324,15 @@ if(mysql_num_rows($query)) {
 	<td>'.datatable::inhaber($row['planeten_playerID'], $row['playerName'], $row['playerUmod'], $row['playerRasse']).'</td>
 	<td>'.datatable::allianz($row['player_allianzenID'], $row['allianzenTag']).'</td>
 	<td>'.$row['planetenGroesse'].'</td>
-	<td>'.datatable::typ($row['planetenTyp']).'</td>
+	<td>'.datatable::typ($row['planetenTyp']).'</td>';
+		
+		// Entfernung
+		if(isset($row['planetenEntfernung'])) {
+			$content .= '
+			<td>'.flugdauer($row['planetenEntfernung'], $user->settings['antrieb']).'</td>';
+		}
+		
+		$content .= '
 	<td>'.datatable::scan($row['planetenUpdateOverview'], $config['scan_veraltet']).'</td>
 	<td>';
 		// fertig
