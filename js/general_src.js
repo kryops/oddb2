@@ -378,15 +378,13 @@ $(document).ready(function(){
 		// Kontextmenü öffnen
 		cm_open(e, 2, $(this).attr('id'));
 		return false;
-	});
-	// Kontextmenü auf den aktiven Tab
-	$('#tabbar').on('contextmenu', '.tabactive', function(e){
-		// Kontextmenü öffnen
+	}).on('contextmenu', '.tabactive', function(e){
+		// Kontextmenü auf den aktiven Tab
 		cm_open(e, 2, $(this).attr('id'));
 		return false;
-	});
-	// Klick auf den schließen-Button
-	$('#tabbar').on('click', '.tabclose', function(e){
+	}).on('click', '.tabclose', function(e){
+		// Klick auf den schließen-Button
+		
 		// Rechtsklick abfangen
 		if (e.button != 0) return true;
 		tab_close($(this).attr('id'));
@@ -408,27 +406,24 @@ $(document).ready(function(){
 		cm_open(e, 3, [addr, id]);
 		
 		return false;
+	}).on('click', '#startbutton', function(){
+		// Startmenü
+		sm_show();
+	}).on('contextmenu', '#startbutton', function(){
+		sm_show();
+		return false;
 	});
 	
 	// Fenster klickbar machen
 	$(document).on('mousedown', '.fenster', function(){
 		wbar_click($(this), 1);
-	});
-	$(document).on('mousedown', '.fhl1', function(e) {
+	}).on('mousedown', '.fhl1', function(e) {
 		var id = $(this).parent().attr('id');
 		id = id.replace(/fenster/g, '');
 		fmove = id;
 		fmovepos = [e.pageX-document.documentElement.scrollLeft, e.pageY-document.documentElement.scrollTop];
 		fmoveobj = [parseInt($(this).parent().css('left').replace(/px/g, '')),
 					parseInt($(this).parent().css('top').replace(/px/g, ''))];
-	});
-	
-	// Startmenü per Links- und Rechtsklick öffnen
-	$('#windowbar').on('click', '#startbutton', function(){
-		sm_show();
-	}).on('contextmenu', '#startbutton', function(){
-		sm_show();
-		return false;
 	});
 	
 	// Startmenülinks klickbar machen
@@ -466,9 +461,8 @@ $(document).ready(function(){
 			
 			page_load(type, false, addr, acttab, false);
 		}
-	});
-	// Startmenü Links Kontextmenü
-	$('#startmenuc').on('contextmenu', '#favoriten a, #historyc a', function(e){
+	}).on('contextmenu', '#favoriten a, #historyc a', function(e){
+		// Startmenü Links Kontextmenü
 		// Kontextmenü anzeigen, wenn Link vorhanden
 		if(typeof($(this).data('link')) == 'undefined') return false;
 		cm_open(e, 1, $(this).data('link'));
@@ -480,10 +474,8 @@ $(document).ready(function(){
 		if(e.altKey && e.ctrlKey && e.which == 116) {
 			tab_next();
 		}
-	});
-	
-	// Enter-Taste bei Inputs aktivieren
-	$(document).on('keypress', '.enter', function(e) {
+	}).on('keypress', '.enter', function(e) {
+		// Enter-Taste bei Inputs aktivieren
 		if(e.keyCode == 13) {
 			var r = (typeof($(e.target).data('action')) == 'undefined') ? $(e.target).attr('rel') : $(e.target).data('action');
 			
@@ -608,6 +600,17 @@ $(document).ready(function(){
 		// Filter deaktiviert
 		if(filter == "") {
 			o.html('<i>alle</i>');
+		}
+	});
+	
+	// Planetenkommentare durch Doppelklick löschen
+	$(document).on('dblclick', '.kommentar.searchicon', function() {
+		if(window.confirm('Soll der Kommentar wirklich gelöscht werden?')) {
+			var idClass = this.className.match(/plkommentar(\d+) /);
+			
+			if(idClass) {
+				ajaxcall('index.php?p=show_planet&sp=kommentar&ajax&id='+idClass[1], false, {kommentar: ''}, false);
+			}
 		}
 	});
 	

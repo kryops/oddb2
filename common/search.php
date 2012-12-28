@@ -326,7 +326,7 @@ class Search {
 			$content .= '</select> &nbsp; &nbsp;';
 		}
 		$content .= '
-		Kommentar <input type="text" class="text" style="width:120px" name="ko" value="'.(isset($filter['ko']) ? htmlspecialchars($filter['ko'], ENT_COMPAT, 'UTF-8') : '').'" />
+		Kommentar <input type="text" class="text tooltip" style="width:120px" name="ko" value="'.(isset($filter['ko']) ? htmlspecialchars($filter['ko'], ENT_COMPAT, 'UTF-8') : '').'" data-tooltip="Findet Kommentare auch anhand des Namens / der ID des Erstellers" />
 	</td>
 </tr>
 </table>
@@ -893,7 +893,35 @@ class Search {
 		}
 		// Kommentar
 		if(isset($filter['ko'])) {
-			$conds[] = "planetenKommentar LIKE '%".escape(escape(str_replace('*', '%', $filter['ko'])))."%'";
+			$cond_kommentar = array("planetenKommentar LIKE '%".escape(escape(str_replace('*', '%', $filter['ko'])))."%'");
+			
+			// Kommentar-Ersteller finden
+			// anhand der ID
+			if(is_numeric($filter['ko']) AND $filter['ko'] > 0) {
+				$cond_kommentar[] = "planetenKommentarUser = ".(int)$filter['ko'];
+			}
+			
+			// anhand des Namens
+			$query_kommentar = query("
+				SELECT
+					user_playerID
+				FROM
+					".PREFIX."user
+				WHERE
+					user_playerName = '".escape($filter['ko'])."'
+				ORDER BY
+					user_playerID DESC
+			") OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
+			
+			if(mysql_num_rows($query_kommentar)) {
+				$data_kommentar = mysql_fetch_assoc($query_kommentar);
+				$cond_kommentar[] = "planetenKommentarUser = ".$data_kommentar['user_playerID'];
+			}
+			
+			$conds[] = "(".implode(" OR ", $cond_kommentar).")";
+			
+			// Ersteller-Filter: kein leerer Kommentar
+			$conds[] = "planetenKommentar != ''";
 		}
 		// User-ID
 		if(isset($filter['uid'])) {
