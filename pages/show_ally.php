@@ -155,7 +155,7 @@ else if($_GET['sp'] == '') {
 						allianzenName,
 						allianzenUpdate
 					FROM
-						".PREFIX."allianzen
+						".GLOBPREFIX."allianzen
 					WHERE
 						".$conds."
 					ORDER BY
