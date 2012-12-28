@@ -268,7 +268,7 @@ class template {
 
 <div id="tabbar"></div>
 
-<div id="szgr"'.(!$user->settings['szgr'] ? ' style="display:none"' : '').'>
+<div id="szgr" class="szgr-bottom" '.(!$user->settings['szgr'] ? ' style="display:none"' : '').'>
 <div id="szgrclose" title="Schnellzugriffsleiste schlie&szlig;en" onclick="szgr_toggle()"></div>
 
 <div id="szgrc">';

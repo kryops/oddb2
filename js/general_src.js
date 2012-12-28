@@ -1610,6 +1610,14 @@ function wbar_update() {
 			});
 		}
 	});
+	
+	// Schnellzugriffsleiste nach oben schieben
+	if(fenster.length > 2) {
+		$('#szgr').removeClass('szgr-bottom');
+	}
+	else {
+		$('#szgr').addClass('szgr-bottom');
+	}
 }
 
 /**
