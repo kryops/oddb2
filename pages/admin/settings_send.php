@@ -49,6 +49,9 @@ else {
 	if(isset($_POST['scan_veraltet_geld'])) {
 		$_POST['scan_veraltet_geld'] = (int)$_POST['scan_veraltet_geld'];
 	}
+	if(isset($_POST['scan_veraltet_forschung'])) {
+		$_POST['scan_veraltet_forschung'] = (int)$_POST['scan_veraltet_forschung'];
+	}
 	
 	if(isset($_POST['disable_freischaltung'])) {
 		$_POST['disable_freischaltung'] = (bool)$_POST['disable_freischaltung'];
@@ -83,6 +86,7 @@ else {
 		'scan_veraltet_einst',
 		'scan_veraltet_flotten',
 		'scan_veraltet_geld',
+		'scan_veraltet_forschung',
 		'disable_freischaltung',
 		'disable_freischaltung_level',
 		'logging',

@@ -46,27 +46,31 @@ $content = '
 	</tr>
 	<tr>
 		<td style="width:55%">normale Scans veraltet nach (Tage)</td>
-		<td><input type="text" class="smalltext tooltip" name="scan_veraltet" value="'.htmlspecialchars($c['scan_veraltet'], ENT_COMPAT, 'UTF-8').'" tooltip="0 = IP-Ban deaktivieren" /> <span class="small hint">('.htmlspecialchars($gconfig['scan_veraltet'], ENT_COMPAT, 'UTF-8').')</span></td>
+		<td><input type="text" class="smalltext tooltip" name="scan_veraltet" value="'.htmlspecialchars($c['scan_veraltet'], ENT_COMPAT, 'UTF-8').'" /> <span class="small hint">('.htmlspecialchars($gconfig['scan_veraltet'], ENT_COMPAT, 'UTF-8').')</span></td>
 	</tr>
 	<tr>
 		<td>Ally-Scans veraltet nach (Tage)</td>
-		<td><input type="text" class="smalltext tooltip" name="scan_veraltet_ally" value="'.htmlspecialchars($c['scan_veraltet_ally'], ENT_COMPAT, 'UTF-8').'" tooltip="0 = IP-Ban deaktivieren" /> <span class="small hint">('.htmlspecialchars($gconfig['scan_veraltet_ally'], ENT_COMPAT, 'UTF-8').')</span></td>
+		<td><input type="text" class="smalltext tooltip" name="scan_veraltet_ally" value="'.htmlspecialchars($c['scan_veraltet_ally'], ENT_COMPAT, 'UTF-8').'" /> <span class="small hint">('.htmlspecialchars($gconfig['scan_veraltet_ally'], ENT_COMPAT, 'UTF-8').')</span></td>
 	</tr>
 	<tr>
 		<td>Planeten&uuml;bersicht veraltet nach (Stunden)</td>
-		<td><input type="text" class="smalltext tooltip" name="scan_veraltet_oview" value="'.htmlspecialchars($c['scan_veraltet_oview'], ENT_COMPAT, 'UTF-8').'" tooltip="0 = IP-Ban deaktivieren" /> <span class="small hint">('.htmlspecialchars($gconfig['scan_veraltet_oview'], ENT_COMPAT, 'UTF-8').')</span></td>
+		<td><input type="text" class="smalltext tooltip" name="scan_veraltet_oview" value="'.htmlspecialchars($c['scan_veraltet_oview'], ENT_COMPAT, 'UTF-8').'" /> <span class="small hint">('.htmlspecialchars($gconfig['scan_veraltet_oview'], ENT_COMPAT, 'UTF-8').')</span></td>
 	</tr>
 	<tr>
 		<td>Einstellungen und Sitter veraltet nach (Tage)</td>
-		<td><input type="text" class="smalltext tooltip" name="scan_veraltet_einst" value="'.htmlspecialchars($c['scan_veraltet_einst'], ENT_COMPAT, 'UTF-8').'" tooltip="0 = IP-Ban deaktivieren" /> <span class="small hint">('.htmlspecialchars($gconfig['scan_veraltet_einst'], ENT_COMPAT, 'UTF-8').')</span></td>
+		<td><input type="text" class="smalltext tooltip" name="scan_veraltet_einst" value="'.htmlspecialchars($c['scan_veraltet_einst'], ENT_COMPAT, 'UTF-8').'" /> <span class="small hint">('.htmlspecialchars($gconfig['scan_veraltet_einst'], ENT_COMPAT, 'UTF-8').')</span></td>
 	</tr>
 	<tr>
 		<td>Flotten&uuml;bersicht veraltet nach (Tage)</td>
-		<td><input type="text" class="smalltext tooltip" name="scan_veraltet_flotten" value="'.htmlspecialchars($c['scan_veraltet_flotten'], ENT_COMPAT, 'UTF-8').'" tooltip="0 = IP-Ban deaktivieren" /> <span class="small hint">('.htmlspecialchars($gconfig['scan_veraltet_flotten'], ENT_COMPAT, 'UTF-8').')</span></td>
+		<td><input type="text" class="smalltext tooltip" name="scan_veraltet_flotten" value="'.htmlspecialchars($c['scan_veraltet_flotten'], ENT_COMPAT, 'UTF-8').'" /> <span class="small hint">('.htmlspecialchars($gconfig['scan_veraltet_flotten'], ENT_COMPAT, 'UTF-8').')</span></td>
 	</tr>
 	<tr>
 		<td>Scan der Einnahmen veraltet nach (Tage)</td>
-		<td><input type="text" class="smalltext tooltip" name="scan_veraltet_geld" value="'.htmlspecialchars($c['scan_veraltet_geld'], ENT_COMPAT, 'UTF-8').'" tooltip="0 = IP-Ban deaktivieren" /> <span class="small hint">('.htmlspecialchars($gconfig['scan_veraltet_geld'], ENT_COMPAT, 'UTF-8').')</span></td>
+		<td><input type="text" class="smalltext tooltip" name="scan_veraltet_geld" value="'.htmlspecialchars($c['scan_veraltet_geld'], ENT_COMPAT, 'UTF-8').'" /> <span class="small hint">('.htmlspecialchars($gconfig['scan_veraltet_geld'], ENT_COMPAT, 'UTF-8').')</span></td>
+	</tr>
+	<tr>
+		<td>Forschung veraltet nach (Tage)</td>
+		<td><input type="text" class="smalltext tooltip" name="scan_veraltet_forschung" value="'.htmlspecialchars($c['scan_veraltet_forschung'], ENT_COMPAT, 'UTF-8').'" /> <span class="small hint">('.htmlspecialchars($gconfig['scan_veraltet_forschung'], ENT_COMPAT, 'UTF-8').')</span></td>
 	</tr>
 	<tr>
 		<td colspan="2">&nbsp;</td>
