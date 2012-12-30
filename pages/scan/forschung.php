@@ -82,7 +82,7 @@ class ScanForschung {
 		
 		// Flooding-Schutz 10 Minuten
 		if($cache->get('scanforsch'.$kat.'_'.$uid) AND !isset($_GET['force'])) {
-			$tmpl->abort('Die Einstellungen wurden in den letzten 10 Minuten schon eingescannt!');
+			$tmpl->abort('Die Forschung wurde in den letzten 10 Minuten schon eingescannt!');
 		}
 		
 		$cache->set('scanforsch'.$kat.'_'.$uid, 1, 600);
