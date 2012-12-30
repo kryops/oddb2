@@ -336,6 +336,11 @@ else if($_GET['sp'] == 'scan') {
 		else if($_POST['typ'] == 'sitter') {
 			include './pages/scan/sitter.php';
 		}
+		// Forschung
+		else if($_POST['typ'] == 'forschung') {
+			include './pages/scan/forschung.php';
+			ScanForschung::scan();
+		}
 		// unbekannter Typ
 		else {
 			$tmpl->error = 'Unbekannter Scan-Typ!';
@@ -353,7 +358,7 @@ else {
 		<div class="fcbox" style="width:92%;line-height:20px;padding:10px">
 			<b>gescannt werden k&ouml;nnen:</b>
 			<br />
-			Systemansicht, Planetenansicht/scan, Orbit, Planeten&uuml;bersicht, Sitter, Einstellungen und Flotten&uuml;bersicht
+			Systemansicht, Planetenansicht/scan, Orbit, Planeten&uuml;bersicht, Sitter, Einstellungen, Flotten&uuml;bersicht (Bergbauschiffe, Steuern) und Forschung (Geb&auml;ude, Schiffe, Systeme)
 		</div>
 		<div class="icontent" style="text-align:center;min-width:500px">
 			<form action="#" name="qtform">

@@ -20,7 +20,7 @@ if(!defined('ODDB')) die('unerlaubter Zugriff!');
 // Hauptversion
 define('VERSION', '2.2.3');
 // Patch-Version
-define('PATCH_VERSION', 2);
+define('PATCH_VERSION', 3);
 // Datei-Zusatz (css und js)
 define('FILESTAMP', '?13');
 // OD-Runde
@@ -55,6 +55,7 @@ $pages = array(
 	'inva'=>true,
 	'ress'=>true,
 	'werft'=>true,
+	'forschung'=>true,
 	'player'=>true,
 	'allianzen'=>true,
 	'stats'=>true,
@@ -472,6 +473,7 @@ $bconfig = array(
 	'scan_veraltet_einst' => 7,			// nach wie vielen Tagen ist der Scan der eigenen Einstellungen und der Sitter veraltet?
 	'scan_veraltet_flotten' => 7,		// nach wie vielen Tagen ist der Scan der eigenen Flottenübersicht veraltet?
 	'scan_veraltet_geld' => 7,			// nach wie vielen Tagen ist der Scan der eigenen Einnahmen veraltet?
+	'scan_veraltet_forschung' => 7		// nach wie vielen Tagen ist der Scan der Forschung veraltet?
 );
 
 $config = $bconfig;

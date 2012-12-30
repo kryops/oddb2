@@ -207,7 +207,8 @@
 		sitter: /\?op=sitter$/,
 		floview: /\?op=fleet&tab=5$/,
 		floviewbbs: /\?op=fleet&tab=2$/,
-		toxx: /\?op=orbit&index=\d+&bioatack=1$/
+		toxx: /\?op=orbit&index=\d+&bioatack=1$/,
+		forschung: /\?op=tech(&tree=(geb|raum|sys))?$/
 	},
 	
 	/**

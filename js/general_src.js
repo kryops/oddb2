@@ -518,7 +518,7 @@ $(document).ready(function(){
 		var ally = this.name;
 		// auf einen Link geklickt
 		if(this.tagName == 'A') {
-			// nur diese Checkbox checken, wenn nicht gecheckt oder
+			// nur diese Checkbox checken, wenn nicht gecheckt
 			if($(this).css('opacity') < 1 || $(p).find('input[name!='+ally+']:checked').length > 0) {
 				$(p).find('input').attr('checked', false);
 				$(p).find('input[name='+ally+']').attr('checked', true);
@@ -529,8 +529,8 @@ $(document).ready(function(){
 				
 				// Zeilen ein- und ausblenden
 				$(t).find('tr').not(':first-child').each(function() {
-					if($(this).data('ally') == ally) $(this).show();
-					else $(this).hide();
+					if($(this).data('ally') == ally) $(this).removeClass('hidden');
+					else $(this).addClass('hidden');
 				});
 			}
 			// alle checken
@@ -539,9 +539,7 @@ $(document).ready(function(){
 				// Link-Transparenz
 				$(p).find('a').css('opacity', 1);
 				// Zeilen einblenden
-				$(t).find('tr').each(function() {
-					$(this).show();
-				});
+				$(t).find('tr').removeClass('hidden');
 			}
 		}
 		// auf eine Checkbox geklickt
@@ -549,8 +547,8 @@ $(document).ready(function(){
 			var show = this.checked;
 			// Zeilen ein- und ausblenden
 			$(t).find('tr[data-ally='+ally+']').each(function() {
-				if(show) $(this).show();
-				else $(this).hide();
+				if(show) $(this).removeClass('hidden');
+				else $(this).addClass('hidden');
 			});
 			
 			// Link-Transparenz
@@ -612,6 +610,12 @@ $(document).ready(function(){
 				ajaxcall('index.php?p=show_planet&sp=kommentar&ajax&id='+idClass[1], false, {kommentar: ''}, false);
 			}
 		}
+	});
+	
+	// Forschungsübersicht filtern
+	$(document).on('click', '.icon_forschung_filter', function() {
+		$(this).toggleClass('icon_forschung_filter_active');
+		forschungPage.filter(this);
 	});
 	
 	// evtl gleich andere Seite laden (#-Anker)
@@ -3739,6 +3743,64 @@ function quelltext(f, r) {
 			out['sitterto'] = sto;
 		}
 		//
+		// Forschung
+		//
+		else if(ctree.find('a[href="?op=tech&tree=geb"]').length && ctree.find('img[src*="basiscamp.gif"], img[src*="titanid.gif"], img[src*="ion1.gif"]').length) {
+			
+			out['typ'] = 'forschung';
+			
+			// Spieler
+			try {
+				out['uid'] = tree.find('div.statusbar a.user').attr('href').replace(/^.*=(\d+)$/, '$1');
+			}
+			catch(e) {
+				throw 'Konnte Spieler nicht ermitteln!';
+			}
+			
+			out['f'] = [];
+			out['fn'] = [];
+			out['ff'] = [];
+			out['kategorie'] = 0;
+			
+			var kategorien = {
+				1: 'basiscamp.gif',
+				2: 'titanid.gif',
+				3: 'ion1.gif'
+			};
+			
+			ctree.find('img[titel]').each(function() {
+				
+				var $this = $(this),
+					path = $this.attr('src');
+				
+				if(out['kategorie'] == 0) {
+					for(var i in kategorien) {
+						if(path.indexOf(kategorien[i]) != -1) {
+							out['kategorie'] = i;
+							break;
+						}
+					}
+				}
+				
+				out['f'].push(path.replace(/^.*\/img\/grafik\//, ''));
+				out['fn'].push($this.attr('titel'));
+				out['ff'].push($this.hasClass('opacity2') ? 1 : 0);
+			});
+			
+			if(!out['f'].length) {
+				throw 'Konnte Forschungen nicht ermitteln!';
+			}
+			
+			// laufende Forschung
+			var current = ctree.find('.tabletranslight .box td:first-child img');
+			
+			if(current.length) {
+				out['current'] = current.attr('src').replace(/^.*\/img\/grafik\//, '');
+				out['current_end'] = ctree.find('#returntim').siblings('b').html();
+			}
+			
+		}
+		//
 		// Unbekannter Quelltext
 		//
 		else {
@@ -4224,3 +4286,40 @@ var toolsPage = {
 	}	
 	
 };
+
+/**
+ * Funktionen für die Forschungs-Seite
+ */
+var forschungPage = {
+	
+	/**
+	 * Forschungs-Filter anwenden
+	 * @param el DOM Icon, auf das geklickt wurde
+	 */
+	filter: function(el) {
+		
+		var $container = $(el).parents('.forschung_container'),
+			$filterIcons = $container.find('.icon_forschung_filter_active'),
+			$rows = $container.find('tr:gt(0)'),
+			filter = [];
+		
+		$filterIcons.each(function() {
+			filter.push($(this).data('forschung'));
+		});
+		
+		$rows.removeClass('forschung_hidden');
+		
+		$rows.each(function() {
+			
+			var $this = $(this);
+			
+			for(var i in filter) {
+				if(!$this.find('img[data-forschung="' + filter[i] + '"]').length) {
+					$this.addClass('forschung_hidden');
+					return;
+				}
+			}
+		});
+	}
+	
+}

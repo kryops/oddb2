@@ -995,6 +995,63 @@ oddbtool.parsePage = function(page, manual) {
 			out['sitterto'] = sto;
 		}
 		//
+		// Forschung
+		//
+		else if(ctree.find('a[href="?op=tech&tree=geb"]').length && ctree.find('img[src*="basiscamp.gif"], img[src*="titanid.gif"], img[src*="ion1.gif"]').length) {
+			
+			out['typ'] = 'forschung';
+			
+			// Spieler
+			try {
+				out['uid'] = tree.find('div.statusbar a.user').attr('href').replace(/^.*=(\d+)$/, '$1');
+			}
+			catch(e) {
+				throw 'Konnte Spieler nicht ermitteln!';
+			}
+			
+			out['f'] = [];
+			out['fn'] = [];
+			out['ff'] = [];
+			out['kategorie'] = 0;
+			
+			var kategorien = {
+				1: 'basiscamp.gif',
+				2: 'titanid.gif',
+				3: 'ion1.gif'
+			};
+			
+			ctree.find('img[titel]').each(function() {
+				
+				var $this = $(this),
+					path = $this.attr('src');
+				
+				if(out['kategorie'] == 0) {
+					for(var i in kategorien) {
+						if(path.indexOf(kategorien[i]) != -1) {
+							out['kategorie'] = i;
+							break;
+						}
+					}
+				}
+				
+				out['f'].push(path.replace(/^.*\/img\/grafik\//, ''));
+				out['fn'].push($this.attr('titel'));
+				out['ff'].push($this.hasClass('opacity2') ? 1 : 0);
+			});
+			
+			if(!out['f'].length) {
+				throw 'Konnte Forschungen nicht ermitteln!';
+			}
+			
+			// laufende Forschung
+			var current = ctree.find('.tabletranslight .box td:first-child img');
+			
+			if(current.length) {
+				out['current'] = current.attr('src').replace(/^.*\/img\/grafik\//, '');
+				out['current_end'] = ctree.find('#returntim').siblings('b').html();
+			}
+		}
+		//
 		// Unbekannter Quelltext
 		//
 		else {

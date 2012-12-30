@@ -664,6 +664,10 @@ th div {
 	background-position:0px -261px;
 }
 
+.trhighlight2, .thighlight2 tr:hover {
+	background-color: rgba(255,255,255,0.02);
+}
+
 /* content */
 
 #contentc {
@@ -838,6 +842,10 @@ th div {
 
 .italic {
 	font-style:italic;
+}
+
+.hidden {
+	display:none;
 }
 
 hr {
@@ -1440,6 +1448,38 @@ label {
 
 .apidoc td:first-child {
 	font-weight:bold;
+}
+
+/* Forschung */
+.icon_forschung {
+	width:28px;
+	height:auto;
+	padding:1px;
+}
+
+.forschung_filter {
+	margin:8px 0;
+	overflow:hidden;
+}
+
+.forschung_filter_area {
+	float:left;
+	width:33%;
+}
+
+.icon_forschung_filter {
+	width:32px;
+	height:auto;
+	padding:3px;
+	cursor:pointer;
+}
+
+.icon_forschung_filter_active {
+	background-color:rgba(255,255,255,0.1);
+}
+
+.forschung_hidden {
+	display:none;
 }
 
 

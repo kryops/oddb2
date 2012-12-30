@@ -131,6 +131,7 @@ var oddbtool = {
 			auto_sitter: prefManager.getBoolPref('extensions.oddbtool.auto_sitter'),
 			auto_einst: prefManager.getBoolPref('extensions.oddbtool.auto_einst'),
 			auto_toxx: prefManager.getBoolPref('extensions.oddbtool.auto_toxx'),
+			auto_forschung: prefManager.getBoolPref('extensions.oddbtool.auto_forschung')
 		}
 	},
 	
@@ -270,7 +271,8 @@ var oddbtool = {
 		sitter: /\?op=sitter$/,
 		floview: /\?op=fleet&tab=5$/,
 		floviewbbs: /\?op=fleet&tab=2$/,
-		toxx: /\?op=orbit&index=\d+&bioatack=1$/
+		toxx: /\?op=orbit&index=\d+&bioatack=1$/,
+		forschung: /\?op=tech(&tree=(geb|raum|sys))?$/
 	},
 	
 	/**

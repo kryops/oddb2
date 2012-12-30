@@ -13,7 +13,8 @@ $(document).ready(function() {
 		"auto_floview": true,
 		"auto_sitter": false,
 		"auto_einst": false,
-		"auto_toxx": true
+		"auto_toxx": true,
+		"auto_forschung": true
 	};
 	
 	if(localStorage['oddbtool']) {
@@ -58,7 +59,8 @@ $(document).ready(function() {
 			"auto_floview",
 			"auto_sitter",
 			"auto_einst",
-			"auto_toxx"
+			"auto_toxx",
+			"auto_forschung"
 		];
 		
 		var p;

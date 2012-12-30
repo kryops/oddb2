@@ -14,6 +14,7 @@
       <preference id="pref8" name="extensions.oddbtool.auto_sitter" type="bool"/>
       <preference id="pref9" name="extensions.oddbtool.auto_einst" type="bool"/>
       <preference id="pref10" name="extensions.oddbtool.auto_toxx" type="bool"/>
+      <preference id="pref11" name="extensions.oddbtool.auto_forschung" type="bool"/>
     </preferences>
     <label control="prefurl">Adresse der ODDB mit abschließendem /</label>
 	<textbox id="prefurl" preference="pref1"/>
@@ -27,5 +28,6 @@
 	<checkbox id="prefauto_sitter" preference="pref8" label="Sitterliste automatisch parsen"/>
 	<checkbox id="prefauto_einst" preference="pref9" label="Einstellungen automatisch parsen"/>
 	<checkbox id="prefauto_toxx" preference="pref10" label="Planeten automatisch als getoxxt markieren"/>
+	<checkbox id="prefauto_forschung" preference="pref11" label="Forschung automatisch parsen"/>
   </prefpane>
 </prefwindow>

@@ -86,6 +86,14 @@ $globtables_add = array(
   KEY `allyhistory_playerID` (`allyhistory_playerID`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8",
 
+"CREATE TABLE IF NOT EXISTS `".$globprefix."forschung` (
+  `forschungID` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `forschungKategorie` tinyint(3) unsigned NOT NULL DEFAULT 0,
+  `forschungName` varchar(255) NOT NULL,
+  `forschungPfad` varchar(255) NOT NULL,
+  PRIMARY KEY (`forschungID`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8",
+
 "INSERT INTO
 	".$globprefix."player
 SET
@@ -355,6 +363,7 @@ $tables_add = array(
   `userOnlineDB` int(10) unsigned NOT NULL DEFAULT 0,
   `userOnlinePlugin` int(10) unsigned NOT NULL DEFAULT 0,
   `userApiKey` char(32) NOT NULL,
+  `userForschung` TEXT NOT NULL,
   PRIMARY KEY (`user_playerID`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8"
 );

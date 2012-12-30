@@ -261,6 +261,7 @@ else {
 				userFlottenUpdate,
 				userODSettingsUpdate,
 				userSitterUpdate,
+				userForschung,
 				userSitterTo
 			FROM
 				".PREFIX."user
@@ -296,6 +297,22 @@ else {
 				// Einstellungen
 				if(time()-$data['userODSettingsUpdate'] > $config['scan_veraltet_einst']*86400) {
 					$scans[] = '<a href="http://www.omega-day.com/game/?op=settings" target="_blank">Einstellungen</a>';
+				}
+				
+				// Forschung
+				General::loadClass('Forschung');
+				
+				$f = Forschung::getUserArray($data['userForschung']);
+				$f_time = time()-$config['scan_veraltet_forschung']*86400;
+				
+				if($f['update'][1] < $f_time) {
+					$scans[] = '<a href="http://www.omega-day.com/game/?op=tech" target="_blank">Geb&auml;ude-Forschung</a>';
+				}
+				if($f['update'][2] < $f_time) {
+					$scans[] = '<a href="http://www.omega-day.com/game/?op=tech&amp;tree=raum" target="_blank">Schiffe-Forschung</a>';
+				}
+				if($f['update'][3] < $f_time) {
+					$scans[] = '<a href="http://www.omega-day.com/game/?op=tech&amp;tree=sys" target="_blank">Systeme-Forschung</a>';
 				}
 				
 				// Planeten

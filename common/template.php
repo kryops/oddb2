@@ -191,7 +191,14 @@ class template {
 			// Ressplaneten und Werften
 			echo '
 <a data-link="index.php?p=ress"'.($_GET['p'] == 'ress' ? ' class="active"' : '').'>RESSPLANETEN</a>
-<a data-link="index.php?p=werft"'.($_GET['p'] == 'werft' ? ' class="active"' : '').'>WERFTEN</a>
+<a data-link="index.php?p=werft"'.($_GET['p'] == 'werft' ? ' class="active"' : '').'>WERFTEN</a>';
+			
+			if($user->rechte['show_player_db_ally'] OR $user->rechte['show_player_db_meta'] OR $user->rechte['show_player_db_other']) {
+				echo '
+<a data-link="index.php?p=forschung"'.($_GET['p'] == 'forschung' ? ' class="active"' : '').'>FORSCHUNG</a>';
+			}
+			
+			echo '
 <span></span>';
 			
 			$spacer = false;
@@ -432,6 +439,17 @@ $(document).ready(function(){
 <script><![CDATA['.$this->script.']]></script>
 </page>';
 		}
+	}
+	
+	
+	/**
+	 * mit einer Fehlermeldung abbrechen
+	 * @param string $message
+	 */
+	public function abort($message = 'Es ist ein Fehler aufgetreten!') {
+		$this->error = $message;
+		$this->output();
+		die();
 	}
 }
 

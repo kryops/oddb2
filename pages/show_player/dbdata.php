@@ -127,6 +127,7 @@ $query = query("
 		userPlanUpdated,
 		userOnlineDB,
 		userOnlinePlugin,
+		userForschung,
 		
 		r1.register_playerID,
 		
@@ -342,6 +343,11 @@ if($data['userBanned']) {
 			</div>';
 }
 
+General::loadClass('Forschung');
+
+$forschung = Forschung::getUserArray($data['userForschung']);
+
+
 // linke Spalte
 // Aktivität, ICQ, Einstellungen, Einnahmen, Flotten, wann aktualisiert
 $tmpl->content .= '
@@ -375,10 +381,7 @@ if($data['userODSettings'] != '' AND strlen($data['userODSettings']) == 6) {
 	$tmpl->content .= '
 			<b>Einstellungen</b>:
 			<div style="padding-left:12px;line-height:15px">';
-	/*
-				Autoangriff: '.($data['userODSettings'][0] ? 'an' : 'aus').'
-				<br />
-	*/
+	
 	$tmpl->content .= '
 				Handel: '.$handel.'
 				<br />
@@ -428,7 +431,13 @@ $tmpl->content .= '
 				<br />
 				Flotten: <span class="'.($data['userFlottenUpdate'] > time()-86400*$config['scan_veraltet_flotten'] ? 'green' : 'red').'">'.($data['userFlottenUpdate'] ? datum($data['userFlottenUpdate']) : '<i>nie</i>').'</span>
 				<br />
-				Einnahmen+Forschung: <span class="'.($data['userGeldUpdate'] > time()-86400*$config['scan_veraltet_geld'] ? 'green' : 'red').'">'.($data['userGeldUpdate'] ? datum($data['userGeldUpdate']) : '<i>nie</i>').'</span>
+				Einnahmen+FP: <span class="'.($data['userGeldUpdate'] > time()-86400*$config['scan_veraltet_geld'] ? 'green' : 'red').'">'.($data['userGeldUpdate'] ? datum($data['userGeldUpdate']) : '<i>nie</i>').'</span>
+				<br />
+				Geb&auml;ude-Forschung: <span class="'.($forschung['update'][1] > time()-86400*$config['scan_veraltet_forschung'] ? 'green' : 'red').'">'.($forschung['update'][1] ? datum($forschung['update'][1]) : '<i>nie</i>').'</span>
+				<br />
+				Schiffe-Forschung: <span class="'.($forschung['update'][2] > time()-86400*$config['scan_veraltet_forschung'] ? 'green' : 'red').'">'.($forschung['update'][2] ? datum($forschung['update'][2]) : '<i>nie</i>').'</span>
+				<br />
+				Systeme-Forschung: <span class="'.($forschung['update'][3] > time()-86400*$config['scan_veraltet_forschung'] ? 'green' : 'red').'">'.($forschung['update'][3] ? datum($forschung['update'][3]) : '<i>nie</i>').'</span>
 			</div>';
 
 // rechte Spalte
@@ -469,6 +478,35 @@ $tmpl->content .= '
 		</td>
 	</tr>
 	</table>';
+
+// Forschungsstand
+if($forschung['update'][1] OR $forschung['update'][2] OR $forschung['update'][3]) {
+	
+	$tmpl->content .= '<div>
+		<b>Forschung</b>:
+		<br />';
+	
+	foreach(Forschung::$kategorien as $i=>$name) {
+		
+		$tmpl->content .= $name.'
+		<br />';
+		
+		foreach($forschung[$i] as $fid) {
+			if($f = Forschung::get($fid)) {
+				$tmpl->content .= '<img src="'.Forschung::$baseUrl.$f['forschungPfad'].'" title="'.h($f['forschungName']).'" class="icon_forschung" />';
+			}
+		}
+		
+		$tmpl->content .= '
+		<br />';
+		
+	}
+	
+	$tmpl->content .= '
+	</div>';
+	
+	
+}
 
 // Standalone-Ansicht
 if(isset($_GET['standalone'])) {
