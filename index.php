@@ -93,7 +93,6 @@ if($_GET['p'] == 'logout') {
 // Umgebungsdaten und globale Funktionen einbinden
 include './common.php';
 
-
 // globale Einstellungen einbinden
 if(@include('./config/global.php')) {
 	
@@ -106,6 +105,7 @@ if(@include('./config/global.php')) {
 	define('GLOBPREFIX', $config['mysql_globprefix']);
 	
 	// Datenbanken einbinden
+	$dbs = array();
 	include './config/dbs.php';
 	
 }

@@ -23,24 +23,14 @@ if($config['patchversion'] == 2) {
 	") OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
 	
 	
+	global $dbs;
 	
-	$dbs_patch = $dbs;
-	
-	if(!$dbs_patch) {
-		$dbs_patch = array(1);	
-	}
-	else {
-		$dbs_patch = array_keys($dbs_patch);
-	}
-	
-	foreach($dbs_patch as $instance) {
-		
+	foreach($dbs as $instance=>$name) {
 		$prefix = mysql::getPrefix($instance);
 		
 		query("
 			ALTER TABLE  `".$prefix."user` ADD  `userForschung` TEXT NOT NULL
 		");
-	
 	}
 	
 	$config['patchversion'] = 3;
