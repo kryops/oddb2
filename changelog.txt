@@ -1,4 +1,18 @@
-﻿09.12.2012 - V2.2.3
+﻿30.12.2012 - V2.2.4
+-------------------
+* Die Gebäude-, Schiffe- und Systeme-Forschung kann nun eingeparst werden
+* Forschungsübersicht
+* Erweiterungen der Werftübersicht
+  - Verbündete Werften können jetzt nach Entfernung sortiert werden
+  - Schnellauswahlfeld für den Werftbedarf
+* Rewrite des Mainscreen-Parsers
+* Die FoW-Einstellungen für Scout-Systeme kann jetzt den globalen Wert für veraltete Systeme annehmen
+* Planetenkommentare können bei Doppelklick gelöscht werden
+* Das Suchfeld für den Planetenkommentar findet jetzt auch Benutzername und ID des Erstellers
+
+
+
+09.12.2012 - V2.2.3
 -------------------
 * DB-Abgleiche funktionieren nun korrekt und haben einen Fortschrittsbalken
 * Beim Systemscan werden nun auch Besatzungen eingetragen
