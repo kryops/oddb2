@@ -212,7 +212,6 @@ else {
 		$data = mysql_fetch_assoc($query);
 		
 		$settings = $bsettings;
-		$settings['scout'] = $config['scan_veraltet'];
 		$settings['fow'] = json_encode($bfowsettings);
 		$settings = json_encode($settings);
 		
