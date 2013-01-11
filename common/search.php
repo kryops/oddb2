@@ -55,7 +55,7 @@ class Search {
 		37=>'FLOOR(
 				(planetenBevoelkerung/100000) * planetenGroesse
 				+ GREATEST(planetenRWErz, planetenRWWolfram, planetenRWKristall, planetenRWFluor)
-				+ planetenRWFluor*3
+				+ planetenRWFluor
 			)'
 	);
 	
