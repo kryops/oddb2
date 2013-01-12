@@ -620,7 +620,7 @@ else if($_GET['sp'] == '') {
 							// Myrigate
 							if($pl['planetenMyrigate']) {
 								// Freund-Myrigate zwischenspeichern -> weitere Abfrage unnötig
-								if($mg === false AND ($pl['player_allianzenID'] == $user->allianz OR in_array($pl['statusStatus'], $status_freund) OR ($pl['planeten_playerID'] == 0 AND $pl['planetenMyrigate'] == 2))) {
+								if($mg === false AND ($pl['player_allianzenID'] == $user->allianz OR in_array($pl['statusStatus'], $status_freund)) AND $pl['planetenMyrigate'] > 2) {
 									$mg = $pl;
 								}
 								
@@ -833,7 +833,7 @@ else if($_GET['sp'] == '') {
 							AND status_allianzenID = allianzenID
 					WHERE
 						myrigates_galaxienID = ".$data['systeme_galaxienID']."
-						AND (statusStatus IN(".implode(", ", $status_freund).") OR (myrigatesSprung > 0 AND myrigatesSprungFeind = 0))
+						AND ((myrigatesSprung = 0 AND statusStatus IN(".implode(", ", $status_freund).")) OR (myrigatesSprung > 0 AND myrigatesSprungFeind = 0))
 					ORDER BY
 						planetenEntfernung ASC
 				") OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
