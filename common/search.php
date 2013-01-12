@@ -178,6 +178,7 @@ class Search {
 			<option value="9"'.((isset($filter['k']) AND $filter['k'] == 9) ? ' selected="selected"' : '').'>Myriforschung</option>
 			<option value="10"'.((isset($filter['k']) AND $filter['k'] == 10) ? ' selected="selected"' : '').'>orbitale Forschung</option>
 			<option value="11"'.((isset($filter['k']) AND $filter['k'] == 11) ? ' selected="selected"' : '').'>Gedankenkonzentratoren</option>
+			<option value="17"'.((isset($filter['k']) AND $filter['k'] == 17) ? ' selected="selected"' : '').'>Credit-Erzeugung</option>
 		</select>
 		<br />
 		<div class="searchpltyplist fcbox" style="display:none">';
@@ -601,7 +602,7 @@ class Search {
 		if(isset($filter['k'])) {
 			$filter['k'] = (int)$filter['k'];
 			// normale Kategorie
-			if($filter['k'] >= 0 AND $filter['k'] <= 13) {
+			if(($filter['k'] >= 0 AND $filter['k'] <= 13) OR $filter['k'] >= 17) {
 				$conds[] = 'planetenKategorie = '.$filter['k'];
 			}
 			// Sammelkategorien
@@ -1538,7 +1539,8 @@ class Search {
 				13=>'Werft',
 				14=>'alle Ressplaneten',
 				15=>'alle Ressplaneten und Werften',
-				16=>'alle Forschungsplaneten'
+				16=>'alle Forschungsplaneten',
+				17=>'Credit-Erzeugung'
 			);
 			
 			if(isset($kat[$filter['k']])) {

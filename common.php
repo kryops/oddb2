@@ -1847,33 +1847,6 @@ function gebaeude($string, $groesse, $thumb) {
 }
 
 /**
- * Icon-Pfad einer Kategorie zurückgeben
- * @param $cat int ID der Kategorie
- *
- * @return string Icon (HTML)
- */
-function catimg($cat) {
-	$imgs = array(
-		0=>'<img src="img/layout/leer.gif" alt="" class="katimg katnone" title="nicht kategorisiert">',
-		1=>'<img src="img/layout/leer.gif" alt="" class="katimg katerz" title="Erz">',
-		2=>'<img src="img/layout/leer.gif" alt="" class="katimg katmetall" title="Metall">',
-		3=>'<img src="img/layout/leer.gif" alt="" class="katimg katwolfram" title="Wolfram">',
-		4=>'<img src="img/layout/leer.gif" alt="" class="katimg katkristall" title="Kristall">',
-		5=>'<img src="img/layout/leer.gif" alt="" class="katimg katfluor" title="Fluor">',
-		6=>'<img src="img/layout/leer.gif" alt="" class="katimg katf1" title="Forschungseinrichtungen">',
-		7=>'<img src="img/layout/leer.gif" alt="" class="katimg katf2" title="UNI-Labore">',
-		8=>'<img src="img/layout/leer.gif" alt="" class="katimg katf3" title="Forschungszentren">',
-		9=>'<img src="img/layout/leer.gif" alt="" class="katimg katf4" title="Myri-Forschung">',
-		10=>'<img src="img/layout/leer.gif" alt="" class="katimg katof1" title="orbitale Forschung">',
-		11=>'<img src="img/layout/leer.gif" alt="" class="katimg katof2" title="Gedankenkonzentratoren">',
-		12=>'<img src="img/layout/leer.gif" alt="" class="katimg katums" title="Umsatzfabriken">',
-		13=>'<img src="img/layout/leer.gif" alt="" class="katimg katwerft" title="Werft">'
-	);
-	if(isset($imgs[$cat])) return $imgs[$cat];
-	return $imgs[0];
-}
-
-/**
  * berechnnet den Zeitpunkt, zu dem ein getoxxter Planet wieder voll ist
  */
 function getoxxt($bev, $bevakt) {

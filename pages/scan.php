@@ -26,6 +26,27 @@ if(!defined('ODDB')) die('unerlaubter Zugriff!');
  * @return int Kategorie des Planeten
  */
 function categorize($gpl, $gor, $gr) {
+	
+	/*
+	 * Kategorien
+	 * 1 Erz
+	 * 2 Metall
+	 * 3 Wolfram
+	 * 4 Kristall
+	 * 5 Fluor
+	 * 6 Forschungseinrichtungen
+	 * 7 UNI-Forschung
+	 * 8 Forschungszentren
+	 * 9 Myri-Forschungszentren
+	 * 10 Orbitale Forschung
+	 * 11 Gedankenkonzentratoren
+	 * 12 Umsatzfabriken
+	 * 13 Werft
+	 * --- 14-16 reserviert durch Suchfunktion
+	 * 17 Crediterzeugung
+	 */
+	
+	
 	// bei Größe 0 abbrechen
 	if(!$gr) return 0;
 	
@@ -48,6 +69,8 @@ function categorize($gpl, $gor, $gr) {
 	$fabgeb = array(1002, 1009, 1010, 1022, 1023, 1035, 1037, 1051, 1053, 1054);
 	// orbitale Fabrikgebäude
 	$ofabgeb = array(1027, 1028, 1049);
+	// Credit-Gebäude
+	$creditgeb = array(1014, 1043);
 	
 	// Gebäude-Zähler initialisieren
 	$countfg = 0;
@@ -70,6 +93,7 @@ function categorize($gpl, $gor, $gr) {
 	$countums = 0;
 	$countfab = 0;
 	$countwerft = 0;
+	$countcredit = 0;
 	
 	// Gebäude auf dem Planet auswerten
 	foreach($gpl as $geb) {
@@ -90,6 +114,7 @@ function categorize($gpl, $gor, $gr) {
 		else if(in_array($geb, $wolfram)) $countwolfram++;
 		else if(in_array($geb, $kristall)) $countkristall++;
 		else if(in_array($geb, $fluor)) $countfluor++;
+		else if(in_array($geb, $creditgeb)) $countcredit++;
 	}
 	// Gebäude im Orbit auswerten
 	foreach($gor as $geb) {
@@ -100,6 +125,7 @@ function categorize($gpl, $gor, $gr) {
 		else if(in_array($geb, $ofabgeb)) $countfab++;
 		else if(in_array($geb, $werft)) $countwerft++;
 		else if($geb == $umsf) $countums++;
+		else if(in_array($geb, $creditgeb)) $countcredit++;
 	}
 	
 	// Forschungsgebäude-Array sortieren
@@ -119,6 +145,10 @@ function categorize($gpl, $gor, $gr) {
 		// GDKZ
 		else return 11;
 	}
+	
+	// Credits bei mindestens 20 Gebäuden
+	if($countcredit >= 20) return 17;
+	
 	// Werft bei 60% Fabriken
 	if($countfab/$gr >= 0.6 AND $countwerft) return 13;
 	// Umsatzfabrik bei 8
@@ -135,6 +165,9 @@ function categorize($gpl, $gor, $gr) {
 	if($countfluor/$gr >= 0.7) return 5;
 	
 	// Stufe 2
+	
+	// Credits bei mindestens 15 Gebäuden
+	if($countcredit >= 15) return 17;
 	
 	// orbitale Forschung bei 6 Gebäuden und 50% Bodenforschung
 	if($countofg >= 6 AND $countfg/$gr >= 0.5) {
@@ -161,6 +194,9 @@ function categorize($gpl, $gor, $gr) {
 	
 	// Stufe 3
 	
+	// Credits bei mindestens 10 Gebäuden
+	if($countcredit >= 10) return 17;
+	
 	// Werft bei 35% Fabriken
 	if($countfab/$gr >= 0.35 AND $countwerft) return 13;
 	// orbitale Forschung bei 4 Gebäuden
@@ -182,6 +218,9 @@ function categorize($gpl, $gor, $gr) {
 	if($countfluor/$gr >= 0.25) return 5;
 	// Metall bei 20%
 	if($countmetall/$gr >= 0.2) return 2;
+	
+	// Credits bei mindestens 8 Gebäuden
+	if($countcredit >= 8) return 17;
 	
 	// Werft bei 25% Fabriken
 	if($countfab/$gr >= 0.25 AND $countwerft) return 13;
