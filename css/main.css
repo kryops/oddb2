@@ -75,7 +75,7 @@ ul {
 	top:10px;
 }
 
-/* Menü */
+/* Menï¿½ */
 #menu {
 	position:absolute;
 	top:105px;
@@ -1010,7 +1010,7 @@ hr {
 	display:block;
 }
 
-/* Übersicht */
+/* ï¿½bersicht */
 .oviewtbl {
 	width:100%;
 	border-top:1px solid #333333;
@@ -1123,10 +1123,10 @@ hr {
 }
 
 .orbitinva2 {
-	position:relative;
+	position:absolute;
 	width:110px;
 	text-align:center;
-	margin-top:-70px;
+	bottom:60px;
 	background-color:rgba(0,0,0,0.5);
 }
 
@@ -1614,7 +1614,7 @@ td, th {
 
 }
 
-/* große CSWs auf kleinen Bildschirmen runterskalieren */
+/* groï¿½e CSWs auf kleinen Bildschirmen runterskalieren */
 @media screen and (max-width:970px) {
 .cswbig {
 	min-width:900px !important;
