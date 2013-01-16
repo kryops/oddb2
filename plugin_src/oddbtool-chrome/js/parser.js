@@ -329,40 +329,44 @@ oddbtool.parsePage = function(page, manual) {
 						pl[i]['riss'] = data[1];
 					}
 					
-
 					// Bergbau
 					if($(this).find('tr:last-child img[src*="flotte-bergbau.gif"]').length) {
 						pl[i]['bb'] = 1;
 					}
 					
 					// Natives
-					if($(this).find('tr:last-child img[src*="flotte_natives.gif"]').length) {
+					else if($(this).find('tr:last-child img[src*="flotte_natives.gif"]').length) {
 						pl[i]['natives'] = 1;
 					}
 					
 					// Kolo
-					if($(this).find('tr:last-child img[src*="flotte-kolo.gif"]').length) {
+					else if($(this).find('tr:last-child img[src*="flotte-kolo.gif"]').length) {
 						pl[i]['kolo'] = 1;
 					}
 					
 					// Genesis
-					if($(this).find('tr:last-child img[src*="flotte-genesis.gif"]').length) {
+					else if($(this).find('tr:last-child img[src*="flotte-genesis.gif"]').length) {
 						pl[i]['genesis'] = 1;
 					}
 					
 					// Terraformer
-					if($(this).find('tr:last-child img[src*="flotte_terraform.gif"]').length) {
+					else if($(this).find('tr:last-child img[src*="flotte_terraform.gif"]').length) {
 						pl[i]['tf'] = 1;
 					}
 					
 					// Invasion
-					if($(this).find('tr:last-child img[src*="flotte_invasion.gif"]').length) {
+					else if($(this).find('tr:last-child img[src*="flotte_invasion.gif"]').length) {
 						pl[i]['inva'] = 1;
 					}
 					
 					// Besatzung
-					if($(this).find('tr:last-child img[src*="flotte-besatzer.gif"]').length) {
+					else if($(this).find('tr:last-child img[src*="flotte-besatzer.gif"]').length) {
 						pl[i]['besatzung'] = 1;
+					}
+					
+					// Orbit leer
+					else if($(this).find('tr:last-child img[src*="orbit-leer.gif"]').length) {
+						pl[i]['leer'] = 1;
 					}
 				}
 				// Kein Planet vorhanden

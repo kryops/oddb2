@@ -175,6 +175,87 @@ class ScanSystem {
 		
 	}
 	
+	
+	/**
+	 * Orbit-Aktionen löschen, wenn der Orbit leer ist
+	 * - Terraformer
+	 * - Kolo
+	 * - Inva
+	 * - Genesis
+	 * - Besatzung
+	 * - Resonation
+	 * - Natives
+	 * (Bergbau nicht, weil das Schiff grade unterwegs sein könnte)
+	 * @param int $id Planeten-ID
+	 * @param array $plrow Planeten-Datensatz (optional)
+	 */
+	public static function removeOrbitActions($id, $plrow = false) {
+		
+		// Terraformer entfernen
+		if($plrow !== false AND $plrow['schiffeTerraformer'] AND !$plrow['schiffeBergbau']) {
+			
+			query("
+				DELETE FROM
+					".PREFIX."planeten_schiffe
+				WHERE
+					schiffe_planetenID = ".(int)$id."
+			") OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
+			
+		}
+		else if($plrow === false OR $plrow['schiffeTerraformer']) {
+			
+			query("
+				UPDATE
+					".PREFIX."planeten_schiffe
+				SET
+					schiffeTerraformer = NULL,
+					schiffeTerraformerUpdate = 0
+				WHERE
+					schiffe_planetenID = ".(int)$id."
+			") OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
+			
+		}
+		
+		
+		// eingetragene Aktionen löschen
+		global $invasionen;
+		
+		if(isset($invasionen[$id])) {
+			foreach($invasionen[$id] as $invaId=>$invaType) {
+				
+				// Kolonisationen löschen
+				if($invaType == 5) {
+					query("
+						DELETE FROM ".PREFIX."invasionen
+						WHERE
+							invasionenID = ".$invaId."
+					") OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
+				}
+				
+				// alles andere archivieren
+				else {
+					inva_archiv($invaId, 'löscht die Aktion durch Einscannen des Systems');
+				}
+				
+			}
+		}
+		
+		
+		// Natives entfernen
+		if($plrow === false OR $plrow['planetenNatives'] > 0) {
+			
+			query("
+				UPDATE
+					".PREFIX."planeten
+				SET
+					planetenNatives = 0
+				WHERE
+					planetenID = ".(int)$id."
+			") OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
+			
+		}
+	}
+	
 }
 
 
@@ -267,6 +348,7 @@ else {
 	
 	$query = query("
 		SELECT
+			invasionenID,
 			invasionen_planetenID,
 			invasionenTyp
 		FROM
@@ -281,7 +363,7 @@ else {
 			$invasionen[$row['invasionen_planetenID']] = array();
 		}
 		
-		$invasionen[$row['invasionen_planetenID']][] = $row['invasionenTyp'];
+		$invasionen[$row['invasionen_planetenID']][$row['invasionenID']] = $row['invasionenTyp'];
 		
 	}
 	
@@ -446,7 +528,6 @@ else {
 				
 				// Kolo und Genesis eintragen
 				ScanSystem::addInvasion($pldata);
-				
 			}
 		}
 	}
@@ -469,6 +550,7 @@ else {
 				planetenNatives,
 				
 				schiffeBergbau,
+				schiffeTerraformer,
 				
 				playerRasse
 			FROM
@@ -715,6 +797,10 @@ else {
 					// Kolo und Genesis eintragen
 					ScanSystem::addInvasion($pldata, $pl[$pldata['id']]);
 					
+					// eingetragene Aktionen bei leerem Orbit löschen
+					if(isset($pldata['leer'])) {
+						ScanSystem::removeOrbitActions($pldata['id'], $pl[$pldata['id']]);
+					}
 				}
 				
 				// Inhaber in ODRequest-Array eintragen
