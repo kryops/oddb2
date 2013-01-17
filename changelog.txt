@@ -1,4 +1,12 @@
-﻿30.12.2012 - V2.2.4
+﻿17.01.2013 - V2.2.5
+-------------------
+* Neue automatische Planetenkategorie "Credit-Ausbau" (nur neu eingescannte Planeten)
+* System-Scans löschen jetzt Planeten-Aktionen, Terraformer und Natives, wenn der Orbit leer ist
+* Als unbenutzbar eingetragene Sprunggeneratoren werden jetzt im FoW immer ausgeblendet
+* kleinere Bugfixes
+
+
+30.12.2012 - V2.2.4
 -------------------
 * Die Gebäude-, Schiffe- und Systeme-Forschung kann nun eingeparst werden
 * Forschungsübersicht
