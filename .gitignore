@@ -1,5 +1,6 @@
 *~
 __devel
+yuicompressor*
 .settings
 Thumbs.db
 config/*.php

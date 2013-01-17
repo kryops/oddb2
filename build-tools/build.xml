@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="ODDB2" default="build" basedir="..">
+	<description>
+        general_src.js minifyen, ODDB Tool packen
+    </description>
+	
+	<!-- relevante Pfade und Dateinamen -->
+	<property name="oddbPath" value="C:\xampp\htdocs\oddb2" />
+	<property name="chromePath" value="C:\Program Files (x86)\Google\Chrome\Application\chrome.exe" />
+	<property name="yuicompressor" value="build-tools/yuicompressor-2.4.8pre.jar" />
+	
+	<!-- alte und neue Version des ODDB Tools JEDES MAL HIER ÄNDERN -->
+	<property name="oldVersion" value="2.2.5" />
+	<property name="oldVersionSuffix" value="2_2_5" />
+	<property name="newVersion" value="2.2.6" />
+	<property name="newVersionSuffix" value="2_2_6" />
+	
+	
+	<target name="build">
+		
+		<antcall target="minify-js" />
+		<antcall target="complete-version-bump" />
+		
+	</target>
+	
+	
+	<!-- general_src zu general.js minifien -->
+	<!-- dazu muss der YUI Compressor heruntergeladen werden (https://github.com/yui/yuicompressor/tree/master/build) -->
+	<target name="minify-js">
+		
+		<condition property="compressorAvailable">
+            <and>
+                <available file="${yuicompressor}" type="file"/>
+            </and>
+        </condition>
+        <fail message="Pfad zum YUI Compressor inkorrekt! (${yuicompressor}) Download unter https://github.com/yui/yuicompressor/tree/master/build" unless="compressorAvailable" />
+		
+		<java jar="${yuicompressor}" fork="true">
+			<arg value="js/general_src.js" />
+			<arg line="-o js/general.js" />
+			<arg line="-v" />
+		</java>
+		
+	</target>
+	
+	<!-- Version überall ändern und ODDB Tools neu packen -->
+	<target name="complete-version-bump" depends="check-paths">
+		
+		<antcall target="version-bump-nopack" />
+		<antcall target="pack-firefox" />
+		<antcall target="pack-chrome" />
+		
+	</target>
+	
+	<!-- Versionsnummer überall ändern -->
+	<target name="version-bump-nopack">
+		
+		<replace file="common.php">
+			<replacefilter token="define('VERSION', '${oldVersion}');" value="define('VERSION', '${newVersion}');" />
+			<replacefilter token="define('ODDBTOOL', '${oldVersion}');" value="define('ODDBTOOL', '${newVersion}');" />
+			<replacefilter token="define('ODDBTOOLPATH', 'oddbtool-${oldVersionSuffix}.xpi');" value="define('ODDBTOOL', 'oddbtool-${newVersionSuffix}.xpi');" />
+			<replacefilter token="define('ODDBTOOLPATH_CHROME', 'oddbtool-chrome-${oldVersionSuffix}.crx');" value="define('ODDBTOOL_CHROME', 'oddbtool-chrome-${newVersionSuffix}.crx');" />
+		</replace>
+		
+		<replace file="plugin_src/oddbtool-chrome/manifest.json" token="&quot;version&quot;: &quot;${oldVersion}&quot;" value="&quot;version&quot;: &quot;${newVersion}&quot;" />
+		<replace file="plugin_src/oddbtool-chrome/js/content.js" token="version: '${oldVersion}'" value="version: '${newVersion}'" />
+		
+		<replace file="plugin_src/oddbtool-firefox/install.rdf" token="&lt;em:version&gt;${oldVersion}&lt;/em:version&gt;" value="&lt;em:version&gt;${newVersion}&lt;/em:version&gt;" />
+		<replace file="plugin_src/oddbtool-firefox/chrome/content/overlay.js" token="version: '${oldVersion}'" value="version: '${newVersion}'" />
+		
+	</target>
+	
+	
+	<!-- ODDB Tool Firefox packen -->
+	<target name="pack-firefox" depends="check-paths">
+		
+		<delete file="plugin/oddbtool-${oldVersionSuffix}.xpi" />
+		
+		<zip destfile="plugin/oddbtool-${newVersionSuffix}.xpi" basedir="plugin_src/oddbtool-firefox" />
+		
+	</target>
+	
+	<!-- ODDB Tool Chrome packen -->
+	<target name="pack-chrome" depends="check-paths">
+		
+		<condition property="chromeAvailable">
+            <and>
+                <available file="${chromePath}" type="file"/>
+            </and>
+        </condition>
+        <fail message="Pfad zu Google Chrome inkorrekt! (${chromePath})" unless="chromeAvailable" />
+		
+		<delete file="plugin/oddbtool-chrome-${oldVersionSuffix}.crx" />
+		
+		<exec executable="${chromePath}">
+            <arg value="--pack-extension=${oddbPath}\plugin_src\oddbtool-chrome" />
+            <arg value="--pack-extension-key=${oddbPath}\plugin_src\oddbtool-chrome.pem" />
+        </exec>
+		
+		<move file="plugin_src/oddbtool-chrome.crx" tofile="plugin/oddbtool-chrome-${newVersionSuffix}.crx" />
+		
+	</target>
+	
+	<!-- Eingetragene Pfade überprüfen -->
+	<target name="check-paths">
+		
+		<condition property="oddbAvailable">
+            <and>
+                <available file="${oddbPath}" type="dir" />
+            </and>
+        </condition>
+        <fail message="Pfad zur ODDB inkorrekt! (${oddbPath})" unless="oddbAvailable" />
+		
+	</target>
+	
+</project>
