@@ -74,6 +74,7 @@ Daten-Archiv:
 </script>' : '').'
 
 <!-- '.number_format(microtime(true)-$time_start, 6).'s, '.$queries.' Queries, '.(function_exists('memory_get_peak_usage') ? ressmenge(@memory_get_peak_usage(true)) : ressmenge(@memory_get_usage(true))).' Bytes RAM -->
+
 </body>
 </html>';
 	}
@@ -296,6 +297,31 @@ else if(isset($_GET['import'], $_POST['offset'])) {
 	$pl = array();
 	$mgates = array();
 	
+	// Planeten-Aktualität und Inhaber auslesen
+	$query = query("
+		SELECT
+			planetenID,
+			planeten_playerID,
+			planetenUpdateOverview,
+			planetenUpdate,
+
+			playerRasse
+		FROM
+			".PREFIX."planeten
+			LEFT JOIN ".GLOBPREFIX."player
+				ON playerID = planeten_playerID
+	") OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
+	
+	while($plrow = mysql_fetch_array($query)) {
+		$pl[$plrow[0]] = array(
+				(int)$plrow[1],
+				(int)$plrow[2],
+				(int)$plrow[3],
+				(int)$plrow[4]
+		);
+	}
+		
+	mysql_free_result($query);
 	
 	// Myrigates auslesen
 	$query = query("
@@ -373,6 +399,7 @@ else if(isset($_GET['import'], $_POST['offset'])) {
 					
 					// Planeten durchgehen
 					foreach($row as $plid=>$plrow) {
+						
 						if(count($plrow) == 11 AND isset($pl[$plid])) {
 							// bei verschleierten Planeten Inhaber nicht immer übernehmen
 							$saveowner = true;
@@ -500,41 +527,7 @@ else if(isset($_GET['import'], $_POST['offset'])) {
 			// Planeten-Datensatz
 			else if($row[1] == 'P') {
 				
-				if($pl_read === false) {
-					// Planeten-Aktualität und Inhaber auslesen
-					$query = query("
-						SELECT
-							planetenID,
-							planeten_playerID,
-							planetenUpdateOverview,
-							planetenUpdate,
-							
-							playerRasse
-						FROM
-							".PREFIX."planeten
-							LEFT JOIN ".GLOBPREFIX."player
-								ON playerID = planeten_playerID
-						WHERE
-							planetenID > ".$plmin."
-					") OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
-					
-					while($plrow = mysql_fetch_array($query)) {
-						$pl[$plrow[0]] = array(
-							(int)$plrow[1],
-							(int)$plrow[2],
-							(int)$plrow[3],
-							(int)$plrow[4]
-						);
-					}
-					
-					mysql_free_result($query);
-					
-					$pl_read = true;
-				}
-				
-				
 				$id = $row[2];
-				$plmin = $id;
 				
 				$row = json_decode($row[3], true);
 				
