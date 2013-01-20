@@ -11,7 +11,7 @@ if(!defined('ODDB')) die('unerlaubter Zugriff!');
 
 // Flooding-Schutz 10 Minuten
 if($cache->get('scanfloview'.$_POST['uid']) AND !isset($_GET['force'])) {
-	$tmpl->error = 'Die Flotten&uuml;bersicht wurde in den letzten 5 Minuten schon eingescannt!';
+	$tmpl->error = 'Die Tagesabrechnung wurde in den letzten 5 Minuten schon eingescannt!';
 	$tmpl->output();
 	die();
 }
@@ -68,6 +68,6 @@ if($config['logging'] >= 2) {
 }
 
 // Ausgabe
-$tmpl->content = 'Flotten&uuml;bersicht erfolgreich eingescannt';
+$tmpl->content = 'Tagesabrechnung erfolgreich eingescannt';
 
 ?>

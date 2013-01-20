@@ -12,8 +12,8 @@
 	<!-- alte und neue Version des ODDB Tools JEDES MAL HIER ÄNDERN -->
 	<property name="oldVersion" value="2.2.5" />
 	<property name="oldVersionSuffix" value="2_2_5" />
-	<property name="newVersion" value="2.2.6" />
-	<property name="newVersionSuffix" value="2_2_6" />
+	<property name="newVersion" value="2.2.5.1" />
+	<property name="newVersionSuffix" value="2_2_5_1" />
 	
 	
 	<target name="build">
@@ -58,8 +58,8 @@
 		<replace file="common.php">
 			<replacefilter token="define('VERSION', '${oldVersion}');" value="define('VERSION', '${newVersion}');" />
 			<replacefilter token="define('ODDBTOOL', '${oldVersion}');" value="define('ODDBTOOL', '${newVersion}');" />
-			<replacefilter token="define('ODDBTOOLPATH', 'oddbtool-${oldVersionSuffix}.xpi');" value="define('ODDBTOOL', 'oddbtool-${newVersionSuffix}.xpi');" />
-			<replacefilter token="define('ODDBTOOLPATH_CHROME', 'oddbtool-chrome-${oldVersionSuffix}.crx');" value="define('ODDBTOOL_CHROME', 'oddbtool-chrome-${newVersionSuffix}.crx');" />
+			<replacefilter token="define('ODDBTOOLPATH', 'oddbtool-${oldVersionSuffix}.xpi');" value="define('ODDBTOOLPATH', 'oddbtool-${newVersionSuffix}.xpi');" />
+			<replacefilter token="define('ODDBTOOLPATH_CHROME', 'oddbtool-chrome-${oldVersionSuffix}.crx');" value="define('ODDBTOOLPATH_CHROME', 'oddbtool-chrome-${newVersionSuffix}.crx');" />
 		</replace>
 		
 		<replace file="plugin_src/oddbtool-chrome/manifest.json" token="&quot;version&quot;: &quot;${oldVersion}&quot;" value="&quot;version&quot;: &quot;${newVersion}&quot;" />

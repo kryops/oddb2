@@ -849,95 +849,36 @@ oddbtool.parsePage = function(page, manual) {
 				throw 'Konnte Spieler nicht ermitteln!';
 			}
 			
-			var data = $(ctree.children('.box')[5]);
-			
-			// Tagesabrechnung wird nicht angezeigt
-			if(data.find('b').length < 8) {
-				throw 'Tagesabrechnung wird nicht angezeigt!';
-			}
-			
-			data = data.find('b');
-			
 			// zuletzt gezahlte Flottensteuer
+			var data = $(ctree.children('.box')[5]).find('b');
+			
 			out['steuer'] = $(data[2]).html().replace(/[^\d+]/g, '');
 			
-			/* übernommen aus dem alten Parser */
-			var input = $(ctree.children('.box')[5]).html();
-			var p;
-			
-			// privat-KoP
-			p = /nicht unterstellbar\) aus <b>([\d\.]*)<\/b> Schiff\(en\) ben\S*tigt <b>([\d\.]*)<\/b> KoP \(<b>([\d\.]*)<\/b> KoP/;
-			
-			data = p.exec(input);
-			if(data == null) {
+			// Kommandopunkte und Schiffe
+			var $kopRows = ctree.find('tr.quickjump').has('b'),
+				$kop = $kopRows.find('td:last-child'),
+				$kopMax = $kopRows.next().find('td:last-child'),
+				$shipCount = ctree.find('tr.tablecolor + tr:not(.tablecolor)').find('td:eq(1)');
 				
-				p = /non-assignable\) of <b>([\d\.]*)<\/b> ship\(s\) use <b>([\d\.]*)<\/b> CoP \(<b>([\d\.]*)<\/b> CoP/;
-				data = p.exec(input);
-				
-				if(data == null) {
-					throw 'Konnte Privat-Kommandopunkte nicht ermitteln!';
-				}
-			}
-			for(var i=1; i<=3; i++) {
-				data[i] = data[i].replace(/\./g, '');
-				if(data[i] == '') {
-					data[i] = 0;
-				}
+			if($kopRows.length != 2) {
+				throw 'Konnte Kommandopunkte nicht ermitteln!';
 			}
 			
-			out['schiffe'] = parseInt(data[1]);
-			
-			out['pkop'] = data[2];
-			out['pkopmax'] = data[3];
-			
-			// Orbiter-KOP dazuzählen
-			p = /Orbiter kosten zus\S*tzlich <b>([\d\.]+)<\/b> private/;
-			data = p.exec(input);
-			
-			if(data == null) {
-				p = /orbiter\(s\) cost you additional  <b>([\d\.]+)<\/b> private/;
-				data = p.exec(input);
+			try {
+				out['pkop'] = $kop.first().html().replace(/[^\d+]/g, '');
+				out['kop'] = $kop.last().html().replace(/[^\d+]/g, '');
+				out['pkopmax'] = $kopMax.first().html().replace(/[^\d+]/g, '');
+				out['kopmax'] = $kopMax.last().html().replace(/[^\d+]/g, '');
+			}
+			catch(e) {
+				throw 'Fehler beim Ermitteln der Kommandopunkte!';
 			}
 			
-			if(data != null) {
-				out['pkop'] = parseInt(out['pkop']) + parseInt(data[1].replace(/\./g, ''));
+			try {
+				out['schiffe'] = parseInt($shipCount.eq(0).html().replace(/[^\d+]/g, '')) + parseInt($shipCount.eq(1).html().replace(/[^\d+]/g, ''));
 			}
-			
-			// AF-KoP
-			p = /\(unterstellbar\) aus <b>([\d\.]*)<\/b> Schiff\(en\) ben\S*tigt <b>([\d\.]*)<\/b> KoP \(<b>([\d\.]*)<\/b> KoP/;
-			data = p.exec(input);
-			if(data == null) {
-				p = /\(assignable\) of <b>([\d\.]*)<\/b> ship\(s\) use <b>([\d\.]*)<\/b> CoP \(<b>([\d\.]*)<\/b> CoP/;
-				data = p.exec(input);
-				
-				if(data == null) {
-					throw 'Konnte AF-Kommandopunkte nicht ermitteln!';
-				}
-			}
-			for(var i=1; i<=3; i++) {
-				data[i] = data[i].replace(/\./g, '');
-				if(data[i] == '') {
-					data[i] = 0;
-				}
-			}
-			
-			out['schiffe'] += parseInt(data[1]);
-			
-			out['kop'] = data[2];
-			out['kopmax'] = data[3];
-			
-			// Schiffe im Basar -> vorherige Werte überschreiben
-			p = /sich <b>([\d\.]+)<\/b> Privat-KoP und <b>([\d\.]+)<\/b> normale KoP ergeben./;
-			data = p.exec(input);
-			
-			if(data == null) {
-				p = /resulting in <b>([\d\.]+)<\/b> private CoP and <b>([\d\.]+)<\/b> normal CoP/;
-				data = p.exec(input);
-			}
-			
-			if(data != null) {
-				out['pkop'] = data[1].replace(/\./g, '');
-				out['kop'] = data[2].replace(/\./g, '');
+			catch(e) {
+				throw 'Konnte Anzahl der Schiffe nicht ermitteln!';
 			}
 		}
 		//
