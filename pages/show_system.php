@@ -833,7 +833,14 @@ else if($_GET['sp'] == '') {
 							AND status_allianzenID = allianzenID
 					WHERE
 						myrigates_galaxienID = ".$data['systeme_galaxienID']."
-						AND ((myrigatesSprung = 0 AND statusStatus IN(".implode(", ", $status_freund).")) OR (myrigatesSprung > 0 AND myrigatesSprungFeind = 0))
+						AND (
+							(myrigatesSprung = 0 AND statusStatus IN(".implode(", ", $status_freund)."))
+							OR
+							(myrigatesSprung > 0 AND myrigatesSprungFeind = 0
+								AND 
+								(statusStatus IS NULL OR statusStatus NOT IN(".implode(", ", $status_feind)."))
+							)
+						)
 					ORDER BY
 						planetenEntfernung ASC
 				") OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
