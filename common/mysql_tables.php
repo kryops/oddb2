@@ -364,6 +364,7 @@ $tables_add = array(
   `userOnlinePlugin` int(10) unsigned NOT NULL DEFAULT 0,
   `userApiKey` char(32) NOT NULL,
   `userForschung` TEXT NOT NULL,
+  `userODServer` varchar(100) NOT NULL,
   PRIMARY KEY (`user_playerID`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8"
 );

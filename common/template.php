@@ -353,17 +353,19 @@ class template {
 <script type="text/javascript" src="js/jquery.js'.FILESTAMP.'"></script>
 <script type="text/javascript" src="js/general'.(DEBUG ? '_src' : '').'.js'.FILESTAMP.'"></script>
 <script type="text/javascript">
-var tabs = [[1, \''.addslashes($this->name).'\']];
-var szgr = '.($user->settings['szgr'] ? 'true' : 'false').';
-var settings = {
-	\'wminoncontent\' : '.($user->settings['wminoncontent'] ? 'true' : 'false').',
-	\'newtabswitch\' : '.($user->settings['newtabswitch'] ? 'true' : 'false').',
-	\'winlinknew\' : '.($user->settings['winlinknew'] ? 'true' : 'false').',
-	\'winlink2tab\' : '.($user->settings['winlink2tab'] ? 'true' : 'false').',
-	\'closeontransfer\' : '.($user->settings['closeontransfer'] ? 'true' : 'false').',
-	\'szgrtype\' : '.$user->settings['szgrtype'].',
-	\'effects\' : 200
-};';
+var tabs = [[1, \''.addslashes($this->name).'\']],
+	szgr = '.($user->settings['szgr'] ? 'true' : 'false').',
+	settings = {
+		\'wminoncontent\' : '.($user->settings['wminoncontent'] ? 'true' : 'false').',
+		\'newtabswitch\' : '.($user->settings['newtabswitch'] ? 'true' : 'false').',
+		\'winlinknew\' : '.($user->settings['winlinknew'] ? 'true' : 'false').',
+		\'winlink2tab\' : '.($user->settings['winlink2tab'] ? 'true' : 'false').',
+		\'closeontransfer\' : '.($user->settings['closeontransfer'] ? 'true' : 'false').',
+		\'szgrtype\' : '.$user->settings['szgrtype'].',
+		\'effects\' : 200
+	},
+	ODServer = "'.$user->odServer.'";
+';
 			if($user->rechte['invasionen']) {
 				echo '
 $(document).ready(function(){

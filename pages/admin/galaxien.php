@@ -27,7 +27,7 @@ if($user->rechte['verwaltung_galaxien']) {
 	$csw->data['galaxien']['content'] .= '
 <br />
 <div class="fcbox" style="width:92%;line-height:28px;padding:10px">
-	<form action="#" onsubmit="if(this.gala.value){window.open(\'http://www.omega-day.com/game/?op=main&amp;order=id&amp;first=0&amp;last=100000&amp;gtyp=2&amp;viewgalaxy=\'+this.gala.value)};return false">
+	<form action="#" onsubmit="if(this.gala.value){window.open(\''.($user->odServer != '' ? $user->odServer : 'http://www.omega-day.com').'/game/?op=main&amp;order=id&amp;first=0&amp;last=100000&amp;gtyp=2&amp;viewgalaxy=\'+this.gala.value)};return false">
 		Mainscreen f&uuml;r Galaxie <input type="text" class="smalltext" name="gala" style="width:40px" /> <input type="submit" class="button" value="&ouml;ffnen">
 	</form>
 </div>

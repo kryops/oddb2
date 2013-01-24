@@ -1208,7 +1208,7 @@ else if($_GET['sp'] == '') {
 	// in OD öffnen
 	$tmpl->content .= '
 	<div>
-		<a href="http://www.omega-day.com/game/index.php?op=system&amp;sys='.$_GET['id'].'" target="_blank">System in OD &ouml;ffnen</a>
+		<a href="'.($user->odServer != '' ? $user->odServer : 'http://www.omega-day.com').'/game/index.php?op=system&amp;sys='.$_GET['id'].'" target="_blank">System in OD &ouml;ffnen</a>
 	</div>';
 	// auf Karte anzeigen
 	if($user->rechte['karte']) {

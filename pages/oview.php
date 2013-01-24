@@ -284,19 +284,19 @@ else {
 			if($c[0] === false) {
 				// Planetenübersicht
 				if(time()-$data['userOverviewUpdate'] > $config['scan_veraltet_oview']*3600) {
-					$scans[] = '<a href="http://www.omega-day.com/game/?op=planlist" target="_blank">Planeten&uuml;bersicht</a>';
+					$scans[] = '<a href="'.($user->odServer != '' ? $user->odServer : 'http://www.omega-day.com').'/game/?op=planlist" target="_blank">Planeten&uuml;bersicht</a>';
 				}
 				// Flottenübersicht
 				if(time()-$data['userFlottenUpdate'] > $config['scan_veraltet_flotten']*86400) {
-					$scans[] = '<a href="http://www.omega-day.com/game/?op=fleet&amp;tab=5" target="_blank">Flotten&uuml;bersicht</a>';
+					$scans[] = '<a href="'.($user->odServer != '' ? $user->odServer : 'http://www.omega-day.com').'/game/?op=fleet&amp;tab=5" target="_blank">Flotten&uuml;bersicht</a>';
 				}
 				// Sitter
 				if(time()-$data['userSitterUpdate'] > $config['scan_veraltet_einst']*86400) {
-					$scans[] = '<a href="http://www.omega-day.com/game/?op=sitter" target="_blank">Sitter</a>';
+					$scans[] = '<a href="'.($user->odServer != '' ? $user->odServer : 'http://www.omega-day.com').'/game/?op=sitter" target="_blank">Sitter</a>';
 				}
 				// Einstellungen
 				if(time()-$data['userODSettingsUpdate'] > $config['scan_veraltet_einst']*86400) {
-					$scans[] = '<a href="http://www.omega-day.com/game/?op=settings" target="_blank">Einstellungen</a>';
+					$scans[] = '<a href="'.($user->odServer != '' ? $user->odServer : 'http://www.omega-day.com').'/game/?op=settings" target="_blank">Einstellungen</a>';
 				}
 				
 				// Forschung
@@ -306,13 +306,13 @@ else {
 				$f_time = time()-$config['scan_veraltet_forschung']*86400;
 				
 				if($f['update'][1] < $f_time) {
-					$scans[] = '<a href="http://www.omega-day.com/game/?op=tech" target="_blank">Geb&auml;ude-Forschung</a>';
+					$scans[] = '<a href="'.($user->odServer != '' ? $user->odServer : 'http://www.omega-day.com').'/game/?op=tech" target="_blank">Geb&auml;ude-Forschung</a>';
 				}
 				if($f['update'][2] < $f_time) {
-					$scans[] = '<a href="http://www.omega-day.com/game/?op=tech&amp;tree=raum" target="_blank">Schiffe-Forschung</a>';
+					$scans[] = '<a href="'.($user->odServer != '' ? $user->odServer : 'http://www.omega-day.com').'/game/?op=tech&amp;tree=raum" target="_blank">Schiffe-Forschung</a>';
 				}
 				if($f['update'][3] < $f_time) {
-					$scans[] = '<a href="http://www.omega-day.com/game/?op=tech&amp;tree=sys" target="_blank">Systeme-Forschung</a>';
+					$scans[] = '<a href="'.($user->odServer != '' ? $user->odServer : 'http://www.omega-day.com').'/game/?op=tech&amp;tree=sys" target="_blank">Systeme-Forschung</a>';
 				}
 				
 				// Planeten
@@ -327,7 +327,7 @@ else {
 				") OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
 				
 				while($row = mysql_fetch_assoc($query)) {
-					$pscans[] = '<a href="http://www.omega-day.com/game/?op=planet&amp;index='.$row['planetenID'].'" target="_blank">'.$row['planetenID'].'</a>';
+					$pscans[] = '<a href="'.($user->odServer != '' ? $user->odServer : 'http://www.omega-day.com').'/game/?op=planet&amp;index='.$row['planetenID'].'" target="_blank">'.$row['planetenID'].'</a>';
 				}
 				
 				// Cache setzen

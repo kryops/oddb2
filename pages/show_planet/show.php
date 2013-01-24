@@ -706,9 +706,9 @@ if($user->rechte['routen'] OR $user->rechte['strecken_flug'] OR ($user->rechte['
 	}
 	$tmpl->content .= '
 		<div>
-			<a href="http://www.omega-day.com/game/index.php?op=orbit&amp;index='.$data['planetenID'].'" target="_blank">Orbit in OD &ouml;ffnen</a>
+			<a href="'.($user->odServer != '' ? $user->odServer : 'http://www.omega-day.com').'/game/index.php?op=orbit&amp;index='.$data['planetenID'].'" target="_blank">Orbit in OD &ouml;ffnen</a>
 			&nbsp;
-			<a href="http://www.omega-day.com/game/index.php?op=fleet&amp;pre_pid_set='.$data['planetenID'].'" target="_blank">Schiffe hierher schicken</a>
+			<a href="'.($user->odServer != '' ? $user->odServer : 'http://www.omega-day.com').'/game/index.php?op=fleet&amp;pre_pid_set='.$data['planetenID'].'" target="_blank">Schiffe hierher schicken</a>
 		</div>
 	</div>';
 }

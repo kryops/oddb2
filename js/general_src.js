@@ -2303,14 +2303,14 @@ function cm_open(e, type, value) {
 		
 		// Planeten-Link
 		if(el.hasClass('link_planet') && el.data('id')) {
-			content += '<a href="http://www.omega-day.com/game/index.php?op=orbit&amp;index='+el.data('id')+'" target="_blank">Orbit in OD &ouml;ffnen</a>';
-			content += '<a href="http://www.omega-day.com/game/index.php?op=fleet&amp;pre_pid_set='+el.data('id')+'" target="_blank">Schiffe hierher schicken</a>';
+			content += '<a href="' + ODServer + '/game/index.php?op=orbit&amp;index='+el.data('id')+'" target="_blank">Orbit in OD &ouml;ffnen</a>';
+			content += '<a href="' + ODServer + '/game/index.php?op=fleet&amp;pre_pid_set='+el.data('id')+'" target="_blank">Schiffe hierher schicken</a>';
 			lcount += 2;
 		}
 		
 		// System-Link
 		else if(el.hasClass('link_system') && el.data('id')) {
-			content += '<a href="http://www.omega-day.com/game/index.php?op=system&amp;sys='+el.data('id')+'" target="_blank">System in OD &ouml;ffnen</a>';
+			content += '<a href="' + ODServer + '/game/index.php?op=system&amp;sys='+el.data('id')+'" target="_blank">System in OD &ouml;ffnen</a>';
 			lcount += 1;
 		}
 	}

@@ -194,7 +194,7 @@ else {
 				<td>'.$row['galaxienID'].'</td>
 				<td><a class="link winlink contextmenu" data-link="index.php?p=show_system&amp;id='.$row['galaxienGateSys'].'">'.$row['galaxienGateSys'].'</a></td>
 				<td>'.$row['galaxienGate'].'</td>
-				<td><a href="http://www.omega-day.com/game/index.php?op=orbit&amp;index='.$row['galaxienGate'].'" target="_blank">[in OD &ouml;ffnen]</a></td>
+				<td><a href="'.($user->odServer != '' ? $user->odServer : 'http://www.omega-day.com').'/game/index.php?op=orbit&amp;index='.$row['galaxienGate'].'" target="_blank">[in OD &ouml;ffnen]</a></td>
 			</tr>';
 			}
 			$content .= '

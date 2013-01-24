@@ -36,6 +36,8 @@ class user {
 	public $settings;
 	// array Rechte des Users
 	public $rechte;
+	// string OD-URL des Benutzers
+	public $odServer;
 	
 	
 	/**
@@ -68,6 +70,8 @@ class user {
 		$this->rechte = $r[1];
 		$this->protectedAllies = $r[2];
 		$this->protectedGalas = $r[3];
+		
+		$this->odServer = $data['userODServer'];
 		
 	}
 	

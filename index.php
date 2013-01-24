@@ -248,6 +248,7 @@ if(isset($_SESSION['oddbuid'], $_SESSION['ip'])) {
 					userSettings,
 					userOnlineDB,
 					userOnlinePlugin,
+					userODServer,
 					registerProtectedAllies,
 					registerProtectedGalas,
 					registerAllyRechte
@@ -333,6 +334,7 @@ if(!$user->login AND isset($_COOKIE['oddb'])) {
 				userSettings,
 				userOnlineDB,
 				userOnlinePlugin,
+				userODServer,
 				registerProtectedAllies,
 				registerProtectedGalas,
 				registerAllyRechte
@@ -390,26 +392,47 @@ if($user->login) {
 	// Benutzer-Objekt mit Daten füllen
 	$user->populateData($data);
 	
-	// Online-Zeit updaten, wenn nicht gebannt
+	// Online-Zeit und Server updaten, wenn nicht gebannt
 	if(!$user->banned) {
+		
 		$uonline = false;
+		
+		$updateODServer = '';
+		
+		if(isset($_SERVER['HTTP_REFERER']) AND strpos($_SERVER['HTTP_REFERER'], 'omega') !== false AND strpos($_SERVER['HTTP_REFERER'], '/game/') !== false) {
+			$updateODServer = preg_replace('#^(.+)/game/.*$#s', '$1', $_SERVER['HTTP_REFERER']);
+			
+			// auf jeden Fall aktualisiern, wenn
+			if($user->odServer == '') {
+				$uonline = true;
+			}
+			
+		}
+		
 		// Zugriff über das Plugin, letzter vor über 2min
 		if($_GET['p'] == 'fow' OR isset($_GET['plugin'])) {
+			$col = 'userOnlinePlugin';
+			
 			if(time()-120 > $data['userOnlinePlugin']) {
-				$col = 'userOnlinePlugin';
 				$uonline = true;
 			}
 		}
 		// Zugriff über die DB, letzter vor über 2min
-		else if(time()-120 > $data['userOnlineDB']) {
+		else {
 			$col = 'userOnlineDB';
-			$uonline = true;
+			
+			if(time()-120 > $data['userOnlineDB']) {
+				$uonline = true;
+			}
 		}
+		
+		
 		if($uonline) {
 			query("
 				UPDATE ".PREFIX."user
 				SET
 					".$col." = ".time()."
+					".($updateODServer != '' ? ", userODServer = '".escape($updateODServer)."'" : '')."
 				WHERE
 					user_playerID = ".$user->id."
 			") OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
