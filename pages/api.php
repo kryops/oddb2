@@ -93,6 +93,7 @@ class ODDBApi {
 				userSettings,
 				userOnlineDB,
 				userOnlinePlugin,
+				userODServer,
 				registerProtectedAllies,
 				registerProtectedGalas,
 				registerAllyRechte
