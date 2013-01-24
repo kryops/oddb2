@@ -46,9 +46,11 @@ ul {
 
 #bgpic {
 	height:650px;
-	background-image:url(../img/bg/milchstrasse.jpg);
+	background-image:url(../img/bg/mars.jpg);
 	background-repeat:no-repeat;
+	background-position:right top;
 	min-width:900px;
+	max-width:1150px;
 }
 
 #ajax {
