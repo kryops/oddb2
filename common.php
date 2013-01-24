@@ -1525,6 +1525,7 @@ function diefow($msg = 'Du bist nicht eingeloggt!') {
 	$charset = $oddb ? 'UTF-8' : 'ISO-8859-1';
 	
 	header('Content-Type:text/xml; charset='.$charset);
+	header('Access-Control-Allow-Origin: *');
 	
 	die('<?xml version="1.0" encoding="'.$charset.'" standalone="yes" ?>
 <odh:odhelper xmlns="http://unzureichende.info/odhelp/ns/fog.of.war/2007" xmlns:odh="http://unzureichende.info/odhelp/ns/api">

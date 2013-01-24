@@ -287,6 +287,7 @@ function inva_archiv($id, $log) {
 }
 
 
+header('Access-Control-Allow-Origin: *');
 
 
 // default-Unterseite definieren

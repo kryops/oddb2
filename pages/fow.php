@@ -220,6 +220,7 @@ $charset = $oddb ? 'UTF-8' : 'ISO-8859-1';
 
 // XML-Header
 header('Content-Type:text/xml; charset='.$charset);
+header('Access-Control-Allow-Origin: *');
 
 // keine Berechtigung
 if(!$user->rechte['fow']) {

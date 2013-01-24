@@ -402,6 +402,9 @@ $(document).ready(function(){
 			if($this->error) {
 				$this->content = '';
 				$this->script = '';
+				
+				// Auch für externe abrufbar machen
+				header('Access-Control-Allow-Origin: *');
 			}
 			
 			// Content-Type-Header XML
