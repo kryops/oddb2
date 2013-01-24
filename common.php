@@ -1751,10 +1751,7 @@ function insertlog($typ, $msg) {
 	$typ = (int)$typ;
 	
 	// IPv6 abfangen
-	$ip = $_SERVER['REMOTE_ADDR'];
-	if(strpos($ip, ':') !== false) {
-		$ip = '0.0.0.0';
-	}
+	$ip = escape($_SERVER['REMOTE_ADDR']);
 	
 	// eintragen
 	query("
@@ -1764,7 +1761,7 @@ function insertlog($typ, $msg) {
 			log_playerID = ".$user->id.",
 			logType = ".$typ.",
 			logText = '".escape($msg)."',
-			logIP = INET_ATON('".$ip."')
+			logIP = '".$ip."'
 	") OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
 }
 

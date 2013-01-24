@@ -108,7 +108,7 @@ if(isset($_GET['s'])) {
 	
 	// IP
 	if(isset($_GET['ip'])) {
-		$conds[] = "logIP = INET_ATON('".escape($_GET['ip'])."')";
+		$conds[] = "logIP = '".escape($_GET['ip'])."'";
 	}
 	
 	// Eintrag enthält
@@ -178,7 +178,7 @@ else {
 			logTime,
 			log_playerID,
 			logText,
-			INET_NTOA(logIP) AS logIP2,
+			logIP,
 			
 			playerName
 		FROM
@@ -197,7 +197,7 @@ else {
 	<tr>
 	<td>'.datum($row['logTime']).'</td>
 	<td>'.datatable::inhaber($row['log_playerID'], $row['playerName']).'</td>
-	<td>'.$row['logIP2'].'</td>
+	<td>'.$row['logIP'].'</td>
 	<td style="text-align:left">'.$row['logText'].'</td>
 	</tr>';
 	}

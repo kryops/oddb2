@@ -193,7 +193,7 @@ $tables_add = array(
   `log_playerID` int(10) unsigned NOT NULL DEFAULT 0,
   `logType` smallint(5) unsigned NOT NULL DEFAULT 0,
   `logText` text NOT NULL,
-  `logIP` int(10) unsigned NOT NULL DEFAULT 0,
+  `logIP` varchar(20) NOT NULL,
   PRIMARY KEY (`logID`),
   KEY `log_playerID` (`log_playerID`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8",
