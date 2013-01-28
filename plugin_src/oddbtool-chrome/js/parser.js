@@ -853,7 +853,7 @@ oddbtool.parsePage = function(page, manual) {
 			out['steuer'] = $(data[2]).html().replace(/[^\d+]/g, '');
 			
 			// Kommandopunkte und Schiffe
-			var $kopRows = ctree.find('tr.quickjump').has('b'),
+			var $kopRows = ctree.find('tr.quickjump:has(b)'),
 				$kop = $kopRows.find('td:last-child'),
 				$kopMax = $kopRows.next().find('td:last-child'),
 				$shipCount = ctree.find('tr.tablecolor + tr:not(.tablecolor)').find('td:eq(1)');
