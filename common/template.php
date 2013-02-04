@@ -364,7 +364,7 @@ var tabs = [[1, \''.addslashes($this->name).'\']],
 		\'szgrtype\' : '.$user->settings['szgrtype'].',
 		\'effects\' : 200
 	},
-	ODServer = "'.$user->odServer.'";
+	ODServer = "'.($user->odServer ? $user->odServer : 'http://www.omega-day.com').'";
 ';
 			if($user->rechte['invasionen']) {
 				echo '
