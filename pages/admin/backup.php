@@ -18,7 +18,7 @@ $content = '
 	<br /><br />
 	<b>Die hier erzeugten Exporte beinhalten lediglich die Daten aus System- und Planetenscans, ein komplettes Backup der Instanz ist nur &uuml;ber die MySQL-Datenbank m&ouml;glich!</b>
 	<br /><br />
-	Importierte System- und Planetenscans werden nur &uuml;bernommen, wenn sie aktueller sind als die Daten dieser Instanz. Damit der Import vollst&auml;ndig funktioniert, sollten alle Galaxien eingetragen und alle Systeme mindestens einmal verdeckt gescannt worden sein. Ebenso empfiehlt es sich, vor dem Import die Spielerprofile aller angemeldeten Spieler einzulesen.
+	Importierte System- und Planetenscans werden nur &uuml;bernommen, wenn sie aktueller sind als die Daten dieser Instanz. Damit der Import vollst&auml;ndig funktioniert, sollten alle Galaxien eingetragen sein. Ebenso empfiehlt es sich, vor dem Import die Spielerprofile aller angemeldeten Spieler einzulesen.
 	<br /><br />
 	Der Import kann mehrere Minuten dauern.
 	

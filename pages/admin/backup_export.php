@@ -31,134 +31,138 @@ else {
 	@ini_set('memory_limit', '768M');
 	
 	// Ausgabe
-	// Runde
+	// Runde und Abgleich-Version
 	$out = 'C1='.ODWORLD.'""""C2='.ABGLEICH_VERSION.'""""';
 	
-	// System-Scandaten abfragen
+	$currentSystem = 0;
+	
 	$query = query("
 		SELECT
 			systemeID,
+			systemeUpdateHidden,
 			systemeUpdate,
+			systemeName,
 			
 			planetenID,
-			planetenName,
-			planeten_playerID,
+			
+			planetenTyp,
+			planetenPosition,
+			
 			planetenGroesse,
 			planetenBevoelkerung,
-			planetenNatives,
+			planetenName,
+			
+			planeten_playerID,
+			
+			planetenUpdateOverview,
+			planetenUpdate,
+			
 			planetenRWErz,
 			planetenRWWolfram,
 			planetenRWKristall,
 			planetenRWFluor,
+			
 			planetenMyrigate,
-			planetenRiss
-		FROM
-			".PREFIX."planeten
-			LEFT JOIN ".PREFIX."systeme
-				ON systemeID = planeten_systemeID
-		WHERE
-			systemeUpdate > 0
-		ORDER BY
-			planetenID ASC
-	") OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
-	
-	$current_sys = 0;
-	
-	while($row = mysql_fetch_assoc($query)) {
-		// System anhängen
-		if($current_sys != $row['systemeID']) {
 			
-			// in den Ausgabe-String
-			if($current_sys != 0) {
-				$out .= 'S'.$current_sys.'='.json_encode($o).'""""';
-			}
+			planetenNatives,
 			
-			$o = array((int)$row['systemeUpdate']);
-			$current_sys = $row['systemeID'];
-		}
-		
-		// Planet anhängen
-		$o[$row['planetenID']] = array(
-			$row['planetenName'],
-			(int)$row['planeten_playerID'],
-			(int)$row['planetenGroesse'],
-			(int)$row['planetenBevoelkerung'],
-			(int)$row['planetenNatives'],
-			(int)$row['planetenRWErz'],
-			(int)$row['planetenRWWolfram'],
-			(int)$row['planetenRWKristall'],
-			(int)$row['planetenRWFluor'],
-			(int)$row['planetenMyrigate'],
-			(int)$row['planetenRiss']
-		);
-	}
-	
-	// in den Ausgabe-String
-	if($current_sys != 0) {
-		$out .= 'S'.$current_sys.'='.json_encode($o).'""""';
-	}
-	
-	// Speicher wieder freigeben
-	mysql_free_result($query);
-	
-	// Planeten-Scandaten abfragen
-	$query = query("
-		SELECT
-			planetenID,
-			planetenUpdateOverview,
-			planetenUpdate,
 			planetenKategorie,
 			planetenGebPlanet,
 			planetenGebOrbit,
 			planetenOrbiter,
-			planetenRPErz,
-			planetenRPMetall,
-			planetenRPWolfram,
-			planetenRPKristall,
-			planetenRPFluor,
+			
 			planetenRMErz,
 			planetenRMMetall,
 			planetenRMWolfram,
 			planetenRMKristall,
 			planetenRMFluor,
+			
 			planetenForschung,
-			planetenIndustrie
+			planetenIndustrie,
+			
+			planetenRPErz,
+			planetenRPMetall,
+			planetenRPWolfram,
+			planetenRPKristall,
+			planetenRPFluor
+			
 		FROM
 			".PREFIX."planeten
-		WHERE
-			planetenUpdateOverview > 0
+			LEFT JOIN ".PREFIX."systeme
+				ON systemeID = planeten_systemeID
 		ORDER BY
 			planetenID ASC
 	") OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
 	
 	while($row = mysql_fetch_assoc($query)) {
-		$out .= 'P'.$row['planetenID'].'='.json_encode(array(
-			(int)$row['planetenUpdateOverview'],
-			(int)$row['planetenUpdate'],
-			(int)$row['planetenKategorie'],
-			$row['planetenGebPlanet'],
-			$row['planetenGebOrbit'],
-			(int)$row['planetenOrbiter'],
-			(int)$row['planetenRPErz'],
-			(int)$row['planetenRPMetall'],
-			(int)$row['planetenRPWolfram'],
-			(int)$row['planetenRPKristall'],
-			(int)$row['planetenRPFluor'],
-			(int)$row['planetenRMErz'],
-			(int)$row['planetenRMMetall'],
-			(int)$row['planetenRMWolfram'],
-			(int)$row['planetenRMKristall'],
-			(int)$row['planetenRMFluor'],
-			(int)$row['planetenForschung'],
-			(int)$row['planetenIndustrie']
-		)).'""""';
+		
+		// System-Datensatz hinzufügen
+		if($currentSystem != $row['systemeID']) {
+			$currentSystem = $row['systemeID'];
+			$out .= 'S'.$currentSystem.'='.json_encode(array(
+				$row['systemeUpdateHidden'],	// 0
+				$row['systemeUpdate'],			// 1
+				$row['systemeName']				// 2
+			)).'""""';
+		}
+		
+		// Planeten-Datensatz
+		$o = array(
+			(int)$row['planetenTyp'], 			// 0
+			(int)$row['planetenPosition'],		// 1
+			(int)$row['planetenGroesse'], 		// 2
+			(int)$row['planetenBevoelkerung'],	// 3 
+			$row['planetenName'],				// 4
+			
+			(int)$row['planeten_playerID'],		// 5
+			
+			(int)$row['planetenUpdateOverview'],// 6
+			(int)$row['planetenUpdate'], 		// 7
+			
+			(int)$row['planetenRWErz'], 		// 8
+			(int)$row['planetenRWWolfram'], 	// 9
+			(int)$row['planetenRWKristall'], 	// 10
+			(int)$row['planetenRWFluor'], 		// 11
+			
+			(int)$row['planetenMyrigate'], 		// 12
+			
+			(int)$row['planetenNatives'] 		// 13
+		);
+		
+		// bei eingescannten Planeten Datensatz erweitern
+		if($row['planetenUpdateOverview']) {
+			$o = array_merge($o, array(
+				(int)$row['planetenKategorie'], 	// 14
+				$row['planetenGebPlanet'], 			// 15
+				$row['planetenGebOrbit'], 			// 16
+				(int)$row['planetenOrbiter'], 		// 17
+				
+				(int)$row['planetenRMErz'], 		// 18
+				(int)$row['planetenRMMetall'], 		// 19
+				(int)$row['planetenRMWolfram'], 	// 20
+				(int)$row['planetenRMKristall'], 	// 21
+				(int)$row['planetenRMFluor'] 		// 22
+			));
+		}
+		
+		if($row['planetenUpdate']) {
+			$o = array_merge($o, array(
+				(int)$row['planetenForschung'], 	// 23
+				(int)$row['planetenIndustrie'], 	// 24
+				
+				(int)$row['planetenRPErz'], 		// 25
+				(int)$row['planetenRPMetall'], 		// 26
+				(int)$row['planetenRPWolfram'], 	// 27
+				(int)$row['planetenRPKristall'], 	// 28
+				(int)$row['planetenRPFluor'], 		// 29
+			));
+		}
+		
+		$out .= 'P'.$row['planetenID'].'='.json_encode($o).'""""';
 	}
 	
 	// Speicher wieder freigeben
 	mysql_free_result($query);
-	
-	// max_input_vars-Problem
-	@ini_set('max_input_vars', 65536);
 	
 	// Array komprimieren
 	$out = gzcompress($out, 2);
