@@ -459,12 +459,16 @@ window.setTimeout(function() {
 							planetenID = ".$id.",
 							planeten_systemeID = ".$systemId.",
 							
-							planetenPosition = ".(int)$row[1].",
-							
-							planetenHistory = 1",								
+							planetenPosition = ".(int)$row[1],								
 							
 							self::getPlanetUpdateSystem($row)
 						);
+						
+						// Inhaber nicht unbekannt
+						if($row[5] != -1) {
+							$planetUpdates[] = "planetenHistory = 1";
+							$playerHistory = true;
+						}
 						
 						// Scan des Planeten vorhanden
 						$updateOverview = ($rowCount >= 23);
@@ -493,8 +497,6 @@ window.setTimeout(function() {
 						}
 						
 						$pladded++;
-						
-						$playerHistory = true;
 					}
 					
 					
