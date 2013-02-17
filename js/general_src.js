@@ -89,6 +89,11 @@ var geb = {
 };
 
 /**
+ * Touch-Support
+ */
+var touchSupport = ("ontouchstart" in window);
+
+/**
  * Kurzform der Weiterleitung
  */
 function url(a) {
@@ -114,7 +119,7 @@ $(document).ready(function(){
 	// Größe des Startmenüs aktualisieren
 	sm_updatesize();
 	
-	$(document).click(function(e){
+	$(document).bind('click', function(e){
 		// Dokument-Klick
 		// Kontextmenü schließen
 		cm_close();
@@ -122,30 +127,38 @@ $(document).ready(function(){
 		if(startmenu && (e.button != 2 || $(e.target).parents('#startmenuc').attr('id') == null)) {
 			sm_hide();
 		}
-	}).mousemove(function(e){
+	}).bind('mousemove touchmove', function(e){
 		// Mausbewegung
 		// Fenster bewegen?
 		if(fmove) {
-			var x = fmoveobj[0]+e.pageX-document.documentElement.scrollLeft-fmovepos[0];
-			var y = fmoveobj[1]+e.pageY-document.documentElement.scrollTop-fmovepos[1];
-			
-			// nicht zu weit schieben
-			// nach oben
-			if(y < 0) {
-				y = 0;
+			if(e.type == 'touchmove' && e.originalEvent.targetTouches) {
+				var x = fmoveobj[0]+e.originalEvent.targetTouches[0].pageX-fmovepos[0];
+				var y = fmoveobj[1]+e.originalEvent.targetTouches[0].pageY-fmovepos[1];
 			}
+			else {
+				var x = fmoveobj[0]+e.pageX-document.documentElement.scrollLeft-fmovepos[0];
+				var y = fmoveobj[1]+e.pageY-document.documentElement.scrollTop-fmovepos[1];
+			}
+			
 			// nach unten
 			if(y > $(window).height()-90) {
 				y = $(window).height()-90;
 			}
+			// nicht zu weit schieben
+			// nach oben
+			else if(y < 0) {
+				y = 0;
+			}
+			
 			// nach rechts
 			if(x > $(window).width()-40) {
 				x = $(window).width()-40;
 			}
 			// nach links
-			if(x < -1*$('#fenster'+fmove).width()+40) {
+			else if(x < -1*$('#fenster'+fmove).width()+40) {
 				x = -1*$('#fenster'+fmove).width()+40;
 			}
+			
 			
 			$('#fenster'+fmove).css({'left' : x+'px', 'top' : y+'px'});
 		}
@@ -153,9 +166,13 @@ $(document).ready(function(){
 		if(tooltip) {
 			tt_pos(e);
 		}
-	}).mouseup(function(e){
+	}).bind('mouseup touchend', function(e){
 		// Fensterbewegung stoppen
 		fmove = 0;
+		
+		if(e.type == 'touchend' && !contextmenuTriggered && !$(e.target).parents('#contextmenu').length) {
+			cm_close();
+		}
 	});
 	
 	// Browserfenstergröße ändern
@@ -198,7 +215,7 @@ $(document).ready(function(){
 	}).mouseup(function(e){
 		// mittlere Maustaste abfangen
 		if(e.which == 2) page_load(2, 'Übersicht', 'index.php?p=oview', false, false);
-	}).bind('contextmenu',function(e){
+	}).bind('contextmenu touchcontextmenu',function(e){
 		// Kontext-Menü
 		cm_open(e, 1, 'index.php?p=oview');
 		
@@ -214,6 +231,12 @@ $(document).ready(function(){
 		var type = 1;
 		if(e.ctrlKey) type = 2;
 		
+		// abbrechen, wenn das Kontextmenü aufgerufen wurde
+		if(contextmenuTriggered) {
+			e.preventDefault();
+			return false;
+		}
+		
 		page_load(type, false, $(this).data('link'), false, false);
 	}).mousedown(function(e){
 		// mittlere Maustaste abfangen
@@ -221,7 +244,7 @@ $(document).ready(function(){
 			page_load(2, false, $(this).data('link'), false, false);
 			return false;
 		}
-	}).bind('contextmenu',function(e){
+	}).bind('contextmenu touchcontextmenu',function(e){
 		// Kontext-Menü
 		// ohne passendes Link-Attribut kein Kontextmenü
 		if(typeof($(this).data('link')) == 'undefined') return false;
@@ -236,6 +259,12 @@ $(document).ready(function(){
 	$(document).on('click', '.link', function(e) {
 		// Rechtsklick abfangen
 		if(e.which == 3) return true;
+		
+		// abbrechen, wenn das Kontextmenü aufgerufen wurde
+		if(contextmenuTriggered) {
+			e.preventDefault();
+			return false;
+		}
 		
 		// Validation, bei falschem Link abbrechen
 		if(typeof($(this).data('link')) == 'undefined' || $(this).data('link') == '') {
@@ -291,6 +320,12 @@ $(document).ready(function(){
 		// Rechtsklick abfangen
 		if(e.which == 3) return true;
 		
+		// abbrechen, wenn das Kontextmenü aufgerufen wurde
+		if(contextmenuTriggered) {
+			e.preventDefault();
+			return false;
+		}
+		
 		// Strg abfangen -> neuer Tab
 		if(e.which == 2 || e.ctrlKey) page_load(2, false, $(this).data('link'), false, false);
 		// normal switchen
@@ -307,7 +342,7 @@ $(document).ready(function(){
 	});
 	
 	// Kontextmenü initialisieren
-	$(document).on('contextmenu', '.contextmenu, .cswlink', function(e){
+	$(document).on('contextmenu touchcontextmenu', '.contextmenu, .cswlink', function(e){
 		// ohne passendes Link-Attribut kein Kontextmenü
 		if(typeof($(this).data('link')) == 'undefined') {
 			if($(this).attr('link') != null) {
@@ -324,7 +359,7 @@ $(document).ready(function(){
 	});
 	
 	// Tooltips initialisieren
-	$(document).on('mouseover', '.tooltip', function(e) {
+	$(document).on('mouseover touchmousedown', '.tooltip', function(e) {
 		// Planeten-Screen erzeugen
 		if($(this).hasClass('plscreen') && typeof($(this).data('tooltip')) == 'undefined') {
 			var data = $(this).data('plscreen').split('_');
@@ -368,18 +403,22 @@ $(document).ready(function(){
 		tooltip = false;
 	});
 	
+	// Touch-Tooltips wieder verschwinden lassen
+	$(document).on('touchstart', function(e) {
+		if(!$(e.target).hasClass('tooltip')) {
+			$('#tooltip').stop(true, true).hide();
+			tooltip = false;
+		}
+	});
+	
 	// Tabs klickbar machen
 	$('#tabbar').on('click', '.tab', function(e){
 		// Klick auf einen Tab
 		// Rechtsklick abfangen
 		if (e.button != 0) return true;
 		tab_click($(this).attr('id'));
-	}).on('contextmenu', '.tab', function(e){
+	}).on('contextmenu touchcontextmenu', '.tab, .tabactive', function(e){
 		// Kontextmenü öffnen
-		cm_open(e, 2, $(this).attr('id'));
-		return false;
-	}).on('contextmenu', '.tabactive', function(e){
-		// Kontextmenü auf den aktiven Tab
 		cm_open(e, 2, $(this).attr('id'));
 		return false;
 	}).on('click', '.tabclose', function(e){
@@ -397,7 +436,7 @@ $(document).ready(function(){
 		// Rechtsklick abfangen
 		if (e.button != 0) return true;
 		wbar_click($(this), 0);
-	}).on('contextmenu', '.barwindow, .barwindowact', function(e){
+	}).on('contextmenu touchcontextmenu', '.barwindow, .barwindowact', function(e){
 		// Kontext-Menü
 		var id = $(this).attr('id');
 		id = id.replace(/[^\d]/g, '');
@@ -415,13 +454,31 @@ $(document).ready(function(){
 	});
 	
 	// Fenster klickbar machen
-	$(document).on('mousedown', '.fenster', function(){
+	$(document).on('mousedown touchstart', '.fenster', function(){
 		wbar_click($(this), 1);
-	}).on('mousedown', '.fhl1', function(e) {
+	}).on('mousedown touchstart', '.fhl1', function(e) {
+		
+		if(e.type == 'touchstart') {
+			
+			// Buttons auf dem Tablet wieder anklickbar machen
+			if($(e.target).parents('.hl1buttons').length) {
+				return;
+			}
+			
+			e.preventDefault();
+		}
+		
 		var id = $(this).parent().attr('id');
 		id = id.replace(/fenster/g, '');
 		fmove = id;
-		fmovepos = [e.pageX-document.documentElement.scrollLeft, e.pageY-document.documentElement.scrollTop];
+		
+		if(e.type == 'touchstart' && e.originalEvent.targetTouches) {
+			fmovepos = [e.originalEvent.targetTouches[0].pageX, e.originalEvent.targetTouches[0].pageY];
+		}
+		else {
+			fmovepos = [e.pageX-document.documentElement.scrollLeft, e.pageY-document.documentElement.scrollTop];
+		}
+		
 		fmoveobj = [parseInt($(this).parent().css('left').replace(/px/g, '')),
 					parseInt($(this).parent().css('top').replace(/px/g, ''))];
 	});
@@ -461,7 +518,7 @@ $(document).ready(function(){
 			
 			page_load(type, false, addr, acttab, false);
 		}
-	}).on('contextmenu', '#favoriten a, #historyc a', function(e){
+	}).on('contextmenu touchcontextmenu', '#favoriten a, #historyc a', function(e){
 		// Startmenü Links Kontextmenü
 		// Kontextmenü anzeigen, wenn Link vorhanden
 		if(typeof($(this).data('link')) == 'undefined') return false;
@@ -563,6 +620,10 @@ $(document).ready(function(){
 		$(this).html('<img src="img/layout/leer.gif" class="hoverbutton" style="background-position:-1060px -91px" title="Marker setzen" onclick="route_marker(this)" />');
 	}).on('mouseleave', '.routemarker', function() {
 		$(this).html('');
+	}).on('touchmousedown', '.routemarker', function() {
+		// iPad-Workaround
+		$(this).html('<span />');
+		route_marker($(this).children()[0]);
 	});
 	
 	// Suche
@@ -656,14 +717,6 @@ $(document).ready(function(){
 	// alte Methode mit Ankern
 	else {
 		window.setInterval(history_check, 2000);
-	}
-	
-	// iPhone / iPad position:fixed bug
-	if(navigator.userAgent.indexOf('iPhone') != -1 || navigator.userAgent.indexOf('iPad') != -1) {
-		$(window).scroll(function() {
-			$('#windowbar').css('bottom', (0-$(window).scrollTop())+'px');
-			$('#startmenu').css('bottom', (38-$(window).scrollTop())+'px');
-		});
 	}
 	
 });
@@ -1127,7 +1180,10 @@ function tab_update() {
 	// document-title ändern
 	jQuery.each(tabs, function(){
 		if(this[0] == acttab) {
-			document.title = this[1]+' - ODDB ';
+			var title = this[1];
+			window.setTimeout(function() {
+				document.title = title+' - ODDB ';
+			}, 20);
 		}
 	});
 	// bei zu vielen Tabs Content-Bereich nach unten verschieben
@@ -1869,6 +1925,7 @@ function win_open(icon, name, content, width, link) {
 	// Fenster zentrieren und nach oben verschieben
 	if(!width) var width = $('#fenster'+fensternr).width();
 	var height = $('#fenster'+fensternr).height();
+	
 	var x = ($(window).width()-width)/2;
 	var y = ($(window).height()-height-75)/8;
 	// innerhalb des Browserfensters halten
@@ -2251,7 +2308,7 @@ var contextmenu = false;
  */
 function cm_close() {
 	if(contextmenu) {
-		$('#contextmenu').hide(150);
+		$('#contextmenu').hide();
 	}
 }
 
@@ -2272,6 +2329,7 @@ function cm_close() {
 function cm_open(e, type, value) {
 	// wie viele Links sind im Kontextmenü?
 	var lcount = 0;
+	var content = '';
 	// type 0 - benutzerdefiniert
 	if(type == 0) {
 		var content = value[0];
@@ -2279,7 +2337,7 @@ function cm_open(e, type, value) {
 	}
 	// type 1 - normaler Link
 	if(type == 1) {
-		var content = '<a href="javascript:page_load(2, false, \''+value+'\', false, false)">in neuem DB-Tab öffnen</a><a href="javascript:page_load(3, false, \''+value+'\', false, false)">in neuem Browser-Tab öffnen</a>';
+		content = '<a href="javascript:page_load(2, false, \''+value+'\', false, false)">in neuem DB-Tab öffnen</a><a href="javascript:page_load(3, false, \''+value+'\', false, false)">in neuem Browser-Tab öffnen</a>';
 		if($(e.target).parents('.fenster').attr('id') != null && settings['winlinknew'] && $(e.target).hasClass('winlink')) {
 			var id = $(e.target).parents('.fenster').attr('id').replace(/fenster/g, '');
 			content += '<a href="javascript:page_load(4, false, \''+value+'\', '+id+', false)">im selben DB-Fenster öffnen</a>';
@@ -2351,7 +2409,6 @@ function cm_open(e, type, value) {
 	else {
 		var addr = value[0];
 		var win = value[1];
-		var content = '';
 		// Link im Fenster verankert?
 		// - Favoriten
 		// - Fenster neu laden
@@ -2386,9 +2443,16 @@ function cm_open(e, type, value) {
 	
 	// Position zuweisen
 	var height = (lcount*30)+12;
-	var x = e.pageX-$(window).scrollLeft()+10;
-	var y = e.pageY-$(window).scrollTop()+5;
-	
+	if(e.pageX) {
+		var x = e.pageX-$(window).scrollLeft()+10,
+			y = e.pageY-$(window).scrollTop()+5;
+	}
+	else {
+		var target = $(e.target),
+			position = target.offset(),
+			x = position.left-$(window).scrollLeft()+target.width()-2,
+			y = position.top-$(window).scrollTop()+target.height()-2;
+	}
 	// zu weit unten -> über Mauszeiger
 	if(y+height > $(window).height()-30) y = y-height;
 	// zu weit rechts -> links
@@ -2411,24 +2475,40 @@ var tooltip = false;
  * @param e Event des mouseover/mousemove
  */
 function tt_pos(e) {
-	var height = $('#tooltip').height();
-	var width = $('#tooltip').width();
-	var x = e.pageX-document.documentElement.scrollLeft+10;
-	var y = e.pageY-document.documentElement.scrollTop+15;
+	var height = $('#tooltip').height(),
+		width = $('#tooltip').width(),
+		x, y;
 	
-	// Chrome Fix
-	if(navigator.userAgent.indexOf('Chrome') > -1) {
-		y -= $('body').scrollTop();
+	// absolute Positionierung auf Touch-Geräten
+	if(e.type == 'touchmousedown') {
+		var target = $(e.target),
+			position = target.offset();
+		
+		x = position.left-20;
+		y = position.top+15;
+		
+		$('#tooltip').css('position', 'absolute');
+	}
+	// traditionelle fixe Maus-Positionierung
+	else {
+		x = e.pageX-document.documentElement.scrollLeft+10;
+		y = e.pageY-document.documentElement.scrollTop+15;
+		
+		// Chrome Fix
+		if(navigator.userAgent.indexOf('Chrome') > -1) {
+			y -= $('body').scrollTop();
+		}
+		
+		// zu weit unten -> über Mauszeiger
+		if(y+height > $(window).height()-10) y = y-height-20;
+		// zu weit rechts -> links
+		if(x+width > $(window).width()-30) x = x-width-30;
+		
+		// aber auch nicht zu weit nach links und zu weit nach oben kommen
+		if(x < 0) x = 0;
+		if(y < 0) y = 0;
 	}
 	
-	// zu weit unten -> über Mauszeiger
-	if(y+height > $(window).height()-10) y = y-height-20;
-	// zu weit rechts -> links
-	if(x+width > $(window).width()-30) x = x-width-30;
-	
-	// aber auch nicht zu weit nach links und zu weit nach oben kommen
-	if(x < 0) x = 0;
-	if(y < 0) y = 0;
 	
 	// Position übernehmen
 	$('#tooltip').css({'left' : x+'px', 'top' : y+'px'});
@@ -4270,4 +4350,58 @@ var forschungPage = {
 		});
 	}
 	
-}
+};
+
+
+/**
+ * Touch-Event-Abstraktionen
+ * - touchmousedown: wird nach 200ms ohne Bewegung gefeuert
+ */
+var contextmenuTriggered = false;
+
+(function() {
+	var timeoutMousedown = false,
+		timeoutContextmenu = false,
+		target = false;
+	
+	$(document).on('touchstart', function(e) {
+		target = e.target;
+		
+		timeoutMousedown = window.setTimeout(function() {
+			$(target).trigger('touchmousedown');
+			timeoutMousedown = false;
+		}, 200);
+		
+		timeoutContextmenu = window.setTimeout(function() {
+			timeoutContextmenu = false;
+			contextmenuTriggered = true;
+			
+			$(target).trigger('touchcontextmenu');
+		}, 600);
+		
+	}).on('touchmove', function() {
+		if(timeoutMousedown) {
+			window.clearTimeout(timeoutMousedown);
+			timeoutMousedown = false;
+		}
+		if(timeoutContextmenu) {
+			window.clearTimeout(timeoutContextmenu);
+			timeoutContextmenu = false;
+		}
+	}).on('touchend', function(e) {
+		if(timeoutContextmenu) {
+			window.clearTimeout(timeoutContextmenu);
+			timeoutContextmenu = false;
+		}
+		
+		if(contextmenuTriggered) {
+			
+			window.setTimeout(function() {
+				contextmenuTriggered = false;
+			}, 400);
+			
+		}
+		
+	});
+	
+})();

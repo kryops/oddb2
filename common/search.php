@@ -281,7 +281,7 @@ class Search {
 		<tr>
 			<td>Werte</td>
 			<td><input type="text" class="smalltext" name="rwe" value="'.(isset($filter['rwe']) ? htmlspecialchars($filter['rwe'], ENT_COMPAT, 'UTF-8') : '').'" /></td>
-			<td class="small hint center">(= Erz-Wert)</td>
+			<td class="small hint center" style="white-space:nowrap">(= Erz-Wert)</td>
 			<td><input type="text" class="smalltext" name="rww" value="'.(isset($filter['rww']) ? htmlspecialchars($filter['rww'], ENT_COMPAT, 'UTF-8') : '').'" /></td>
 			<td><input type="text" class="smalltext" name="rwk" value="'.(isset($filter['rwk']) ? htmlspecialchars($filter['rwk'], ENT_COMPAT, 'UTF-8') : '').'" /></td>
 			<td><input type="text" class="smalltext" name="rwf" value="'.(isset($filter['rwf']) ? htmlspecialchars($filter['rwf'], ENT_COMPAT, 'UTF-8') : '').'" /></td>

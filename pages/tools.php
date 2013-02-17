@@ -624,7 +624,7 @@ else {
 			Die ODDB stellt eine eigene API f&uuml;r Erweiterungen und Scripts zur Verf&uuml;gung.
 			<br /><br />
 			Dein API-Key lautet: 
-			<input type="text" class="text apikey" style="width:290px" value="'.$apikey.'" onmouseover="$(this).select()" readonly="readonly" /> 
+			<input type="text" class="text apikey" style="width:290px" value="'.$apikey.'" onmouseover="$(this).select()" /> 
 			&nbsp; <a class="italic" onclick="toolsPage.changeApiKey()">(Key &auml;ndern)</a>
 			<br /><br />
 			<a class="link contextmenu bold" data-link="index.php?p=tools&amp;sp=api">&raquo; Entwickler-Dokumentation</a>
