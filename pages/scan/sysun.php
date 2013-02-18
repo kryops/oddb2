@@ -274,6 +274,7 @@ else {
 			SELECT
 				planetenID,
 				planetenName,
+				planetenTyp,
 				planeten_playerID
 			FROM ".PREFIX."planeten
 			WHERE
@@ -358,6 +359,22 @@ else {
 						$his = '';
 					}
 					
+					// Planetentyp bei Genesis nicht übernehmen
+					$genesisPlanet = 33;
+					
+					$genesisPool = array_merge(
+						range(63,91),
+						array(6, 50, 53, 57, 61, 9, 22, 12, 44, 10, 25, 37, 38, 21, 40, 36, 34, 39)
+					);
+					
+					$newType = $pldata['typ'];
+					
+					// nicht fertig transformiert -> Genesis-Kugel behalten
+					if($pl[$pldata['id']]['planetenTyp'] == $genesisPlanet AND !in_array($pldata['typ'], $genesisPool)) {
+						$newType = $genesisPlanet;
+					}
+					
+					
 					// Planet aktualisieren
 					query("
 						UPDATE ".PREFIX."planeten
@@ -365,7 +382,7 @@ else {
 							planeten_playerID = ".$inh.",
 							planetenName = '".$pldata['name']."',
 							".$his."
-							planetenTyp = ".$pldata['typ']."
+							planetenTyp = ".$newType."
 						WHERE
 							planetenID = ".$pldata['id']."
 					") OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
