@@ -2652,7 +2652,9 @@ function form_sendget(f, addr) {
 	
 	// Adresse erzeugen
 	addr = addajax(addr);
-	addr = addr+'&'+$(f).find('[value!=]').serialize();
+	addr = addr+'&'+$(f).find('input').filter(function(index) {
+			return (this.value != '');
+		}).serialize();
 	// abschließendes & entfernen
 	addr = addr.replace(/&$/, '');
 	
@@ -2976,7 +2978,7 @@ function quelltext(f, r) {
 	// Grafiken beim Parsen nicht laden
 	input = input.replace(/src="/g, 'src="file:///');
 	
-	var tree = $(input);
+	var tree = $($.parseHTML(input));
 	var ctree = tree.find('#layout-main');
 	
 	// Ausgabe-Container
@@ -4283,7 +4285,9 @@ var settingsPage = {
 	editFoWSearch : function(form, target) {
 		
 		// Such-String generieren
-		var val = $(form).find('[value!=]').serialize();
+		var val = $(form).find('input').filter(function(index) {
+			return (this.value != '');
+		}).serialize();
 		$('#'+target+' input[type=hidden]').val(val);
 		
 		// Beschreibung laden

@@ -345,7 +345,7 @@ var oddbtool = {
 			
 			subscriptLoader.loadSubScript("chrome://oddbtool/content/parser.js");
 			
-			subscriptLoader.loadSubScript("chrome://oddbtool/content/jquery1.7.1.js");
+			subscriptLoader.loadSubScript("chrome://oddbtool/content/jquery.js");
 			
 			jQuery.noConflict();
 			
