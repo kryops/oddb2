@@ -84,7 +84,7 @@ class Search {
 		
 		
 		// Planeten-Typen
-		$pltypen = 62;
+		$pltypen = 91;
 		$pltypnot = array();
 		
 		// Planetentyp validieren
@@ -184,7 +184,7 @@ class Search {
 		<div class="searchpltyplist fcbox" style="display:none">';
 		
 		// Planetentypen ausgeben
-		for($i=1; $i <= 62; $i++) {
+		for($i=1; $i <= $pltypen; $i++) {
 			if(!in_array($i, $pltypnot)) {
 				$content .= '<img src="img/planeten/'.$i.'.jpg" alt="" /> ';
 			}
