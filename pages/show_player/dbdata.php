@@ -200,7 +200,7 @@ if(!$r) {
 // Ausgabe
 if(!isset($_GET['standalone'])) {
 	$tmpl->content = '
-	<div class="fhl2"><a onclick="$(this.parentNode).siblings(\'table\').toggle()">Datenbank-Daten</a></div>';
+	<div class="fhl2"><a onclick="$(this.parentNode).siblings().toggle()">Datenbank-Daten</a></div>';
 }
 // Standalone-Ansicht
 else {
