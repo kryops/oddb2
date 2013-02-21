@@ -137,6 +137,11 @@ foreach($_POST['pl'] as $data) {
 }
 $plids = implode(', ', $plids);
 
+// Benutzer hat keine Planeten
+if($plids == '') {
+	$plids = '-1';
+}
+
 // Planeten des Spielers und neue abfragen
 $query = query("
 	SELECT
@@ -285,8 +290,8 @@ foreach($_POST['pl'] as $data) {
 			foreach($data['inva'] as $ityp) {
 				
 				// bereits eingetragen
-				if(isset($invas[$row['invasionen_planetenID']][$ityp])) {
-					unset($invas[$row['invasionen_planetenID']][$ityp]);
+				if(isset($invas[$data['id']][$ityp])) {
+					unset($invas[$data['id']][$ityp]);
 				}
 				
 				// neue Aktionen eintragen
