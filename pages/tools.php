@@ -542,30 +542,14 @@ else {
 	
 	$tmpl->content = '
 	<div class="icontent" style="line-height:1.5em">';
-	// kein Firefox
-	if(!$firefox AND !$chrome) {
-		$tmpl->content .= '
-		<br />
-		<div class="center" style="font-weight:bold">Die Tools k&ouml;nnen nur mit Firefox oder Chrome benutzt werden!</div>
-		<br />';
-	}
 	// keine Berechtigung für FoW-Ausgleich
 	if(!$user->rechte['fow']) {
 		$tmpl->content .= '
 		<br />
 		<div class="center" style="font-weight:bold">Du hast keine Berechtigung, den FoW-Ausgleich zu benutzen!</div>
-		<br />';
+		<br /><br />';
 	}
 	$tmpl->content .= '
-		<br />
-		<div style="width:90%;margin:auto;margin-bottom:8px">
-			<span style="font-weight:bold">F&uuml;r alle Tools gilt der Hinweis:</span>
-			<br />
-			Solltest du einen Loginfehler angezeigt bekommen, obwohl du in der Datenbank eingeloggt bist, musst du unter
-			<br />
-			<span style="font-style:italic">Einstellungen &rarr; Datenschutz</span> &nbsp;Cookies von <span style="font-style:italic">'.SERVER.'</span> &nbsp;explizit erlauben oder einen Haken bei&nbsp; <span style="font-style:italic">Cookies von Drittanbietern akzeptieren</span>&nbsp; setzen.
-		</div>
-		<br />
 		<div class="hl2">
 			<img src="img/tools/oddbtool.png" alt="" style="width:32px;height:32px;margin:-8px;margin-left:-4px;margin-right:5px" /> 
 			ODDB Tool
@@ -606,8 +590,44 @@ else {
 			<br /><br />
 			Adresse der ODDB, die eingestellt werden muss: <input type="text" class="text" value="'.ADDR.'" style="width:400px" onmouseover="this.select()" />
 			
+			<br /><br />
+			<p>Solltest du einen Loginfehler angezeigt bekommen, obwohl du in der Datenbank eingeloggt bist, musst du unter
+			<br />
+			<span style="font-style:italic">Einstellungen &rarr; Datenschutz</span> &nbsp;Cookies von <span style="font-style:italic">'.SERVER.'</span> &nbsp;explizit erlauben oder einen Haken bei&nbsp; <span style="font-style:italic">Cookies von Drittanbietern akzeptieren</span>&nbsp; setzen.</p>
+			
 		</div>
-		<br /><br />';
+		<br /><br />
+	
+		<div class="hl2">
+			ODDB Bookmarklet
+		</div>
+		
+		<div class="icontent">
+			
+			<p>Ein Bookmarklet ist ein Link, der als Favorit gespeichert wird. Wird er aufgerufen, &ouml;ffnet er keine neue Seite, sondern bindet Code in die aktuelle Seite ein.</p>
+			<p>Das ODDB Tool wurde als Bookmarklet portiert. Wird es auf einer geeigneten OD-Seite aufgerufen, bietet es die Haupt-Funktionen des ODDB Tools: den Parser und den FoW-Ausgleich. 
+				Dadurch k&ouml;nnen die Funktionen des ODDB Tools auch in anderen Browsern oder auf dem iPad genutzt werden.</p>
+			<p>Das Bookmarklet ist auf die Adresse dieser Installation und deine Benutzerdaten angepasst. &Auml;nderst du dein Passwort, musst du das Bookmarklet neu einrichten.</p>';
+	
+	$authToken = str_replace("'", "\\'", h($user->getAuthToken()));
+	$bookmarklet = "javascript:(function(){ODDBauthToken='".$authToken."';var s=document.createElement('script');s.type='text/javascript';s.src='".ADDR."plugin/bookmarklet.php';document.body.appendChild(s);})();";
+	
+	$tmpl->content .= '
+			
+			<table style="width:100%">
+			<tr>
+				<td style="width:50%">
+					<p>Adresse des Bookmarklets:</p>
+					<textarea class="text tools-bookmarklet-field">'.$bookmarklet.'</textarea>
+					<p class="small hint">[kopieren und als Favorit speichern]</p>
+				</td>
+				<td>	
+					Link: <a href="'.$bookmarklet.'" class="bold" title="ODDB Bookmarklet">ODDB Bookmarklet</a> &nbsp; <span class="small hint">[in die Favoritenleiste ziehen]</span>
+				</td>
+			</tr>
+			</table>
+			
+		</div>';
 	
 	// ODDB-API
 	if($user->rechte['api']) {

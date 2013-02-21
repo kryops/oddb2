@@ -170,6 +170,25 @@ class user {
 		return $apikey;
 	}
 	
+	/**
+	 * Auth-Token abfragen
+	 * @return string
+	 */
+	public function getAuthToken() {
+		$query = query("
+			SELECT
+				userPassword
+			FROM
+				".PREFIX."user
+			WHERE
+				user_playerID = ".$this->id."
+		") OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
+	
+		$data = mysql_fetch_assoc($query);
+		
+		return $this->id.'+'.$data['userPassword'].'+'.INSTANCE;
+	}
+	
 }
 
 

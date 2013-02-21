@@ -1452,6 +1452,11 @@ label {
 	font-weight:bold;
 }
 
+.tools-bookmarklet-field {
+	width:200px;
+	height:40px;
+}
+
 /* Forschung */
 .icon_forschung {
 	width:28px;

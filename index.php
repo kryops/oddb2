@@ -118,6 +118,11 @@ else {
 $gconfig = $config;
 
 
+// Login-Override (Bookmarklet)
+if(isset($_POST['authToken'])) {
+	$_COOKIE['oddb'] = $_POST['authToken'];
+}
+
 // Instanz-Konstante definieren
 // es gibt nur eine DB
 if(!$dbs) {
