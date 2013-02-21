@@ -79,35 +79,24 @@ else {
 				$data[$instance]['user'] = $row[0];
 			}
 			
-			// User heute online
+			// User in 7 Tagen
+			$time7days = time()-604800;
+			
 			$query = query("
 				SELECT
 					COUNT(*)
 				FROM
 					".$prefix."user
 				WHERE
-					userOnlineDB > ".$heute."
+					userOnlineDB > ".$time7days."
+					OR userOnlinePlugin > ".$time7days."
 			");
-			
+				
 			if($query) {
 				$row = mysql_fetch_array($query);
-				$data[$instance]['user_heute'] = $row[0];
+				$data[$instance]['user_aktiv'] = $row[0];
 			}
 			
-			// User heute Plugin
-			$query = query("
-				SELECT
-					COUNT(*)
-				FROM
-					".$prefix."user
-				WHERE
-					userOnlinePlugin > ".$heute."
-			");
-			
-			if($query) {
-				$row = mysql_fetch_array($query);
-				$data[$instance]['user_heute_plugin'] = $row[0];
-			}
 			
 			$sys = 0;
 			$sys_scanned = 0;
@@ -141,7 +130,7 @@ else {
 				$sys_scanned = $row[0];
 			}
 			
-			// Systeme
+			// Systeme aktuell
 			$query = query("
 				SELECT
 					COUNT(*)
@@ -157,9 +146,21 @@ else {
 			}
 			
 			if($sys) {
-				$data[$instance]['sys_scanned'] = $sys_scanned.'/'.$sys.' = '.round($sys_scanned/$sys*100,2).'%';
+				$data[$instance]['sys_scanned'] = round($sys_scanned/$sys*100,2).'%';
+				$data[$instance]['sys_aktuell'] = round($sys_aktuell/$sys*100,2).'%';
+			}
+			
+			// Log-Einträge
+			$query = query("
+				SELECT
+					COUNT(*)
+				FROM
+					".$prefix."log
+			");
 				
-				$data[$instance]['sys_aktuell'] = $sys_aktuell.'/'.$sys.' = '.round($sys_aktuell/$sys*100,2).'%';
+			if($query) {
+				$row = mysql_fetch_array($query);
+				$data[$instance]['log'] = $row[0];
 			}
 		}
 		
@@ -191,8 +192,7 @@ else {
 	
 	 // Zähler
 	$count_user = 0;
-	$count_online = 0;
-	$count_plugin = 0;
+	$count_aktiv = 0;
 	
 	
 	$tmpl->content .= '
@@ -201,9 +201,9 @@ else {
 				<th>ID</th>
 				<th>Name</th>
 				<th>User</th>
-				<th>heute online (DB / Plugin)</th>
-				<th>Systeme gescannt</th>
-				<th>Systeme aktuell (21 Tage)</th>
+				<th>User aktiv <span class="small">(7 Tage)</span></th>
+				<th>Systeme gescannt / aktuell <span class="small">(21 Tage)</span></th>
+				<th>Log-Eintr&auml;ge</th>
 			</tr>';
 	foreach($data as $instance=>$stats) {
 		if($instance != 'time') {
@@ -212,19 +212,16 @@ else {
 				<td>'.$instance.'</td>
 				<td>'.(trim($stats['name']) != '' ? htmlspecialchars($stats['name'], ENT_COMPAT, 'UTF-8') : ' - ').'</td>
 				<td>'.(isset($stats['user']) ? $stats['user'] : '-').'</td>
-				<td>'.(isset($stats['user_heute'], $stats['user_heute_plugin']) ? $stats['user_heute'].' / '.$stats['user_heute_plugin'] : '-').'</td>
-				<td>'.(isset($stats['sys_scanned']) ? $stats['sys_scanned'] : '-').'</td>
-				<td>'.(isset($stats['sys_aktuell']) ? $stats['sys_aktuell'] : '-').'</td>
+				<td>'.(isset($stats['user_aktiv']) ? $stats['user_aktiv'] : '-').'</td>
+				<td>'.(isset($stats['sys_scanned']) ? $stats['sys_scanned'] : '-').' / '.(isset($stats['sys_aktuell']) ? $stats['sys_aktuell'] : '-').'</td>
+				<td>'.(isset($stats['log']) ? $stats['log'] : '-').'</td>
 			</tr>';
 			
 			if(isset($stats['user'])) {
 				$count_user += $stats['user'];
 			}
-			if(isset($stats['user_heute'])) {
-				$count_online += $stats['user_heute'];
-			}
-			if(isset($stats['user_heute_plugin'])) {
-				$count_plugin += $stats['user_heute_plugin'];
+			if(isset($stats['user_aktiv'])) {
+				$count_aktiv += $stats['user_aktiv'];
 			}
 		}
 	}
@@ -232,7 +229,7 @@ else {
 				<tr>
 					<th colspan="2">gesamt</th>
 					<th>'.$count_user.'</th>
-					<th>'.$count_online.' / '.$count_plugin.'</th>
+					<th>'.$count_aktiv.'</th>
 					<th colspan="2">&nbsp;</th>
 				</tr>
 			</table>
