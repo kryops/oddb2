@@ -26,7 +26,7 @@ else {
 		die();
 	}
 	
-	$tmpl->name = 'Details der '.$invatyp[$data['invasionenTyp']].' (Planet '.$data['invasionen_planetenID'].')';
+	$tmpl->name = 'Details der '.(isset($invatyp[$data['invasionenTyp']]) ? $invatyp[$data['invasionenTyp']] : '-').' (Planet '.$data['invasionen_planetenID'].')';
 	
 	$tmpl->content = '
 	<div class="icontent">
@@ -45,7 +45,7 @@ else {
 		<table class="tneutral" style="width:500px">
 		<tr>
 		<td style="width:50%;line-height:20px;vertical-align:top">
-			<b>Typ:</b> '.$invatyp[$data['invasionenTyp']];
+			<b>Typ:</b> '.(isset($invatyp[$data['invasionenTyp']]) ? $invatyp[$data['invasionenTyp']] : '-');
 	// bei Besatzungen Ende nicht anzeigen
 	if($data['invasionenTyp'] != 4) {
 		$tmpl->content .= '

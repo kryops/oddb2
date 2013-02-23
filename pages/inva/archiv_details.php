@@ -86,7 +86,7 @@ else {
 		die();
 	}
 	
-	$tmpl->name = 'Archiv - Details der '.$invatyp[$data['archivTyp']].' (Planet '.$data['archiv_planetenID'].')';
+	$tmpl->name = 'Archiv - Details der '.(isset($invatyp[$data['archivTyp']]) ? $invatyp[$data['archivTyp']] : '-').' (Planet '.$data['archiv_planetenID'].')';
 	
 	$tmpl->content = '
 	<div class="icontent">
@@ -103,7 +103,7 @@ else {
 		<table class="tneutral" style="width:500px">
 		<tr>
 		<td style="width:50%;line-height:20px;vertical-align:top">
-			<b>Typ:</b> '.$invatyp[$data['archivTyp']];
+			<b>Typ:</b> '.(isset($invatyp[$data['archivTyp']]) ? $invatyp[$data['archivTyp']] : '-');
 	// bei Besatzungen Ende nicht anzeigen
 	if($data['archivTyp'] != 4) {
 		$tmpl->content .= '

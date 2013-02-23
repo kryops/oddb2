@@ -119,6 +119,7 @@ class ScanSystem {
 		") OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
 		
 		$id = mysql_insert_id();
+		$id = inva_autoIncrement($id);
 		
 		// InvaLog-Eintrag
 		query("
@@ -229,6 +230,12 @@ class ScanSystem {
 						DELETE FROM ".PREFIX."invasionen
 						WHERE
 							invasionenID = ".$invaId."
+					") OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
+					
+					query("
+						DELETE FROM ".PREFIX."invasionen_log
+						WHERE
+							invalog_invasionenID = ".$invaId."
 					") OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
 				}
 				
@@ -850,7 +857,7 @@ else {
 					schiffe_planetenID IN(".$ids.")
 			") OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
 			
-			//  ins Archiv verschieben
+			// Invasionen ins Archiv verschieben
 			$query = query("
 				SELECT
 					invasionenID,
@@ -871,6 +878,12 @@ else {
 						DELETE FROM ".PREFIX."invasionen
 						WHERE
 							invasionenID = ".$row['invasionenID']."
+					") OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
+					
+					query("
+						DELETE FROM ".PREFIX."invasionen_log
+						WHERE
+							invalog_invasionenID = ".$row['invasionenID']."
 					") OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
 				}
 			}

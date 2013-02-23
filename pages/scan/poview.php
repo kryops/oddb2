@@ -324,6 +324,7 @@ foreach($_POST['pl'] as $data) {
 					") OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
 					
 					$id = mysql_insert_id();
+					$id = inva_autoIncrement($id);
 					
 					// InvaLog-Eintrag
 					query("
@@ -356,6 +357,12 @@ foreach($_POST['pl'] as $data) {
 						DELETE FROM ".PREFIX."invasionen
 						WHERE
 							invasionenID = ".$id."
+					") OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
+					
+					query("
+						DELETE FROM ".PREFIX."invasionen_log
+						WHERE
+							invalog_invasionenID = ".$id."
 					") OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
 				}
 				else {
