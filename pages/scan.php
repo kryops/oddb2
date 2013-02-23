@@ -241,7 +241,7 @@ function inva_archiv($id, $log) {
 	
 	// ins Archiv kopieren
 	query("
-		INSERT INTO ".PREFIX."invasionen_archiv
+		INSERT IGNORE INTO ".PREFIX."invasionen_archiv
 		SELECT
 			invasionenID,
 			invasionenTime,
@@ -287,6 +287,48 @@ function inva_archiv($id, $log) {
 }
 
 
+
+/**
+ * Workaround für das AUTO_INCREMENT-Verhalten von InnoDB beim Hinzufügen von Invasionen
+ * @param $id int ID der hinzugefügten Invasion
+ * @return int geänderte ID der Invasion
+ */
+function inva_autoIncrement($id) {
+
+	$query = query("
+		SELECT
+			 MAX(invalog_invasionenID)
+		FROM
+			".PREFIX."invasionen_log
+	") OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
+	
+	$data = mysql_fetch_array($query);
+	$maxId = $data[0];
+	
+	if($maxId !== null AND $maxId >= $id) {
+		
+		// ID der Aktion ändern
+		query("
+			UPDATE
+				".PREFIX."invasionen
+			SET
+				invasionenID = ".($maxId+1)."
+			WHERE
+				invasionenID = ".$id."
+		") OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
+		
+		$id = $maxId+1;
+		
+		// AUTO_INCREMENT-Wert erhöhen
+		query("
+			ALTER TABLE
+				".PREFIX."invasionen
+			AUTO_INCREMENT = ".($maxId+2)."
+		") OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
+	}
+	
+	return $id;
+}
 
 
 // default-Unterseite definieren

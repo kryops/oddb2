@@ -81,7 +81,7 @@ function invarow($row, $fremd=false) {
 		<td>'.datatable::system($row['invasionen_systemeID']).'</td>
 				<td>'.datatable::planet($row['invasionen_planetenID']).'</td>
 		<td>'.datatable::gate($row['systemeGateEntf'], $user->settings['antrieb']).'</td>
-		<td>'.$invatyp[$row['invasionenTyp']].'</td>
+		<td>'.(isset($invatyp[$row['invasionenTyp']]) ? $invatyp[$row['invasionenTyp']] : '-').'</td>
 		<td>'.datatable::playerallianz($row['invasionen_playerID'], $row['playerName'], $row['player_allianzenID'], $row['allianzenTag']).'</td>
 		<td>'.($row['a_playerName'] != NULL ? datatable::playerallianz($row['invasionenAggressor'], $row['a_playerName'], $row['a_player_allianzenID'], $row['a_allianzenTag']) : '').'</td>
 		<td>';

@@ -277,7 +277,7 @@ else {
 		<td>'.datatable::galaxie($row['systeme_galaxienID'], $row['systemeX'], $row['systemeZ']).'</td>
 		<td>'.datatable::system($row['archiv_systemeID']).'</td>
 		<td>'.datatable::planet($row['archiv_planetenID']).'</td>
-		<td>'.$invatyp[$row['archivTyp']].'</td>
+		<td>'.(isset($invatyp[$row['archivTyp']]) ? $invatyp[$row['archivTyp']] : '-').'</td>
 		<td>'.datatable::playerallianz($row['archiv_playerID'], $row['playerName'], $row['player_allianzenID'], $row['allianzenTag']).'</td>
 		<td>'.($row['a_playerName'] != NULL ? datatable::playerallianz($row['archivAggressor'], $row['a_playerName'], $row['a_player_allianzenID'], $row['a_allianzenTag']) : '').'</td>
 		<td>';

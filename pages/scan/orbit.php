@@ -248,19 +248,18 @@ else {
 						invasionenSchiffe = ".$_POST['frs']."
 				") OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
 				
-				// falls keine Kolo, InvaLog-Eintrag
-				if($ityp != 5) {
-					$id = mysql_insert_id();
-					
-					query("
-						INSERT INTO ".PREFIX."invasionen_log
-						SET
-							invalog_invasionenID = ".$id.",
-							invalogTime = ".time().",
-							invalog_playerID = ".$user->id.",
-							invalogText = 'erfasst die Aktion durch Einscannen des Orbits'
-					") OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
-				}
+				$id = mysql_insert_id();
+				$id = inva_autoIncrement($id);
+				
+				// InvaLog-Eintrag
+				query("
+					INSERT INTO ".PREFIX."invasionen_log
+					SET
+						invalog_invasionenID = ".$id.",
+						invalogTime = ".time().",
+						invalog_playerID = ".$user->id.",
+						invalogText = 'erfasst die Aktion durch Einscannen des Orbits'
+				") OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
 				
 			}
 			// Aktion aktualisieren
@@ -321,6 +320,12 @@ else {
 				DELETE FROM ".PREFIX."invasionen
 				WHERE
 					invasionenID = ".$row['invasionenID']."
+			") OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
+			
+			query("
+				DELETE FROM ".PREFIX."invasionen_log
+				WHERE
+					invalog_invasionenID = ".$row['invasionenID']."
 			") OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
 		}
 		else {

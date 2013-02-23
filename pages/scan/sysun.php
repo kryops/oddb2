@@ -423,6 +423,12 @@ else {
 						WHERE
 							invasionenID = ".$row['invasionenID']."
 					") OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
+					
+					query("
+						DELETE FROM ".PREFIX."invasionen_log
+						WHERE
+							invalog_invasionenID = ".$row['invasionenID']."
+					") OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
 				}
 			}
 			
