@@ -3881,7 +3881,7 @@ function quelltext_mainscreen(f, r) {
 	input = input.replace(/\std width=/g, '<td width=');
 	
 	
-	var tree = $(input),
+	var tree = $($.parseHTML(input)),
 		ctree = tree.find('#layout-main'),
 		link_all = ctree.find("a[href*='op=main&order=id&first=0&last=5000&galax=']");
 	
