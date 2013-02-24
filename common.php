@@ -1311,6 +1311,15 @@ function escape($var) {
 	return mysql_real_escape_string($var);
 }
 
+/**
+ * MySQL-Transaktion zurückrollen und mit Fehlermeldung abbrechen
+ * @param string $msg Fehlermeldung
+ */
+function dieTransaction($msg) {
+	query("ROLLBACK");
+	die($msg.' [Transaktion zurückgesetzt]');
+}
+
 
 //
 // globale Klasse und Funktionen einbinden

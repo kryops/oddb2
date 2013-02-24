@@ -84,7 +84,7 @@ Daten-Archiv:
 class BackupImport {
 	
 	// Zeitlimit, wie lange ein Importschritt höchstens dauern darf
-	public static $import_timelimit = 15;
+	public static $import_timelimit = 10;
 	
 	
 	
@@ -366,6 +366,9 @@ window.setTimeout(function() {
 		$systemId = 0;
 		
 		
+		// Transaktion starten
+		query("START TRANSACTION") OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
+		
 		// Datensätze durchgehen
 		for($i=$offset; $i < $count; $i++) {
 		
@@ -381,6 +384,10 @@ window.setTimeout(function() {
 		
 					// nach dem Zeitlimit unterbrechen
 					if(time()-$time > self::$import_timelimit AND $count-$i > 10) {
+						
+						// Transaktion ausführen
+						query("COMMIT") OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
+						
 						// Balken berechnen
 						$maxwidth = 300;
 						$width = round(($i+1)/$count*$maxwidth);
@@ -426,7 +433,7 @@ window.setTimeout(function() {
 							systemeName = '".escape($row[2])."'
 						WHERE
 							systemeID = ".(int)$id."
-					") OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
+					") OR dieTransaction("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
 							
 						$syscount++;
 					}
@@ -488,7 +495,7 @@ window.setTimeout(function() {
 								".PREFIX."planeten
 							SET
 								".implode(" , ", $planetUpdates)."
-						") OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
+						") OR dieTransaction("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
 						
 						
 						// Zähler aktualisieren
@@ -541,7 +548,7 @@ window.setTimeout(function() {
 									".implode(" , ", $planetUpdates)."
 								WHERE
 									planetenID = ".$id."
-							") OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
+							") OR dieTransaction("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
 							
 							
 							// Zähler aktualisieren
@@ -564,7 +571,7 @@ window.setTimeout(function() {
 									myrigates_planetenID = ".(int)$id.",
 									myrigates_galaxienID = ".(int)$gala.",
 									myrigatesSprung = ".($row[12] == 2 ? $sysupd : "0")."
-							") OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
+							") OR dieTransaction("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
 						}
 						
 						// Myrigate entfernen
@@ -574,7 +581,7 @@ window.setTimeout(function() {
 									".PREFIX."myrigates
 								WHERE
 									myrigates_planetenID = ".(int)$id."
-							") OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
+							") OR dieTransaction("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
 						}
 					}
 					
@@ -588,12 +595,14 @@ window.setTimeout(function() {
 								history_playerID = ".(int)$row[5].",
 								historyLast = ".($planetExists ? (int)$pl[$id][0] : "-1").",
 								historyTime = ".$sysupd."
-						") OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
+						") OR dieTransaction("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
 					}
 				}
 			}
 		}
 		
+		// Transaktion ausführen
+		query("COMMIT") OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
 		
 		self::cleanup();
 		
@@ -701,7 +710,7 @@ $(\'#content\').html(\'<div class="center">Der Import wurde erfolgreich abgeschl
 					systeme_galaxienID
 				ORDER BY
 					systeme_galaxienID ASC
-			") OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
+			") OR dieTransaction("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
 			
 			while($row = mysql_fetch_assoc($query)) {
 				self::$galaSystemId[$row['systeme_galaxienID']] = $row['MinSystem'];
