@@ -88,6 +88,8 @@ if(!$config['caching']) {
 // odrequests absetzen
 //
 
+query("START TRANSACTION") OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
+
 // Allianzen und Metas für das odrequest zurücksetzen
 $odrallies = array();
 
@@ -103,7 +105,7 @@ $query = query("
 		playerID ASC
 	LIMIT
 		".$gconfig['odrequest_max']."
-") OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
+") OR dieTransaction("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
 
 while($row = mysql_fetch_assoc($query)) {
 	// nach 50 Sekunden odrequests abbrechen
@@ -113,6 +115,10 @@ while($row = mysql_fetch_assoc($query)) {
 	
 	odrequest($row['playerID']);
 }
+
+query("COMMIT") OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
+
+query("START TRANSACTION") OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
 
 //
 // Spieler mit kürlichen Allywechseln ermitteln
@@ -129,7 +135,7 @@ $query = query("
 		AND allyhistoryLastAlly IS NOT NULL
 	ORDER BY
 		allyhistoryTime ASC
-") OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
+") OR dieTransaction("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
 
 $allywechsel = array();
 
@@ -145,7 +151,7 @@ query("
 		allyhistoryFinal = 1
 	WHERE
 		allyhistoryFinal = 0
-") OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
+") OR dieTransaction("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
 
 
 
@@ -171,7 +177,7 @@ foreach($dbs as $instance) {
 			register_allianzenID
 		FROM
 			".$prefix."register
-	") OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
+	") OR dieTransaction("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
 	
 	while($row = mysql_fetch_assoc($query)) {
 		if($row['register_playerID']) {
@@ -192,7 +198,7 @@ foreach($dbs as $instance) {
 				".$prefix."user
 			WHERE
 				user_playerID = ".(int)$row['allyhistory_playerID']."
-		") OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
+		") OR dieTransaction("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
 		
 		if(mysql_num_rows($query)) {
 			// darf der Spieler die Instanz benutzen?
@@ -226,47 +232,12 @@ foreach($dbs as $instance) {
 					userBanned = ".$banned."
 				WHERE
 					user_playerID = ".(int)$row['allyhistory_playerID']."
-			") OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
+			") OR dieTransaction("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
 		}
-	}
-	
-	//
-	// Statistiken der Übersichtsseite
-	//
-	if($config['caching']) {
-		// Invasionen
-		$query = query("
-			SELECT
-				COUNT(*) AS invasionenCount
-			FROM
-				".$prefix."invasionen
-			WHERE
-				(invasionenEnde = 0 OR invasionenEnde > ".time().")
-				AND invasionenFremd = 0
-				AND invasionenTyp != 5
-		") OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
-		
-		$data = mysql_fetch_assoc($query);
-		
-		$cache->setglobal($instance.'invas', $data['invasionenCount'], 120);
-		
-		// Spieler noch nicht freigeschaltet oder gesperrt
-		$query = query("
-			SELECT
-				COUNT(*) AS userCount
-			FROM
-				".$prefix."user
-			WHERE
-				userBanned = 2
-				OR userBanned = 3
-		") OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
-		
-		$data = mysql_fetch_assoc($query);
-		
-		$cache->setglobal($instance.'userbanned', $data['userCount'], 120);
 	}
 }
 
+query("COMMIT") OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
 
 echo "Cronjob erfolgreich.";
 

@@ -86,7 +86,7 @@ function inva_archiv($id, $log) {
 	
 	// ins Archiv kopieren
 	$query = query("
-		INSERT INTO ".$prefix."invasionen_archiv
+		INSERT IGNORE INTO ".$prefix."invasionen_archiv
 		SELECT
 			invasionenID,
 			invasionenTime,
@@ -102,14 +102,14 @@ function inva_archiv($id, $log) {
 		FROM ".$prefix."invasionen
 		WHERE
 			invasionenID = ".$id."
-	") OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
+	") OR dieTransaction("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
 	
 	// Eintrag aus den Invasionen löschen
 	$query = query("
 		DELETE FROM ".$prefix."invasionen
 		WHERE
 			invasionenID = ".$id."
-	") OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
+	") OR dieTransaction("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
 	
 	// InvaLog-Eintrag
 	$query = query("
@@ -119,7 +119,7 @@ function inva_archiv($id, $log) {
 			invalogTime = ".time().",
 			invalog_playerID = 0,
 			invalogText = '".mysql_real_escape_string($log)."'
-	") OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
+	") OR dieTransaction("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
 }
 
 
@@ -150,6 +150,9 @@ foreach($dbs as $instance) {
 	
 	$prefix = mysql::getPrefix($instance);
 	
+	// Transaktion starten
+	query("START TRANSACTION") OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
+	
 	//
 	// Log löschen
 	//
@@ -157,7 +160,7 @@ foreach($dbs as $instance) {
 		DELETE FROM ".$prefix."log
 		WHERE
 			logTime < ".(time()-86400*$config['logging_time'])."
-	") OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
+	") OR dieTransaction("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
 	
 	//
 	// veraltete Kolonisationen löschen
@@ -178,7 +181,7 @@ foreach($dbs as $instance) {
 			AND invasionenEnde < ".time()."
 			AND systemeUpdate < invasionenEnde
 			AND planeten_playerID = 0
-	") OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
+	") OR dieTransaction("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
 	
 	$kolo_planeten = array();
 	
@@ -193,7 +196,7 @@ foreach($dbs as $instance) {
 				planeten_playerID = -1
 			WHERE
 				planetenID IN(".implode(",", $kolo_planeten).")
-		") OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
+		") OR dieTransaction("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
 	}
 	
 	foreach($kolo_planeten as $plid) {
@@ -204,7 +207,7 @@ foreach($dbs as $instance) {
 				history_playerID = -1,
 				historyLast = 0,
 				historyTime = ".time()."
-		") OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
+		") OR dieTransaction("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
 	}
 	
 	// alte Kolonisationen löschen
@@ -213,7 +216,7 @@ foreach($dbs as $instance) {
 		WHERE
 			invasionenTyp = 5
 			AND invasionenEnde < ".time()."
-	") OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
+	") OR dieTransaction("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
 	
 	
 	//
@@ -227,7 +230,7 @@ foreach($dbs as $instance) {
 		WHERE
 			(invasionenEnde < ".time()." AND invasionenEnde != 0)
 			OR invasionenTime < ".(time()-604800)."
-	") OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
+	") OR dieTransaction("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
 	
 	while($row = mysql_fetch_assoc($query)) {
 		inva_archiv($row['invasionenID'], 'Die Aktion wurde automatisch ins Archiv verschoben');
@@ -249,7 +252,7 @@ foreach($dbs as $instance) {
 			user_allianzenID > 0
 			AND (statusStatus IS NULL
 				OR statusStatus != ".$status_meta.")
-	") OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
+	") OR dieTransaction("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
 	
 	while($row = mysql_fetch_assoc($query)) {
 		if($row['statusStatus'] == NULL) {
@@ -259,7 +262,7 @@ foreach($dbs as $instance) {
 					statusDBAllianz = ".$row['user_allianzenID'].",
 					status_allianzenID = ".$row['user_allianzenID'].",
 					statusStatus = ".$status_meta."
-			") OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
+			") OR dieTransaction("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
 		}
 		else {
 			query("
@@ -269,7 +272,7 @@ foreach($dbs as $instance) {
 				WHERE
 					statusDBAllianz = ".$row['user_allianzenID']."
 					AND status_allianzenID = ".$row['user_allianzenID']."
-			") OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
+			") OR dieTransaction("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
 		}
 	}
 	
@@ -294,7 +297,7 @@ foreach($dbs as $instance) {
 			systemeUpdate > 0
 			AND systemeUpdate < ".(time()-172800)."
 		GROUP BY planeten_systemeID
-	") OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
+	") OR dieTransaction("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
 	
 	while($row = mysql_fetch_assoc($query)) {
 		$allies = explode(',', $row['allianzen']);
@@ -317,7 +320,7 @@ foreach($dbs as $instance) {
 					systemeAllianzen = '".$allies."'
 				WHERE
 					systemeID = ".$row['planeten_systemeID']."
-			") OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
+			") OR dieTransaction("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
 		}
 	}
 	
@@ -332,7 +335,7 @@ foreach($dbs as $instance) {
 		WHERE
 			routenListe = 2
 			AND routenDate < ".(time()-604800)."
-	") OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
+	") OR dieTransaction("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
 	
 	//
 	// veraltete Sprunggeneratoren löschen
@@ -349,7 +352,7 @@ foreach($dbs as $instance) {
 			WHERE
 				myrigatesSprung > 0
 				AND myrigatesSprung < ".(time()-86400*$config['sprunggenerator_del'])."
-		") OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
+		") OR dieTransaction("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
 		
 		while($row = mysql_fetch_assoc($query)) {
 			$ids[] = $row['myrigates_planetenID'];
@@ -367,7 +370,7 @@ foreach($dbs as $instance) {
 					".$prefix."myrigates
 				WHERE
 					myrigates_planetenID IN(".$ids.")
-			") OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
+			") OR dieTransaction("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
 			
 			// aus der Planeten-Tabelle löschen
 			query("
@@ -377,7 +380,7 @@ foreach($dbs as $instance) {
 					planetenMyrigate = 0
 				WHERE
 					planetenID IN(".$ids.")
-			") OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
+			") OR dieTransaction("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
 		}
 	}
 	
@@ -391,7 +394,7 @@ foreach($dbs as $instance) {
 			(schiffeBergbau IS NULL AND schiffeTerraformer IS NULL)
 			OR
 			(schiffeBergbauUpdate < ".(time()-604800)." AND schiffeTerraformerUpdate < ".(time()-604800).")
-	") OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
+	") OR dieTransaction("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
 	
 	query("
 		UPDATE ".$prefix."planeten_schiffe
@@ -399,7 +402,7 @@ foreach($dbs as $instance) {
 			schiffeBergbau = NULL
 		WHERE
 			schiffeBergbauUpdate < ".(time()-604800)."
-	") OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
+	") OR dieTransaction("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
 	
 	query("
 		UPDATE ".$prefix."planeten_schiffe
@@ -407,7 +410,7 @@ foreach($dbs as $instance) {
 			schiffeTerraformer = NULL
 		WHERE
 			schiffeTerraformerUpdate < ".(time()-604800)."
-	") OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
+	") OR dieTransaction("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
 	
 	
 	//
@@ -428,8 +431,11 @@ foreach($dbs as $instance) {
 					systemeUpdate > 0
 					AND systeme_galaxienID = galaxienID
 			)
-	") OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
+	") OR dieTransaction("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
 	
+	
+	// Transaktion beenden
+	query("COMMIT") OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
 }
 
 //
@@ -482,6 +488,9 @@ if($minid AND $od_up) {
 	$counter = $minid;
 	$ids = array();
 	
+	// Transaktion starten
+	query("START TRANSACTION") OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
+	
 	// Spieler abfragen
 	$query = query("
 		SELECT
@@ -492,7 +501,7 @@ if($minid AND $od_up) {
 			playerID > 1000
 		ORDER BY
 			playerID ASC
-	") OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
+	") OR dieTransaction("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
 	
 	while($row = mysql_fetch_assoc($query)) {
 		
@@ -518,7 +527,7 @@ if($minid AND $od_up) {
 				SET
 					playerID = ".$id.",
 					playerDeleted = 1
-			") OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
+			") OR dieTransaction("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
 		}
 		
 		$c++;
@@ -528,6 +537,9 @@ if($minid AND $od_up) {
 			break;
 		}
 	}
+	
+	// Transaktion beenden
+	query("COMMIT") OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
 }
 
 

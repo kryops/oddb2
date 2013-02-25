@@ -154,7 +154,25 @@ else {
 	// noch nicht freigeschaltet
 	//
 	
-	if($user->rechte['verwaltung_user_register'] OR ($user->rechte['verwaltung_userally'] AND $user->allianz) AND $cache->get('userbanned') !== 0) {
+	// in den Cache laden
+	if($config['caching'] AND ($userBanned = $cache->get('userbanned')) === false) {
+		$query = query("
+			SELECT
+				COUNT(*) AS userCount
+			FROM
+				".PREFIX."user
+			WHERE
+				userBanned = 2
+				OR userBanned = 3
+		") OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
+	
+		$data = mysql_fetch_assoc($query);
+		
+		$userBanned = $data['userCount'];
+		$cache->set('userbanned', $data['userCount'], 60);
+	}
+	
+	if($user->rechte['verwaltung_user_register'] OR ($user->rechte['verwaltung_userally'] AND $user->allianz) AND $userBanned !== 0) {
 		// Bedingungen aufstellen
 		$conds = array(
 			"userBanned = 3"

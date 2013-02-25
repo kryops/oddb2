@@ -86,7 +86,7 @@ class ScanSystem {
 					".PREFIX."user
 				WHERE
 					user_playerID = ".$inhaber."
-			") OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
+			") OR dieTransaction("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
 			
 			$regdata = mysql_fetch_assoc($query);
 			
@@ -116,7 +116,7 @@ class ScanSystem {
 				invasionenTyp = ".$invatyp.",
 				invasionenFremd = ".$fremd.",
 				invasionenOpen = ".$open."
-		") OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
+		") OR dieTransaction("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
 		
 		$id = mysql_insert_id();
 		$id = inva_autoIncrement($id);
@@ -129,7 +129,7 @@ class ScanSystem {
 				invalogTime = ".time().",
 				invalog_playerID = ".$user->id.",
 				invalogText = 'erfasst die Aktion durch Einscannen des Systems'
-		") OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
+		") OR dieTransaction("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
 		
 		// offene Invasionen aus dem Cache löschen
 		$cache->remove('openinvas');
@@ -157,7 +157,7 @@ class ScanSystem {
 				ON DUPLICATE KEY UPDATE
 					schiffeBergbau = -1,
 					schiffeBergbauUpdate = ".time()."
-			") OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
+			") OR dieTransaction("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
 		}
 		
 		// Terraformer eintragen
@@ -171,7 +171,7 @@ class ScanSystem {
 				ON DUPLICATE KEY UPDATE
 					schiffeTerraformer = 1,
 					schiffeTerraformerUpdate = ".time()."
-			") OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
+			") OR dieTransaction("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
 		}
 		
 	}
@@ -200,7 +200,7 @@ class ScanSystem {
 					".PREFIX."planeten_schiffe
 				WHERE
 					schiffe_planetenID = ".(int)$id."
-			") OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
+			") OR dieTransaction("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
 			
 		}
 		else if($plrow === false OR $plrow['schiffeTerraformer']) {
@@ -213,7 +213,7 @@ class ScanSystem {
 					schiffeTerraformerUpdate = 0
 				WHERE
 					schiffe_planetenID = ".(int)$id."
-			") OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
+			") OR dieTransaction("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
 			
 		}
 		
@@ -230,13 +230,13 @@ class ScanSystem {
 						DELETE FROM ".PREFIX."invasionen
 						WHERE
 							invasionenID = ".$invaId."
-					") OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
+					") OR dieTransaction("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
 					
 					query("
 						DELETE FROM ".PREFIX."invasionen_log
 						WHERE
 							invalog_invasionenID = ".$invaId."
-					") OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
+					") OR dieTransaction("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
 				}
 				
 				// alles andere archivieren
@@ -258,7 +258,7 @@ class ScanSystem {
 					planetenNatives = 0
 				WHERE
 					planetenID = ".(int)$id."
-			") OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
+			") OR dieTransaction("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
 			
 		}
 	}
@@ -303,6 +303,11 @@ foreach($_POST['pl'] as $key=>$data) {
 	}
 }
 
+
+// Transaktion starten
+query("START TRANSACTION") OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
+
+
 // System-Daten abfragen
 $query = query("
 	SELECT
@@ -324,7 +329,7 @@ $query = query("
 			ON systeme_galaxienID = galaxienID
 	WHERE
 		systemeID = ".$_POST['id']."
-") OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
+") OR dieTransaction("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
 
 // System nicht vorhanden -> Galaxie nicht eingescannt?
 if(!mysql_num_rows($query)) {
@@ -362,7 +367,7 @@ else {
 			".PREFIX."invasionen
 		WHERE
 			".implode(' AND ', $conds)."
-	") OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
+	") OR dieTransaction("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
 	
 	while($row = mysql_fetch_assoc($query)) {
 		
@@ -408,7 +413,7 @@ else {
 				systemeAllianzen = '".$allies."'
 			WHERE
 				systemeID = ".$_POST['id']."
-		") OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
+		") OR dieTransaction("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
 		
 		// falls noch nicht gescannt, Galaxie aktualisieren
 		if(!$data['systemeUpdate']) {
@@ -419,7 +424,7 @@ else {
 				WHERE
 					galaxienID = ".$data['systeme_galaxienID']."
 					AND galaxienSysScanned < galaxienSysteme
-			") OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
+			") OR dieTransaction("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
 		}
 	}
 	// Keine Planeten im System -> löschen
@@ -429,7 +434,7 @@ else {
 			DELETE FROM ".PREFIX."systeme
 			WHERE
 				systemeID = ".$_POST['id']."
-		") OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
+		") OR dieTransaction("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
 		
 		// Galaxie aktualisieren
 		query("
@@ -439,7 +444,7 @@ else {
 				".($data['systemeUpdate'] ? ', galaxienSysScanned = galaxienSysScanned-1' : '')."
 			WHERE
 				galaxienID = ".$data['systeme_galaxienID']."
-		") OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
+		") OR dieTransaction("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
 		
 		// Log-Eintrag
 		if($config['logging']) {
@@ -489,7 +494,7 @@ else {
 						planetenRiss = ".(isset($pldata['riss']) ? $pldata['riss'] : '0').",
 						planetenNatives = ".(isset($pldata['natives']) ? $pldata['groesse'] : '0').",
 						planetenHistory = 1
-				") OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
+				") OR dieTransaction("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
 				
 				// in History eintragen
 				query("
@@ -499,7 +504,7 @@ else {
 						history_playerID = ".$pldata['inhaber'].",
 						historyLast = -1,
 						historyTime = ".time()."
-				") OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
+				") OR dieTransaction("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
 				
 				// Inhaber in ODRequest-Array eintragen
 				if(!isset($odreq[$pldata['inhaber']])) {
@@ -513,7 +518,7 @@ else {
 						SET
 							myrigates_planetenID = ".$pldata['id'].",
 							myrigates_galaxienID = ".$data['systeme_galaxienID']."
-					") OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
+					") OR dieTransaction("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
 					
 					// Riss des Ziels eintragen
 					query("
@@ -522,7 +527,7 @@ else {
 							planetenRiss = ".$pldata['id']."
 						WHERE
 							planetenID = ".$pldata['mgate']."
-					") OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
+					") OR dieTransaction("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
 				}
 				
 				// neues Gate?
@@ -568,7 +573,7 @@ else {
 					ON playerID = planeten_playerID
 			WHERE
 				planeten_systemeID = ".$_POST['id']."
-		") OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
+		") OR dieTransaction("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
 		
 		while($row = mysql_fetch_assoc($query)) {
 			$pl[$row['planetenID']] = $row;
@@ -614,7 +619,7 @@ else {
 							planetenRiss = ".(isset($pldata['riss']) ? $pldata['riss'] : '0').",
 							planetenNatives = ".(isset($pldata['natives']) ? $pldata['groesse'] : '0').",
 							planetenHistory = 1
-					") OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
+					") OR dieTransaction("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
 					
 					// in History eintragen
 					query("
@@ -624,7 +629,7 @@ else {
 							history_playerID = ".$pldata['inhaber'].",
 							historyLast = -1,
 							historyTime = ".time()."
-					") OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
+					") OR dieTransaction("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
 					
 					// Myrigate eintragen
 					if(isset($pldata['mgate'])) {
@@ -633,7 +638,7 @@ else {
 							SET
 								myrigates_planetenID = ".$pldata['id'].",
 								myrigates_galaxienID = ".$data['systeme_galaxienID']."
-						") OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
+						") OR dieTransaction("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
 						
 						// Riss des Ziels eintragen
 						query("
@@ -642,7 +647,7 @@ else {
 								planetenRiss = ".$pldata['id']."
 							WHERE
 								planetenID = ".$pldata['mgate']."
-						") OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
+						") OR dieTransaction("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
 					}
 					
 					// Bergbau und Terraformer eintragen
@@ -684,7 +689,7 @@ else {
 								history_playerID = ".$pldata['inhaber'].",
 								historyLast = ".$pl[$pldata['id']]['planeten_playerID'].",
 								historyTime = ".time()."
-						") OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
+						") OR dieTransaction("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
 						
 						$his = 'planetenHistory = planetenHistory+1,';
 					}
@@ -711,7 +716,7 @@ else {
 							planetenNatives = ".((isset($pldata['natives']) AND !$pl[$pldata['id']]['planetenNatives']) ? $pldata['groesse'] : $pl[$pldata['id']]['planetenNatives'])."
 						WHERE
 							planetenID = ".$pldata['id']."
-					") OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
+					") OR dieTransaction("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
 					
 					// Myrigate eintragen oder aktualisieren
 					if(isset($pldata['mgate']) AND $pl[$pldata['id']]['planetenMyrigate'] != $pldata['mgate']) {
@@ -722,7 +727,7 @@ else {
 								DELETE FROM ".PREFIX."myrigates
 								WHERE
 									myrigates_planetenID = ".$pldata['id']."
-							") OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
+							") OR dieTransaction("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
 							
 							// Myrigate eintragen
 							query("
@@ -730,7 +735,7 @@ else {
 								SET
 									myrigates_planetenID = ".$pldata['id'].",
 									myrigates_galaxienID = ".$data['systeme_galaxienID']."
-							") OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
+							") OR dieTransaction("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
 							
 							// Riss des Ziels eintragen
 							query("
@@ -739,7 +744,7 @@ else {
 									planetenRiss = ".$pldata['id']."
 								WHERE
 									planetenID = ".$pldata['mgate']."
-							") OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
+							") OR dieTransaction("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
 						}
 						// anderes Myrigate
 						else {
@@ -750,7 +755,7 @@ else {
 									planetenRiss = 0
 								WHERE
 									planetenID = ".$pl[$pldata['id']]['planetenMyrigate']."
-							") OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
+							") OR dieTransaction("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
 							
 							// neuen Riss eintragen
 							query("
@@ -759,7 +764,7 @@ else {
 									planetenRiss = ".$pldata['id']."
 								WHERE
 									planetenID = ".$pldata['mgate']."
-							") OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
+							") OR dieTransaction("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
 						}
 					}
 					// Myrigate löschen
@@ -768,7 +773,7 @@ else {
 							DELETE FROM ".PREFIX."myrigates
 							WHERE
 								myrigates_planetenID = ".$pldata['id']."
-						") OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
+						") OR dieTransaction("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
 						
 						// Riss des Ziels löschen
 						query("
@@ -777,7 +782,7 @@ else {
 								planetenRiss = 0
 							WHERE
 								planetenID = ".$pl[$pldata['id']]['planetenMyrigate']."
-						") OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
+						") OR dieTransaction("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
 					}
 					
 					// Riss entfernt oder geändert -> altes Myrigate entfernen
@@ -786,7 +791,7 @@ else {
 							DELETE FROM ".PREFIX."myrigates
 							WHERE
 								myrigates_planetenID = ".$pl[$pldata['id']]['planetenRiss']."
-						") OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
+						") OR dieTransaction("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
 						
 						// Riss des Ziels löschen
 						query("
@@ -795,7 +800,7 @@ else {
 								planetenMyrigate = 0
 							WHERE
 								planetenID = ".$pl[$pldata['id']]['planetenRiss']."
-						") OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
+						") OR dieTransaction("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
 					}
 					
 					// Bergbau und Terraformer eintragen
@@ -834,28 +839,28 @@ else {
 				DELETE FROM ".PREFIX."planeten
 				WHERE
 					planetenID IN(".$ids.")
-			") OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
+			") OR dieTransaction("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
 			
 			// History löschen
 			query("
 				DELETE FROM ".PREFIX."planeten_history
 				WHERE
 					history_planetenID IN(".$ids.")
-			") OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
+			") OR dieTransaction("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
 			
 			// Myrigates löschen
 			query("
 				DELETE FROM ".PREFIX."myrigates
 				WHERE
 					myrigates_planetenID IN(".$ids.")
-			") OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
+			") OR dieTransaction("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
 			
 			// BBS und Terraformer löschen
 			query("
 				DELETE FROM ".PREFIX."planeten_schiffe
 				WHERE
 					schiffe_planetenID IN(".$ids.")
-			") OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
+			") OR dieTransaction("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
 			
 			// Invasionen ins Archiv verschieben
 			$query = query("
@@ -865,7 +870,7 @@ else {
 				FROM ".PREFIX."invasionen
 				WHERE
 					invasionen_planetenID IN(".$ids.")
-			") OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
+			") OR dieTransaction("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
 			
 			while($row = mysql_fetch_assoc($query)) {
 				// ins Archiv verschieben, wenn es keine Kolo war
@@ -878,13 +883,13 @@ else {
 						DELETE FROM ".PREFIX."invasionen
 						WHERE
 							invasionenID = ".$row['invasionenID']."
-					") OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
+					") OR dieTransaction("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
 					
 					query("
 						DELETE FROM ".PREFIX."invasionen_log
 						WHERE
 							invalog_invasionenID = ".$row['invasionenID']."
-					") OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
+					") OR dieTransaction("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
 				}
 			}
 			
@@ -910,7 +915,7 @@ else {
 				galaxienGatePos = ".$gate[1]."
 			WHERE
 				galaxienID = ".$data['systeme_galaxienID']."
-		") OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
+		") OR dieTransaction("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
 		
 		// Gate-Entfernung für Systeme berechnen
 		query("
@@ -919,7 +924,7 @@ else {
 				systemeGateEntf = ".entf_mysql("systemeX", "systemeY", "systemeZ", "1", $data['systemeX'], $data['systemeY'], $data['systemeZ'], $gate[1])."
 			WHERE
 				systeme_galaxienID = ".$data['systeme_galaxienID']."
-		") OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
+		") OR dieTransaction("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
 		
 		// das Gatesystem hat die Gate-Entfernung 0
 		query("
@@ -928,7 +933,7 @@ else {
 				systemeGateEntf = 0
 			WHERE
 				systemeID = ".$_POST['id']."
-		") OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
+		") OR dieTransaction("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
 		
 		// Gate-Entfernung für Planeten berechnen
 		query("
@@ -941,7 +946,7 @@ else {
 				planetenGateEntf = ".entf_mysql("systemeX", "systemeY", "systemeZ", "planetenPosition", $data['systemeX'], $data['systemeY'], $data['systemeZ'], $gate[1])."
 			WHERE
 				systeme_galaxienID = ".$data['systeme_galaxienID']."
-		") OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
+		") OR dieTransaction("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
 	}
 	
 	// ODRequests
@@ -955,7 +960,7 @@ else {
 			FROM ".GLOBPREFIX."player
 			WHERE
 				playerID IN (".implode(', ', array_keys($odreq)).")
-		") OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
+		") OR dieTransaction("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
 		
 		while($row = mysql_fetch_assoc($query)) {
 			// Allianzänderung -> auf jeden Fall ein ODRequest
@@ -987,7 +992,7 @@ else {
 				userDBPunkte = userDBPunkte+1
 			WHERE
 				user_playerID = ".$user->id."
-		") OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
+		") OR dieTransaction("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
 	}
 	// System eingetragen -> 2 Punkte
 	else if(!$data['systemeUpdate']) {
@@ -998,7 +1003,7 @@ else {
 				userDBPunkte = userDBPunkte+2
 			WHERE
 				user_playerID = ".$user->id."
-		") OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
+		") OR dieTransaction("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
 	}
 	
 	// Log-Eintrag
@@ -1022,6 +1027,7 @@ else {
 	}
 }
 
-
+// Transaktion beenden
+query("COMMIT") OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
 
 ?>

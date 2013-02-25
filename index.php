@@ -460,6 +460,33 @@ if($user->login) {
 
 
 //
+// Daten in den Cache laden
+//
+
+if($config['caching']) {
+	
+	// offene Invasionen
+	if($cache->get('invas') === false) {
+		$query = query("
+				SELECT
+					COUNT(*) AS invasionenCount
+				FROM
+					".PREFIX."invasionen
+				WHERE
+					(invasionenEnde = 0 OR invasionenEnde > ".time().")
+					AND invasionenFremd = 0
+					AND invasionenTyp != 5
+			") OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
+	
+		$data = mysql_fetch_assoc($query);
+	
+		$cache->set('invas', $data['invasionenCount'], 60);
+	}
+
+}
+
+
+//
 // welche Seite will der User aufrufen?
 //
 

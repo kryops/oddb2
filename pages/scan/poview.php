@@ -205,6 +205,9 @@ while($row = mysql_fetch_assoc($query)) {
 
 $sys = array();
 
+// Transaktion starten
+query("START TRANSACTION") OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
+
 // Planeten durchgehen
 foreach($_POST['pl'] as $data) {
 	// nur aktualisieren, wenn Planet in der DB vorhanden
@@ -239,7 +242,7 @@ foreach($_POST['pl'] as $data) {
 					history_playerID = ".$_POST['uid'].",
 					historyLast = ".$pl[$data['id']].",
 					historyTime = ".time()."
-			") OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
+			") OR dieTransaction("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
 			
 			$his = 'planetenHistory = planetenHistory+1,';
 			
@@ -282,7 +285,7 @@ foreach($_POST['pl'] as $data) {
 				".$schiff."
 			WHERE
 				planetenID = ".$data['id']."
-		") OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
+		") OR dieTransaction("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
 		
 		
 		// laufende Aktionen durchgehen
@@ -321,7 +324,7 @@ foreach($_POST['pl'] as $data) {
 							invasionenTyp = ".$ityp.",
 							invasionenFremd = ".$fremd.",
 							invasionenOpen = ".$open."
-					") OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
+					") OR dieTransaction("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
 					
 					$id = mysql_insert_id();
 					$id = inva_autoIncrement($id);
@@ -334,7 +337,7 @@ foreach($_POST['pl'] as $data) {
 							invalogTime = ".time().",
 							invalog_playerID = ".$user->id.",
 							invalogText = 'erfasst die Aktion durch Einscannen der Planetenübersicht'
-					") OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
+					") OR dieTransaction("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
 					
 					// offene Invasionen aus dem Cache löschen
 					$cache->remove('openinvas');
@@ -357,13 +360,13 @@ foreach($_POST['pl'] as $data) {
 						DELETE FROM ".PREFIX."invasionen
 						WHERE
 							invasionenID = ".$id."
-					") OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
+					") OR dieTransaction("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
 					
 					query("
 						DELETE FROM ".PREFIX."invasionen_log
 						WHERE
 							invalog_invasionenID = ".$id."
-					") OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
+					") OR dieTransaction("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
 				}
 				else {
 					inva_archiv($id, 'löscht die Aktion durch Einscannen der Planetenübersicht');
@@ -387,7 +390,7 @@ query("
 		playerPlaneten = '".count($_POST['pl'])."'
 	WHERE
 		playerID = ".$_POST['uid']."
-") OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
+") OR dieTransaction("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
 
 // Aktualisierungszeitpunkt eintragen
 if($registered) {
@@ -397,7 +400,7 @@ if($registered) {
 			userOverviewUpdate = ".time()."
 		WHERE
 			user_playerID = ".$_POST['uid']."
-	") OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
+	") OR dieTransaction("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
 }
 
 // übrige Planeten des Spielers auf unbekannt setzen
@@ -409,7 +412,7 @@ if(count($pl)) {
 			planetenHistory = planetenHistory+1
 		WHERE
 			planetenID IN (".implode(', ', array_keys($pl)).")
-	") OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
+	") OR dieTransaction("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
 	
 	// History-Einträge
 	$vals = array();
@@ -419,7 +422,7 @@ if(count($pl)) {
 	query("
 		INSERT INTO ".PREFIX."planeten_history
 		VALUES ".implode(', ', $vals)."
-	") OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
+	") OR dieTransaction("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
 }
 
 // Terraformer aktualisieren
@@ -432,7 +435,7 @@ if(count($terraformer_set)) {
 			schiffeTerraformerUpdate = ".time()."
 		WHERE
 			schiffe_planetenID IN(".implode(",", $terraformer_set).")
-	") OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
+	") OR dieTransaction("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
 	
 	// neue eintragen
 	$sql = "
@@ -448,7 +451,7 @@ if(count($terraformer_set)) {
 	
 	$sql .= implode(", ", $terraformer_set);
 	
-	query($sql) OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
+	query($sql) OR dieTransaction("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
 }
 
 if(count($terraformer_unset)) {
@@ -459,8 +462,13 @@ if(count($terraformer_unset)) {
 			schiffeTerraformer = NULL
 		WHERE
 			schiffe_planetenID IN(".implode(",", $terraformer_unset).")
-	") OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
+	") OR dieTransaction("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
 }
+
+
+// Transaktion beenden
+query("COMMIT") OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
+
 
 // Log-Eintrag
 if($config['logging'] >= 2) {
@@ -494,7 +502,5 @@ if($config['logging'] >= 2) {
 	// Ausgabe
 	$tmpl->content = 'Planeten&uuml;bersicht erfolgreich eingescannt';
 }
-
-
 
 ?>
