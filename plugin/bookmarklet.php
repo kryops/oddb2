@@ -17,6 +17,16 @@ include '../config/global.php';
 
 define('ADDR', $config['addr']);
 
+
+// dynamisches Authentifizierungs-Token
+if(isset($_GET['authTokenVar'])) {
+	$authTokenVar = preg_replace('/[^a-zA-Z0-9]/', '', $_GET['authTokenVar']);
+}
+else {
+	$authTokenVar = "ODDBAuthToken";
+}
+
+
 /**
  * Caching 15 Minuten
  */
@@ -1391,7 +1401,7 @@ header('Content-Type: text/javascript; charset=utf-8');
 			
 			// Bookmarklet: Authentifizierungs-Daten
 			data: {
-				'authToken': ODDBauthToken
+				'authToken': <?php echo $authTokenVar; ?>
 			},
 			
 			success: function(result){
@@ -1797,7 +1807,7 @@ if(preg_match('/MSIE/', $_SERVER['HTTP_USER_AGENT'])) {
 		url = page.location.href;
 	
 	// kein Authentifizierungs-Token
-	if(typeof(ODDBauthToken) == 'undefined') {
+	if(typeof(<?php echo $authTokenVar; ?>) == 'undefined') {
 		alert('Abbruch: Keine Authentifizierungs-Daten übergeben!');
 		return;
 	}
@@ -1910,7 +1920,7 @@ if(preg_match('/MSIE/', $_SERVER['HTTP_USER_AGENT'])) {
 	var pdata = oddbtool.parsePage(page, true);
 	
 	// Bookmarklet: Authentifizierungs-Daten
-	pdata.authToken = ODDBauthToken;
+	pdata.authToken = <?php echo $authTokenVar; ?>;
 	
 	// FoW-Ausgleich
 	if(oddbtool.parserRegex.system.exec(url) != null) {

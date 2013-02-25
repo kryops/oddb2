@@ -610,7 +610,9 @@ else {
 			<p>Das Bookmarklet ist auf die Adresse dieser Installation und deine Benutzerdaten angepasst. &Auml;nderst du dein Passwort, musst du das Bookmarklet neu einrichten.</p>';
 	
 	$authToken = str_replace("'", "\\'", h($user->getAuthToken()));
-	$bookmarklet = "javascript:(function(){ODDBauthToken='".$authToken."';var s=document.createElement('script');s.type='text/javascript';s.src='".ADDR."plugin/bookmarklet.php';document.body.appendChild(s);})();";
+	$authTokenVar = "ODDBAuth".substr(md5(microtime(true)), 0, 8);
+	
+	$bookmarklet = "javascript:(function(){".$authTokenVar."='".$authToken."';var s=document.createElement('script');s.type='text/javascript';s.src='".ADDR."plugin/bookmarklet.php?authTokenVar=".$authTokenVar."';document.body.appendChild(s);})();";
 	
 	$tmpl->content .= '
 			
