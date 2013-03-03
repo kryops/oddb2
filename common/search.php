@@ -679,23 +679,27 @@ class Search {
 		}
 		// Bevölkerung
 		if(isset($filter['bev'])) {
+			$kleiner = self::getSmallerThan($filter['bev']);
 			$filter['bev'] = (int)$filter['bev'];
-			$conds[] = 'planetenBevoelkerung >= '.$filter['bev'];
+			$conds[] = 'planetenBevoelkerung '.($kleiner ? '<' : '>').'= '.$filter['bev'];
 		}
 		// Forschung
 		if(isset($filter['f'])) {
+			$kleiner = self::getSmallerThan($filter['f']);
 			$filter['f'] = (int)$filter['f'];
-			$conds[] = 'planetenForschung >= '.$filter['f'];
+			$conds[] = 'planetenForschung '.($kleiner ? '<' : '>').'= '.$filter['f'];
 		}
 		// Industrie
 		if(isset($filter['i'])) {
+			$kleiner = self::getSmallerThan($filter['i']);
 			$filter['i'] = (int)$filter['i'];
-			$conds[] = 'planetenIndustrie >= '.$filter['i'];
+			$conds[] = 'planetenIndustrie '.($kleiner ? '<' : '>').'= '.$filter['i'];
 		}
 		// Punkte
 		if(isset($filter['pu'])) {
+			$kleiner = self::getSmallerThan($filter['pu']);
 			$filter['pu'] = (int)$filter['pu'];
-			$conds[] = imppunkte_mysql().' >= '.$filter['pu'];
+			$conds[] = imppunkte_mysql().' '.($kleiner ? '<' : '>').'= '.$filter['pu'];
 		}
 		// Ressplanet
 		if(isset($filter['rpl'])) {
@@ -761,77 +765,94 @@ class Search {
 		}
 		// Summe aller Resswerte
 		if(isset($filter['rw'])) {
+			$kleiner = self::getSmallerThan($filter['rw']);
 			$filter['rw'] = (int)$filter['rw'];
-			$conds[] = 'planetenRWErz+planetenRWWolfram+planetenRWKristall+planetenRWFluor >= '.$filter['rw'];
+			$conds[] = 'planetenRWErz+planetenRWWolfram+planetenRWKristall+planetenRWFluor '.($kleiner ? '<' : '>').'= '.$filter['rw'];
 		}
 		// gesamte Ressproduktion
 		if(isset($filter['rp'])) {
+			$kleiner = self::getSmallerThan($filter['rp']);
 			$filter['rp'] = (int)$filter['rp'];
-			$conds[] = 'planetenRPGesamt >= '.$filter['rp'];
+			$conds[] = 'planetenRPGesamt '.($kleiner ? '<' : '>').'= '.$filter['rp'];
 		}
 		// gesamter Ressvorrat
 		if(isset($filter['rv'])) {
+			$kleiner = self::getSmallerThan($filter['rv']);
 			$filter['rv'] = (int)$filter['rv'];
-			$conds[] = 'planetenRMGesamt >= '.$filter['rv'];
+			$conds[] = 'planetenRMGesamt '.($kleiner ? '<' : '>').'= '.$filter['rv'];
 		}
 		// Resswerte
 		if(isset($filter['rwe'])) {
+			$kleiner = self::getSmallerThan($filter['rwe']);
 			$filter['rwe'] = (int)$filter['rwe'];
-			$conds[] = 'planetenRWErz >= '.$filter['rwe'];
+			$conds[] = 'planetenRWErz '.($kleiner ? '<' : '>').'= '.$filter['rwe'];
 		}
 		if(isset($filter['rww'])) {
+			$kleiner = self::getSmallerThan($filter['rww']);
 			$filter['rww'] = (int)$filter['rww'];
-			$conds[] = 'planetenRWWolfram >= '.$filter['rww'];
+			$conds[] = 'planetenRWWolfram '.($kleiner ? '<' : '>').'= '.$filter['rww'];
 		}
 		if(isset($filter['rwk'])) {
+			$kleiner = self::getSmallerThan($filter['rwk']);
 			$filter['rwk'] = (int)$filter['rwk'];
-			$conds[] = 'planetenRWKristall >= '.$filter['rwk'];
+			$conds[] = 'planetenRWKristall '.($kleiner ? '<' : '>').'= '.$filter['rwk'];
 		}
 		if(isset($filter['rwf'])) {
+			$kleiner = self::getSmallerThan($filter['rwf']);
 			$filter['rwf'] = (int)$filter['rwf'];
-			$conds[] = 'planetenRWFluor >= '.$filter['rwf'];
+			$conds[] = 'planetenRWFluor '.($kleiner ? '<' : '>').'= '.$filter['rwf'];
 		}
 		// Ressproduktion
 		if(isset($filter['rpe'])) {
+			$kleiner = self::getSmallerThan($filter['rpe']);
 			$filter['rpe'] = (int)$filter['rpe'];
-			$conds[] = 'planetenRPErz >= '.$filter['rpe'];
+			$conds[] = 'planetenRPErz '.($kleiner ? '<' : '>').'= '.$filter['rpe'];
 		}
 		if(isset($filter['rpm'])) {
+			$kleiner = self::getSmallerThan($filter['rpm']);
 			$filter['rpm'] = (int)$filter['rpm'];
-			$conds[] = 'planetenRPMetall >= '.$filter['rpm'];
+			$conds[] = 'planetenRPMetall '.($kleiner ? '<' : '>').'= '.$filter['rpm'];
 		}
 		if(isset($filter['rpw'])) {
+			$kleiner = self::getSmallerThan($filter['rpw']);
 			$filter['rpw'] = (int)$filter['rpw'];
-			$conds[] = 'planetenRPWolfram >= '.$filter['rpw'];
+			$conds[] = 'planetenRPWolfram '.($kleiner ? '<' : '>').'= '.$filter['rpw'];
 		}
 		if(isset($filter['rpk'])) {
+			$kleiner = self::getSmallerThan($filter['rpk']);
 			$filter['rpk'] = (int)$filter['rpk'];
-			$conds[] = 'planetenRPKristall >= '.$filter['rpk'];
+			$conds[] = 'planetenRPKristall '.($kleiner ? '<' : '>').'= '.$filter['rpk'];
 		}
 		if(isset($filter['rpf'])) {
+			$kleiner = self::getSmallerThan($filter['rpf']);
 			$filter['rpf'] = (int)$filter['rpf'];
-			$conds[] = 'planetenRPFluor >= '.$filter['rpf'];
+			$conds[] = 'planetenRPFluor '.($kleiner ? '<' : '>').'= '.$filter['rpf'];
 		}
 		// Ressvorrat
 		if(isset($filter['rve'])) {
+			$kleiner = self::getSmallerThan($filter['rve']);
 			$filter['rve'] = (int)$filter['rve'];
-			$conds[] = 'planetenRMErz >= '.$filter['rve'];
+			$conds[] = 'planetenRMErz '.($kleiner ? '<' : '>').'= '.$filter['rve'];
 		}
 		if(isset($filter['rvm'])) {
+			$kleiner = self::getSmallerThan($filter['rvm']);
 			$filter['rvm'] = (int)$filter['rvm'];
-			$conds[] = 'planetenRMMetall >= '.$filter['rvm'];
+			$conds[] = 'planetenRMMetall '.($kleiner ? '<' : '>').'= '.$filter['rvm'];
 		}
 		if(isset($filter['rvw'])) {
+			$kleiner = self::getSmallerThan($filter['rvw']);
 			$filter['rvw'] = (int)$filter['rvw'];
-			$conds[] = 'planetenRMWolfram >= '.$filter['rvw'];
+			$conds[] = 'planetenRMWolfram '.($kleiner ? '<' : '>').'= '.$filter['rvw'];
 		}
 		if(isset($filter['rvk'])) {
+			$kleiner = self::getSmallerThan($filter['rvk']);
 			$filter['rvk'] = (int)$filter['rvk'];
-			$conds[] = 'planetenRMKristall >= '.$filter['rvk'];
+			$conds[] = 'planetenRMKristall '.($kleiner ? '<' : '>').'= '.$filter['rvk'];
 		}
 		if(isset($filter['rvf'])) {
+			$kleiner = self::getSmallerThan($filter['rvf']);
 			$filter['rvf'] = (int)$filter['rvf'];
-			$conds[] = 'planetenRMFluor >= '.$filter['rvf'];
+			$conds[] = 'planetenRMFluor '.($kleiner ? '<' : '>').'= '.$filter['rvf'];
 		}
 		// geraidet
 		if(isset($filter['rai']) AND $user->rechte['toxxraid']) {
@@ -1881,6 +1902,24 @@ class Search {
 		}
 		
 		return self::$invasionen;
+	}
+	
+	
+	/**
+	 * Erkennen, ob ein Suchfilter mit einem < beginnt
+	 * entfernt dieses in der Parameter-Variable
+	 * @return boolean beginnt mit <
+	 */
+	public static function getSmallerThan(&$val) {
+		
+		$smaller = (substr($val, 0, 1) === '<');
+		
+		if($smaller) {
+			$val = preg_replace('/^<\s*/Uis', '', $val);
+		}
+		
+		return $smaller;
+		
 	}
 	
 	
