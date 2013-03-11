@@ -409,7 +409,7 @@ header('Content-Type: text/javascript; charset=utf-8');
 		try {
 			// Überprüfung auf richtige OD-Welt
 			var world = tree.find('div.world');
-			if(world.length && world.html().indexOf('int10') == -1) {
+			if(world.length && world.html().indexOf('<?php echo ODWORLD; ?>') == -1) {
 				throw 'Falsche OD-Welt!';
 			}
 			
@@ -1893,11 +1893,6 @@ if(preg_match('/MSIE/', $_SERVER['HTTP_USER_AGENT'])) {
 	$.support.cors = true;
 	
 	
-	// Logo klickbar machen
-	$(document).on('click', '#oddbtoollogo', function() {
-		window.open(chrome.extension.getURL('options.html'));
-	});
-	
 	// Parsen-Link
 	$(document).on('click', '#oddbtoolparselink', function() {
 		oddbtool.parser(false, false, true);
@@ -1924,7 +1919,7 @@ if(preg_match('/MSIE/', $_SERVER['HTTP_USER_AGENT'])) {
 	
 	// FoW-Ausgleich
 	if(oddbtool.parserRegex.system.exec(url) != null) {
-		oddbtool.fow(page, pdata);
+		oddbtool.fow(page, oddbtool.parsePage(page, true));
 	}
 	
 	window.setTimeout(function() {
