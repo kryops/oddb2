@@ -753,8 +753,10 @@ oddbtool.parsePage = function(page, manual) {
 				}
 			}
 			
-			// Reso
-			if(input.indexOf('sich gerade ein Resonator auf, um diesen Planeten und alle Schiffe im Orbit zu vernichten!') != -1 || input.indexOf('<b>A resonator is currently charging up so that it can destroy this planet and all ships in orbit around it') != -1) {
+			// Reso / Todesstern
+			if(input.indexOf('sich gerade ein Resonator auf, um diesen Planeten und alle Schiffe im Orbit zu vernichten!') != -1
+				|| input.indexOf('<b>A resonator is currently charging up so that it can destroy this planet and all ships in orbit around it') != -1
+				|| input.indexOf('sich gerade ein Schiff auf, um diesen Planeten zu vernichten!') != -1) {
 				
 				out['reso'] = 1;
 				
