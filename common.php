@@ -1776,6 +1776,25 @@ function insertlog($typ, $msg) {
 }
 
 
+/**
+ * Log-Eintrag von einem Cronjob
+ * @param integer $number Nummer des Cronjobs
+ * @param string $msg Log-Nachricht
+ */
+function cronlog($number, $msg) {
+	
+	$number = (int)$number;
+	
+	// eintragen
+	query("
+		INSERT INTO ".GLOBPREFIX."cronjobs
+		SET
+			cronjobsTime = ".time().",
+			cronjobsNumber = ".$number.",
+			cronjobsText = '".escape($msg)."'
+	") OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
+	
+}
 
 //
 // Planeten-Funktionen

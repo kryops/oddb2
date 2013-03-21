@@ -123,6 +123,14 @@ function inva_archiv($id, $log) {
 }
 
 
+// Statistik-Counter
+$countInvaArchiv = 0;
+$countOdRequest = 0;
+$countToxxroute = 0;
+$countSprung = 0;
+$countBbsTf = 0;
+
+
 //
 // odrequest-Statistik leeren
 //
@@ -143,6 +151,16 @@ if($dir = @opendir('../admin/cache')) {
 	
 	closedir($dir);
 }
+
+//
+// altes Cronjob-Log leeren
+//
+$query = query("
+	DELETE FROM
+		".GLOBPREFIX."cronjobs
+	WHERE
+		cronjobsTime < ".(time()-604800)."
+") OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
 
 
 // Instanzen durchgehen
@@ -187,6 +205,7 @@ foreach($dbs as $instance) {
 	
 	while($row = mysql_fetch_assoc($query)) {
 		$kolo_planeten[] = $row['invasionen_planetenID'];
+		$countInvaArchiv++;
 	}
 	
 	if(count($kolo_planeten)) {
@@ -233,6 +252,7 @@ foreach($dbs as $instance) {
 	") OR dieTransaction("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
 	
 	while($row = mysql_fetch_assoc($query)) {
+		$countInvaArchiv++;
 		inva_archiv($row['invasionenID'], 'Die Aktion wurde automatisch ins Archiv verschoben');
 	}
 	
@@ -337,6 +357,8 @@ foreach($dbs as $instance) {
 			AND routenDate < ".(time()-604800)."
 	") OR dieTransaction("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
 	
+	$countToxxroute += mysql_affected_rows();
+	
 	//
 	// veraltete Sprunggeneratoren löschen
 	//
@@ -356,6 +378,7 @@ foreach($dbs as $instance) {
 		
 		while($row = mysql_fetch_assoc($query)) {
 			$ids[] = $row['myrigates_planetenID'];
+			$countSprung++;
 		}
 		
 		mysql_free_result($query);
@@ -395,6 +418,8 @@ foreach($dbs as $instance) {
 			OR
 			(schiffeBergbauUpdate < ".(time()-604800)." AND schiffeTerraformerUpdate < ".(time()-604800).")
 	") OR dieTransaction("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
+	
+	$countBbsTf++;
 	
 	query("
 		UPDATE ".$prefix."planeten_schiffe
@@ -531,6 +556,7 @@ if($minid AND $od_up) {
 		}
 		
 		$c++;
+		$countOdRequest++;
 		
 		// bei 100 abbrechen
 		if($c > 100) {
@@ -543,6 +569,37 @@ if($minid AND $od_up) {
 }
 
 
-echo "Cronjob erfolgreich.";
+// Log- und Ausgabe-Nachricht generieren
+$message = "Cronjob erfolgreich";
+
+if($countBbsTf OR $countInvaArchiv OR $countOdRequest OR $countSprung OR $countToxxroute) {
+	$messageAdd = array();
+	
+	if($countBbsTf) {
+		$messageAdd[] = $countBbsTf.' Bergbauschiffe/Terraformer entfernt';
+	}
+	
+	if($countInvaArchiv) {
+		$messageAdd[] = $countInvaArchiv.' Invasionen archiviert';
+	}
+	
+	if($countOdRequest) {
+		$messageAdd[] = $countOdRequest.' Spielerprofile eingetragen';
+	}
+	
+	if($countSprung) {
+		$messageAdd[] = $countSprung.' Sprunggeneratoren entfernt';
+	}
+	
+	if($countToxxroute) {
+		$messageAdd[] = $countToxxroute.' Toxxrouten entfernt';
+	}
+	
+	$message .= '. '.implode(", ", $messageAdd);
+}
+
+cronlog(2, $message);
+
+echo $message;
 
 ?>

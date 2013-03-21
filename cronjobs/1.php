@@ -69,6 +69,11 @@ $mysql_conn = new mysql;
 $cache = new cache();
 
 
+// Statistik-Counter
+$countOdRequest = 0;
+$countAllyWechsel = 0;
+
+
 
 /**
  * globale Operationen
@@ -114,6 +119,7 @@ while($row = mysql_fetch_assoc($query)) {
 	}
 	
 	odrequest($row['playerID']);
+	$countOdRequest++;
 }
 
 query("COMMIT") OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
@@ -142,6 +148,8 @@ $allywechsel = array();
 while($row = mysql_fetch_assoc($query)) {
 	$allywechsel[] = $row;
 }
+
+$countAllyWechsel = count($allywechsel);
 
 // bei allen auf übertragen setzen
 query("
@@ -239,7 +247,27 @@ foreach($dbs as $instance) {
 
 query("COMMIT") OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
 
-echo "Cronjob erfolgreich.";
+
+// Log- und Ausgabe-Nachricht generieren
+$message = "Cronjob erfolgreich";
+
+if($countAllyWechsel OR $countOdRequest) {
+	$messageAdd = array();
+	
+	if($countOdRequest) {
+		$messageAdd[] = $countOdRequest.' Spielerprofile aktualisiert';
+	}
+	
+	if($countAllyWechsel) {
+		$messageAdd[] = $countAllyWechsel.' Allianzwechsel eingetragen';
+	}
+	
+	$message .= '. '.implode(", ", $messageAdd);
+}
+
+cronlog(1, $message);
+
+echo $message;
 
 
 ?>

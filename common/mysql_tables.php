@@ -54,6 +54,14 @@ $globtables_add = array(
   `banTime` int(10) unsigned NOT NULL DEFAULT 0
 ) ENGINE=MEMORY DEFAULT CHARSET=utf8",
 
+"CREATE TABLE IF NOT EXISTS `oddbcronjobs` (
+  `cronjobsID` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `cronjobsTime` int(10) unsigned NOT NULL,
+  `cronjobsNumber` tinyint(3) unsigned NOT NULL,
+  `cronjobsText` text NOT NULL,
+  PRIMARY KEY (`cronjobsID`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8",
+		
 "CREATE TABLE IF NOT EXISTS `".$globprefix."flooding` (
   `flooding_playerID` int(10) unsigned NOT NULL,
   `floodingTime` int(10) unsigned NOT NULL
