@@ -61,6 +61,14 @@ Die Einstellungen &auml;ndern sowie weitere Instanzen anlegen kannst du sp&auml;
 		$tmpl->content .= '<div class="bold red center">Die PHP-Einstellung max_input_vars sollte auf mindestens 2000 gestellt werden, da sonst neue Galaixen nicht komplett eingetragen werden k&ouml;nnen!</div>';
 	}
 	
+	// Link auf die Installations-Anleitung
+	$tmpl->content .= '
+		<br />
+		<p>
+			<a href="../INSTALL-README/Installationsanleitung.pdf" target="_blank" class="bold">&raquo;	Installationsanleitung (PDF)</a>
+		</p>
+	';
+	
 	
 	$tmpl->content .= '
 	
