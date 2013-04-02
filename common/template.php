@@ -365,6 +365,8 @@ var tabs = [[1, \''.addslashes($this->name).'\']],
 		\'effects\' : 200
 	},
 	ODServer = "'.($user->odServer ? $user->odServer : 'http://www.omega-day.com').'";
+	
+	ODWorld = "'.ODWORLD.'";
 ';
 			if($user->rechte['invasionen']) {
 				echo '

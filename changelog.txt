@@ -1,9 +1,29 @@
-﻿17.01.2013 - V2.2.5
+﻿02.04.2013 - V2.3 [R11]
+-----------------------
+* Portierung des ODDB Tools als Bookmarklet
+* Die Abgleichfunktion trägt jetzt auch neue Planeten ein, sofern die Galaxie gescannt wurde
+* Anpassung der Oberfläche an Touch-Events für die Verwendung auf dem iPad
+* Numerische Suchfilter, die standardmäßig nach größeren Werten suchen, erlauben jetzt die Eingabe
+  im Format <123, um kleinere Werte zu suchen (z.B. Bevölkerung, Forschung, Industrie, Resswerte)
+* Todessterne werden jetzt als Resonatoren erkannt
+* Die Adresse, über welche der Spieler auf OD zugreift, wird jetzt gespeichert und
+  bei Verlinkungen auf OD verwendet
+* Das Log ist jetzt IPv6-tauglich
+* Upgrade auf jQuery 1.9.1
+
+Admin-Bereich
+* Cronjob-Log
+* Statistik-Anzeigen geändert
+
+
+
+17.01.2013 - V2.2.5
 -------------------
 * Neue automatische Planetenkategorie "Credit-Ausbau" (nur neu eingescannte Planeten)
 * System-Scans löschen jetzt Planeten-Aktionen, Terraformer und Natives, wenn der Orbit leer ist
 * Als unbenutzbar eingetragene Sprunggeneratoren werden jetzt im FoW immer ausgeblendet
 * kleinere Bugfixes
+
 
 
 30.12.2012 - V2.2.4

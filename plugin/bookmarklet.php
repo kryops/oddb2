@@ -53,6 +53,7 @@ header('Content-Type: text/javascript; charset=utf-8');
 	var oddbtool = {
 		
 		version: '<?php echo ODDBTOOL; ?>',
+		odworld: '<?php echo ODWORLD; ?>',
 		
 		prefs: {
 			url: '<?php echo ADDR; ?>'

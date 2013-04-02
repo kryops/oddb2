@@ -2987,7 +2987,7 @@ function quelltext(f, r) {
 	try {
 		// Überprüfung auf richtige OD-Welt
 		var world = tree.find('div.world');
-		if(world.length && world.html().indexOf('int10') == -1) {
+		if(world.length && world.html().indexOf(ODWorld) == -1) {
 			throw 'Falsche OD-Welt!';
 		}
 		

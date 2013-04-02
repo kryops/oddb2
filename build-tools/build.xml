@@ -10,10 +10,10 @@
 	<property name="yuicompressor" value="build-tools/yuicompressor-2.4.8pre.jar" />
 	
 	<!-- alte und neue Version des ODDB Tools JEDES MAL HIER ÄNDERN -->
-	<property name="oldVersion" value="2.2.5" />
-	<property name="oldVersionSuffix" value="2_2_5" />
-	<property name="newVersion" value="2.2.5.1" />
-	<property name="newVersionSuffix" value="2_2_5_1" />
+	<property name="oldVersion" value="2.2.5.1" />
+	<property name="oldVersionSuffix" value="2_2_5_1" />
+	<property name="newVersion" value="2.3" />
+	<property name="newVersionSuffix" value="2_3" />
 	
 	
 	<target name="build">
