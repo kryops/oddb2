@@ -700,6 +700,11 @@ playeratm=4173&userid=602511&name=Kryops&points=34202&titel=&warpoints=8608&gesi
 	if(isset($oddata['name']) AND count($oddata) > 1 AND $oddata['name'] != '') {
 		// Daten sichern
 		$oddata['points'] = (int)$oddata['points'];
+		$oddata['warpoints'] = (int)$oddata['warpoints'];
+		$oddata['gpunkte'] = (int)$oddata['gpunkte'];
+		$oddata['kriegspunkte'] = (int)$oddata['kriegspunkte'];
+		$oddata['questpunkte'] = (int)$oddata['questpunkte'];
+		$oddata['handelspunkte'] = (int)$oddata['handelspunkte'];
 		$oddata['allianzmembers'] = (int)$oddata['allianzmembers'];
 		$oddata['allianz_id'] = (int)$oddata['allianz_id'];
 		$oddata['gesinnung'] = (int)$oddata['gesinnung'];
@@ -720,6 +725,10 @@ playeratm=4173&userid=602511&name=Kryops&points=34202&titel=&warpoints=8608&gesi
 					player_allianzenID = ".$oddata['allianz_id'].",
 					playerPlaneten = ".$oddata['plcount'].",
 					playerImppunkte = ".$oddata['points'].",
+					playerGesamtpunkte = ".$oddata['gpunkte'].",
+					playerKriegspunkte = ".$oddata['warpoints'].",
+					playerQuestpunkte = ".$oddata['questpunkte'].",
+					playerHandelspunkte = ".$oddata['handelspunkte'].",
 					playerGesinnung = ".$oddata['gesinnung'].",
 					playerRasse = ".$oddata['rasse'].",
 					playerFA = ".$oddata['flottenadmin'].",
@@ -752,6 +761,10 @@ playeratm=4173&userid=602511&name=Kryops&points=34202&titel=&warpoints=8608&gesi
 					player_allianzenID = ".$oddata['allianz_id'].",
 					playerPlaneten = ".$oddata['plcount'].",
 					playerImppunkte = ".$oddata['points'].",
+					playerGesamtpunkte = ".$oddata['gpunkte'].",
+					playerKriegspunkte = ".$oddata['warpoints'].",
+					playerQuestpunkte = ".$oddata['questpunkte'].",
+					playerHandelspunkte = ".$oddata['handelspunkte'].",
 					playerGesinnung = ".$oddata['gesinnung'].",
 					playerRasse = ".$oddata['rasse'].",
 					playerFA = ".$oddata['flottenadmin'].",
