@@ -254,6 +254,9 @@ class template_install {
 </table>
 
 <br /><br />
+<div class="center">Wenn du die ODDB installieren willst, ohne eine Instanz anzulegen (z.B. vor Rundenstart), lasse die Felder f&uuml;r den Namen der Instanz und die Administrator-ID leer.</div>
+
+<br /><br />
 <div class="center">
 <input type="submit" class="button" value="Installation starten" style="width:150px" />
 </div>

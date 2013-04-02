@@ -69,9 +69,6 @@ else if($_GET['sp'] == 'del') {
 	else if(!isset($dbs[$_GET['id']])) {
 		$tmpl->error = 'Die Datenbank existiert nicht mehr!';
 	}
-	else if(count($dbs) == 1) {
-		$tmpl->error = 'Die letzte Instanz kann nicht gelöscht werden! Du musst zuerst eine neue Instanz erstellen, bevor du diese Instanz löschen kannst!';
-	}
 	else {
 		// Daten sichern
 		$_GET['id'] = (int)$_GET['id'];
@@ -215,7 +212,7 @@ else {
 			<td>'.($c ? ($c['active'] ? 'ja' : '<span class="tooltip" tooltip="'.htmlspecialchars($c['offlinemsg'], ENT_COMPAT, 'UTF-8').'">nein</span>') : '<i>unbekannt</i>').'</td>
 			<td class="userlistaction">
 				<img src="../img/layout/leer.gif" style="background-position:-1020px -91px" class="link winlink contextmenu hoverbutton" data-link="index.php?p=dbs&amp;sp=edit&amp;id='.$instance.'" title="Datenbank bearbeiten" />
-				'.($instance != 1 ? '<img src="../img/layout/leer.gif" style="background-position:-1040px -91px;cursor:pointer" class="hoverbutton" onclick="if(window.confirm(\'Soll die Datenbank wirklich unwiderruflich gelöscht werden?\\nDU KANNST DIESE AKTION NICHT RÜCKGÄNGIG MACHEN!\')){ajaxcall(\'index.php?p=dbs&amp;sp=del&amp;id='.$instance.'&amp;ajax\', this.parentNode, false, false)}" title="Datenbank l&ouml;schen" />' : '').'
+				<img src="../img/layout/leer.gif" style="background-position:-1040px -91px;cursor:pointer" class="hoverbutton" onclick="if(window.confirm(\'Soll die Datenbank wirklich unwiderruflich gelöscht werden?\\nDU KANNST DIESE AKTION NICHT RÜCKGÄNGIG MACHEN!\')){ajaxcall(\'index.php?p=dbs&amp;sp=del&amp;id='.$instance.'&amp;ajax\', this.parentNode, false, false)}" title="Datenbank l&ouml;schen" />
 			</td>
 		</tr>';
 	}
@@ -223,7 +220,6 @@ else {
 		</table>
 	';
 	
-	// importieren
 	if(!isset($_GET['list'])) {
 		$tmpl->content .= '</div>
 		';

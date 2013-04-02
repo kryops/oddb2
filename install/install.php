@@ -36,9 +36,11 @@ else {
 		$errors[] = 'Der Sicherheitsschl&uuml;ssel darf nur Buchstaben und Zahlen beinhalten!';
 	}
 	
+	$installInstance = true;
+	
 	// Kein Name
 	if(trim($_POST['db_name']) == '') {
-		$errors[] = 'Kein Instanz-Name eingegeben!';
+		$installInstance = false;
 	}
 	
 	// Instanz-Admin-Passwort
@@ -49,28 +51,30 @@ else {
 		$errors[] = 'Kein Instanz-Admin-Passwort eingegeben!';
 	}
 	
-	// User-ID
-	if((int)$_POST['admin'] < 10) {
-		$errors[] = 'Ung&uuml;ltuge Administrator-UserID eingegeben!';
-	}
-	// Administrator prüfen
-	else {
-		$admin = (int)$_POST['admin'];
-		$file = 'http://www.omega-day.com/game/states/live_state.php?userid='.$admin.'&world='.ODWORLD;
-		$connection = @fopen($file,'r');
-		if(!$connection) {
-			$errors[] = 'Konnte keine Verbindung zum OD-Server aufbauen!';
+	if($installInstance) {
+		// User-ID
+		if((int)$_POST['admin'] < 10) {
+			$errors[] = 'Ung&uuml;ltuge Administrator-UserID eingegeben!';
 		}
+		// Administrator prüfen
 		else {
-			$buffer = fgets($connection, 4096);
-			fclose($connection);
-			
-			// als Array parsen
-			parse_str($buffer, $oddata);
-			
-			// User nicht vorhanden oder gelöscht
-			if(!isset($oddata['name']) OR $oddata['name'] == '') {
-				$errors[] = 'Der Account mit der User-ID '.$admin.' ist nicht vorhanden oder hat sich gel&ouml;scht, oder die ODDB kann sich nicht mit Omega-Day verbinden!';
+			$admin = (int)$_POST['admin'];
+			$file = 'http://www.omega-day.com/game/states/live_state.php?userid='.$admin.'&world='.ODWORLD;
+			$connection = @fopen($file,'r');
+			if(!$connection) {
+				$errors[] = 'Konnte keine Verbindung zum OD-Server aufbauen!';
+			}
+			else {
+				$buffer = fgets($connection, 4096);
+				fclose($connection);
+				
+				// als Array parsen
+				parse_str($buffer, $oddata);
+				
+				// User nicht vorhanden oder gelöscht
+				if(!isset($oddata['name']) OR $oddata['name'] == '') {
+					$errors[] = 'Der Account mit der User-ID '.$admin.' ist nicht vorhanden oder hat sich gel&ouml;scht, oder die ODDB kann sich nicht mit Omega-Day verbinden!';
+				}
 			}
 		}
 	}
@@ -111,27 +115,29 @@ else {
 	
 	
 	// Instanz-Verzeichnis
-	$dbs = array(
-		1=>$_POST['db_name']
-	);
-	
-	config::saveGlobal('dbs', 'dbs', $dbs);
-	
-	
-	// Instanzkonfiguration
-	$c = array(
-		'instancekey'=>generate_key()
-	);
-	
-	config::save(1, $c, false);
-	
-	$config['instancekey'] = $c['instancekey'];
-	
-	foreach($_POST as $key=>$val) {
-		$config[$key] = $val;
+	if($installInstance) {
+		$dbs = array(
+			1=>$_POST['db_name']
+		);
+		
+		// Instanzkonfiguration
+		$c = array(
+				'instancekey'=>generate_key()
+		);
+		
+		config::save(1, $c, false);
+		
+		$config['instancekey'] = $c['instancekey'];
+		
+		foreach($_POST as $key=>$val) {
+			$config[$key] = $val;
+		}
+	}
+	else {
+		$dbs = array();
 	}
 	
-	
+	config::saveGlobal('dbs', 'dbs', $dbs);
 	
 	
 	/*
@@ -167,80 +173,82 @@ else {
 		}
 	}
 	
-	// Tabellen für 1. Instanz anlegen
-	foreach($tables_add as $sql) {
-		$query = query($sql);
-		if(!$query) {
-			$tmpl->error = 'Anlegen der MySQL-Tabellen fehlgeschlagen: '.mysql_error().'<br /><br />(Query '.htmlspecialchars($sql, ENT_COMPAT, 'UTF-8').')';
-			$tmpl->output();
-			die();
+	if($installInstance) {
+		// Tabellen für 1. Instanz anlegen
+		foreach($tables_add as $sql) {
+			$query = query($sql);
+			if(!$query) {
+				$tmpl->error = 'Anlegen der MySQL-Tabellen fehlgeschlagen: '.mysql_error().'<br /><br />(Query '.htmlspecialchars($sql, ENT_COMPAT, 'UTF-8').')';
+				$tmpl->output();
+				die();
+			}
 		}
-	}
-	
-	
-	// Administrator anlegen
-	$cache = new cache();
-	odrequest($admin, true);
-	
-	// Passwort erzeugen
-	$pw = General::encryptPassword($_POST['admin_passwort'], $config['instancekey']);
-	
-	// Registrierungserlaubnis
-	$query = query("
-		INSERT INTO
-			".$prefix."register
-		SET
-			register_playerID = ".$admin."
-	");
-	if(!$query) {
-		$tmpl->error = 'Fehler beim Anlegen des Administrator-Accounts! '.mysql_error().'<br />';
-	}
-	
-	$query = query("
-		SELECT
-			playerName,
-			player_allianzenID
-		FROM
-			".$globprefix."player
-		WHERE
-			playerID = ".$admin."
-	");
-	if(!$query OR !mysql_num_rows($query)) {
-		$tmpl->error = 'Fehler beim Anlegen des Administrator-Accounts!';
-	}
-	else {
-		$data = mysql_fetch_assoc($query);
 		
-		$settings = $bsettings;
-		$settings['fow'] = json_encode($bfowsettings);
-		$settings = json_encode($settings);
 		
+		// Administrator anlegen
+		$cache = new cache();
+		odrequest($admin, true);
+		
+		// Passwort erzeugen
+		$pw = General::encryptPassword($_POST['admin_passwort'], $config['instancekey']);
+		
+		// Registrierungserlaubnis
 		$query = query("
 			INSERT INTO
-				".$prefix."user
+				".$prefix."register
 			SET
-				user_playerID = ".$admin.",
-				user_playerName = '".escape($data['playerName'])."',
-				user_allianzenID = ".$data['player_allianzenID'].",
-				userRechtelevel = 4,
-				userPassword = '".$pw."',
-				userSettings = '".escape($settings)."',
-				userApiKey = '".General::generateApiKey()."'
+				register_playerID = ".$admin."
 		");
 		if(!$query) {
 			$tmpl->error = 'Fehler beim Anlegen des Administrator-Accounts! '.mysql_error().'<br />';
 		}
+		
+		$query = query("
+			SELECT
+				playerName,
+				player_allianzenID
+			FROM
+				".$globprefix."player
+			WHERE
+				playerID = ".$admin."
+		");
+		if(!$query OR !mysql_num_rows($query)) {
+			$tmpl->error = 'Fehler beim Anlegen des Administrator-Accounts!';
+		}
 		else {
-			// Administrator-Ally auf Status Meta setzen
-			if($data['player_allianzenID']) {
-				$query = query("
-					INSERT INTO
-						".$prefix."allianzen_status
-					SET
-						status_allianzenID = ".$data['player_allianzenID'].",
-						statusDBAllianz = ".$data['player_allianzenID'].",
-						statusStatus = ".$status_meta."
-				");
+			$data = mysql_fetch_assoc($query);
+			
+			$settings = $bsettings;
+			$settings['fow'] = json_encode($bfowsettings);
+			$settings = json_encode($settings);
+			
+			$query = query("
+				INSERT INTO
+					".$prefix."user
+				SET
+					user_playerID = ".$admin.",
+					user_playerName = '".escape($data['playerName'])."',
+					user_allianzenID = ".$data['player_allianzenID'].",
+					userRechtelevel = 4,
+					userPassword = '".$pw."',
+					userSettings = '".escape($settings)."',
+					userApiKey = '".General::generateApiKey()."'
+			");
+			if(!$query) {
+				$tmpl->error = 'Fehler beim Anlegen des Administrator-Accounts! '.mysql_error().'<br />';
+			}
+			else {
+				// Administrator-Ally auf Status Meta setzen
+				if($data['player_allianzenID']) {
+					$query = query("
+						INSERT INTO
+							".$prefix."allianzen_status
+						SET
+							status_allianzenID = ".$data['player_allianzenID'].",
+							statusDBAllianz = ".$data['player_allianzenID'].",
+							statusStatus = ".$status_meta."
+					");
+				}
 			}
 		}
 	}
@@ -257,10 +265,20 @@ else {
 	
 	$tmpl->content = '
 Die ODDB wurde erfolgreich installiert.
-<br /><br />
+<br /><br />';
+	
+	if($installInstance) {
+		$tmpl->content .= '
 Der Account '.htmlspecialchars($data['playerName'], ENT_COMPAT, 'UTF-8').' wurde mit dem eingegebenen Passwort angelegt.
 <br /><br />
-Den Administrationsbereich findest du unter <a href="'.h($_POST['addr']).'admin/" target="_blank"><b>'.h($_POST['addr']).'admin/</b></a>. Auch hier kannst du dich mit dem eingegebenen Passwort anmelden.
+Den Administrationsbereich findest du unter <a href="'.h($_POST['addr']).'admin/" target="_blank"><b>'.h($_POST['addr']).'admin/</b></a>. Auch hier kannst du dich mit dem eingegebenen Passwort anmelden.';
+	}
+	else {
+		$tmpl->content .= '
+		Den Administrationsbereich findest du unter <a href="'.h($_POST['addr']).'admin/" target="_blank"><b>'.h($_POST['addr']).'admin/</b></a>. Dort kannst du dich mit dem eingegebenen Passwort anmelden.';
+	}
+	
+	$tmpl->content .= '
 <br /><br />
 Zum korrekten Betrieb der ODDB musst du noch 2 Cronjobs einrichten:
 <br />

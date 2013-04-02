@@ -54,6 +54,7 @@ if(!@include('../config/global.php')) {
 $gconfig = $config;
 define('GLOBPREFIX', $config['mysql_globprefix']);
 
+$dbs = array();
 include '../config/dbs.php';
 
 
@@ -63,7 +64,6 @@ if(!isset($_GET['key']) OR $_GET['key'] != $config['key']) {
 }
 
 // Instanz-Array umformen
-if(!$dbs) $dbs = array(1=>'');
 $dbs = array_keys($dbs);
 
 // MySQL-Verbindung

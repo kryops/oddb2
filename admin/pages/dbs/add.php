@@ -89,9 +89,14 @@ else if($_GET['sp'] == 'add_send') {
 		$_POST['instancekey'] = generate_key();
 		
 		// ID ermitteln
-		$dbkeys = array_keys($dbs);
-		sort($dbkeys);
-		$instance = array_pop($dbkeys)+1;
+		if(count($dbs)) {
+			$dbkeys = array_keys($dbs);
+			sort($dbkeys);
+			$instance = array_pop($dbkeys)+1;
+		}
+		else {
+			$instance = 1;
+		}
 		
 		$dbs[$instance] = $name;
 		
@@ -542,15 +547,9 @@ else if($_GET['sp'] == 'add') {
 		<td>Grunddaten &uuml;bernehmen von</td>
 		<td><select name="data_copy" size="1" class="tooltip" tooltip="Es werden die Galaxien und die verdeckten Systeme &uuml;bertragen. Die Option ist nur aktiv, wenn keine vorhandene Installation benutzt wird">
 		<option value="0">keine Daten übernehmen</option>';
-	if(count($dbs) == 1) {
+	foreach($dbs as $inst=>$instname) {
 		$tmpl->content .= '
-		<option value="1">bestehender Instanz</option>';
-	}
-	else {
-		foreach($dbs as $inst=>$instname) {
-			$tmpl->content .= '
-			<option value="'.$inst.'">'.$inst.' - '.htmlspecialchars($instname, ENT_COMPAT, 'UTF-8').'</option>';
-		}
+		<option value="'.$inst.'">'.$inst.' - '.htmlspecialchars($instname, ENT_COMPAT, 'UTF-8').'</option>';
 	}
 	$tmpl->content .= '
 		</select>

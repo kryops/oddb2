@@ -124,9 +124,9 @@ if(isset($_POST['authToken'])) {
 }
 
 // Instanz-Konstante definieren
-// es gibt nur eine DB
-if(!$dbs) {
-	define('INSTANCE', 1);
+// keine Instanz definiert
+if(!count($dbs)) {
+	define('INSTANCE', 0);
 }
 else if(count($dbs) == 1) {
 	$db_keys = array_keys($dbs);

@@ -66,10 +66,8 @@ $gconfig = $config;
 define('GLOBPREFIX', $config['mysql_globprefix']);
 define('KEY', $config['key']);
 
+$dbs = array();
 include '../config/dbs.php';
-
-// Instanz-Array umformen
-if(!$dbs) $dbs = array(1=>'');
 
 // Cache laden
 $cache = new cache();

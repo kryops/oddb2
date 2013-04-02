@@ -9,8 +9,13 @@
 if(!defined('ODDB')) die('unerlaubter Zugriff!');
 
 
+// API abfangen
+if(isset($_GET['p']) AND $_GET['p'] == 'api') {
+	include './pages/api.php';
+	ODDBApi::outputError('API-Key ungültig!');
+}
 // AJAX abfangen
-if(isset($_GET['ajax'])) {
+else if(isset($_GET['ajax'])) {
 	$tmpl = new template;
 	$tmpl->error = '
 Du bist nicht mehr eingeloggt!
@@ -18,14 +23,25 @@ Du bist nicht mehr eingeloggt!
 <a href="index.php">neu einloggen</a>
 ';
 }
-// Ungültiger API-Key
-else if(isset($_GET['p']) AND $_GET['p'] == 'api') {
-	$tmpl = new template;
-	$tmpl->error = 'API-Key ungültig';
-}
 // FoW abfangen
 else if(isset($_GET['p']) AND $_GET['p'] == 'fow') {
 	diefow();
+}
+// noch keine Instanz angelegt
+else if(count($dbs) == 0) {
+	$tmpl = new template_login;
+	$tmpl->content = '
+	<div class="hl1">
+		ODDB V'.VERSION.' - '.ODWORLD.'
+	</div>
+	<br /><br />
+	<div class="center" id="instances" style="line-height:30px">
+		Die ODDB wurde frisch installiert, es sind noch keine Datenbanken angelegt.
+		<br>
+		<a href="admin/index.php" class="bold">&raquo; zum Adminbereich</a>
+	</div>
+	<br /><br />
+	';
 }
 // Instanz-Auswahl anzeigen
 else {

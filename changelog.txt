@@ -12,6 +12,7 @@
 * Upgrade auf jQuery 1.9.1
 
 Admin-Bereich
+* Installation jetzt ohne erste Instanz möglich
 * Cronjob-Log
 * Statistik-Anzeigen geändert
 
