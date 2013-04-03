@@ -43,6 +43,12 @@ else if($_GET['sp'] == 'send') {
 		// MySQL-Verbindung
 		$mysql_conn = new mysql;
 		
+		// bei globalem Query ohne Instanzen DB-Array überschreiben
+		if($_POST['mode'] AND !count($dbs)) {
+			$dbs = array(1=>'');
+		}
+		
+		
 		// Instanzen durchgehen
 		foreach($dbs as $instance=>$instance_name) {
 			
