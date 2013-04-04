@@ -2654,9 +2654,12 @@ function form_sendget(f, addr) {
 	addr = addajax(addr);
 	addr = addr+'&'+$(f).find('input').filter(function(index) {
 			return (this.value != '');
-		}).serialize();
+		}).serialize()+'&'+$(f).find('select').filter(function(index) {
+		return (this.value != '');
+	}).serialize();
+	
 	// abschließendes & entfernen
-	addr = addr.replace(/&$/, '');
+	addr = addr.replace(/&+$/, '');
 	
 	// Fenster-ID ermitteln
 	var id = $(f).parents('.fenster').attr('id');
@@ -4289,7 +4292,15 @@ var settingsPage = {
 		// Such-String generieren
 		var val = $(form).find('input').filter(function(index) {
 			return (this.value != '');
+		}).serialize(),
+			val2 = $(form).find('select').filter(function(index) {
+			return (this.value != '');
 		}).serialize();
+		
+		if(val2 != '') {
+			val += '&'+val2;
+		}
+		
 		$('#'+target+' input[type=hidden]').val(val);
 		
 		// Beschreibung laden
