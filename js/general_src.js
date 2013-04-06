@@ -3674,7 +3674,7 @@ function quelltext(f, r) {
 		//
 		// Flottenübersicht - Steuern
 		//
-		else if(ctree.find('#fleet-subnav').find('a').eq(5).is('.active')) {
+		else if(ctree.find('a.active[href*="tab=5"]').length) {
 			out['typ'] = 'floview';
 			
 			// Spieler
@@ -3722,7 +3722,7 @@ function quelltext(f, r) {
 		//
 		// Bergbauschiffe
 		//
-		else if(ctree.find('#fleet-subnav').find('a').eq(1).is('.active')) {
+		else if(ctree.find('a.active[href*="tab=2"]').length) {
 			out['typ'] = 'floviewbbs';
 			
 			// Spieler
