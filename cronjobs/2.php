@@ -419,7 +419,7 @@ foreach($dbs as $instance) {
 			(schiffeBergbauUpdate < ".(time()-604800)." AND schiffeTerraformerUpdate < ".(time()-604800).")
 	") OR dieTransaction("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
 	
-	$countBbsTf++;
+	$countBbsTf += mysql_affected_rows();
 	
 	query("
 		UPDATE ".$prefix."planeten_schiffe
