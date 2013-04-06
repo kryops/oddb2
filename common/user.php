@@ -566,7 +566,7 @@ playeratm=4173&userid=602511&name=Kryops&points=34202&titel=&warpoints=8608&gesi
 	
 	// X und Rebellion abfangen
 	if(!$uid) return false;
-	if($uid <= 10000 OR $uid > 2000000) return false;
+	if($uid <= 3 OR $uid > 2000000) return false;
 	
 	// Downtime
 	if(DOWNTIME AND date("G") == 4) return false;
