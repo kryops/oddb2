@@ -84,7 +84,7 @@ class Search {
 		
 		
 		// Planeten-Typen
-		$pltypen = 91;
+		$pltypen = 93;
 		$pltypnot = array();
 		
 		// Planetentyp validieren
