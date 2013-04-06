@@ -472,7 +472,7 @@ $query = query("
 	FROM
 		".GLOBPREFIX."player
 	WHERE
-		playerID > 1000
+		playerID > 10000
 ") OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
 
 $data = mysql_fetch_assoc($query);
@@ -523,7 +523,7 @@ if($minid AND $od_up) {
 		FROM
 			".GLOBPREFIX."player
 		WHERE
-			playerID > 1000
+			playerID > 10000
 		ORDER BY
 			playerID ASC
 	") OR dieTransaction("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
