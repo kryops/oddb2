@@ -944,7 +944,7 @@ else if($_GET['sp'] == '') {
 				$tmpl->content .= '
 		<tr>
 			<td>Scoutziel</td>
-			<td colspan="7">alle Systeme in G'.$data['systeme_galaxienID'].' sind aktueller als '.$fow['scout'].' Tage</td>
+			<td colspan="7">alle Systeme in G'.$data['systeme_galaxienID'].' sind aktueller als '.$scout_days.' Tage</td>
 		</tr>';
 			}
 		}
