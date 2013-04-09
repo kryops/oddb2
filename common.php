@@ -22,7 +22,7 @@ define('VERSION', '2.3');
 // Patch-Version
 define('PATCH_VERSION', 3);
 // Datei-Zusatz (css und js)
-define('FILESTAMP', '?18');
+define('FILESTAMP', '?19');
 // OD-Runde
 define('ODWORLD', 'int11');
 define('DOWNTIME', false);

@@ -565,7 +565,7 @@ $(document).ready(function(){
 		var cb = $(this).parents('form').find('input[name="'+name+'"], .'+name);
 		if(cb == null) return false;
 		if(cb.attr('disabled')) return false;
-		cb.attr('checked', !cb.attr('checked'));
+		cb.prop('checked', !cb.prop('checked'));
 	});
 	
 	// Allianzfilter
@@ -577,8 +577,8 @@ $(document).ready(function(){
 		if(this.tagName == 'A') {
 			// nur diese Checkbox checken, wenn nicht gecheckt
 			if($(this).css('opacity') < 1 || $(p).find('input[name!='+ally+']:checked').length > 0) {
-				$(p).find('input').attr('checked', false);
-				$(p).find('input[name='+ally+']').attr('checked', true);
+				$(p).find('input').prop('checked', false);
+				$(p).find('input[name='+ally+']').prop('checked', true);
 				
 				// Link-Transparenz
 				$(p).find('a[name!='+ally+']').css('opacity', 0.5);
@@ -592,7 +592,7 @@ $(document).ready(function(){
 			}
 			// alle checken
 			else {
-				$(p).find('input').attr('checked', true);
+				$(p).find('input').prop('checked', true);
 				// Link-Transparenz
 				$(p).find('a').css('opacity', 1);
 				// Zeilen einblenden
