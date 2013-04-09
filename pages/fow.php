@@ -1192,7 +1192,7 @@ if(count($fow) OR !$showr) {
 			$sysinfo .= '
 	<tr>
 		'.fowcell('Scoutziel').'
-		'.fowcell('alle Systeme in G'.$data['systeme_galaxienID'].' sind aktueller als '.$fow['scout'].' Tage', false, 8).'
+		'.fowcell('alle Systeme in G'.$data['systeme_galaxienID'].' sind aktueller als '.$scout_days.' Tage', false, 8).'
 	</tr>';
 		}
 	}
