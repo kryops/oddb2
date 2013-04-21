@@ -21,6 +21,7 @@ General::loadClass('Search');
 
 // Suchspalten
 $spalten = array(
+	54=>'Treffer-Position',
 	1=>'Galaxie',
 	2=>'System',
 	3=>'Plani-ID',
@@ -633,7 +634,8 @@ else {
 				50=>'Aktivit&auml;t',
 				51=>'Allys im System',
 				52=>'Natives',
-				53=>'Punkte'
+				53=>'Punkte',
+				54=>'Pos'
 			);
 			
 			$heute = strtotime('today');
@@ -824,7 +826,13 @@ else {
 				// erste Galaxie
 				$firstgala = false;
 				
+				// Positions-Zähler
+				$pos = $offset;
+				
 				while($row = mysql_fetch_assoc($results)) {
+					// Position hochzählen
+					$pos++;
+					
 					// zu Route hinzufügen
 					if($route) {
 						$route->add($row['planetenID'], false);
@@ -1266,7 +1274,10 @@ else {
 					if(isset($sp2[53])) {
 						$spv[53] = imppunkte($row);
 					}
-					
+					// Treffer-Position
+					if(isset($sp2[54])) {
+						$spv[54] = $pos;
+					}
 					
 					// ausgeben
 					
