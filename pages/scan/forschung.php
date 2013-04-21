@@ -103,13 +103,6 @@ class ScanForschung {
 			
 			$forschung['update'][$kat] = time();
 			
-			$fids = array();
-			
-			for($i=0; $i<$fcount; $i++) {
-				if($_POST['ff'][$i] AND $fid = Forschung::getId($_POST['f'][$i])) {
-					$fids[] = $fid;
-				}
-			}
 			
 			// aktuelle Forschung
 			if(isset($_POST['current']) AND $fid = Forschung::getId($_POST['current'])) {
@@ -124,6 +117,15 @@ class ScanForschung {
 			}
 			else {
 				$forschung['current_end'] = 0;
+			}
+			
+			// erforschte Technologien
+			$fids = array();
+				
+			for($i=0; $i<$fcount; $i++) {
+				if($_POST['ff'][$i] AND $fid = Forschung::getId($_POST['f'][$i]) AND $fid != $forschung['current']) {
+					$fids[] = $fid;
+				}
 			}
 			
 			$forschung[$kat] = $fids;
