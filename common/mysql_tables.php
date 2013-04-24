@@ -348,7 +348,7 @@ $tables_add = array(
   `userRechte` text NOT NULL,
   `userBanned` tinyint(3) unsigned NOT NULL DEFAULT 0,
   `userSettings` text NOT NULL,
-  `userODSettings` varchar(6) NOT NULL DEFAULT 0,
+  `userODSettings` varchar(6) NOT NULL,
   `userSitterTo` text NOT NULL,
   `userSitterFrom` text NOT NULL,
   `userODSettingsUpdate` int(10) unsigned NOT NULL DEFAULT 0,

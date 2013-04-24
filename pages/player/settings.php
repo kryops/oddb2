@@ -155,7 +155,7 @@ else {
 		$r = true;
 		
 		// wenn Einstellungen eingescannt, nur ohne Filter anzeigen
-		if($row['userODSettings'] == '') {
+		if($row['userODSettings'] == '' OR strlen($row['userODSettings']) < 6) {
 			$row['userODSettings'] = '444444';
 		}
 		
