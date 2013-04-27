@@ -744,7 +744,7 @@ if($showr) {
 				}
 				
 				$planeten .= '
-		<userRace><![CDATA['.($pl['playerName'] != NULL ? $rassen[$pl['playerRasse']] : '').']]></userRace>';
+		<userRace><![CDATA['.(($pl['playerName'] != NULL AND isset($rassen[$pl['playerRasse']])) ? $rassen[$pl['playerRasse']] : '').']]></userRace>';
 				if(trim($pl['planetenKommentar']) != '' AND $r) {
 					$planeten .= '
 		<comment><![CDATA['.($oddb ? 1 : htmlspecialchars($pl['planetenKommentar'], ENT_COMPAT, $charset)).']]></comment>';

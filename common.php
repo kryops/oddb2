@@ -220,6 +220,7 @@ $rassen = array(
 	3=>'Tradoner',
 	4=>'Beralut',
 	5=>'Myrianer',
+	8=>'Wraith Lords',
 	11=>'Revisker',
 	10=>'NPC'
 );
@@ -231,6 +232,7 @@ $rassen2 = array(
 	3=>'trado',
 	4=>'bera',
 	5=>'myri',
+	8=>'lux',
 	10=>'lux',
 	11=>'revisker'
 );
