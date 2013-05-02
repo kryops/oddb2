@@ -572,7 +572,7 @@ else {
 			Um das ODDB Tool zu installieren, musst du
 		
 			<ul>
-			<li>die .crx-Datei herunterladen</li>
+			<li>die .crx-Datei herunterladen (Rechtsklick &rarr; Link speichern unter)</li>
 			<li>in Chrome die Erweiterungsseite &ouml;ffnen <i>(Einstellungen &rarr; Tools &rarr; Erweiterungen)</i></li>
 			<li>die heruntergeladene Datei in Chrome hineinziehen</li>
 			</ul>
