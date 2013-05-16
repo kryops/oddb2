@@ -1,4 +1,10 @@
-﻿02.04.2013 - V2.3 [R11]
+﻿16.05.2013 - V2.3.1
+-------------------
+* Bugfix Forschungsbereich mit lokalem Grafikpaket
+
+
+
+02.04.2013 - V2.3 [R11]
 -----------------------
 * Portierung des ODDB Tools als Bookmarklet
 * Die Abgleichfunktion trägt jetzt auch neue Planeten ein, sofern die Galaxie gescannt wurde

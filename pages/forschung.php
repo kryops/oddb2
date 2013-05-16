@@ -141,7 +141,7 @@ while($row = mysql_fetch_assoc($query)) {
 		$content2 .= '
 			<br />
 			<p>aktuelle Forschung: 
-			<img src="'.Forschung::$baseUrl.$f['forschungPfad'].'" title="'.h($f['forschungName']).'" class="icon_forschung" data-forschung="'.$forschung['current'].'" />';
+			<img src="'.Forschung::$baseUrl.$f['forschungPfad'].'" title="'.h($f['forschungName']).'" class="icon_forschung icon_forschung_current" data-forschung="'.$forschung['current'].'" />';
 		
 		if($forschung['current_end']) {
 			$content2 .= ' &nbsp; (Ende: '.datum($forschung['current_end']).')</p>';

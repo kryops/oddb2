@@ -1464,6 +1464,10 @@ label {
 	padding:1px;
 }
 
+.icon_forschung_current {
+	margin-bottom:-8px;
+}
+
 .forschung_filter {
 	margin:8px 0;
 	overflow:hidden;

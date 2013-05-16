@@ -970,6 +970,10 @@ oddbtool.parsePage = function(page, manual) {
 				var $this = $(this),
 					path = $this.attr('src');
 				
+				// Lokale Grafikpakete abfangen
+				if(path.indexOf('http://static.omega-day.com/img/grafik/') == -1) {
+					throw 'Grafikpfade ungültig!';
+				}
 				if(out['kategorie'] == 0) {
 					for(var i in kategorien) {
 						if(path.indexOf(kategorien[i]) != -1) {

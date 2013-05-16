@@ -7,7 +7,7 @@ var oddbtool = {
 	/**
 	 * Version
 	 */
-	version: '2.3',
+	version: '2.3.1',
 	odworld: 'int11',
 	
 	
