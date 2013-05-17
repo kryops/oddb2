@@ -98,7 +98,8 @@ var oddbtool = {
 		1053:912,
 		1054:928,
 		1055:976,
-		1056:960
+		1056:960,
+		1057:768
 	},
 	
 	// Rassen-Suchmuster und Klassennamen

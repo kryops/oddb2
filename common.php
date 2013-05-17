@@ -300,7 +300,8 @@ $gebaeude = array(
 	1053=>'industriezentrum.gif',
 	1054=>'fabrikIII-1.gif',
 	1055=>'ratshalle_mod.gif',
-	1056=>'arcbro3.gif'
+	1056=>'arcbro3.gif',
+	1057=>'bio-gas-raff_mkii.gif'
 );
 
 // Gebaeude-Positionen auf dem Sprite (Pixel nach rechts)
@@ -366,7 +367,8 @@ $gebaeudepos = array(
 	1053=>912,
 	1054=>928,
 	1055=>976,
-	1056=>960
+	1056=>960,
+	1057=>768
 );
 
 // Orbiter (Gebäude-ID=>Stufe)

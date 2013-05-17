@@ -124,7 +124,8 @@ header('Content-Type: text/javascript; charset=utf-8');
 			1053:912,
 			1054:928,
 			1055:976,
-			1056:960
+			1056:960,
+			1057:768
 		},
 		
 		// Rassen-Suchmuster und Klassennamen
@@ -1239,6 +1240,11 @@ header('Content-Type: text/javascript; charset=utf-8');
 					
 					var $this = $(this),
 						path = $this.attr('src');
+					
+					// Lokale Grafikpakete abfangen
+					if(path.indexOf('http://static.omega-day.com/img/grafik/') == -1) {
+						throw 'Grafikpfade ungültig!';
+					}
 					
 					if(out['kategorie'] == 0) {
 						for(var i in kategorien) {
