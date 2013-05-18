@@ -7,7 +7,7 @@ var oddbtool = {
 	/**
 	 * Version
 	 */
-	version: '2.3.1',
+	version: '2.3.1.1',
 	odworld: 'int11',
 	
 	
@@ -115,7 +115,7 @@ var oddbtool = {
 	
 	// Sonderzeichen im FoW ersetzen
 	charmap_search: ['&amp;#92', '&amp;#47', '&amp;', '', '', '', '\\\'', '', '', '', ''],
-	charmap_replace: ['\\', '/', '&', '&dagger;', '&bull;', '´', '\'', '˜', '”', '™', '€'],
+	charmap_replace: ['\\', '/', '&', '&dagger;', '&bull;', '´', '\'', '˜', '�?', '™', '€'],
 	
 	/**
 	 * Einstellungen laden

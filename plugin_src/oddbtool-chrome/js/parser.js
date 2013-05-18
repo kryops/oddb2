@@ -35,18 +35,11 @@ oddbtool.parser = function(page, pdata, manual) {
 	
 	// Parsen fehlgeschlagen
 	if(!pdata) {
-		//$('#oddbtoolparser',page).append('<span style="color:red">fehlgeschlagen! (unbekannter Quelltext)</span>');
 		return false;
 	}
 	
-	// Debug-Ausgabe /////////////////////////////////////////////////////////////////////////
-	//$('#oddbtoolwin',page).append('<br><br>'+decodeURIComponent(jQuery.param(pdata)));
-	
-	var content = decodeURIComponent(jQuery.param(pdata));
-	content = content.replace(/&/gi, " ");
-	content = content.replace(/</gi, "[");
-	content = content.replace(/>/gi, "]");
-	$('body',page).append('<div style="display:none">'+content+'</div>');
+	// Debug-Ausgabe
+	console.log(pdata);
 	
 	var addr = oddbtool.prefs.url+'index.php?p=scan&sp=scan&plugin&version='+oddbtool.version+'&ajax';
 	
@@ -365,7 +358,7 @@ oddbtool.parsePage = function(page, manual) {
 					}
 					
 					// Orbit leer
-					else if($(this).find('tr:last-child img[src*="orbit-leer.gif"]').length) {
+					else if($(this).find('tr:last-child img[src*="orbit_blank.gif"]').length) {
 						pl[i]['leer'] = 1;
 					}
 				}
@@ -423,7 +416,7 @@ oddbtool.parsePage = function(page, manual) {
 			}
 			
 			// Werte
-			data = ctree.find('img[src*="planeteninfo"]').parent().attr('onmouseover');
+			data = ctree.find('img[src*="icon_planet_info.gif"]').parent().attr('onmouseover');
 			if(data == null) {
 				throw 'Konnte Planetenwerte nicht ermitteln!';
 			}
@@ -479,13 +472,13 @@ oddbtool.parsePage = function(page, manual) {
 				// Planetengebäude
 				data = ctree.find('td[width="600"][background]');
 				for(var i=1; i<=36; i++) {
-					out['g'+i] = data.find('img[name="pod'+i+'"]').attr('src').replace(/^.*\/grafik\/(?:gebaude\/)*/, '').replace(/leer.gif/, '');
+					out['g'+i] = data.find('img[name="pod'+i+'"]').attr('src').replace(/^.*\/img\/(?:buildings\/|misc\/)*/, '').replace(/blank.gif/, '');
 				}
 				
 				// Orbitgebäude
 				data = data.prev();
 				for(i=1; i<=12; i++) {
-					out['o'+i] = data.find('img[name="wpod'+i+'"]').attr('src').replace(/^.*\/grafik\/(?:gebaude\/)*/, '');
+					out['o'+i] = data.find('img[name="wpod'+i+'"]').attr('src').replace(/^.*\/img\/(?:buildings\/|misc\/)*/, '');
 				}
 			}
 			catch(e) {
@@ -505,10 +498,10 @@ oddbtool.parsePage = function(page, manual) {
 				try {
 					// Vermögen und Steuereinnahmen
 					out['konto'] = ctree.find('#creditsda').html().replace(/[^\d\-]/g, '');
-					out['steuer'] = ctree.find('img[src*="credits_us"]').last().next().children('b').html().replace(/^(\S*) .*$/, '$1').replace(/[^\d]/g, '');
+					out['steuer'] = ctree.find('img[src*="credits_small.gif"]').last().next().children('b').html().replace(/^(\S*) .*$/, '$1').replace(/[^\d]/g, '');
 					
 					// Gesamt-FP
-					data = ctree.find('img[src*="forschung_forschen"]').next().children('b').html()
+					data = ctree.find('img[src*="research_small.gif"]').next().children('b').html();
 					// Forscherdrang
 					if(data.indexOf('+') != -1) {
 						data = data.split('+');
@@ -526,7 +519,7 @@ oddbtool.parsePage = function(page, manual) {
 			}
 			
 			// Schiffbau
-			if(ctree.find('table[width="821"] td:last-child img[src*="schiffe"]').length) {
+			if(ctree.find('table[width="821"] td:last-child img[src*="ships"]').length) {
 				out['schiff'] = ctree.find('input[name="bauzeit"]').val();
 			}
 		}
@@ -604,7 +597,7 @@ oddbtool.parsePage = function(page, manual) {
 					pl['scr'] = pl['scr'].replace(/=/g, 'Y');
 					
 					// Schiff in der Werft
-					if($(this).find('img[src*="schiffe"]').length) {
+					if($(this).find('img[src*="ships"]').length) {
 						pl['schiff'] = $(this).find('td[remtimea]').attr('remtimea');
 					}
 					
@@ -684,6 +677,7 @@ oddbtool.parsePage = function(page, manual) {
 				out['bes'] = 1;
 				
 				// Besatzer
+				// TODO Grafikpfad wahrscheinlich falsch
 				data = ctree.find('img[src*="warn.gif"]').parent().next().find('a[href*="usershow"]');
 				if(data.length) {
 					out['besuser'] = data.attr('href').replace(/[^\d]/g, '');
@@ -942,7 +936,7 @@ oddbtool.parsePage = function(page, manual) {
 		//
 		// Forschung
 		//
-		else if(ctree.find('a[href="?op=tech&tree=geb"]').length && ctree.find('img[src*="basiscamp.gif"], img[src*="titanid.gif"], img[src*="ion1.gif"]').length) {
+		else if(ctree.find('a[href="?op=tech&tree=geb"]').length && ctree.find('img[src*="basiscamp.gif"], img[src*="titanid_s.gif"], img[src*="ion1.gif"]').length) {
 			
 			out['typ'] = 'forschung';
 			
@@ -961,7 +955,7 @@ oddbtool.parsePage = function(page, manual) {
 			
 			var kategorien = {
 				1: 'basiscamp.gif',
-				2: 'titanid.gif',
+				2: 'titanid_s.gif',
 				3: 'ion1.gif'
 			};
 			
@@ -971,7 +965,7 @@ oddbtool.parsePage = function(page, manual) {
 					path = $this.attr('src');
 				
 				// Lokale Grafikpakete abfangen
-				if(path.indexOf('http://static.omega-day.com/img/grafik/') == -1) {
+				if(path.indexOf('http://static.omega-day.com/img/') == -1) {
 					throw 'Grafikpfade ungültig!';
 				}
 				if(out['kategorie'] == 0) {
@@ -983,7 +977,7 @@ oddbtool.parsePage = function(page, manual) {
 					}
 				}
 				
-				out['f'].push(path.replace(/^.*\/img\/grafik\//, ''));
+				out['f'].push(path.replace(/^.*\/img\//, ''));
 				out['fn'].push($this.attr('titel'));
 				out['ff'].push($this.hasClass('opacity2') ? 1 : 0);
 			});
@@ -996,7 +990,7 @@ oddbtool.parsePage = function(page, manual) {
 			var current = ctree.find('.tabletranslight .box td:first-child img');
 			
 			if(current.length) {
-				out['current'] = current.attr('src').replace(/^.*\/img\/grafik\//, '');
+				out['current'] = current.attr('src').replace(/^.*\/img\//, '');
 				out['current_end'] = ctree.find('#returntim').siblings('b').html();
 			}
 		}

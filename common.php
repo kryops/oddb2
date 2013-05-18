@@ -18,20 +18,20 @@ if(!defined('ODDB')) die('unerlaubter Zugriff!');
 //
 
 // Hauptversion
-define('VERSION', '2.3.1');
+define('VERSION', '2.3.1.1');
 // Patch-Version
-define('PATCH_VERSION', 3);
+define('PATCH_VERSION', 4);
 // Datei-Zusatz (css und js)
-define('FILESTAMP', '?19');
+define('FILESTAMP', '?20');
 // OD-Runde
 define('ODWORLD', 'int11');
 define('DOWNTIME', false);
 // Abgleich-Version
 define('ABGLEICH_VERSION', 3);
 // ODDB Tool-Version
-define('ODDBTOOL', '2.3.1');
-define('ODDBTOOLPATH', 'oddbtool-2_3_1.xpi');
-define('ODDBTOOLPATH_CHROME', 'oddbtool-chrome-2_3_1.crx');
+define('ODDBTOOL', '2.3.1.1');
+define('ODDBTOOLPATH', 'oddbtool-2_3_1_1.xpi');
+define('ODDBTOOLPATH_CHROME', 'oddbtool-chrome-2_3_1_1.crx');
 
 // Debug-Modus
 define('DEBUG', false);
@@ -239,10 +239,10 @@ $rassen2 = array(
 
 // Gebaeude-Pfade
 $gebaeude = array(
-	0=>'leer.gif',
-	-1=>'bau.gif',
-	-2=>'pod.gif',
-	-3=>'weltraumpod.gif',
+	0=>'blank.gif',
+	-1=>'under_construction.gif',
+	-2=>'pod_ground.gif',
+	-3=>'pod_space.gif',
 	-4=>'unbekannt.png',
 	1000=>'basiscamp.gif',
 	1001=>'forschungscamp.gif',

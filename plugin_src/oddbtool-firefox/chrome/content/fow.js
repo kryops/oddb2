@@ -264,7 +264,7 @@ oddbtool.fow = function(page, data) {
 							data['pl'][i]['groesse'] = '<span style="color:red">unbewohnbar</span>';
 						}
 						
-						tooltip += '<table style="border:0;padding:0;margin:0;width:auto"><tr><td><img src="http://static.omega-day.com/img//grafik/aufbautechniken/kultur_erz_us.gif"></td><td style="padding-left:10px;white-space:nowrap">'+data['pl'][i]['erz']+' %</td><td style="padding-left:10px">'+data['pl'][i]['erzmenge']+'</td></tr><tr><td><img src="http://static.omega-day.com/img//grafik/aufbautechniken/kultur_metall_us.gif"></td><td style="padding-left:10px;white-space:nowrap">'+data['pl'][i]['erz']+' %</td><td style="padding-left:10px">'+data['pl'][i]['metallmenge']+'</td></tr><tr><td><img src="http://static.omega-day.com/img//grafik/aufbautechniken/kultur_wolfram_us.gif"></td><td style="padding-left:10px;white-space:nowrap">'+data['pl'][i]['wolfram']+' %</td><td style="padding-left:10px">'+data['pl'][i]['wolframmenge']+'</td></tr><tr><td><img src="http://static.omega-day.com/img//grafik/aufbautechniken/kultur_kristall_us.gif"></td><td style="padding-left:10px;white-space:nowrap">'+data['pl'][i]['kristall']+' %</td><td style="padding-left:10px">'+data['pl'][i]['kristallmenge']+'</td></tr><tr><td><img src="http://static.omega-day.com/img//grafik/aufbautechniken/kultur_flour_us.gif"></td><td style="padding-left:10px;white-space:nowrap">'+data['pl'][i]['fluor']+' %</td><td style="padding-left:10px">'+data['pl'][i]['fluormenge']+'</td></tr></table><br>Bev&ouml;lkerung: '+data['pl'][i]['bev']+'<br>Gr&ouml;&szlig;e: '+data['pl'][i]['groesse']+'<br><br>'+data['pl'][i]['additional'];
+						tooltip += '<table style="border:0;padding:0;margin:0;width:auto"><tr><td><img src="http://static.omega-day.com/img/research/ress_ore_small.gif"></td><td style="padding-left:10px;white-space:nowrap">'+data['pl'][i]['erz']+' %</td><td style="padding-left:10px">'+data['pl'][i]['erzmenge']+'</td></tr><tr><td><img src="http://static.omega-day.com/img/research/ress_steel_small.gif"></td><td style="padding-left:10px;white-space:nowrap">'+data['pl'][i]['erz']+' %</td><td style="padding-left:10px">'+data['pl'][i]['metallmenge']+'</td></tr><tr><td><img src="http://static.omega-day.com/img/research/ress_wolfram_small.gif"></td><td style="padding-left:10px;white-space:nowrap">'+data['pl'][i]['wolfram']+' %</td><td style="padding-left:10px">'+data['pl'][i]['wolframmenge']+'</td></tr><tr><td><img src="http://static.omega-day.com/img/research/ress_crystal_small.gif"></td><td style="padding-left:10px;white-space:nowrap">'+data['pl'][i]['kristall']+' %</td><td style="padding-left:10px">'+data['pl'][i]['kristallmenge']+'</td></tr><tr><td><img src="http://static.omega-day.com/img/research/ress_fluor_small.gif"></td><td style="padding-left:10px;white-space:nowrap">'+data['pl'][i]['fluor']+' %</td><td style="padding-left:10px">'+data['pl'][i]['fluormenge']+'</td></tr></table><br>Bev&ouml;lkerung: '+data['pl'][i]['bev']+'<br>Gr&ouml;&szlig;e: '+data['pl'][i]['groesse']+'<br><br>'+data['pl'][i]['additional'];
 							
 						data['pl'][i]['name'] = oddbtool.str_replace(oddbtool.charmap_search, oddbtool.charmap_replace, data['pl'][i]['name']);
 						tooltip = tooltip.replace(/'/g, "\\'");
@@ -378,7 +378,7 @@ oddbtool.fow = function(page, data) {
 								}
 							}
 							
-							content += '<img src="http://static.omega-day.com/img//grafik/leer.gif" alt="" class="oddbtoolrasse oddbtoolr'+data['pl'][i]['rasse']+'"><a href="index.php?op=usershow&welch='+data['pl'][i]['inhaber']+'">'+data['pl'][i]['username']+'</a>';
+							content += '<img src="http://static.omega-day.com/img/mist/blank.gif" alt="" class="oddbtoolrasse oddbtoolr'+data['pl'][i]['rasse']+'"><a href="index.php?op=usershow&welch='+data['pl'][i]['inhaber']+'">'+data['pl'][i]['username']+'</a>';
 							if(data['pl'][i]['allianz'] > 0) {
 								content += '<br><a href="index.php?op=allyshow&welch='+data['pl'][i]['allianz']+'" style="font-size:10px">'+data['pl'][i]['allytag']+'</a>';
 								var status = $(result).find('status'+data['pl'][i]['allianz']).text();
@@ -470,9 +470,6 @@ oddbtool.fow = function(page, data) {
 				
 				$('#oddbtoolfowtbl tr:even',page).css('backgroundColor', 'rgba(255,255,255,0.05)');
 			}
-			
-			// Debug-Ausgabe
-			//$('#oddbtoolfow',page).append('<span style="color:#00ff00">'+decodeURIComponent(jQuery.param(data))+'</span>');
 			
 		},
 		error: function(e, msg) {

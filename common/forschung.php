@@ -11,7 +11,7 @@ class Forschung {
 	/**
 	 * Grafikpfad-Wurzel
 	 */
-	public static $baseUrl = 'http://static.omega-day.com/img/grafik/';
+	public static $baseUrl = 'http://static.omega-day.com/img/';
 	
 	public static $kategorien = array(
 		1 => 'Gebäude',
@@ -41,17 +41,26 @@ class Forschung {
 	
 	
 	/**
-	 * welche Forschungen (Pfad oder Name) sollen ignoriert werden?
+	 * welche Forschungen (Pfad oder Name [in beiden Sprachen]) sollen ignoriert werden?
 	 * @var unknown
 	 */
 	private static $ignore = array(
-		'Hellfire-Chassis',
-		'Stahlchassis',
-		'Prallfeldgenerator',
-		'Flourchassis',
-		'Freedom-Class',
-		'Hyperiums-Class',
-		'Shelloptress-Class'
+		'ships/steel_s.gif',
+		'ships/titanid_s.gif',
+		'ships/hellfire_s.gif',
+		'ships/collidingfield_s.gif',
+		'ships/hyperium_s.gif',
+		'ships/freedom_s.gif',
+		'ships/shelloptress_s.gif',
+		'ships/core_s.gif',
+		'ships/steel01_s.gif',
+			
+		'buildings/basiscamp.gif',
+		'buildings/forschungscamp.gif',
+		
+		'ship-components/generatorV1_01.gif',
+		'ship-components/ion1.gif',
+		'ship-components/transportV101.gif'
 	);
 	
 	
