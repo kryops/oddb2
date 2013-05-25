@@ -1,7 +1,7 @@
 <?php
 
 /*
- * Patch Version 2.3.1 - 2.3.2 (Patch-Nummer 4)
+ * Patch Version 2.3.1 - 2.3.1.1 (Patch-Nummer 4)
  */
 
 

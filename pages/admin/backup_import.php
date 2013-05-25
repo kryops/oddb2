@@ -703,25 +703,23 @@ $(\'#content\').html(\'<div class="center">Der Import wurde erfolgreich abgeschl
 			$query = query("
 				SELECT
 					systeme_galaxienID,
-					MIN(systemeID) as MinSystem
+					MIN(systemeID) as MinSystem,
+					MAX(systemeID) as MaxSystem
 				FROM
 					".PREFIX."systeme
 				GROUP BY
 					systeme_galaxienID
-				ORDER BY
-					systeme_galaxienID ASC
 			") OR dieTransaction("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
 			
 			while($row = mysql_fetch_assoc($query)) {
-				self::$galaSystemId[$row['systeme_galaxienID']] = $row['MinSystem'];
+				self::$galaSystemId[$row['systeme_galaxienID']] = array($row['MinSystem'], $row['MaxSystem']);
 			}
 			
 			mysql_free_result($query);
-			
 		}
 		
-		foreach(self::$galaSystemId as $gala=>$minSys) {
-			if($minSys < $id) {
+		foreach(self::$galaSystemId as $gala=>$data) {
+			if($data[0] <= $id AND $data[1] >= $id) {
 				return $gala;
 			}
 		}
