@@ -94,6 +94,77 @@ else if($user->allianz) {
 		<div class="center" style="font-weight:bold">Alle Systeme deiner Allianz sind aktuell.</div>
 		<br />';
 	}
+	
+	//
+	// Bergbau-Systeme
+	//
+	$content .= '
+		</div>
+		
+		<br />
+		
+		<div class="hl2">
+			Veraltete Bergbau-Systeme
+		</div>
+		
+		<div class="icontent">';
+	
+	$query = query("
+		SELECT
+			systemeID,
+			systemeX,
+			systemeZ,
+			systeme_galaxienID,
+			systemeUpdate
+		FROM
+			".PREFIX."planeten_schiffe
+			LEFT JOIN ".GLOBPREFIX."player
+				ON playerID = schiffeBergbau
+			LEFT JOIN ".PREFIX."planeten
+				ON planetenID = schiffe_planetenID
+			LEFT JOIN ".PREFIX."systeme
+				ON systemeID = planeten_systemeID
+		WHERE
+			player_allianzenID = ".$user->allianz."
+			AND systemeUpdate < ".(time()-$config['scan_veraltet_ally']*86400)."
+			AND systemeAllianzen NOT LIKE '%+".$user->allianz."+%'
+		GROUP BY
+			systemeID
+		ORDER BY
+			systemeUpdate ASC
+	") OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
+	
+	if(mysql_num_rows($query)) {
+		// Tabellen-Header
+		$content .= '
+		In diesen veralteten Systemen ist ein Bergbauschiff deiner Allianz eingetragen:
+		<br /><br /><br />
+		<table class="data" style="margin:auto">
+			<tr>
+				<th>Gala</th>
+				<th>System</th>
+				<th>Scan</th>
+				<th>&nbsp;</th>
+			</tr>';
+		while($row = mysql_fetch_assoc($query)) {
+			$content .= '
+			<tr>
+				<td>'.datatable::galaxie($row['systeme_galaxienID'], $row['systemeX'], $row['systemeZ']).'</td>
+				<td>'.datatable::system($row['systemeID']).'</td>
+					<td>'.datatable::scan($row['systemeUpdate'], $config['scan_veraltet_ally']).'</td>
+				<td><a href="'.($user->odServer != '' ? $user->odServer : 'http://www.omega-day.com').'/game/index.php?op=system&amp;sys='.$row['systemeID'].'" target="_blank">[in OD &ouml;ffnen]</a></td>
+			</tr>';
+		}
+		$content .= '
+		</table>';
+	}
+	else {
+		$content .= '
+		<br />
+		<div class="center" style="font-weight:bold">Alle Bergbau-Systeme deiner Allianz sind aktuell.</div>
+		<br />';
+	}
+	
 }
 
 $content .= '
