@@ -123,17 +123,19 @@ else if($_GET['sp'] == 'register_delplayer') {
 			$query = query("
 				SELECT
 					playerName,
+					user_playerID,
 					
 					register_allianzenID
 				FROM
 					".GLOBPREFIX."player
+					LEFT JOIN ".PREFIX."user
+						ON user_playerID = playerID
 					LEFT JOIN ".PREFIX."register
 						ON register_allianzenID = player_allianzenID
 				WHERE
 					playerID = ".$_GET['id']."
 			") OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
 			
-			// Allianz nicht eingetragen
 			if(!mysql_num_rows($query)) {
 				$tmpl->error = 'Der Spieler wurde nicht gefunden!';
 			}
@@ -150,21 +152,37 @@ else if($_GET['sp'] == 'register_delplayer') {
 			Soll dem Spieler <a class="link winlink contextmenu" data-link="index.php?p=show_player&amp;id='.$_GET['id'].'">'.htmlspecialchars($data['playerName'], ENT_COMPAT, 'UTF-8').'</a> wirklich die Registrierungserlaubnis entzogen werden?
 			<br /><br />';
 				
-				// Ally hat Registrierungserlaubnis
-				if($data['register_allianzenID'] !== NULL) {
-					$tmpl->content .= '
-			Der Spieler kann die Datenbank weiterhin benutzen,<br />weil seine Allianz eine Registrierungserlaubnis hat.
-			<input type="hidden" name="action" value="1" />';
+				$allyRegister = ($data['register_allianzenID'] !== NULL AND $data['register_allianzenID'] != 0);
+				
+				// Spieler angemeldet
+				if($data['user_playerID'] !== NULL) {
+					// Ally hat Registrierungserlaubnis
+					if($allyRegister) {
+						$tmpl->content .= '
+				Der Spieler kann die Datenbank weiterhin benutzen,<br />weil seine Allianz eine Registrierungserlaubnis hat.
+				<input type="hidden" name="action" value="1" />';
+					}
+					// Ally hat keine Registrierungserlaubnis -> löschen oder sperren
+					else {
+						$tmpl->content .= '
+				den Spieler
+				&nbsp;<select name="action" size="1">
+					<option value="0">l&ouml;schen</option>
+					<option value="1">sperren</option>
+				</select>';
+					}
 				}
-				// Ally hat keine Registrierungserlaubnis -> löschen oder sperren
+				
+				// Spieler nicht angemeldet
 				else {
-					$tmpl->content .= '
-			den Spieler
-			&nbsp;<select name="action" size="1">
-				<option value="0">l&ouml;schen</option>
-				<option value="1">sperren</option>
-			</select>';
+					if($allyRegister) {
+						$tmpl->content .= '
+				Der Spieler kann sich trotzdem registrieren,<br />weil seine Allianz eine Registrierungserlaubnis hat.';
+					}
+					
+					$tmpl->content .= '<input type="hidden" name="action" value="1" />';
 				}
+				
 				
 				$tmpl->content .= '
 				<br /><br /><br />
@@ -237,7 +255,7 @@ else if($_GET['sp'] == 'register_delplayer2') {
 				$cache->remove('user'.$_GET['id']);
 				
 				// Ally hat keine Registrierungserlaubnis
-				if($data['register_allianzenID'] === NULL) {
+				if($data['register_allianzenID'] === NULL OR $data['register_allianzenID'] == 0) {
 					// Spieler sperren
 					if($_POST['action']) {
 						query("
