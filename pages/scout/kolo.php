@@ -17,7 +17,7 @@ if(!class_exists('datatable')) {
 // keine Berechtigung
 if(!$user->rechte['scout']) $tmpl->error = 'Du hast keine Berechtigung!';
 // Daten unvollständig
-else if(!isset($_POST['typ'], $_POST['allianz'], $_POST['gr'], $_POST['stunden'])) {
+else if(!isset($_POST['typ'], $_POST['allianz'], $_POST['gr'], $_POST['stunden'], $_POST['sysally'])) {
 	$tmpl->error = 'Daten unvollständig!';
 }
 // keine Allianz
@@ -31,6 +31,7 @@ else {
 	
 	// Daten sichern
 	$_POST['allianz'] = escape($_POST['allianz']);
+	$_POST['sysally'] = escape($_POST['sysally']);
 	$_POST['stunden'] = (int)$_POST['stunden'];
 	$_POST['gr'] = (int)$_POST['gr'];
 	
@@ -87,12 +88,67 @@ else {
 		}
 	}
 	
+	if(isset($_POST['findsysally']) AND trim($_POST['sysally']) != '') {
+		$sysAllianz = null;
+	
+		// Allianz-ID
+		if(is_numeric(trim($_POST['sysally']))) {
+			// Daten abfragen
+			$query = query("
+				SELECT
+					allianzenID
+				FROM
+					".GLOBPREFIX."allianzen
+				WHERE
+					allianzenID = ".$_POST['sysally']."
+			") OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
+			
+			// Allianz mit dieser ID existiert
+			if(mysql_num_rows($query)) {
+				$data = mysql_fetch_assoc($query);
+				$sysAllianz = $data['allianzenID'];
+			}
+		}
+		
+		// Name eingegeben oder ID nicht gefunden
+		if(!$sysAllianz) {
+			// * als Wildcard benutzen
+			$_POST['sysally'] = str_replace('*', '%', $_POST['sysally']);
+			
+			// Daten abfragen (doppelt escapen wegen LIKE-Bug)
+			$query = query("
+				SELECT
+					allianzenID
+				FROM
+					".GLOBPREFIX."allianzen
+				WHERE
+					allianzenTag LIKE '".escape($_POST['sysally'])."'
+					OR allianzenName LIKE '".escape($_POST['sysally'])."'
+				ORDER BY allianzenID ASC
+				LIMIT 1
+			") OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
+			
+			// Allianz mit diesem Namen
+			if(mysql_num_rows($query)) {
+				$data = mysql_fetch_assoc($query);
+				$sysAllianz = $data['allianzenID'];
+			}
+		}
+	}
+	else {
+		$sysAllianz = false;
+	}
+	
 	// Allianz nicht gefunden
 	if(!$allianz) {
 		$tmpl->error = 'Die Allianz wurde nicht gefunden!';
 	}
+	// Allianz im System nicht gefunden
+	if($sysAllianz === null) {
+		$tmpl->error = 'Die Allianz im System wurde nicht gefunden!';
+	}
 	// Allianz gesperrt
-	if($user->protectedAllies AND in_array($allianz, $user->protectedAllies)) {
+	else if($user->protectedAllies AND (in_array($allianz, $user->protectedAllies) OR ($sysAllianz !== null AND in_array($sysAllianz, $user->protectedAllies)))) {
 		$tmpl->error = 'Du hast keine Berechtigung, diese Allianz anzuzeigen!';
 	}
 	else {
@@ -122,8 +178,19 @@ else {
 		$sql .= "
 			WHERE
 				systemeUpdate < ".(time()-$_POST['stunden']*3600)."
-				AND systemeAllianzen LIKE '%+".$allianz."+%'
-				".($user->protectedGalas ? "AND systeme_galaxienID NOT IN(".implode(', ', $user->protectedGalas).")" : '');
+				AND systemeAllianzen LIKE '%+".$allianz."+%'";
+		
+		if($user->protectedGalas) {
+			$sql .= "
+				AND systeme_galaxienID NOT IN(".implode(', ', $user->protectedGalas).")";
+		}
+		
+		// Allianz im System
+		if($sysAllianz) {
+			$sql .= "
+				AND systemeAllianzen LIKE '%+".$sysAllianz."+%'";
+		}
+		
 		// freie Planeten
 		if(isset($_POST['free'])) {
 			// Mindestgröße -> über Planeten abfragen und gruppieren

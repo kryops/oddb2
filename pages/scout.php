@@ -239,7 +239,7 @@ else {
 		'width'=>650,
 		'content'=>'
 			<div class="hl2">
-				Kolos finden
+				Kolos / BBS / Terraformer in eigenen Systemen finden
 			</div>
 			
 			<div class="icontent">
@@ -256,8 +256,13 @@ else {
 						<input type="text" class="text center" style="width:90px" name="allianz" /> &nbsp;
 						<span class="small hint">(ID, Tag oder Name)</span>
 						<br />
-						<input type="checkbox" name="free" checked="checked" /> die freie Planeten enthalten &nbsp;
+						<input type="checkbox" name="free" checked="checked" /> <span class="togglecheckbox" data-name="free">die freie Planeten enthalten</span> &nbsp;
 						(optionale Mindestgröße <input type="text" class="smalltext" name="gr" /> )
+						<br />
+						<input type="checkbox" name="findsysally" /> <span class="togglecheckbox" data-name="findsysally">die Planeten der Allianz</span> &nbsp;
+						<input type="text" class="smalltext" name="sysally" /> &nbsp;
+						<span class="togglecheckbox" data-name="findsysally">enthalten</span> &nbsp;
+						<span class="small hint">(ID, Tag oder Name)</span>
 						<br />
 						deren Scan &auml;lter als 
 						&nbsp;<input type="text" class="smalltext" name="stunden" value="24" />&nbsp;
