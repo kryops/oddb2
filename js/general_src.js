@@ -4088,7 +4088,7 @@ function searchnav(id, search, t) {
 			if(pos > 0) {
 				content += '<a class="link contextmenu" link="index.php?p=show_planet&id='+vals[pos-1]+'&nav='+search+'">&laquo; vorheriger Planet ('+vals[pos-1]+')</a>';
 			}
-			content += '</td><td style="width:30%;text-align:center">Suchergebnis-Navigation</td><td style="width:35%;text-align:right;font-weight:bold">';
+			content += '</td><td style="width:30%;text-align:center">Planeten-Navigation</td><td style="width:35%;text-align:right;font-weight:bold">';
 			// nächster Planet
 			if(pos < vals.length-1) {
 				content += '<a class="link contextmenu" link="index.php?p=show_planet&id='+vals[pos+1]+'&nav='+search+'">n&auml;chster Planet ('+vals[pos+1]+') &raquo;</a>';

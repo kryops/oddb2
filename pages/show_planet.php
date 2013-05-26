@@ -148,7 +148,7 @@ function searchnav() {
 		
 		// Navileiste erzeugen
 		$nav = '
-			<div class="fcbox center small2" id="snavbox'.$_GET['nav'].'-'.$_GET['id'].'-'.$t.'">Suchnavigation wird geladen...</div>';
+			<div class="fcbox center small2" id="snavbox'.$_GET['nav'].'-'.$_GET['id'].'-'.$t.'">Planeten-Navigation wird geladen...</div>';
 		// JavaScript starten
 		$tmpl->script = '
 searchnav('.$_GET['id'].', '.$_GET['nav'].', '.$t.');';

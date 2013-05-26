@@ -200,6 +200,9 @@ else {
 		'.((!$route->finished AND $r) ? '<th>&nbsp;</th>' : '').'
 	</tr>';
 	
+	$t = time();
+	$ids = array();
+		
 	if($route->count) {
 		// Bedingungen aufstellen
 		$conds = array(
@@ -307,8 +310,8 @@ else {
 				}
 				$tmpl->content .=  ($route->liste ? '<td>'.datatable::galaxie($row['systeme_galaxienID'], $row['systemeX'], $row['systemeZ']).'</td>' : '').'
 		<td>'.($route->liste ? datatable::system($row['planeten_systemeID']) : datatable::systemsektor($row['planeten_systemeID'], $row['systemeX'], $row['systemeZ'])).'</td>
-		<td>'.datatable::planet($row['planetenID']).'</a></td>
-		<td>'.datatable::planet($row['planetenID'], $row['planetenName']).'</td>
+		<td>'.datatable::planet($row['planetenID'], false, $t).'</a></td>
+		<td>'.datatable::planet($row['planetenID'], $row['planetenName'], $t).'</td>
 		<td>'.datatable::inhaber($row['planeten_playerID'], $row['playerName'], $row['playerUmod'], $row['playerRasse']).'</td>
 		<td>'.datatable::allianz($row['player_allianzenID'], $row['allianzenTag']).'</td>
 		<td>'.datatable::status($row['statusStatus'], $row['player_allianzenID']).'</td>
@@ -360,6 +363,8 @@ else {
 		'.((!$route->finished AND $r) ? '<td class="userlistaction"><img src="img/layout/leer.gif" style="background-position:-1040px -91px;cursor:pointer" class="hoverbutton" onclick="if(window.confirm(\'Soll der Planet wirklich entfernt werden?\')){ajaxcall(\'index.php?p=route&amp;sp=remove&amp;id='.$_GET['id'].'&remove='.$id.'&ajax\', false, false, false)}" title="Planet entfernen" /></td>' : '').'
 	</tr>';
 			}
+			
+			$ids[] = $id;
 		}
 	}
 	// Route leer
@@ -387,6 +392,11 @@ else {
 	}
 	$tmpl->content .= '
 	</form>';
+	
+	// hidden-Feld für die Suchnavigation
+	$tmpl->content .= '
+		<input type="hidden" id="snav'.$t.'" value="'.implode('-', $ids).'" />';
+	
 	if(!isset($_GET['update'])) {
 		$tmpl->content .= '
 </div>';

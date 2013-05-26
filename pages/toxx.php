@@ -305,6 +305,9 @@ else if($_GET['sp'] == 'send') {
 				
 				$tmpl->content = '<div class="favadd" style="float:right" title="zu den Favoriten hinzuf&uuml;gen" onclick="fav_add(\'index.php?p=toxx&amp;'.implode('&amp;', $fav).'\', 3)"></div>';
 				
+				$t = time();
+				$ids = array();
+				
 				// Planeten abfragen
 				$query = query("
 					SELECT
@@ -397,17 +400,17 @@ else if($_GET['sp'] == 'send') {
 				
 					while($row = mysql_fetch_assoc($query)) {
 						// ist der PLanet in einer Toxxroute enthalten?
-						$t = route::in_toxxroute($row['planetenID']);
-						if($t) {
+						$toxx = route::in_toxxroute($row['planetenID']);
+						if($toxx) {
 							$intoxxroute = true;
 						}
 						
 						$tmpl->content .= '
-					<tr'.($t ? ' style="opacity:0.4"' : '').'>
+					<tr'.($toxx ? ' style="opacity:0.4"' : '').'>
 					<td>'.datatable::galaxie($point[0], $row['systemeX'], $row['systemeZ']).'</td>
 					<td>'.datatable::system($row['planeten_systemeID']).'</td>
-	<td>'.datatable::planet($row['planetenID']).'</a></td>
-	<td>'.datatable::planet($row['planetenID'], $row['planetenName']).'</td>
+	<td>'.datatable::planet($row['planetenID'], false, $t).'</a></td>
+	<td>'.datatable::planet($row['planetenID'], $row['planetenName'], $t).'</td>
 					<td>'.datatable::inhaber($row['planeten_playerID'], $row['playerName'], $row['playerUmod'], $row['playerRasse']).'</td>
 					<td>'.datatable::allianz($row['player_allianzenID'], $row['allianzenTag'], $row['statusStatus']).'</td>
 					<td>'.$row['planetenGroesse'].'</td>
@@ -461,16 +464,22 @@ else if($_GET['sp'] == 'send') {
 						
 						// reservieren, geraidet- oder getoxxt-Datum und Link
 						$tmpl->content .= '</td>
-						<td>'.((time()-$row['planetenReserv'] < 86400) ? '<i>reserv</i>' : '<a onclick="ajaxcall(\'index.php?p=ajax_general&amp;sp=toxxraidreserv&amp;id='.$row['planetenID'].'&amp;ajax\', this.parentNode, false, false)" class="hint">reserv</a>').'</td>
+						<td>'.(($t-$row['planetenReserv'] < 86400) ? '<i>reserv</i>' : '<a onclick="ajaxcall(\'index.php?p=ajax_general&amp;sp=toxxraidreserv&amp;id='.$row['planetenID'].'&amp;ajax\', this.parentNode, false, false)" class="hint">reserv</a>').'</td>
 						<td>'.datatable::geraidet($row['planetenGeraidet'], $row['planetenID']).'</td>
 						<td>'.datatable::getoxxt($row['planetenGetoxxt'], $row['planetenID']).'</td>
 						<td class="userlistaction"><img src="img/layout/leer.gif" class="hoverbutton" style="background-position:-1060px -91px" title="von hier aus weiterfliegen" onclick="scout_weiter('.$row['planetenID'].', this)" /></td>
 					</tr>';
+						
+						$ids[] = $row['planetenID'];
 					}
 					
 					// Tabellenfooter
 					$tmpl->content .= '
 					</table>';
+					
+					// hidden-Feld für die Suchnavigation
+					$tmpl->content .= '
+						<input type="hidden" id="snav'.$t.'" value="'.implode('-', $ids).'" />';
 					
 					// Toxxrouten-Label
 					if($intoxxroute) {

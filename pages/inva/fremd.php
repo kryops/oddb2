@@ -71,6 +71,9 @@ Aktionen nach Entfernung zu
 <br /><br />
 <form name="fremdroutenform" onsubmit="return false">';
 
+$t = time();
+$ids = array();
+
 // Daten abfragen
 $query = query("
 	SELECT
@@ -173,7 +176,9 @@ $content2 .= '
 			}
 		}
 		
-		$content2 .= invarow($row, true);
+		$content2 .= invarow($row, true, $t);
+		
+		$ids[] = $row['invasionen_planetenID'];
 	}
 	
 	// Allianzen-Auswahl anzeigen
@@ -200,6 +205,10 @@ $content2 .= '
 	
 	$content .= $content2.'
 	</table>';
+	
+	// hidden-Feld für die Suchnavigation
+	$content .= '
+		<input type="hidden" id="snav'.$t.'" value="'.implode('-', $ids).'" />';
 	
 	// Routen-Formular
 	if($user->rechte['routen']) {

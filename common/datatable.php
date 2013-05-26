@@ -50,10 +50,11 @@ class datatable {
 	 * Planet
 	 * @param $id int Planeten-ID
 	 * @param $name string Planeten-Name @default false
+	 * @param $nav int Timestamp für Suchergebnis-Navigation @default false
 	 * @return HTML
 	 */
-	public static function planet($id, $name=false) {
-		return '<a class="link winlink contextmenu link_planet" data-id="'.$id.'" data-link="index.php?p=show_planet&amp;id='.$id.'&amp;ajax">'.($name === false ? $id : htmlspecialchars($name, ENT_COMPAT, 'UTF-8')).'</a>';
+	public static function planet($id, $name=false, $nav=false) {
+		return '<a class="link winlink contextmenu link_planet" data-id="'.$id.'" data-link="index.php?p=show_planet&amp;id='.$id.($nav ? '&amp;nav='.$nav : '').'&amp;ajax">'.($name === false ? $id : htmlspecialchars($name, ENT_COMPAT, 'UTF-8')).'</a>';
 	}
 	
 	/**

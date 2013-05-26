@@ -149,6 +149,9 @@ else {
 				$conds[] = "systemeScanReserv < ".(time()-86400);
 			}
 			
+			$t = time();
+			$ids = array();
+			
 			// Planeten abfragen
 			$query = query("
 				SELECT
@@ -235,8 +238,8 @@ else {
 				<tr>
 					<td>'.datatable::galaxie($point[0], $row['systemeX'], $row['systemeZ']).'</td>
 					<td>'.datatable::system($row['planeten_systemeID']).'</td>
-	<td>'.datatable::planet($row['planetenID']).'</a></td>
-	<td>'.datatable::planet($row['planetenID'], $row['planetenName']).'</td>
+	<td>'.datatable::planet($row['planetenID'], false, $t).'</a></td>
+	<td>'.datatable::planet($row['planetenID'], $row['planetenName'], $t).'</td>
 					<td>'.datatable::inhaber($row['planeten_playerID'], $row['playerName'], $row['playerUmod'], $row['playerRasse']).'</td>
 					<td>'.datatable::allianz($row['player_allianzenID'], $row['allianzenTag']).'</td>
 					<td>'.datatable::status($row['statusStatus'], $row['player_allianzenID']).'</td>
@@ -247,14 +250,19 @@ else {
 					<td>'.datatable::screenshot($row, $config['scan_veraltet']).'</td>
 					<td>'.datatable::kategorie($row['planetenKategorie'], $row['planetenUpdateOverview'], $row).'</td>
 					<td>'.datatable::kommentar($row['planetenKommentar'], $row['planetenID']).'</td>
-					<td class="sysreserv'.$row['planeten_systemeID'].'">'.($row['systemeScanReserv'] > time()-86400 ? '<i>'.htmlspecialchars($row['systemeReservUser'], ENT_COMPAT, 'UTF-8').'</i>' : '<a onclick="ajaxcall(\'index.php?p=ajax_general&amp;sp=reserve&amp;sys='.$row['planeten_systemeID'].'&amp;ajax\', this.parentNode, false, false)">reservieren</a>').'</td>
+					<td class="sysreserv'.$row['planeten_systemeID'].'">'.($row['systemeScanReserv'] > $t-86400 ? '<i>'.htmlspecialchars($row['systemeReservUser'], ENT_COMPAT, 'UTF-8').'</i>' : '<a onclick="ajaxcall(\'index.php?p=ajax_general&amp;sp=reserve&amp;sys='.$row['planeten_systemeID'].'&amp;ajax\', this.parentNode, false, false)">reservieren</a>').'</td>
 					<td class="userlistaction"><img src="img/layout/leer.gif" class="hoverbutton arrowbutton"  title="von hier aus weiterscouten" onclick="scout_weiter('.$row['planetenID'].', this)" /></td>
 				</tr>';
+					
+					$ids[] = $row['planetenID'];
 				}
 				
 				// Tabellenfooter
 				$tmpl->content .= '
 					</table>';
+				
+				// Ergebnis-Navigation
+				$tmpl->content .= '<input type="hidden" id="snav'.$t.'" value="'.implode('-', $ids).'" />';
 			}
 			// alle Systeme aktuell
 			else {

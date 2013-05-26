@@ -142,6 +142,10 @@ $querystring = preg_replace('/&sort=([a-z]+)/', '', $querystring);
 $querystring = str_replace('&switch', '', $querystring);
 $querystring = htmlspecialchars($querystring, ENT_COMPAT, 'UTF-8');
 
+$t = time();
+$ids = array();
+
+
 // eigene Ressplanis abfragen
 $query = query("
 	SELECT
@@ -238,8 +242,8 @@ if(mysql_num_rows($query)) {
 	<tr>
 	<td>'.datatable::galaxie($row['systeme_galaxienID'], $row['systemeX'], $row['systemeZ']).'</td>
 	<td>'.datatable::system($row['planeten_systemeID']).'</td>
-	<td>'.datatable::planet($row['planetenID']).'</a></td>
-	<td>'.datatable::planet($row['planetenID'], $row['planetenName']).'</td>
+	<td>'.datatable::planet($row['planetenID'], false, $t).'</a></td>
+	<td>'.datatable::planet($row['planetenID'], $row['planetenName'], $t).'</td>
 	<td>'.datatable::inhaber($row['planeten_playerID'], $row['playerName'], $row['playerUmod'], $row['playerRasse']).'</td>
 	<td>'.datatable::allianz($row['player_allianzenID'], $row['allianzenTag'], $row['statusStatus']).'</td>
 	<td>'.$row['planetenGroesse'].'</td>
@@ -258,10 +262,16 @@ if(mysql_num_rows($query)) {
 		}
 		$content .= '
 	</tr>';
+		
+		$ids[] = $row['planetenID'];
 	}
 	
 	$content .= '
 	</table>';
+	
+	// hidden-Feld für die Suchnavigation
+	$content .= '
+		<input type="hidden" id="snav'.$t.'" value="'.implode('-', $ids).'" />';
 	
 	if($user->rechte['routen']) {
 		$content .= '

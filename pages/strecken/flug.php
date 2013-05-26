@@ -599,6 +599,10 @@ else if($_GET['sp'] == 'flug_search') {
 	
 	// kein Fehler
 	if(!$tmpl->error) {
+		
+		$t = time();
+		$ids = array();
+		
 		// Daten abfragen
 		$query = query("
 			SELECT
@@ -665,7 +669,7 @@ else if($_GET['sp'] == 'flug_search') {
 				<tr'.($row['playerDeleted'] ? ' style="opacity:0.4;filter:alpha(opacity=40)"' : '').'>
 					<td><span style="color:'.sektor_coord($row['systemeX'], $row['systemeZ']).'">'.$point[0].'</span></td>
 					<td><a class="link winlink contextmenu" data-link="index.php?p=show_system&amp;id='.$row['planeten_systemeID'].'&amp;ajax">'.$row['planeten_systemeID'].'</a></td>
-					<td><a class="link winlink contextmenu" data-link="index.php?p=show_planet&amp;id='.$row['planetenID'].'&amp;ajax">'.$row['planetenID'].'</a></td>
+					<td><a class="link winlink contextmenu" data-link="index.php?p=show_planet&amp;id='.$row['planetenID'].'&amp;nav='.$t.'&amp;ajax">'.$row['planetenID'].'</a></td>
 					<td>';
 				// Inhaber
 				if($row['playerName'] != NULL) {
@@ -696,11 +700,17 @@ else if($_GET['sp'] == 'flug_search') {
 					</td>
 					<td>'.flugdauer($row['planetenEntfernung'], $_POST['antrieb']).'</td>
 				</tr>';
+				
+				$ids[] = $row['planetenID'];
 			}
 			
 			$tmpl->content .= '
 				</table>
 			</div>';
+			
+			// hidden-Feld für die Suchnavigation
+			$tmpl->content .= '
+				<input type="hidden" id="snav'.$t.'" value="'.implode('-', $ids).'" />';
 		}
 		
 		// Log-Eintrag

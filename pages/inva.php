@@ -59,7 +59,7 @@ $invatyp = array(
  * @param $fremd bool Fremdinvasion/Kolonisation default false
  * @return HTML Tabellenzeile
  */
-function invarow($row, $fremd=false) {
+function invarow($row, $fremd=false, $nav=false) {
 	global $invatyp, $user;
 	
 	if($row['player_allianzenID'] == NULL) {
@@ -79,7 +79,7 @@ function invarow($row, $fremd=false) {
 	<tr class="invarow'.$row['invasionenID'].'" data-ally="'.$row['player_allianzenID'].'">
 		<td>'.datatable::galaxie($row['systeme_galaxienID'], $row['systemeX'], $row['systemeZ']).'</td>
 		<td>'.datatable::system($row['invasionen_systemeID']).'</td>
-				<td>'.datatable::planet($row['invasionen_planetenID']).'</td>
+				<td>'.datatable::planet($row['invasionen_planetenID'], false, $nav).'</td>
 		<td>'.datatable::gate($row['systemeGateEntf'], $user->settings['antrieb']).'</td>
 		<td>'.(isset($invatyp[$row['invasionenTyp']]) ? $invatyp[$row['invasionenTyp']] : '-').'</td>
 		<td>'.datatable::playerallianz($row['invasionen_playerID'], $row['playerName'], $row['player_allianzenID'], $row['allianzenTag']).'</td>
