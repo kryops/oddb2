@@ -144,7 +144,7 @@ class ScanSystem {
 	 * Bergbau oder Terraformer eintragen
 	 * @param array $pldata Planeten-Datensatz
 	 */
-	public static function addBergbauTf($pldata) {
+	public static function addBergbauTf($pldata, $plrow = false) {
 		
 		// Bergbau eintragen
 		if(isset($pldata['bb'])) {
@@ -155,7 +155,7 @@ class ScanSystem {
 					schiffeBergbau = -1,
 					schiffeBergbauUpdate = ".time()."
 				ON DUPLICATE KEY UPDATE
-					schiffeBergbau = -1,
+					".(($plrow AND $plrow['schiffeBergbau'] > 0) ? "" : "schiffeBergbau = -1,")."
 					schiffeBergbauUpdate = ".time()."
 			") OR dieTransaction("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
 		}
@@ -192,7 +192,7 @@ class ScanSystem {
 	 */
 	public static function removeOrbitActions($id, $plrow = false) {
 		
-		// Terraformer entfernen
+		// Terraformer und unbekannten Bergbau entfernen
 		if($plrow !== false AND $plrow['schiffeTerraformer'] AND !$plrow['schiffeBergbau']) {
 			
 			query("
@@ -203,7 +203,7 @@ class ScanSystem {
 			") OR dieTransaction("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
 			
 		}
-		else if($plrow === false OR $plrow['schiffeTerraformer']) {
+		else if($plrow === false OR $plrow['schiffeBergbau'] > 0) {
 			
 			query("
 				UPDATE
@@ -804,7 +804,7 @@ else {
 					}
 					
 					// Bergbau und Terraformer eintragen
-					ScanSystem::addBergbauTf($pldata);
+					ScanSystem::addBergbauTf($pldata, $pl[$pldata['id']]);
 					
 					// Kolo und Genesis eintragen
 					ScanSystem::addInvasion($pldata, $pl[$pldata['id']]);

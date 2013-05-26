@@ -317,33 +317,41 @@ if($data['systemeUpdateHidden']) {
 			planetenNatives,
 			planeten_playerID,
 			
-			playerName,
-			playerRasse,
-			player_allianzenID,
-			playerUmod,
+			p1.playerName,
+			p1.playerRasse,
+			p1.player_allianzenID,
+			p1.playerUmod,
 			
-			allianzenTag,
-			allianzenName,
+			a1.allianzenTag,
+			a1.allianzenName,
 			
 			register_allianzenID,
 			
 			schiffeBergbau,
 			schiffeTerraformer,
 			
+			p2.playerName AS BergbauName,
+				p2.player_allianzenID AS BergbauAllyID,
+				a2.allianzenTag AS BergbauAllyTag,
+				
 			statusStatus
 		FROM
 			".PREFIX."planeten
-			LEFT JOIN ".GLOBPREFIX."player
+			LEFT JOIN ".GLOBPREFIX."player p1
 				ON playerID = planeten_playerID
-			LEFT JOIN ".GLOBPREFIX."allianzen
-				ON allianzenID = player_allianzenID
+			LEFT JOIN ".GLOBPREFIX."allianzen a1
+				ON a1.allianzenID = p1.player_allianzenID
 			LEFT JOIN ".PREFIX."register
-				ON register_allianzenID = allianzenID
+				ON register_allianzenID = a1.allianzenID
 			LEFT JOIN ".PREFIX."planeten_schiffe
 				ON schiffe_planetenID = planetenID
+			LEFT JOIN ".GLOBPREFIX."player p2
+				ON p2.playerID = schiffeBergbau
+			LEFT JOIN ".GLOBPREFIX."allianzen a2
+				ON a2.allianzenID = p2.player_allianzenID
 			LEFT JOIN ".PREFIX."allianzen_status
 				ON statusDBAllianz = ".$user->allianz."
-				AND status_allianzenID = allianzenID
+				AND status_allianzenID = a1.allianzenID
 		WHERE
 			planeten_systemeID = ".$_GET['id']."
 		ORDER BY
@@ -810,7 +818,18 @@ if($showr) {
 					
 				// Bergbau
 				if($user->rechte['fremdinvakolos'] AND $pl['schiffeBergbau'] !== NULL) {
-					$planeten .= '<span style="color:#55ff33">Bergbau</span>';
+					$planeten .= '<span style="color:#55ff33">Bergbau';
+					
+					// Bergbauer bekannt
+					if($pl['BergbauName'] AND $pl['schiffeBergbau'] > 0) {
+						$planeten .= ' '.htmlspecialchars($pl['BergbauName'], ENT_COMPAT, $charset);
+						
+						if($pl['BergbauAllyTag']) {
+							$planeten .= ' '.htmlspecialchars($pl['BergbauAllyTag'], ENT_COMPAT, $charset);
+						}
+					}
+					
+					$planeten .= '</span>';
 				}
 				
 				// Terraformer
