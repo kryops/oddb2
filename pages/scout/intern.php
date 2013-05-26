@@ -94,10 +94,12 @@ else if($user->allianz) {
 		<div class="center" style="font-weight:bold">Alle Systeme deiner Allianz sind aktuell.</div>
 		<br />';
 	}
-	
-	//
-	// Bergbau-Systeme
-	//
+}
+
+//
+// Bergbau-Systeme
+//
+if($user->allianz) {
 	$content .= '
 		</div>
 		
@@ -164,7 +166,6 @@ else if($user->allianz) {
 		<div class="center" style="font-weight:bold">Alle Bergbau-Systeme deiner Allianz sind aktuell.</div>
 		<br />';
 	}
-	
 }
 
 $content .= '
