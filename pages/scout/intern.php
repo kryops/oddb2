@@ -28,6 +28,8 @@ $content = '
 	<div class="icontent">
 		';
 
+$t = time();
+
 // keine Allianz
 if(!$user->allianz) {
 	$content .= '
@@ -44,7 +46,6 @@ if($user->allianz AND $cache->get('fow_ally'.$user->allianz)) {
 }
 else if($user->allianz) {
 	
-	$t = time();
 	$sids = array();
 	
 	// Systeme abfragen
