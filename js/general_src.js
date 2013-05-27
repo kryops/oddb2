@@ -4101,6 +4101,56 @@ function searchnav(id, search, t) {
 }
 
 /**
+ * System-Navigation erzeugen (Systemansicht)
+ * @param id int System-ID
+ * @param search int Timestamp der Suche / Identifier der Container
+ * @param t int Timestamp des Fensters
+ */
+function systemnav(id, search, t) {
+	var vals = $('#sysnav'+search).val();
+	var search2 = search+'-'+id+'-'+t;
+	
+	// Suche nicht mehr verfügbar
+	if(vals == null) {
+		$('#sysnavbox'+search2).slideUp(200);
+	}
+	// Suchergebnisse analysieren
+	else {
+		var vals = vals.split('-');
+		// Position des aktuellen Planeten ermitteln
+		var pos = -1;
+		for(var i in vals) {
+			if(vals[i] == id) {
+				pos = parseInt(i);
+			}
+		}
+		// ID nicht in den Ergebnissen (umgeblättert?) oder nur 1 Treffer
+		if(pos == -1) {
+			$('#sysnavbox'+search2).slideUp(200);
+		}
+		// nur 1 Treffer
+		else if(vals.length < 2) {
+			$('#sysnavbox'+search2).hide();
+		}
+		else {
+			var content = '<table border="0" style="width:100%"><tr><td style="width:35%;text-align:left;font-weight:bold">';
+			// vorheriger Planet
+			if(pos > 0) {
+				content += '<a class="link contextmenu" link="index.php?p=show_system&id='+vals[pos-1]+'&nav='+search+'">&laquo; vorheriges System ('+vals[pos-1]+')</a>';
+			}
+			content += '</td><td style="width:30%;text-align:center">System-Navigation</td><td style="width:35%;text-align:right;font-weight:bold">';
+			// nächster Planet
+			if(pos < vals.length-1) {
+				content += '<a class="link contextmenu" link="index.php?p=show_system&id='+vals[pos+1]+'&nav='+search+'">n&auml;chstes System ('+vals[pos+1]+') &raquo;</a>';
+			}
+			content += '</td></tr></table>';
+			// Content in die Navibox füllen
+			$('#sysnavbox'+search2).html(content);
+		}
+	}
+}
+
+/**
  * Userberechtigungen einzeln anpassen
  * Klick auf einen Radiobutton -> Farbe der Zelle verändern
  */

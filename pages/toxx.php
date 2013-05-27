@@ -218,12 +218,10 @@ else if($_GET['sp'] == 'send') {
 				// Kategorie
 				if($_POST['kategorie'] != '') {
 					// normale Kategorie
-					if($_POST['kategorie'] >= 0 AND $_POST['kategorie'] <= 13) {
-						$conds[] = 'planetenKategorie = '.$_POST['kategorie'];
-					}
+					
 					// Sammelkategorien
 					// alle Ressplaneten
-					else if($_POST['kategorie'] == 14) {
+					if($_POST['kategorie'] == 14) {
 						$conds[] = 'planetenKategorie IN(1,2,3,4,5,12)';
 					}
 					// Ressplaneten und Werften
@@ -231,8 +229,11 @@ else if($_GET['sp'] == 'send') {
 						$conds[] = 'planetenKategorie IN(1,2,3,4,5,12,13)';
 					}
 					// alle Forschungsplaneten
-					else {
+					else if($_POST['kategorie'] == 16) {
 						$conds[] = 'planetenKategorie >= 6 AND planetenKategorie <= 11';
+					}
+					else {
+						$conds[] = 'planetenKategorie = '.$_POST['kategorie'];
 					}
 				}
 				
@@ -307,6 +308,7 @@ else if($_GET['sp'] == 'send') {
 				
 				$t = time();
 				$ids = array();
+				$sids = array();
 				
 				// Planeten abfragen
 				$query = query("
@@ -408,7 +410,7 @@ else if($_GET['sp'] == 'send') {
 						$tmpl->content .= '
 					<tr'.($toxx ? ' style="opacity:0.4"' : '').'>
 					<td>'.datatable::galaxie($point[0], $row['systemeX'], $row['systemeZ']).'</td>
-					<td>'.datatable::system($row['planeten_systemeID']).'</td>
+					<td>'.datatable::system($row['planeten_systemeID'], $t).'</td>
 	<td>'.datatable::planet($row['planetenID'], false, $t).'</a></td>
 	<td>'.datatable::planet($row['planetenID'], $row['planetenName'], $t).'</td>
 					<td>'.datatable::inhaber($row['planeten_playerID'], $row['playerName'], $row['playerUmod'], $row['playerRasse']).'</td>
@@ -471,6 +473,10 @@ else if($_GET['sp'] == 'send') {
 					</tr>';
 						
 						$ids[] = $row['planetenID'];
+						
+						if(!in_array($row['planeten_systemeID'], $sids)) {
+							$sids[] = $row['planeten_systemeID'];
+						}
 					}
 					
 					// Tabellenfooter
@@ -479,7 +485,8 @@ else if($_GET['sp'] == 'send') {
 					
 					// hidden-Feld für die Suchnavigation
 					$tmpl->content .= '
-						<input type="hidden" id="snav'.$t.'" value="'.implode('-', $ids).'" />';
+						<input type="hidden" id="snav'.$t.'" value="'.implode('-', $ids).'" />
+						<input type="hidden" id="sysnav'.$t.'" value="'.implode('-', $sids).'" />';
 					
 					// Toxxrouten-Label
 					if($intoxxroute) {
@@ -599,6 +606,7 @@ else {
 			<option value="9"'.((isset($_GET['kategorie']) AND $_GET['kategorie'] == 9) ? ' selected="selected"' : '').'>Myriforschung</option>
 			<option value="10"'.((isset($_GET['kategorie']) AND $_GET['kategorie'] == 10) ? ' selected="selected"' : '').'>orbitale Forschung</option>
 			<option value="11"'.((isset($_GET['kategorie']) AND $_GET['kategorie'] == 11) ? ' selected="selected"' : '').'>Gedankenkonzentratoren</option>
+			<option value="17"'.((isset($_GET['kategorie']) AND $_GET['kategorie'] == 17) ? ' selected="selected"' : '').'>Credit-Erzeugung</option>
 		</select>
 		<br />
 		Orbiter 

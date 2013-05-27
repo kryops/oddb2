@@ -43,6 +43,10 @@ if($user->allianz AND $cache->get('fow_ally'.$user->allianz)) {
 		<br />';
 }
 else if($user->allianz) {
+	
+	$t = time();
+	$sids = array();
+	
 	// Systeme abfragen
 	$query = query("
 		SELECT
@@ -77,13 +81,18 @@ else if($user->allianz) {
 			$content .= '
 			<tr>
 				<td>'.datatable::galaxie($row['systeme_galaxienID'], $row['systemeX'], $row['systemeZ']).'</td>
-				<td>'.datatable::system($row['systemeID']).'</td>
+				<td>'.datatable::system($row['systemeID'], $t).'</td>
 					<td>'.datatable::scan($row['systemeUpdate'], $config['scan_veraltet_ally']).'</td>
 				<td><a href="'.($user->odServer != '' ? $user->odServer : 'http://www.omega-day.com').'/game/index.php?op=system&amp;sys='.$row['systemeID'].'" target="_blank">[in OD &ouml;ffnen]</a></td>
 			</tr>';
+			
+			$sids[] = $row['systemeID'];
 		}
 		$content .= '
 		</table>';
+		
+		// Ergebnis-Navigation
+		$content .= '<input type="hidden" id="sysnav'.$t.'" value="'.implode('-', $sids).'" />';
 	}
 	// alle Allysysteme aktuell
 	else {
@@ -110,6 +119,9 @@ if($user->allianz) {
 		</div>
 		
 		<div class="icontent">';
+	
+	$t = $t.'0';
+	$sids = array();
 	
 	$query = query("
 		SELECT
@@ -152,13 +164,18 @@ if($user->allianz) {
 			$content .= '
 			<tr>
 				<td>'.datatable::galaxie($row['systeme_galaxienID'], $row['systemeX'], $row['systemeZ']).'</td>
-				<td>'.datatable::system($row['systemeID']).'</td>
+				<td>'.datatable::system($row['systemeID'], $t).'</td>
 					<td>'.datatable::scan($row['systemeUpdate'], $config['scan_veraltet_ally']).'</td>
 				<td><a href="'.($user->odServer != '' ? $user->odServer : 'http://www.omega-day.com').'/game/index.php?op=system&amp;sys='.$row['systemeID'].'" target="_blank">[in OD &ouml;ffnen]</a></td>
 			</tr>';
+			
+			$sids[] = $row['systemeID'];
 		}
 		$content .= '
 		</table>';
+		
+		// Ergebnis-Navigation
+		$content .= '<input type="hidden" id="sysnav'.$t.'" value="'.implode('-', $sids).'" />';
 	}
 	else {
 		$content .= '

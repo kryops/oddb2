@@ -18,11 +18,11 @@ if(!defined('ODDB')) die('unerlaubter Zugriff!');
 //
 
 // Hauptversion
-define('VERSION', '2.3.1.1');
+define('VERSION', '2.3.2');
 // Patch-Version
 define('PATCH_VERSION', 4);
 // Datei-Zusatz (css und js)
-define('FILESTAMP', '?20');
+define('FILESTAMP', '?21');
 // OD-Runde
 define('ODWORLD', 'int11');
 define('DOWNTIME', false);

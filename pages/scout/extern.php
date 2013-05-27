@@ -90,6 +90,8 @@ else {
 			
 			$heute = strtotime('today');
 			
+			$t = time();
+			$sids = array();
 			
 			// nächste Systeme abfragen
 			$query = query("
@@ -164,7 +166,7 @@ else {
 				$tmpl->content .= '
 				<tr>
 					<td>'.datatable::galaxie($point[0], $row['systemeX'], $row['systemeZ']).'</td>
-					<td>'.datatable::system($row['systemeID']).'</td>';
+					<td>'.datatable::system($row['systemeID'], $t).'</td>';
 				
 				// System verdeckt gescannt
 				if($row['systemeUpdateHidden'] AND (!$row['systemeUpdate'] OR !$access)) {
@@ -256,12 +258,17 @@ else {
 					<td class="sysreserv'.$row['systemeID'].'">'.($row['systemeScanReserv'] > time()-86400 ? '<i>'.htmlspecialchars($row['systemeReservUser'], ENT_COMPAT, 'UTF-8').'</i>' : '<a onclick="ajaxcall(\'index.php?p=ajax_general&amp;sp=reserve&amp;sys='.$row['systemeID'].'&amp;ajax\', this.parentNode, false, false)">reservieren</a>').'</td>
 					'.(isset($_GET['scan']) ? '' : '<td class="userlistaction"><img src="img/layout/leer.gif" class="hoverbutton arrowbutton" title="von hier aus weiterscouten" onclick="scout_weiter(\'sys'.$row['systemeID'].'\', this)" /></td>').'
 				</tr>';
+				
+				$sids[] = $row['systemeID'];
 			}
 			
 			if(mysql_num_rows($query)) {
 				// Tabellenfooter
 				$tmpl->content .= '
 					</table>';
+				
+				// Ergebnis-Navigation
+				$tmpl->content .= '<input type="hidden" id="sysnav'.$t.'" value="'.implode('-', $sids).'" />';
 			}
 			// alle Systeme aktuell
 			else {

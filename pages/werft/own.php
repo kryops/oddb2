@@ -26,6 +26,10 @@ if(!isset($_GET['update'])) {
 
 $bedarf_list = array();
 
+$t = time();
+$ids = array();
+$sids = array();
+
 
 // eigene Werften abfragen
 $query = query("
@@ -90,9 +94,9 @@ if(mysql_num_rows($query)) {
 		$content .= '
 	<tr class="werft'.$row['planetenID'].'">
 	<td>'.datatable::galaxie($row['systeme_galaxienID'], $row['systemeX'], $row['systemeZ']).'</td>
-	<td>'.datatable::system($row['planeten_systemeID']).'</td>
-		<td>'.datatable::planet($row['planetenID']).'</a></td>
-		<td>'.datatable::planet($row['planetenID'], $row['planetenName']).'</td>
+	<td>'.datatable::system($row['planeten_systemeID'], $t).'</td>
+		<td>'.datatable::planet($row['planetenID'], false, $t).'</a></td>
+		<td>'.datatable::planet($row['planetenID'], $row['planetenName'], $t).'</td>
 	<td>'.$row['planetenGroesse'].'</td>
 	<td>'.datatable::typ($row['planetenTyp']).'</td>
 	<td>'.datatable::scan($row['planetenUpdateOverview'], $config['scan_veraltet']).'</td>
@@ -110,9 +114,6 @@ if(mysql_num_rows($query)) {
 				$content .= $ress[$key].' '.ressmenge2($val, true).' &nbsp; ';
 			}
 			
-			
-			
-			
 			// zur Schnellauswahl hinzufügen
 			$b2 = $b;
 			foreach($b2 as $key=>$val) {
@@ -128,6 +129,12 @@ if(mysql_num_rows($query)) {
 	<td>'.datatable::kommentar($row['planetenKommentar'], $row['planetenID']).'</td>
 	<td class="buttons"><img title="Bedarf bearbeiten" data-link="index.php?p=werft&amp;sp=edit&amp;id='.$row['planetenID'].'" class="link winlink contextmenu hoverbutton" style="background-position:-1020px -91px" src="img/layout/leer.gif" /> <img title="entfernen" onclick="ajaxcall(\'index.php?p=werft&amp;sp=del&amp;id='.$row['planetenID'].'\', this.parentNode, false, false)" class="hoverbutton" style="background-position:-1040px -91px;cursor:pointer" src="img/layout/leer.gif" /></td>
 	</tr>';
+		
+		$ids[] = $row['planetenID'];
+		
+		if(!in_array($row['planeten_systemeID'], $sids)) {
+			$sids[] = $row['planeten_systemeID'];
+		}
 	}
 	
 }
@@ -141,6 +148,11 @@ else {
 
 $content .= '
 	</table>';
+
+// hidden-Feld für die Suchnavigation
+$content .= '
+	<input type="hidden" id="snav'.$t.'" value="'.implode('-', $ids).'" />
+	<input type="hidden" id="sysnav'.$t.'" value="'.implode('-', $sids).'" />';
 
 // Werften hinzufügen
 $query = query("

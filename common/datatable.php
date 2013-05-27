@@ -29,10 +29,11 @@ class datatable {
 	/**
 	 * System
 	 * @param $id int System-ID
+	 * @param $nav int Timestamp für System-Navigation @default false
 	 * @return HTML
 	 */
-	public static function system($id) {
-		return '<a class="link winlink contextmenu link_system" data-id="'.$id.'" data-link="index.php?p=show_system&amp;id='.$id.'&amp;ajax">'.$id.'</a>';
+	public static function system($id, $nav=false) {
+		return '<a class="link winlink contextmenu link_system" data-id="'.$id.'" data-link="index.php?p=show_system&amp;id='.$id.($nav ? '&amp;nav='.$nav : '').'&amp;ajax">'.$id.'</a>';
 	}
 	
 	/**
@@ -40,10 +41,11 @@ class datatable {
 	 * @param $id int System-ID
 	 * @param $x X-Koordinate
 	 * @param $z Z-Koordinate
+	 * @param $nav int Timestamp für System-Navigation @default false
 	 * @return HTML
 	 */
-	public static function systemsektor($id, $x, $z) {
-		return '<a class="link winlink contextmenu link_system" data-id="'.$id.'" data-link="index.php?p=show_system&amp;id='.$id.'&amp;ajax" style="color:'.sektor_coord($x, $z).'">'.$id.'</a>';
+	public static function systemsektor($id, $x, $z, $nav=false) {
+		return '<a class="link winlink contextmenu link_system" data-id="'.$id.'" data-link="index.php?p=show_system&amp;id='.$id.($nav ? '&amp;nav='.$nav : '').'&amp;ajax" style="color:'.sektor_coord($x, $z).'">'.$id.'</a>';
 	}
 	
 	/**

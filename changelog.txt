@@ -1,4 +1,15 @@
-﻿16.05.2013 - V2.3.1
+﻿27.05.2013 - V2.3.2
+-------------------
+* Systeme-Ergebnis-Navigation
+* Planeten-Suchergebnis-Navigation wurde auf weitere Bereiche der DB ausgeweitet
+* Anzeige von bekannten Bergbauern im FoW
+* Veraltete Bergbau-Systeme unter "allyintern scouten"
+* zusätzlicher Allianz-Filter in der "Kolos finden"-Funktion zum Finden von Terraformern
+* mehrere Bugfixes
+
+
+
+16.05.2013 - V2.3.1
 -------------------
 * Bugfix Forschungsbereich mit lokalem Grafikpaket
 

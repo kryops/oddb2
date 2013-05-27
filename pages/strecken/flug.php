@@ -187,6 +187,9 @@ else if($_GET['sp'] == 'flug_next') {
 							<th>Reservierung</td>
 						</tr>';
 				
+				$t = time();
+				$sids = array();
+				
 				// nächste Systeme abfragen
 				$query = query("
 					SELECT
@@ -240,7 +243,7 @@ else if($_GET['sp'] == 'flug_next') {
 					$tmpl->content .= '
 					<tr>
 						<td><span style="color:'.sektor_coord($row['systemeX'], $row['systemeZ']).'">'.$point[0].'</span></td>
-						<td><a class="link winlink contextmenu" data-link="index.php?p=show_system&amp;id='.$row['systemeID'].'&amp;ajax">'.$row['systemeID'].'</a></td>';
+						<td><a class="link winlink contextmenu" data-link="index.php?p=show_system&amp;id='.$row['systemeID'].'&amp;nav='.$t.'&amp;ajax">'.$row['systemeID'].'</a></td>';
 					
 					// System verdeckt gescannt
 					if($row['systemeUpdateHidden'] AND (!$row['systemeUpdate'] OR !$access)) {
@@ -336,12 +339,17 @@ else if($_GET['sp'] == 'flug_next') {
 						<td class="'.$color.'">'.$scan.'</td>
 						<td>'.($row['systemeScanReserv'] > time()-86400 ? '<i>'.htmlspecialchars($row['systemeReservUser'], ENT_COMPAT, 'UTF-8').'</i>' : '<a onclick="ajaxcall(\'index.php?p=ajax_general&amp;sp=reserve&amp;sys='.$row['systemeID'].'&amp;ajax\', this.parentNode, false, false)">reservieren</a>').'</td>
 					</tr>';
+					
+					$sids[] = $row['systemeID'];
 				}
 				
 				// Tabellenfooter
 				$tmpl->content .= '
 					</table>
 					</div>';
+				
+				// Ergebnis-Navigation
+				$tmpl->content .= '<input type="hidden" id="sysnav'.$t.'" value="'.implode('-', $sids).'" />';
 				
 				// Log-Eintrag
 				if($config['logging'] >= 2) {

@@ -158,6 +158,9 @@ else {
 		$content = '
 			<div class="hl2">Gates</div>';
 		
+		$t = time();
+		$sids = array();
+		
 		$query = query("
 			SELECT
 				galaxienID,
@@ -192,13 +195,18 @@ else {
 				$content .= '
 			<tr>
 				<td>'.$row['galaxienID'].'</td>
-				<td><a class="link winlink contextmenu" data-link="index.php?p=show_system&amp;id='.$row['galaxienGateSys'].'">'.$row['galaxienGateSys'].'</a></td>
+				<td><a class="link winlink contextmenu" data-link="index.php?p=show_system&amp;id='.$row['galaxienGateSys'].'&amp;nav='.$t.'">'.$row['galaxienGateSys'].'</a></td>
 				<td>'.$row['galaxienGate'].'</td>
 				<td><a href="'.($user->odServer != '' ? $user->odServer : 'http://www.omega-day.com').'/game/index.php?op=orbit&amp;index='.$row['galaxienGate'].'" target="_blank">[in OD &ouml;ffnen]</a></td>
 			</tr>';
+				
+				$sids[] = $row['galaxienGateSys'];
 			}
 			$content .= '
 			</table>';
+			
+			// System-Navigation
+			$content .= '<input type="hidden" id="sysnav'.$t.'" value="'.implode('-', $sids).'" />';
 		}
 		
 		// Log-Eintrag
@@ -227,6 +235,10 @@ else {
 		else {
 			$conds = "";
 		}
+		
+		$t = time();
+		$ids = array();
+		$sids = array();
 		
 		// Daten abfragen
 		$query = query("
@@ -317,8 +329,8 @@ else {
 				$content .= '
 			<tr class="filter" name="gala'.$row['myrigates_galaxienID'].'"'.($dunkel ? ' style="opacity:0.6"' : '').'>
 				<td><span style="color:'.sektor_coord($row['systemeX'], $row['systemeZ']).'">'.$row['myrigates_galaxienID'].'</span></td>
-				<td><a class="link winlink contextmenu" data-link="index.php?p=show_system&amp;id='.$row['planeten_systemeID'].'&amp;ajax">'.$row['planeten_systemeID'].'</a></td>
-				<td><a class="link winlink contextmenu" data-link="index.php?p=show_planet&amp;id='.$row['myrigates_planetenID'].'&amp;ajax">'.$row['myrigates_planetenID'].'</a></td>
+				<td><a class="link winlink contextmenu" data-link="index.php?p=show_system&amp;id='.$row['planeten_systemeID'].'&amp;nav='.$t.'&amp;ajax">'.$row['planeten_systemeID'].'</a></td>
+				<td><a class="link winlink contextmenu" data-link="index.php?p=show_planet&amp;id='.$row['myrigates_planetenID'].'&amp;nav='.$t.'&amp;ajax">'.$row['myrigates_planetenID'].'</a></td>
 				<td>';
 				// Inhaber
 				if($row['playerName'] != NULL) {
@@ -413,9 +425,20 @@ else {
 				
 				$content .= '</td>
 			</tr>';
+				
+				$ids[] = $row['myrigates_planetenID'];
+				
+				if(!in_array($row['planeten_systemeID'], $sids)) {
+					$sids[] = $row['planeten_systemeID'];
+				}
 			}
 			$content .= '
 			</table>';
+			
+			// System- und Planeten-Navigation
+			$content .= '
+				<input type="hidden" id="snav'.$t.'" value="'.implode('-', $ids).'" />
+				<input type="hidden" id="sysnav'.$t.'" value="'.implode('-', $sids).'" />';
 		}
 		
 		// Log-Eintrag

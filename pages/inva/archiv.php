@@ -204,6 +204,9 @@ else {
 	// Pagebar ausgeben
 	$content .= $pagebar;
 	
+	$t = time();
+	$ids = array();
+	$sids = array();
 	
 	// Daten abfragen
 	$query = query("
@@ -275,8 +278,8 @@ else {
 		$content .= '
 	<tr class="invarow'.$row['archivID'].'" data-ally="'.$row['player_allianzenID'].'">
 		<td>'.datatable::galaxie($row['systeme_galaxienID'], $row['systemeX'], $row['systemeZ']).'</td>
-		<td>'.datatable::system($row['archiv_systemeID']).'</td>
-		<td>'.datatable::planet($row['archiv_planetenID']).'</td>
+		<td>'.datatable::system($row['archiv_systemeID'], $t).'</td>
+		<td>'.datatable::planet($row['archiv_planetenID'], false, $t).'</td>
 		<td>'.(isset($invatyp[$row['archivTyp']]) ? $invatyp[$row['archivTyp']] : '-').'</td>
 		<td>'.datatable::playerallianz($row['archiv_playerID'], $row['playerName'], $row['player_allianzenID'], $row['allianzenTag']).'</td>
 		<td>'.($row['a_playerName'] != NULL ? datatable::playerallianz($row['archivAggressor'], $row['a_playerName'], $row['a_player_allianzenID'], $row['a_allianzenTag']) : '').'</td>
@@ -293,12 +296,25 @@ else {
 		<td class="invakommentar'.$row['archivID'].'">'.(trim($row['archivKommentar']) != '' ? '<div class="kommentar searchicon tooltip" data-tooltip="'.htmlspecialchars(htmlspecialchars($row['archivKommentar'], ENT_COMPAT, 'UTF-8'), ENT_COMPAT, 'UTF-8').'"></div>' : '&nbsp;').'</td>
 		<td class="userlistaction"><img src="img/layout/leer.gif" style="background-position:-1000px -91px" class="link winlink contextmenu hoverbutton" data-link="index.php?p=inva&amp;sp=archiv_details&amp;id='.$row['archivID'].'" alt="Details" title="Details" /></td>
 	</tr>';
+		
+		if(!in_array($row['archiv_planetenID'], $ids)) {
+			$ids[] = $row['archiv_planetenID'];
+		}
+		
+		if(!in_array($row['archiv_systemeID'], $sids)) {
+			$sids[] = $row['archiv_systemeID'];
+		}
 	}
 	
 	$content .= '
 	</table>
 	
 	<br />'.$pagebar;
+	
+	// hidden-Feld für die Planeten- und System-Navigation
+	$content .= '
+		<input type="hidden" id="snav'.$t.'" value="'.implode('-', $ids).'" />
+		<input type="hidden" id="sysnav'.$t.'" value="'.implode('-', $sids).'" />';
 }
 
 // Log-Eintrag

@@ -78,7 +78,7 @@ function invarow($row, $fremd=false, $nav=false) {
 	$content = '
 	<tr class="invarow'.$row['invasionenID'].'" data-ally="'.$row['player_allianzenID'].'">
 		<td>'.datatable::galaxie($row['systeme_galaxienID'], $row['systemeX'], $row['systemeZ']).'</td>
-		<td>'.datatable::system($row['invasionen_systemeID']).'</td>
+		<td>'.datatable::system($row['invasionen_systemeID'], $nav).'</td>
 				<td>'.datatable::planet($row['invasionen_planetenID'], false, $nav).'</td>
 		<td>'.datatable::gate($row['systemeGateEntf'], $user->settings['antrieb']).'</td>
 		<td>'.(isset($invatyp[$row['invasionenTyp']]) ? $invatyp[$row['invasionenTyp']] : '-').'</td>

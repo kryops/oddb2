@@ -88,6 +88,9 @@ else {
 	else {
 		$heute = strtotime('today');
 		
+		$t = time();
+		$sids = array();
+		
 		// Systeme abfragen
 		$query = query("
 			SELECT
@@ -127,13 +130,18 @@ else {
 				$tmpl->content .= '
 				<tr>
 				<td>'.datatable::galaxie($row['systeme_galaxienID'], $row['systemeX'], $row['systemeZ']).'</td>
-				<td>'.datatable::system($row['systemeID']).'</td>
+				<td>'.datatable::system($row['systemeID'], $t).'</td>
 				<td class="red">'.$scan.'</td>
 				<td><a href="'.($user->odServer != '' ? $user->odServer : 'http://www.omega-day.com').'/game/index.php?op=system&amp;sys='.$row['systemeID'].'" target="_blank">[in OD &ouml;ffnen]</a></td>
 				</tr>';
+				
+				$sids[] = $row['systemeID'];
 			}
 			$tmpl->content .= '
 				</table>';
+			
+			// Ergebnis-Navigation
+			$tmpl->content .= '<input type="hidden" id="sysnav'.$t.'" value="'.implode('-', $sids).'" />';
 		}
 		// alle Allysysteme aktuell
 		else {

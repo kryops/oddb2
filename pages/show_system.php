@@ -1256,6 +1256,33 @@ else if($_GET['sp'] == '') {
 	</div>';
 }
 
+// System-Navigation
+$nav = false;
+	
+if(isset($_GET['nav']) AND is_numeric($_GET['nav'])) {
+	// bei nichtexistenten Planeten Wildcards  entfernen
+	$_GET['id'] = str_replace('%', '', $_GET['id']);
+	$t = time();
+	
+	// Navileiste erzeugen
+	$nav = '
+		<div class="fcbox center small2" id="sysnavbox'.$_GET['nav'].'-'.$_GET['id'].'-'.$t.'">System-Navigation wird geladen...</div>';
+	// JavaScript starten
+	$tmpl->script = 'systemnav('.$_GET['id'].', '.$_GET['nav'].', '.$t.');';
+}
+
+// Fehler in Content umwandeln und Navigation davor setzen
+if($nav AND $tmpl->error) {
+	$tmpl->content = $nav.'<div class="icontent" style="text-align:center;margin:20px;font-size:16px;font-weight:bold"><img src="img/layout/error.png" width="150" height="137" alt="Fehler" /><br /><br />'.$tmpl->error.'</div>';
+	// ursprünglichen Fehler entfernen
+	$tmpl->error = '';
+	$tmpl->name = 'Fehler!';
+}
+// Navigation vor den Content setzen
+else if($nav) {
+	$tmpl->content = $nav.$tmpl->content;
+}
+
 // Ausgabe
 $tmpl->output();
 

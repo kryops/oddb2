@@ -75,6 +75,7 @@ Aktionen nach Entfernung zu
 
 $t = time();
 $ids = array();
+$sids = array();
 
 // Daten abfragen
 $query = query("
@@ -176,7 +177,13 @@ else {
 		
 		$content2 .= invarow($row, false, $t);
 		
-		$ids[] = $row['invasionen_planetenID'];
+		if(!in_array($row['invasionen_planetenID'], $ids)) {
+			$ids[] = $row['invasionen_planetenID'];
+		}
+		
+		if(!in_array($row['invasionen_systemeID'], $sids)) {
+			$sids[] = $row['invasionen_systemeID'];
+		}
 		
 		if($row['invasionenOpen']) {
 			$openinvas++;
@@ -216,7 +223,8 @@ else {
 	
 	// hidden-Feld für die Suchnavigation
 	$content .= '
-		<input type="hidden" id="snav'.$t.'" value="'.implode('-', $ids).'" />';
+		<input type="hidden" id="snav'.$t.'" value="'.implode('-', $ids).'" />
+		<input type="hidden" id="sysnav'.$t.'" value="'.implode('-', $sids).'" />';
 	
 	// Routen-Formular
 	if($user->rechte['routen']) {

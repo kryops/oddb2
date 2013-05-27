@@ -151,6 +151,7 @@ else {
 			
 			$t = time();
 			$ids = array();
+			$sids = array();
 			
 			// Planeten abfragen
 			$query = query("
@@ -237,7 +238,7 @@ else {
 					$tmpl->content .= '
 				<tr>
 					<td>'.datatable::galaxie($point[0], $row['systemeX'], $row['systemeZ']).'</td>
-					<td>'.datatable::system($row['planeten_systemeID']).'</td>
+					<td>'.datatable::system($row['planeten_systemeID'], $t).'</td>
 	<td>'.datatable::planet($row['planetenID'], false, $t).'</a></td>
 	<td>'.datatable::planet($row['planetenID'], $row['planetenName'], $t).'</td>
 					<td>'.datatable::inhaber($row['planeten_playerID'], $row['playerName'], $row['playerUmod'], $row['playerRasse']).'</td>
@@ -255,6 +256,10 @@ else {
 				</tr>';
 					
 					$ids[] = $row['planetenID'];
+					
+					if(!in_array($row['planeten_systemeID'], $sids)) {
+						$sids[] = $row['planeten_systemeID'];
+					}
 				}
 				
 				// Tabellenfooter
@@ -262,7 +267,9 @@ else {
 					</table>';
 				
 				// Ergebnis-Navigation
-				$tmpl->content .= '<input type="hidden" id="snav'.$t.'" value="'.implode('-', $ids).'" />';
+				$tmpl->content .= '
+					<input type="hidden" id="snav'.$t.'" value="'.implode('-', $ids).'" />
+					<input type="hidden" id="sysnav'.$t.'" value="'.implode('-', $sids).'" />';
 			}
 			// alle Systeme aktuell
 			else {

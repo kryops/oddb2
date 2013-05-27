@@ -822,6 +822,7 @@ else {
 				
 				// ID-Liste für Ergebnis-Navigation
 				$ids = array();
+				$sids = array();
 				
 				// erste Galaxie
 				$firstgala = false;
@@ -855,6 +856,10 @@ else {
 					// ID an Liste anhängen
 					$ids[] = $row['planetenID'];
 					
+					if(!in_array($row['systemeID'], $sids)) {
+						$sids[] = $row['systemeID'];
+					}
+					
 					// Invasionen übernehmen
 					$row['invasionen'] = isset(Search::$invasionen[$row['planetenID']]) ? Search::$invasionen[$row['planetenID']] : false;
 					
@@ -867,7 +872,7 @@ else {
 					}
 					// System
 					if(isset($sp2[2])) {
-						$spv[2] = '<a class="link winlink contextmenu link_system" data-id="'.$row['systemeID'].'" data-link="index.php?p=show_system&amp;id='.$row['systemeID'].'&amp;ajax">'.$row['systemeID'].'</a>';
+						$spv[2] = '<a class="link winlink contextmenu link_system" data-id="'.$row['systemeID'].'" data-link="index.php?p=show_system&amp;id='.$row['systemeID'].'&amp;nav='.$t.'&amp;ajax">'.$row['systemeID'].'</a>';
 					}
 					// Plani-ID
 					if(isset($sp2[3])) {
@@ -1369,7 +1374,8 @@ else {
 				
 				// hidden-Feld für die Suchnavigation
 				$content .= '
-					<input type="hidden" id="snav'.$t.'" value="'.implode('-', $ids).'" />';
+					<input type="hidden" id="snav'.$t.'" value="'.implode('-', $ids).'" />
+					<input type="hidden" id="sysnav'.$t.'" value="'.implode('-', $sids).'" />';
 			}
 			
 			// Seite im normalen Modus zu den Ergebnissen scrollen

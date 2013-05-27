@@ -202,6 +202,7 @@ else {
 	
 	$t = time();
 	$ids = array();
+	$sids = array();
 		
 	if($route->count) {
 		// Bedingungen aufstellen
@@ -309,7 +310,7 @@ else {
 					$tmpl->content .= '<td><input type="checkbox" name="'.$id.'" /></td>';
 				}
 				$tmpl->content .=  ($route->liste ? '<td>'.datatable::galaxie($row['systeme_galaxienID'], $row['systemeX'], $row['systemeZ']).'</td>' : '').'
-		<td>'.($route->liste ? datatable::system($row['planeten_systemeID']) : datatable::systemsektor($row['planeten_systemeID'], $row['systemeX'], $row['systemeZ'])).'</td>
+		<td>'.($route->liste ? datatable::system($row['planeten_systemeID'], $t) : datatable::systemsektor($row['planeten_systemeID'], $row['systemeX'], $row['systemeZ'], $t)).'</td>
 		<td>'.datatable::planet($row['planetenID'], false, $t).'</a></td>
 		<td>'.datatable::planet($row['planetenID'], $row['planetenName'], $t).'</td>
 		<td>'.datatable::inhaber($row['planeten_playerID'], $row['playerName'], $row['playerUmod'], $row['playerRasse']).'</td>
@@ -365,6 +366,10 @@ else {
 			}
 			
 			$ids[] = $id;
+			
+			if(!in_array($row['planeten_systemeID'], $sids)) {
+				$sids[] = $row['planeten_systemeID'];
+			}
 		}
 	}
 	// Route leer
@@ -395,7 +400,8 @@ else {
 	
 	// hidden-Feld für die Suchnavigation
 	$tmpl->content .= '
-		<input type="hidden" id="snav'.$t.'" value="'.implode('-', $ids).'" />';
+		<input type="hidden" id="snav'.$t.'" value="'.implode('-', $ids).'" />
+		<input type="hidden" id="sysnav'.$t.'" value="'.implode('-', $sids).'" />';
 	
 	if(!isset($_GET['update'])) {
 		$tmpl->content .= '

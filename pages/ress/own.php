@@ -86,6 +86,10 @@ else if($_GET['sp'] == 'own') {
 		$sort = $sort[$_GET['sort']];
 	}
 	
+	$t = time();
+	$ids = array();
+	$sids = array();
+	
 	// eigene Ressplanis abfragen
 	$query = query("
 		SELECT
@@ -152,9 +156,9 @@ else if($_GET['sp'] == 'own') {
 			$content .= '
 		<tr'.($row['planetenRessplani'] ? ' class="trhighlight"' : '').'>
 		<td>'.datatable::galaxie($row['systeme_galaxienID'], $row['systemeX'], $row['systemeZ']).'</td>
-		<td>'.datatable::system($row['planeten_systemeID']).'</td>
-		<td>'.datatable::planet($row['planetenID']).'</a></td>
-		<td>'.datatable::planet($row['planetenID'], $row['planetenName']).'</td>
+		<td>'.datatable::system($row['planeten_systemeID'], $t).'</td>
+		<td>'.datatable::planet($row['planetenID'], false, $t).'</a></td>
+		<td>'.datatable::planet($row['planetenID'], $row['planetenName'], $t).'</td>
 		<td>'.$row['planetenGroesse'].'</td>
 		<td>'.datatable::typ($row['planetenTyp']).'</td>
 		<td>'.datatable::scan($row['planetenUpdate'], $config['scan_veraltet']).'</td>
@@ -167,6 +171,12 @@ else if($_GET['sp'] == 'own') {
 		<input type="checkbox" name="'.$row['planetenID'].'"'.($row['planetenRessplani'] ? ' checked="checked"' : '').' onclick="(this.checked ? $(this).parents(\'tr\').addClass(\'trhighlight\') : $(this).parents(\'tr\').removeClass(\'trhighlight\'))" />
 		</td>
 		</tr>';
+			
+			$ids[] = $row['planetenID'];
+			
+			if(!in_array($row['planeten_systemeID'], $sids)) {
+				$sids[] = $row['planeten_systemeID'];
+			}
 		}
 		
 		$content .= '
@@ -177,6 +187,11 @@ else if($_GET['sp'] == 'own') {
 		</div>
 		</form>
 		<div class="ajax center"></div>';
+		
+		// hidden-Feld für die Suchnavigation
+		$content .= '
+			<input type="hidden" id="snav'.$t.'" value="'.implode('-', $ids).'" />
+			<input type="hidden" id="sysnav'.$t.'" value="'.implode('-', $sids).'" />';
 	}
 	// keine Planeten eingetragen
 	else {

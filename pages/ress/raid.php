@@ -184,6 +184,7 @@ $querystring = htmlspecialchars($querystring, ENT_COMPAT, 'UTF-8');
 
 $t = time();
 $ids = array();
+$sids = array();
 
 
 // Ress zum Raiden abfragen
@@ -279,7 +280,7 @@ if(mysql_num_rows($query)) {
 		$content .= '
 	<tr>
 	<td>'.datatable::galaxie($row['systeme_galaxienID'], $row['systemeX'], $row['systemeZ']).'</td>
-	<td>'.datatable::system($row['planeten_systemeID']).'</td>
+	<td>'.datatable::system($row['planeten_systemeID'], $t).'</td>
 	<td>'.datatable::planet($row['planetenID'], false, $t).'</a></td>
 	<td>'.datatable::planet($row['planetenID'], $row['planetenName'], $t).'</td>
 	<td>'.datatable::inhaber($row['planeten_playerID'], $row['playerName'], $row['playerUmod'], $row['playerRasse']).'</td>
@@ -303,6 +304,10 @@ if(mysql_num_rows($query)) {
 	</tr>';
 		
 		$ids[] = $row['planetenID'];
+		
+		if(!in_array($row['planeten_systemeID'], $sids)) {
+			$sids[] = $row['planeten_systemeID'];
+		}
 	}
 	
 	$content .= '
@@ -310,7 +315,8 @@ if(mysql_num_rows($query)) {
 	
 	// hidden-Feld für die Suchnavigation
 	$content .= '
-		<input type="hidden" id="snav'.$t.'" value="'.implode('-', $ids).'" />';
+		<input type="hidden" id="snav'.$t.'" value="'.implode('-', $ids).'" />
+		<input type="hidden" id="sysnav'.$t.'" value="'.implode('-', $sids).'" />';
 	
 	if($user->rechte['routen']) {
 		$content .= '

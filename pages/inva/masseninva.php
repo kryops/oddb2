@@ -169,6 +169,10 @@ if(isset($config['masseninva'])) {
 	$conds1 = $conds;
 	$conds1[] = "planetenMasseninva = ".$user->id;
 	
+	$t = time();
+	$ids = array();
+	$sids = array();
+	
 	// Eigene Ziele abfragen
 	$query = query("
 		SELECT
@@ -252,9 +256,9 @@ if(isset($config['masseninva'])) {
 		$content .= '
 <tr class="masseninva'.$row['planetenID'].'">
 	<td>'.datatable::galaxie($row['systeme_galaxienID'], $row['systemeX'], $row['systemeZ']).'</td>
-	<td>'.datatable::system($row['planeten_systemeID']).'</td>
-	<td>'.datatable::planet($row['planetenID']).'</a></td>
-	<td>'.datatable::planet($row['planetenID'], $row['planetenName']).'</td>
+	<td>'.datatable::system($row['planeten_systemeID'], $t).'</td>
+	<td>'.datatable::planet($row['planetenID'], false, $t).'</a></td>
+	<td>'.datatable::planet($row['planetenID'], $row['planetenName'], $t).'</td>
 	<td>'.datatable::inhaber($row['planeten_playerID'], $row['playerName'], $row['playerUmod'], $row['playerRasse']).'</td>
 	<td>'.datatable::allianz($row['player_allianzenID'], $row['allianzenTag']).'</td>
 	<td>'.$row['planetenGroesse'].'</td>
@@ -268,10 +272,22 @@ if(isset($config['masseninva'])) {
 	<td>'.($row['invasionenID'] != NULL ? '<span class="green">ja</span>' : '&nbsp;').'</td>
 	<td class="buttons">&rarr; <a class="link winlink contextmenu" data-link="index.php?p=show_player&amp;id='.$user->id.'">'.htmlspecialchars($user->name, ENT_COMPAT, 'UTF-8').'</a> <img title="Reservierung aufheben" onclick="ajaxcall(\'index.php?p=inva&amp;sp=masseninva_unset&amp;id='.$row['planetenID'].'\', this.parentNode, false, false)" class="hoverbutton delbutton" src="img/layout/leer.gif" /></td>
 </tr>';
+		
+		$ids[] = $row['planetenID'];
+		
+		if(!in_array($row['planeten_systemeID'], $sids)) {
+			$sids[] = $row['planeten_systemeID'];
+		}
 	}
 	
 	$content .= '
 </table>';
+	
+	// hidden-Feld für die Suchnavigation
+	$content .= '
+		<input type="hidden" id="snav'.$t.'" value="'.implode('-', $ids).'" />
+		<input type="hidden" id="sysnav'.$t.'" value="'.implode('-', $sids).'" />';
+	
 	
 	// Alle Ziele
 	$content .= '
@@ -385,6 +401,9 @@ Bev&ouml;lkerung
 	<th>&nbsp;</th>
 </tr>';
 		
+		$t = $t.'0';
+		$ids = array();
+		$sids = array();
 		
 		// Alle Ziele abfragen
 		$query = query("
@@ -446,9 +465,9 @@ Bev&ouml;lkerung
 			$content .= '
 <tr class="masseninva'.$row['planetenID'].'">
 	<td>'.datatable::galaxie($row['systeme_galaxienID'], $row['systemeX'], $row['systemeZ']).'</td>
-	<td>'.datatable::system($row['planeten_systemeID']).'</td>
-	<td>'.datatable::planet($row['planetenID']).'</a></td>
-	<td>'.datatable::planet($row['planetenID'], $row['planetenName']).'</td>
+	<td>'.datatable::system($row['planeten_systemeID'], $t).'</td>
+	<td>'.datatable::planet($row['planetenID'], false, $t).'</a></td>
+	<td>'.datatable::planet($row['planetenID'], $row['planetenName'], $t).'</td>
 	<td>'.datatable::inhaber($row['planeten_playerID'], $row['playerName'], $row['playerUmod'], $row['playerRasse']).'</td>
 	<td>'.datatable::allianz($row['player_allianzenID'], $row['allianzenTag']).'</td>
 	<td>'.$row['planetenGroesse'].'</td>
@@ -476,10 +495,21 @@ Bev&ouml;lkerung
 			
 			$content .= '</td>
 </tr>';
+			
+			$ids[] = $row['planetenID'];
+			
+			if(!in_array($row['planeten_systemeID'], $sids)) {
+				$sids[] = $row['planeten_systemeID'];
+			}
 		}
 		
 		$content .= '
 </table>';
+		
+		// hidden-Feld für die Suchnavigation
+		$content .= '
+			<input type="hidden" id="snav'.$t.'" value="'.implode('-', $ids).'" />
+			<input type="hidden" id="sysnav'.$t.'" value="'.implode('-', $sids).'" />';
 		
 		$content .= $pagebar;
 	}
