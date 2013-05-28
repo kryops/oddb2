@@ -56,7 +56,7 @@ $content .= '
 <br /><br />';
 
 // 2 Tage in der Vergangenheit
-$t = time()-172800;
+$t_scan = time()-172800;
 
 // Bedingungen
 $conds = array(
@@ -156,12 +156,12 @@ if(isset($_GET['player']) AND $_GET['player'] != '') {
 if(isset($_GET['leer'])) {
 	$conds[] = "planetenWerftFinish < ".time();
 	// muss innerhalb der letzten 2 Tage eingescannt worden sein
-	$conds[] = "planetenUpdateOverview > ".$t;
+	$conds[] = "planetenUpdateOverview > ".$t_scan;
 }
 
 // Sortierung
 $sort = array(
-	'standard'=>'(planetenUpdateOverview > '.$t.') DESC, planetenWerftFinish ASC',
+	'standard'=>'(planetenUpdateOverview > '.$t_scan.') DESC, planetenWerftFinish ASC',
 	'id'=>'planetenID ASC',
 	'name'=>'planetenName ASC',
 	'player'=>'playerName ASC',
@@ -352,7 +352,7 @@ if(mysql_num_rows($query)) {
 	<td>';
 		// fertig
 		// unbekannt
-		if($row['planetenUpdateOverview'] < $t) {
+		if($row['planetenUpdateOverview'] < $t_scan) {
 			$content .= '<span class="yellow" style="font-style:italic">unbekannt</span>';
 		}
 		// leerstehend
@@ -408,7 +408,7 @@ if(mysql_num_rows($query)) {
 			}
 			
 			// Label erzeugen
-			if($row['planetenUpdateOverview'] < $t) {
+			if($row['planetenUpdateOverview'] < $t_scan) {
 				$color = 'yellow italic';
 				$label = 'Scan veraltet';
 			}
