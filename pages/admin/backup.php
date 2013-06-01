@@ -17,9 +17,23 @@ $content = '
 	Dieser Bereich dient dazu, Datenbank-Instanzen abzugleichen oder umzuziehen.
 	<br /><br />
 	<b>Die hier erzeugten Exporte beinhalten lediglich die Daten aus System- und Planetenscans, ein komplettes Backup der Instanz ist nur &uuml;ber die MySQL-Datenbank m&ouml;glich!</b>
-	<br /><br />
-	Importierte System- und Planetenscans werden nur &uuml;bernommen, wenn sie aktueller sind als die Daten dieser Instanz. Damit der Import vollst&auml;ndig funktioniert, sollten alle Galaxien eingetragen sein. Ebenso empfiehlt es sich, vor dem Import die Spielerprofile aller angemeldeten Spieler einzulesen.
-	<br /><br />
+	<br />
+	<p>Folgende Dateien k&ouml;nnen importiert werden:</p>
+	<ul>
+		<li><b>Hier erzeugte Exporte</b> (auch von anderen ODDB-Installationen)</li>
+	</ul>
+	<p style="margin-left:2em">
+		Importierte System- und Planetenscans werden nur &uuml;bernommen, wenn sie aktueller sind als die Daten dieser Instanz. Damit der Import vollst&auml;ndig funktioniert, sollten alle Galaxien eingetragen sein. Ebenso empfiehlt es sich, vor dem Import die Spielerprofile aller angemeldeten Spieler einzulesen.
+	</p>
+	
+	<ul>
+		<li><b>Grunddaten-Exporte von Omega-Day</b> (alle verdeckten Systemscans)</li>
+	</ul>
+	<p style="margin-left:2em">
+		Die Systeme und Planeten werden nur f&uuml;r Galaxien eingetragen, deren Mainscreen noch nicht eingescannt wurde!
+	</p>
+		
+	<br />
 	Der Import kann mehrere Minuten dauern.
 	
 	<br /><br /><br /><br />

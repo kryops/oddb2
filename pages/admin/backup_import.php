@@ -135,10 +135,9 @@ class BackupImport {
 		
 		$data = explode('""""', $data);
 		
-		// Ungültige Daten
+		// Grunddaten-Import
 		if(count($data) < 2) {
-			$tmpl->error = 'Ung&uuml;ltige Datei! (< 2 Datensätze)';
-			$tmpl->output();
+			self::importBasicData($data_raw);
 			die();
 		}
 		
@@ -800,6 +799,141 @@ $(\'#content\').html(\'<div class="center">Der Import wurde erfolgreich abgeschl
 		@unlink('./admin/cache/'.$_GET['import']);
 		
 	}
+	
+	
+	/**
+	 * Grunddaten aus OD importieren
+	 * @param string $data dekomprimierter Datei-Inhalt
+	 */
+	public static function importBasicData($data) {
+		
+		$tmpl = new template_import();
+		$tmpl->form = false;
+		
+		// Dateiinhalt parsen
+		if(!($data = @json_decode($data, true))) {
+			$tmpl->error = 'Fehler beim Parsen der Datei! (kein gültiges JSON)';
+		}
+		else {
+			
+			// Gültige Welt und Version
+			if(!isset($data['world'], $data['version'], $data['galaxien']) OR $data['world'] != ODWORLD OR $data['version'] != 1) {
+				$tmpl->error = 'Ungültige Datei! (Falsche Version oder OD-Welt)';
+			}
+			else {
+				
+				$t = time();
+				
+				$gcount = 0;
+				$scount = 0;
+				$pcount = 0;
+				
+				$galaxien = array();
+				
+				// eingetragene Galaxien auslesen
+				$query = query("
+					SELECT
+						galaxienID
+					FROM
+						".PREFIX."galaxien
+				") OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
+				
+				while($row = mysql_fetch_assoc($query)) {
+					$galaxien[] = $row['galaxienID'];
+				}
+				
+				// Transaktion starten
+				query("START TRANSACTION") OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
+				
+				
+				foreach($data['galaxien'] as $gala=>$gdata) {
+					
+					// bereits eingetragene Galaxien überspringen
+					if(in_array($gala, $galaxien)) {
+						continue;
+					}
+					
+					$gcount++;
+					
+					// Galaxie eintragen
+					query("
+						INSERT IGNORE INTO
+							".PREFIX."galaxien
+						SET
+							galaxienID = ".(int)$gala.",
+							galaxienSysteme = ".count($gdata)."
+					") OR dieTransaction("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
+					
+					foreach($gdata as $system=>$sdata) {
+						
+						// System eintragen
+						query("
+							INSERT IGNORE INTO
+								".PREFIX."systeme
+							SET
+								systemeID = ".(int)$system.",
+								systeme_galaxienID = ".(int)$gala.",
+								systemeName = '".escape($sdata['name'])."',
+								systemeX = ".(int)$sdata['x'].",
+								systemeY = ".(int)$sdata['y'].",
+								systemeZ = ".(int)$sdata['z'].",
+								systemeUpdateHidden = ".$t."
+						") OR dieTransaction("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
+						
+						$scount++;
+						
+						foreach($sdata['planeten'] as $planet=>$pdata) {
+							
+							// Planet eintragen
+							query("
+								INSERT IGNORE INTO
+									".PREFIX."planeten
+								SET
+									planetenID = ".(int)$planet.",
+									planeten_systemeID = ".(int)$system.",
+									planeten_playerID = -1,
+									planetenName = '".escape($pdata['name'])."',
+									planetenPosition = ".(int)$pdata['position'].",
+									planetenTyp = ".(int)$pdata['typ'].",
+									planetenGroesse = ".(int)$pdata['groesse'].",
+									planetenBevoelkerung = ".(int)$pdata['bevoelkerung'].",
+									planetenRWErz = ".(int)$pdata['erz'].",
+									planetenRWWolfram = ".(int)$pdata['wolfram'].",
+									planetenRWKristall = ".(int)$pdata['kristall'].",
+									planetenRWFluor = ".(int)$pdata['fluor']."
+							") OR dieTransaction("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
+							
+							$pcount++;
+						}
+					}
+				}
+				
+				// Transaktion ausführen
+				query("COMMIT") OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
+				
+				// Statistik-Cache leeren
+				global $cache;
+				
+				for($i=1; $i<=100; $i++) {
+					$cache->remove('stats'.$i);
+				}
+				
+				// Ausgabe
+				$tmpl->content = '
+					<div id="content" class="center">
+						<p>
+							Der Grunddaten-Import wurde erfolgreich abgeschlossen.
+							<br /><br />
+							'.$gcount.' Galaxien mit '.$scount.' Systemen und '.$pcount.' Planeten wurden eingetragen.
+						</p>
+					</div>
+				';
+			}
+		}
+		
+		$tmpl->output();
+	}
+	
 	
 }
 
