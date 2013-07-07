@@ -3119,17 +3119,27 @@ function quelltext(f, r) {
 					// Name und Werte
 					try {
 						data = $(this).find('tr:first-child a').attr('onmouseover');
-						pl[i]['name'] = data.replace(/^.*\'(.*):\'\);setter.*$/, '$1');
+						pl[i]['name'] = data.match(/\'([^\']*):\'\);setter\(/)[1];
 						
 						data = data.replace(/','.*$/, '');
 						data = data.split('<br>');
 						
-						pl[i]['bev'] = data[4].replace(/[^\d+]/g, '');
-						pl[i]['groesse'] = data[6].replace(/[^\d+]/g, '');
-						
-						// Workaround: Unbewohnbare Planis Größe 0
-						if(pl[i]['groesse'] == '' || pl[i]['groesse'] == '0000') {
+						// Workaround: Unbewohnbare Planis Größe und Bevölkerung 0
+						if(data.length == 6) {
 							pl[i]['groesse'] = 0;
+							pl[i]['bev'] = 0;
+						}
+						else {
+							pl[i]['bev'] = data[4].replace(/[^\d+]/g, '');
+							
+							var groesse = data[6].match(/e: (\d+)\',/);
+							
+							if(groesse) {
+								pl[i]['groesse'] = groesse[1];
+							}
+							else {
+								throw 'Konnte Größe nicht ermitteln ('+i+')';
+							}
 						}
 						
 						data = $(data[3]);
@@ -3143,7 +3153,7 @@ function quelltext(f, r) {
 					}
 					
 					// Inhaber
-					p = /setter\(\'(.+)\',\'(\d+)\',\'(?:.*)\',\'(.*)\',\'(.*)\'\);kringler/;
+					p = /setter\(\'(.+)\',[\r\n\s]*\'(\d+)\',\'.*\',\'(.*)\',\'(.*)\'\);/;
 					data = p.exec($(this).find('tr:first-child a').attr('onmouseover'));
 					if(data == null) throw 'Konnte Inhaber nicht ermitteln! ('+i+')';
 					else {
