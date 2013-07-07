@@ -556,7 +556,7 @@ function odrequest($uid, $always = false, $auto = false) {
 	/*
 	Beispiel-Output
 	
-playeratm=4173&userid=602511&name=Kryops&points=34202&titel=&warpoints=8608&gesinnung=2138&allianz_tag=%3D+%5C+S+%2F+%3D&allianz_name=S%86arflee%86&allianz_punkte=1334696&grafik=&erstellzeit=0.00368309020996&serverzeit=1266585144&plcount=30&kriegspunkte=8608&questpunkte=809&handelspunkte=8814&rasse=3&allianzmembers=41&allianzkriegspunkte=0&gpunkte=26848&allianz_id=3795&meta_id=409&metaname=Dark+Federation&metatag=_-%3DD-F%3D-_&flottenadmin=1&startzeit=1244350748&version=1.6
+playeratm=775&userid=1100059&name=Kryops&points=43415&titel=&warpoints=11465&gesinnung=2635&allianz_tag=%3D%5CS%2F%3D&allianz_name=Starfleet&allianz_punkte=418167&erstellzeit=0.0045781135559082&serverzeit=1373216503&plcount=26&kriegspunkte=11465&questpunkte=5298&handelspunkte=14620&rasse=4&allianzmembers=20&allianzkriegspunkte=0&gpunkte=23011&allianz_id=109&startzeit=1365181239&rank=130&version=1.7
 
 	*/
 	
@@ -710,7 +710,6 @@ playeratm=4173&userid=602511&name=Kryops&points=34202&titel=&warpoints=8608&gesi
 		$oddata['gesinnung'] = (int)$oddata['gesinnung'];
 		$oddata['plcount'] = (int)$oddata['plcount'];
 		$oddata['rasse'] = (int)$oddata['rasse'];
-		$oddata['flottenadmin'] = (int)$oddata['flottenadmin'];
 		
 		// User in der DB vorhanden -> aktualisieren
 		if($data) {
@@ -731,7 +730,6 @@ playeratm=4173&userid=602511&name=Kryops&points=34202&titel=&warpoints=8608&gesi
 					playerHandelspunkte = ".$oddata['handelspunkte'].",
 					playerGesinnung = ".$oddata['gesinnung'].",
 					playerRasse = ".$oddata['rasse'].",
-					playerFA = ".$oddata['flottenadmin'].",
 					playerActivity = ".$activity.",
 					playerUpdate = ".time()."
 				WHERE
@@ -767,7 +765,6 @@ playeratm=4173&userid=602511&name=Kryops&points=34202&titel=&warpoints=8608&gesi
 					playerHandelspunkte = ".$oddata['handelspunkte'].",
 					playerGesinnung = ".$oddata['gesinnung'].",
 					playerRasse = ".$oddata['rasse'].",
-					playerFA = ".$oddata['flottenadmin'].",
 					playerActivity = 0,
 					playerUpdate = ".time()."
 			") OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
