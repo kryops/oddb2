@@ -24,7 +24,7 @@ oddbtool.fow = function(page, data) {
 			// Planet existiert und hat Inhaber
 			if(typeof(data['pl'][i]) == 'object' && data['pl'][i]['inhaber'] > 0) {
 				
-				p = 'setter\\(\\\'(.+)\\\',\\\''+data['pl'][i]['inhaber']+'\\\',\\\'(.*)\\\',\\\'(?:.*)\\\',\\\'(?:.*)\\\'\\);kringler\\('+data['pl'][i]['id'];
+				p = 'setter\\(\\\'(.+)\\\',[\\r\\n\\s]*\\\''+data['pl'][i]['inhaber']+'\\\',\\\'(.*)\\\',\\\'(?:.*)\\\',\\\'(?:.*)\\\'\\);';
 				
 				p = new RegExp(p);
 				var data2 = p.exec(input);
@@ -131,10 +131,14 @@ oddbtool.fow = function(page, data) {
 			// erfolgreich-Meldung
 			$('#oddbtoolfow',page).append('<span style="color:#00ff00">erfolgreich!</span>');
 			
+			// Tabellenbreite richtig setzen
+			$('#layout-main table[width=800] td[valign=top] table[width=100]',page).css('width', '110px');
+			
+			
 			// Positionen
 			var xbase = 304;
-			var ybase = 199;
-			var xadd = 100;
+			var ybase = 263;
+			var xadd = 110;
 			var yadd = 17;
 			
 			var x = 0;

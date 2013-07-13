@@ -558,7 +558,7 @@ window.setTimeout(function() {
 					}
 					
 					
-					if($addPlanets OR $planetExists) {
+					if($updateSystem AND ($addPlanets OR $planetExists)) {
 						// Myrigate eintragen
 						if($row[12] AND !isset($mgates[$id])) {
 							

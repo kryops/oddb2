@@ -24,7 +24,7 @@ oddbtool.fow = function(page, data) {
 			// Planet existiert und hat Inhaber
 			if(typeof(data['pl'][i]) == 'object' && data['pl'][i]['inhaber'] > 0) {
 				
-				p = 'setter\\(\\\'(.+)\\\',\\\''+data['pl'][i]['inhaber']+'\\\',\\\'(.*)\\\',\\\'(?:.*)\\\',\\\'(?:.*)\\\'\\);kringler\\('+data['pl'][i]['id'];
+				p = 'setter\\(\\\'(.+)\\\',[\\r\\n\\s]*\\\''+data['pl'][i]['inhaber']+'\\\',\\\'(.*)\\\',\\\'(?:.*)\\\',\\\'(?:.*)\\\'\\);';
 				
 				p = new RegExp(p);
 				var data2 = p.exec(input);
@@ -131,10 +131,14 @@ oddbtool.fow = function(page, data) {
 			// erfolgreich-Meldung
 			$('#oddbtoolfow',page).append('<span style="color:#00ff00">erfolgreich!</span>');
 			
+			// Tabellenbreite richtig setzen
+			$('#layout-main table[width=800] td[valign=top] table[width=100]',page).css('width', '110px');
+			
+			
 			// Positionen
 			var xbase = 304;
-			var ybase = 199;
-			var xadd = 100;
+			var ybase = 263;
+			var xadd = 110;
 			var yadd = 17;
 			
 			var x = 0;
@@ -378,7 +382,7 @@ oddbtool.fow = function(page, data) {
 								}
 							}
 							
-							content += '<img src="http://static.omega-day.com/img/mist/blank.gif" alt="" class="oddbtoolrasse oddbtoolr'+data['pl'][i]['rasse']+'"><a href="index.php?op=usershow&welch='+data['pl'][i]['inhaber']+'">'+data['pl'][i]['username']+'</a>';
+							content += '<img src="http://static.omega-day.com/img/misc/blank.gif" alt="" class="oddbtoolrasse oddbtoolr'+data['pl'][i]['rasse']+'"><a href="index.php?op=usershow&welch='+data['pl'][i]['inhaber']+'">'+data['pl'][i]['username']+'</a>';
 							if(data['pl'][i]['allianz'] > 0) {
 								content += '<br><a href="index.php?op=allyshow&welch='+data['pl'][i]['allianz']+'" style="font-size:10px">'+data['pl'][i]['allytag']+'</a>';
 								var status = $(result).find('status'+data['pl'][i]['allianz']).text();

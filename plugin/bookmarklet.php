@@ -539,17 +539,27 @@ header('Content-Type: text/javascript; charset=utf-8');
 						// Name und Werte
 						try {
 							data = $(this).find('tr:first-child a').attr('onmouseover');
-							pl[i]['name'] = data.replace(/^.*\'(.*):\'\);setter.*$/, '$1');
+							pl[i]['name'] = data.match(/\'([^\']*):\'\);setter\(/)[1];
 							
 							data = data.replace(/','.*$/, '');
 							data = data.split('<br>');
 							
-							pl[i]['bev'] = data[4].replace(/[^\d+]/g, '');
-							pl[i]['groesse'] = data[6].replace(/[^\d+]/g, '');
-							
-							// Workaround: Unbewohnbare Planis Größe 0
-							if(pl[i]['groesse'] == '' || pl[i]['groesse'] == '0000') {
+							// Workaround: Unbewohnbare Planis Größe und Bevölkerung 0
+							if(data.length == 6) {
 								pl[i]['groesse'] = 0;
+								pl[i]['bev'] = 0;
+							}
+							else {
+								pl[i]['bev'] = data[4].replace(/[^\d+]/g, '');
+								
+								var groesse = data[6].match(/e: (\d+)\',/);
+								
+								if(groesse) {
+									pl[i]['groesse'] = groesse[1];
+								}
+								else {
+									throw 'Konnte Größe nicht ermitteln ('+i+')';
+								}
 							}
 							
 							data = $(data[3]);
@@ -563,7 +573,7 @@ header('Content-Type: text/javascript; charset=utf-8');
 						}
 						
 						// Inhaber
-						p = /setter\(\'(.+)\',\'(\d+)\',\'(?:.*)\',\'(.*)\',\'(.*)\'\);kringler/;
+						p = /setter\(\'(.+)\',[\r\n\s]*\'(\d+)\',\'.*\',\'(.*)\',\'(.*)\'\);/;
 						data = p.exec($(this).find('tr:first-child a').attr('onmouseover'));
 						if(data == null) throw 'Konnte Inhaber nicht ermitteln! ('+i+')';
 						else {
@@ -1322,7 +1332,7 @@ header('Content-Type: text/javascript; charset=utf-8');
 				// Planet existiert und hat Inhaber
 				if(typeof(data['pl'][i]) == 'object' && data['pl'][i]['inhaber'] > 0) {
 					
-					p = 'setter\\(\\\'(.+)\\\',\\\''+data['pl'][i]['inhaber']+'\\\',\\\'(.*)\\\',\\\'(?:.*)\\\',\\\'(?:.*)\\\'\\);kringler\\('+data['pl'][i]['id'];
+					p = 'setter\\(\\\'(.+)\\\',[\\r\\n\\s]*\\\''+data['pl'][i]['inhaber']+'\\\',\\\'(.*)\\\',\\\'(?:.*)\\\',\\\'(?:.*)\\\'\\);';
 					
 					p = new RegExp(p);
 					var data2 = p.exec(input);
@@ -1435,10 +1445,14 @@ header('Content-Type: text/javascript; charset=utf-8');
 				// erfolgreich-Meldung
 				$('#oddbtoolfow',page).append('<span style="color:#00ff00">erfolgreich!</span>');
 				
+				// Tabellenbreite richtig setzen
+				$('#layout-main table[width=800] td[valign=top] table[width=100]',page).css('width', '110px');
+				
+				
 				// Positionen
 				var xbase = 304;
-				var ybase = 199;
-				var xadd = 100;
+				var ybase = 263;
+				var xadd = 110;
 				var yadd = 17;
 				
 				var x = 0;
@@ -1568,8 +1582,8 @@ header('Content-Type: text/javascript; charset=utf-8');
 								data['pl'][i]['groesse'] = '<span style="color:red">unbewohnbar</span>';
 							}
 							
-							tooltip += '<table style="border:0;padding:0;margin:0;width:auto"><tr><td><img src="http://static.omega-day.com/img//grafik/aufbautechniken/kultur_erz_us.gif"></td><td style="padding-left:10px;white-space:nowrap">'+data['pl'][i]['erz']+' %</td><td style="padding-left:10px">'+data['pl'][i]['erzmenge']+'</td></tr><tr><td><img src="http://static.omega-day.com/img//grafik/aufbautechniken/kultur_metall_us.gif"></td><td style="padding-left:10px;white-space:nowrap">'+data['pl'][i]['erz']+' %</td><td style="padding-left:10px">'+data['pl'][i]['metallmenge']+'</td></tr><tr><td><img src="http://static.omega-day.com/img//grafik/aufbautechniken/kultur_wolfram_us.gif"></td><td style="padding-left:10px;white-space:nowrap">'+data['pl'][i]['wolfram']+' %</td><td style="padding-left:10px">'+data['pl'][i]['wolframmenge']+'</td></tr><tr><td><img src="http://static.omega-day.com/img//grafik/aufbautechniken/kultur_kristall_us.gif"></td><td style="padding-left:10px;white-space:nowrap">'+data['pl'][i]['kristall']+' %</td><td style="padding-left:10px">'+data['pl'][i]['kristallmenge']+'</td></tr><tr><td><img src="http://static.omega-day.com/img//grafik/aufbautechniken/kultur_flour_us.gif"></td><td style="padding-left:10px;white-space:nowrap">'+data['pl'][i]['fluor']+' %</td><td style="padding-left:10px">'+data['pl'][i]['fluormenge']+'</td></tr></table><br>Bev&ouml;lkerung: '+data['pl'][i]['bev']+'<br>Gr&ouml;&szlig;e: '+data['pl'][i]['groesse']+'<br><br>'+data['pl'][i]['additional'];
-								
+							tooltip += '<table style="border:0;padding:0;margin:0;width:auto"><tr><td><img src="http://static.omega-day.com/img/research/ress_ore_small.gif"></td><td style="padding-left:10px;white-space:nowrap">'+data['pl'][i]['erz']+' %</td><td style="padding-left:10px">'+data['pl'][i]['erzmenge']+'</td></tr><tr><td><img src="http://static.omega-day.com/img/research/ress_steel_small.gif"></td><td style="padding-left:10px;white-space:nowrap">'+data['pl'][i]['erz']+' %</td><td style="padding-left:10px">'+data['pl'][i]['metallmenge']+'</td></tr><tr><td><img src="http://static.omega-day.com/img/research/ress_wolfram_small.gif"></td><td style="padding-left:10px;white-space:nowrap">'+data['pl'][i]['wolfram']+' %</td><td style="padding-left:10px">'+data['pl'][i]['wolframmenge']+'</td></tr><tr><td><img src="http://static.omega-day.com/img/research/ress_crystal_small.gif"></td><td style="padding-left:10px;white-space:nowrap">'+data['pl'][i]['kristall']+' %</td><td style="padding-left:10px">'+data['pl'][i]['kristallmenge']+'</td></tr><tr><td><img src="http://static.omega-day.com/img/research/ress_fluor_small.gif"></td><td style="padding-left:10px;white-space:nowrap">'+data['pl'][i]['fluor']+' %</td><td style="padding-left:10px">'+data['pl'][i]['fluormenge']+'</td></tr></table><br>Bev&ouml;lkerung: '+data['pl'][i]['bev']+'<br>Gr&ouml;&szlig;e: '+data['pl'][i]['groesse']+'<br><br>'+data['pl'][i]['additional'];
+							
 							data['pl'][i]['name'] = oddbtool.str_replace(oddbtool.charmap_search, oddbtool.charmap_replace, data['pl'][i]['name']);
 							tooltip = tooltip.replace(/'/g, "\\'");
 							tooltip = tooltip.replace(/"/g, '&quot;');
@@ -1675,7 +1689,7 @@ header('Content-Type: text/javascript; charset=utf-8');
 									}
 								}
 								
-								content += '<img src="http://static.omega-day.com/img//grafik/leer.gif" alt="" class="oddbtoolrasse oddbtoolr'+data['pl'][i]['rasse']+'"><a href="index.php?op=usershow&welch='+data['pl'][i]['inhaber']+'">'+data['pl'][i]['username']+'</a>';
+								content += '<img src="http://static.omega-day.com/img/misc/blank.gif" alt="" class="oddbtoolrasse oddbtoolr'+data['pl'][i]['rasse']+'"><a href="index.php?op=usershow&welch='+data['pl'][i]['inhaber']+'">'+data['pl'][i]['username']+'</a>';
 								if(data['pl'][i]['allianz'] > 0) {
 									content += '<br><a href="index.php?op=allyshow&welch='+data['pl'][i]['allianz']+'" style="font-size:10px">'+data['pl'][i]['allytag']+'</a>';
 									var status = $(result).find('status'+data['pl'][i]['allianz']).text();
@@ -1840,7 +1854,7 @@ if(preg_match('/MSIE/', $_SERVER['HTTP_USER_AGENT'])) {
 		
 		'#oddbtoolheadline{position:absolute; top:85px; left:450px; width:650px; text-align:center;}',
 		
-		'#oddbtoolfowtbl{position:absolute; top:525px; left:275px; width:700px; background-color:rgba(255,255,255,0.15); padding:10px; -moz-border-radius:12px; border-radius:12px; font-family:Arial,Sans; font-size:12px; color:white; z-index:1;}',
+		'#oddbtoolfowtbl{position:absolute; top:575px; left:275px; width:700px; background-color:rgba(255,255,255,0.15); padding:10px; -moz-border-radius:12px; border-radius:12px; font-family:Arial,Sans; font-size:12px; color:white; z-index:1;}',
 		'#oddbtoolfowtbl table{width:100%}',
 		'#oddbtoolfowtbl th, #oddbtoolfowtbl td, #oddbtoolfowtbl a {font-size:9pt;padding:5px}',
 		'#oddbtoolfowtbl th{background-color:rgba(255,255,255,0.1); text-align:left; font-weight:bold;}',

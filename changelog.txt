@@ -1,4 +1,11 @@
-﻿27.05.2013 - V2.3.2
+﻿07.07.2013 - V2.3.3
+-------------------
+* Hotfixes durch OD 11.3
+* neue Genesis-Grafik übernommen
+
+
+
+27.05.2013 - V2.3.2
 -------------------
 * Systeme-Ergebnis-Navigation
 * Planeten-Suchergebnis-Navigation wurde auf weitere Bereiche der DB ausgeweitet

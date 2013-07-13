@@ -7,7 +7,7 @@ var oddbtool = {
 	/**
 	 * Version
 	 */
-	version: '2.3.1.1',
+	version: '2.3.3',
 	odworld: 'int11',
 	
 	
@@ -115,7 +115,7 @@ var oddbtool = {
 	
 	// Sonderzeichen im FoW ersetzen
 	charmap_search: ['&amp;#92', '&amp;#47', '&amp;', '', '', '', '\\\'', '', '', '', ''],
-	charmap_replace: ['\\', '/', '&', '&dagger;', '&bull;', '´', '\'', '˜', '�?', '™', '€'],
+	charmap_replace: ['\\', '/', '&', '&dagger;', '&bull;', '´', '\'', '˜', '�?', '™', '€'],
 	
 	/**
 	 * Einstellungen laden
@@ -400,7 +400,7 @@ var oddbtool = {
 		
 		'#oddbtoolheadline{position:absolute; top:85px; left:450px; width:650px; text-align:center;}',
 		
-		'#oddbtoolfowtbl{position:absolute; top:525px; left:300px; width:700px; background-color:rgba(255,255,255,0.15); padding:10px; -moz-border-radius:12px; border-radius:12px; font-family:Arial,Sans; font-size:12px; color:white; z-index:1;}',
+		'#oddbtoolfowtbl{position:absolute; top:575px; left:300px; width:700px; background-color:rgba(255,255,255,0.15); padding:10px; -moz-border-radius:12px; border-radius:12px; font-family:Arial,Sans; font-size:12px; color:white; z-index:1;}',
 		'#oddbtoolfowtbl table{width:100%}',
 		'#oddbtoolfowtbl th, #oddbtoolfowtbl td, #oddbtoolfowtbl a {font-size:9pt;padding:5px}',
 		'#oddbtoolfowtbl th{background-color:rgba(255,255,255,0.1); text-align:left; font-weight:bold;}',
