@@ -268,7 +268,8 @@ class ODDBApi {
 					'scan' => (($row['planetenUpdateOverview'] AND Rechte::getRechteShowPlanet($row)) ? array(
 						'url' => odscreen($row['planetenTyp'], $row['planetenGebPlanet'], $row['planetenGebOrbit']),
 						'planet' => $row['planetenGebPlanet'],
-						'orbit' => $row['planetenGebOrbit']
+						'orbit' => $row['planetenGebOrbit'],
+						'orbiter' => $row['planetenOrbiter']
 					) : false),
 					
 					'myrigate' => (($row['planetenMyrigate'] AND Rechte::getRechteShowMyrigate($row)) ? $row['planetenMyrigate'] : false),
@@ -283,7 +284,7 @@ class ODDBApi {
 					
 					'ressplanet' => (($row['planetenRessplani'] AND Rechte::getRechteRessplanet($row)) ? true : false),
 					'werft' => (($row['planetenWerft'] AND Rechte::getRechteWerft($row)) ? true : false),
-					'bunker' => (($row['planetenBunker'] AND Rechte::getRechteBunker($row)) ? true : false),
+					'bunker' => (($row['planetenBunker'] AND Rechte::getRechteBunker($row)) ? true : false)
 				),
 				
 				'system' => array(

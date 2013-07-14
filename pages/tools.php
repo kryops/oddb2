@@ -291,6 +291,10 @@ else if($_GET['sp'] == 'api') {
 			<td>orbit</td>
 			<td>String, der die Geb&auml;ude-IDs des Orbits enth&auml;lt; durch + getrennt</td>
 		</tr>
+		<tr>
+			<td>orbiter</td>
+			<td>Summierter Orbiter-Angriff</td>
+		</tr>
 		</table>
 		
 		<table class="apidoc" style="margin-left:'.($col_multi).'px">
