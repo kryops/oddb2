@@ -55,6 +55,7 @@ $sql = "
 		planetenKommentarUpdate,
 		planetenHistory,
 		planetenNatives,
+		planetenOrbiter,
 		
 		systemeID,
 		systemeX,
@@ -359,7 +360,13 @@ if($data['planetenUpdate']) {
 }
 $tmpl->content .= '
 					<br />
-					<b>Planetenpunkte</b>: '.ressmenge(imppunkte($data)).'
+					<b>Planetenpunkte</b>: '.ressmenge(imppunkte($data));
+if($data['planetenUpdateOverview']) {
+	$tmpl->content .= '
+					<br />
+					<b>Orbiter-Angriff</b>: '.ressmenge($data['planetenOrbiter']);
+}
+$tmpl->content .= '
 				</td>
 				<td style="width:20%;height:112px">
 					<img src="img/layout/leer.gif" alt="Erz" class="ress erz" /> &nbsp; '.$data['planetenRWErz'].'%

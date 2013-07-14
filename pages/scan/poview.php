@@ -222,13 +222,12 @@ foreach($_POST['pl'] as $data) {
 		$gor = explode('+', $data['gor']);
 		$cat = categorize(explode('+', $data['gpl']), $gor, $data['gr']);
 		
-		// Orbiter einstufen
+		// Orbiter
 		$orb = 0;
 		
-		// Orbiter-Stufe
 		foreach($gor as $geb) {
-			if(isset($orbiter[$geb]) AND $orbiter[$geb] > $orb) {
-				$orb = $orbiter[$geb];
+			if(isset($orbiter[$geb])) {
+				$orb += $orbiter[$geb];
 			}
 		}
 		

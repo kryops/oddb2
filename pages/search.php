@@ -72,7 +72,8 @@ $spalten = array(
 	50=>'letzte registrierte Aktivit&auml;t',
 	51=>'Allianzen im System',
 	52=>'Natives',
-	53=>'Punkte'
+	53=>'Punkte',
+	55=>'Orbiter-Angriff'
 );
 
 $spalten2 = $spalten;
@@ -131,7 +132,8 @@ $sortol = array(
 	29=>'Oberfl&auml;chen-Scan',
 	36=>'System-Scan',
 	27=>'Natives',
-	37=>'Punkte'
+	37=>'Punkte',
+	38=>'Orbiter-Angriff'
 );
 
 // Sortier-IDs auf Spaltennummer mappen
@@ -174,7 +176,8 @@ $spalten_sort = array(
 	49=>34,
 	50=>35,
 	52=>27,
-	53=>37
+	53=>37,
+	55=>38
 );
 
 /**
@@ -635,7 +638,8 @@ else {
 				51=>'Allys im System',
 				52=>'Natives',
 				53=>'Punkte',
-				54=>'Pos'
+				54=>'Pos',
+				55=>'Orb-Angriff'
 			);
 			
 			$heute = strtotime('today');
@@ -1282,6 +1286,10 @@ else {
 					// Treffer-Position
 					if(isset($sp2[54])) {
 						$spv[54] = $pos;
+					}
+					// Orbiter-Angriff
+					if(isset($sp2[55])) {
+						$spv[55] = ressmenge($row['planetenOrbiter']);
 					}
 					
 					// ausgeben

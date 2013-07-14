@@ -92,14 +92,13 @@ for($i=1;$i<=12;$i++) {
 		$geb = array_search($_POST['o'.$i], $gebaeude);
 		if($geb !== false) {
 			$gor[] = $geb;
-			// Orbiter-Stufe
-			if(isset($orbiter[$geb]) AND $orbiter[$geb] > $orb) {
-				$orb = $orbiter[$geb];
+			// Orbiter-Angriff
+			if(isset($orbiter[$geb])) {
+				$orb += $orbiter[$geb];
 			}
 		}
 		else $gor[] = '-4';
 	}
-	//else $gor[] = '';  --> Platz sparen
 }
 
 // Schiffbau

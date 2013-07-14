@@ -56,7 +56,8 @@ class Search {
 				(planetenBevoelkerung/100000) * planetenGroesse
 				+ GREATEST(planetenRWErz, planetenRWWolfram, planetenRWKristall, planetenRWFluor)
 				+ planetenRWFluor
-			)'
+			)',
+		38=>'planetenOrbiter'
 	);
 	
 	/**
@@ -211,16 +212,14 @@ class Search {
 		<input type="checkbox" name="mg"'.(isset($filter['mg']) ? ' checked="checked"' : '').' /> <span class="togglecheckbox" data-name="mg">Myrigate</span> &nbsp; &nbsp;';
 		
 		$content .= '
-		Orbiter 
-		<select name="o" size="1">
-			<option value="">egal</option>
-			<option value="1"'.((isset($filter['o']) AND $filter['o'] == 1) ? ' selected="selected"' : '').'>keine</option>
-			<option value="6"'.((isset($filter['o']) AND $filter['o'] == 6) ? ' selected="selected"' : '').'>ja</option>
-			<option value="2"'.((isset($filter['o']) AND $filter['o'] == 2) ? ' selected="selected"' : '').'>max. Stufe 1</option>
-			<option value="3"'.((isset($filter['o']) AND $filter['o'] == 3) ? ' selected="selected"' : '').'>max. Stufe 2</option>
-			<option value="4"'.((isset($filter['o']) AND $filter['o'] == 4) ? ' selected="selected"' : '').'>mind. Stufe 2</option>
-			<option value="5"'.((isset($filter['o']) AND $filter['o'] == 5) ? ' selected="selected"' : '').'>mind. Stufe 3</option>
-		</select>
+		Orbiter-Angriff  
+		<select name="o_" size="1">
+			<option value="">&lt;=</option>
+			<option value="1"'.((isset($filter['o_']) AND $filter['o_'] == 1) ? ' selected="selected"' : '').'>&gt;</option>
+			<option value="2"'.((isset($filter['o_']) AND $filter['o_'] == 2) ? ' selected="selected"' : '').'>&lt;=, mind 1</option>
+		</select> 
+		<input type="text" class="smalltext" name="o" value="'.(isset($filter['o']) ? htmlspecialchars($filter['o'], ENT_COMPAT, 'UTF-8') : '').'" />
+		
 		&nbsp; &nbsp;
 		Natives 
 		<select name="na_" size="1">
@@ -642,24 +641,21 @@ class Search {
 		
 		// Orbiter
 		if(isset($filter['o'])) {
-			if($filter['o'] == 1) {
-				$conds[] = 'planetenOrbiter = 0 AND planetenUpdateOverview > 0';
+			$val = '<=';
+			if(isset($filter['o_']) AND $filter['o_'] == 1) {
+				$val = '>';
 			}
-			else if($filter['o'] == 2) {
-				$conds[] = 'planetenOrbiter <= 1 AND planetenUpdateOverview > 0';
-			}
-			else if($filter['o'] == 3) {
-				$conds[] = 'planetenOrbiter <= 2 AND planetenUpdateOverview > 0';
-			}
-			else if($filter['o'] == 4) {
-				$conds[] = 'planetenOrbiter >= 2';
-			}
-			else if($filter['o'] == 5) {
-				$conds[] = 'planetenOrbiter >= 3';
+			// mindestens 1 Orbiter
+			else if(isset($filter['o_']) AND $filter['o_'] == 2) {
+				$conds[] = 'planetenOrbiter > 0';
 			}
 			else {
-				$conds[] = 'planetenOrbiter >= 1';
+				// bei Orbiter <= muss der Planet gescannt sein
+				$conds[] = 'planetenUpdateOverview > 0';
 			}
+			
+			$filter['o'] = (int)$filter['o'];
+			$conds[] = 'planetenOrbiter '.$val.' '.$filter['o'];
 		}
 		// Natives
 		if(isset($filter['na'])) {
@@ -1353,6 +1349,7 @@ class Search {
 				planetenKommentar,
 				planeten_playerID,
 				planetenNatives,
+				planetenOrbiter,
 				
 				".($entf ? $entf." AS planetenEntfernung," : '')."
 				
@@ -1586,24 +1583,18 @@ class Search {
 		
 		// Orbiter
 		if(isset($filter['o'])) {
-			if($filter['o'] == 1) {
-				$desc[] = 'keine Orbiter';
+			$val = '&lt;=';
+			if(isset($filter['o_']) AND $filter['o_'] == 1) {
+				$val = '&gt;';
 			}
-			else if($filter['o'] == 2) {
-				$desc[] = 'Orbiter max. Stufe 1';
+			
+			$add = '';
+			if(isset($filter['o_']) AND $filter['o_'] == 2) {
+				$add = ' aber mindestens 1';
 			}
-			else if($filter['o'] == 3) {
-				$desc[] = 'Orbiter max. Stufe 2';
-			}
-			else if($filter['o'] == 4) {
-				$desc[] = 'Orbiter mind. Stufe 2';
-			}
-			else if($filter['o'] == 5) {
-				$desc[] = 'Orbiter mind. Stufe 3';
-			}
-			else {
-				$desc[] = 'Orbiter vorhanden';
-			}
+			
+			$filter['o'] = (int)$filter['o'];
+			$desc[] = 'Orbiter-Angriff '.$val.' '.$filter['o'].$add;
 		}
 		// Natives
 		if(isset($filter['na'])) {
