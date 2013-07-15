@@ -76,6 +76,27 @@ $content = '
 		<td colspan="2">&nbsp;</td>
 	</tr>
 	<tr>
+		<th colspan="2">Automatisches L&ouml;schen veralteter Eintr&auml;ge (0 f&uuml;r nie)</th>
+	</tr>
+	<tr>
+		<td colspan="2">&nbsp;</td>
+	</tr>
+	<tr>
+		<td style="width:55%">Sprunggeneratoren l&ouml;schen nach (Tage)</td>
+		<td><input type="text" class="smalltext tooltip" name="sprunggenerator_del" value="'.htmlspecialchars($c['sprunggenerator_del'], ENT_COMPAT, 'UTF-8').'" /> <span class="small hint">('.htmlspecialchars($gconfig['sprunggenerator_del'], ENT_COMPAT, 'UTF-8').')</span></td>
+	</tr>
+	<tr>
+		<td style="width:55%">BBS und TF l&ouml;schen nach (Tage)</td>
+		<td><input type="text" class="smalltext tooltip" name="bbstf_del" value="'.htmlspecialchars($c['bbstf_del'], ENT_COMPAT, 'UTF-8').'" /> <span class="small hint">('.htmlspecialchars($gconfig['bbstf_del'], ENT_COMPAT, 'UTF-8').')</span></td>
+	</tr>
+	<tr>
+		<td style="width:55%">Toxxrouten l&ouml;schen nach (Tage)</td>
+		<td><input type="text" class="smalltext tooltip" name="toxxroute_del" value="'.htmlspecialchars($c['toxxroute_del'], ENT_COMPAT, 'UTF-8').'" /> <span class="small hint">('.htmlspecialchars($gconfig['toxxroute_del'], ENT_COMPAT, 'UTF-8').')</span></td>
+	</tr>
+	<tr>
+		<td colspan="2">&nbsp;</td>
+	</tr>
+	<tr>
 		<th colspan="2">Sicherheit</th>
 	</tr>
 	<tr>

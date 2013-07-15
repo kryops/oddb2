@@ -349,15 +349,17 @@ foreach($dbs as $instance) {
 	//
 	// 7 Tage alte Toxxrouten löschen
 	//
-	query("
-		DELETE FROM
-			".$prefix."routen
-		WHERE
-			routenListe = 2
-			AND routenDate < ".(time()-604800)."
-	") OR dieTransaction("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
-	
-	$countToxxroute += mysql_affected_rows();
+	if($config['toxxroute_del']) {
+		query("
+			DELETE FROM
+				".$prefix."routen
+			WHERE
+				routenListe = 2
+				AND routenDate < ".(time()-86400*$config['toxxroute_del'])."
+		") OR dieTransaction("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
+		
+		$countToxxroute += mysql_affected_rows();
+	}
 	
 	//
 	// veraltete Sprunggeneratoren löschen
@@ -411,32 +413,35 @@ foreach($dbs as $instance) {
 	// gelöschte oder 7 Tage alte BBS und Terraformer löschen
 	// 
 	
-	query("
-		DELETE FROM ".$prefix."planeten_schiffe
-		WHERE
-			(schiffeBergbau IS NULL AND schiffeTerraformer IS NULL)
-			OR
-			(schiffeBergbauUpdate < ".(time()-604800)." AND schiffeTerraformerUpdate < ".(time()-604800).")
-	") OR dieTransaction("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
-	
-	$countBbsTf += mysql_affected_rows();
-	
-	query("
-		UPDATE ".$prefix."planeten_schiffe
-		SET
-			schiffeBergbau = NULL
-		WHERE
-			schiffeBergbauUpdate < ".(time()-604800)."
-	") OR dieTransaction("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
-	
-	query("
-		UPDATE ".$prefix."planeten_schiffe
-		SET
-			schiffeTerraformer = NULL
-		WHERE
-			schiffeTerraformerUpdate < ".(time()-604800)."
-	") OR dieTransaction("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
-	
+	if($config['bbstf_del']) {
+		$bbstf_del = time()-86400*$config['bbstf_del'];
+		
+		query("
+			DELETE FROM ".$prefix."planeten_schiffe
+			WHERE
+				(schiffeBergbau IS NULL AND schiffeTerraformer IS NULL)
+				OR
+				(schiffeBergbauUpdate < ".$bbstf_del." AND schiffeTerraformerUpdate < ".$bbstf_del.")
+		") OR dieTransaction("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
+		
+		$countBbsTf += mysql_affected_rows();
+		
+		query("
+			UPDATE ".$prefix."planeten_schiffe
+			SET
+				schiffeBergbau = NULL
+			WHERE
+				schiffeBergbauUpdate < ".$bbstf_del."
+		") OR dieTransaction("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
+		
+		query("
+			UPDATE ".$prefix."planeten_schiffe
+			SET
+				schiffeTerraformer = NULL
+			WHERE
+				schiffeTerraformerUpdate < ".$bbstf_del."
+		") OR dieTransaction("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
+	}
 	
 	//
 	// Galaxiestatistiken bei abgebrochenen Importen neu berechnen 

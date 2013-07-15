@@ -31,27 +31,25 @@ else {
 		}
 	}
 	
-	if(isset($_POST['scan_veraltet'])) {
-		$_POST['scan_veraltet'] = (int)$_POST['scan_veraltet'];
+	$int_vars = array(
+		'scan_veraltet',
+		'scan_veraltet_ally',
+		'scan_veraltet_oview',
+		'scan_veraltet_einst',
+		'scan_veraltet_flotten',
+		'scan_veraltet_geld',
+		'scan_veraltet_forschung',
+		'sprunggenerator_del',
+		'bbstf_del',
+		'toxxroute_del'
+	);
+	
+	foreach($int_vars as $var) {
+		if(isset($_POST[$var])) {
+			$_POST[$var] = (int)$_POST[$var];
+		}
 	}
-	if(isset($_POST['scan_veraltet_ally'])) {
-		$_POST['scan_veraltet_ally'] = (int)$_POST['scan_veraltet_ally'];
-	}
-	if(isset($_POST['scan_veraltet_oview'])) {
-		$_POST['scan_veraltet_oview'] = (int)$_POST['scan_veraltet_oview'];
-	}
-	if(isset($_POST['scan_veraltet_einst'])) {
-		$_POST['scan_veraltet_einst'] = (int)$_POST['scan_veraltet_einst'];
-	}
-	if(isset($_POST['scan_veraltet_flotten'])) {
-		$_POST['scan_veraltet_flotten'] = (int)$_POST['scan_veraltet_flotten'];
-	}
-	if(isset($_POST['scan_veraltet_geld'])) {
-		$_POST['scan_veraltet_geld'] = (int)$_POST['scan_veraltet_geld'];
-	}
-	if(isset($_POST['scan_veraltet_forschung'])) {
-		$_POST['scan_veraltet_forschung'] = (int)$_POST['scan_veraltet_forschung'];
-	}
+	
 	
 	if(isset($_POST['disable_freischaltung'])) {
 		$_POST['disable_freischaltung'] = (bool)$_POST['disable_freischaltung'];
@@ -87,6 +85,9 @@ else {
 		'scan_veraltet_flotten',
 		'scan_veraltet_geld',
 		'scan_veraltet_forschung',
+		'sprunggenerator_del',
+		'bbstf_del',
+		'toxxroute_del',
 		'disable_freischaltung',
 		'disable_freischaltung_level',
 		'logging',

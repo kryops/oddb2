@@ -371,7 +371,7 @@ $gebaeudepos = array(
 	1057=>768
 );
 
-// Orbiter (Gebäude-ID=>Stufe)
+// Orbiter (Gebäude-ID=>Angriff)
 $orbiter = array(
 	1013=>5,
 	1012=>1,
@@ -430,9 +430,6 @@ $bconfig = array(
 	// Invasionen
 	'invasionen_update' => 300,		// nach wie vielen Sekunden soll die anzeige der offenen Invasionen aktualisiert werden?
 	
-	// Spprunggeneratoren
-	'sprunggenerator_del' => 28,	// nach wie vielen Tagen sollen Sprunggeneratoren automatisch gelöscht werden? (0 für nie)
-	
 	// Caching
 	'caching' => 1,					// 0 - deaktiviert, 1 - APC, 2 - memcached -> verbessert die Performance
 	'caching_prefix' => 'oddb',
@@ -470,14 +467,19 @@ $bconfig = array(
 	'logging' => 2,						// Logging-Level
 	'logging_time' => 3,				// nach wie vielen Tagen sollen Einträge aus dem Logfile gelöscht werden?
 	
-	// Scans
+	// Scans als veraltet anzeigen
 	'scan_veraltet' => 21,				// nach wie vielen Tagen gelten Scans als veraltet? (Systeme und Planeten)
 	'scan_veraltet_ally' => 14,			// nach wie vielen Tagen gelten Ally- und eigene Scans als veraltet? (Systeme und Planeten)
-	'scan_veraltet_oview' => 12,	// nach wie vielen Stunden sind Planetenübersicht-Scans veraltet?
+	'scan_veraltet_oview' => 12,		// nach wie vielen Stunden sind Planetenübersicht-Scans veraltet?
 	'scan_veraltet_einst' => 7,			// nach wie vielen Tagen ist der Scan der eigenen Einstellungen und der Sitter veraltet?
 	'scan_veraltet_flotten' => 7,		// nach wie vielen Tagen ist der Scan der eigenen Flottenübersicht veraltet?
 	'scan_veraltet_geld' => 7,			// nach wie vielen Tagen ist der Scan der eigenen Einnahmen veraltet?
-	'scan_veraltet_forschung' => 7		// nach wie vielen Tagen ist der Scan der Forschung veraltet?
+	'scan_veraltet_forschung' => 7,		// nach wie vielen Tagen ist der Scan der Forschung veraltet?
+	
+	// Veraltete Einträge löschen
+	'sprunggenerator_del' => 28,		// nach wie vielen Tagen sollen Sprunggeneratoren automatisch gelöscht werden? (0 für nie)
+	'bbstf_del' => 7,					// nach wie vielen Tagen sollen BBS und TF automatisch gelöscht werden? (0 für nie)
+	'toxxroute_del' => 7				// nach wie vielen Tagen sollen Toxxrouten automatisch gelöscht werden? (0 für nie)
 );
 
 $config = $bconfig;
