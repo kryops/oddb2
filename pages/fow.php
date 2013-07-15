@@ -315,6 +315,7 @@ if($data['systemeUpdateHidden']) {
 			planetenGeraidet,
 			planetenGetoxxt,
 			planetenNatives,
+			planetenOrbiter,
 			planeten_playerID,
 			
 			p1.playerName,
@@ -764,6 +765,7 @@ if($showr) {
 				$planeten .= '
 		<gebplanet><![CDATA['.($r ? $pl['planetenGebPlanet'] : '').']]></gebplanet>
 		<geborbit><![CDATA['.($r ? $pl['planetenGebOrbit'] : '').']]></geborbit>
+		<orbiter><![CDATA['.($r ? $pl['planetenOrbiter'] : '0').']]></orbiter>
 		<erzmenge><![CDATA['.ressmenge($pl['planetenRMErz']).']]></erzmenge>
 		<metallmenge><![CDATA['.ressmenge($pl['planetenRMMetall']).']]></metallmenge>
 		<wolframmenge><![CDATA['.ressmenge($pl['planetenRMWolfram']).']]></wolframmenge>
