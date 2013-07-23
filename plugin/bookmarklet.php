@@ -562,18 +562,19 @@ header('Content-Type: text/javascript; charset=utf-8');
 								}
 							}
 							
+							/* andere Implementierung als in den übrigen Parsern wegen IE8-Inkompatibilität */
 							data = $(data[3]);
-							pl[i]['erz'] = data.find('tr:nth-child(2) > td:nth-child(2)').html().replace(/[^\d+]/g, '');
-							pl[i]['wolfram'] = data.find('tr:nth-child(4) > td:nth-child(2)').html().replace(/[^\d+]/g, '');
-							pl[i]['kristall'] = data.find('tr:nth-child(5) > td:nth-child(2)').html().replace(/[^\d+]/g, '');
-							pl[i]['fluor'] = data.find('tr:nth-child(6) > td:nth-child(2)').html().replace(/[^\d+]/g, '');
+							pl[i]['erz'] = data.find('tr:eq(1)').find('td:eq(1)').html().replace(/[^\d+]/g, '');
+							pl[i]['wolfram'] = data.find('tr:eq(3)').find('td:eq(1)').html().replace(/[^\d+]/g, '');
+							pl[i]['kristall'] = data.find('tr:eq(4)').find('td:eq(1)').html().replace(/[^\d+]/g, '');
+							pl[i]['fluor'] = data.find('tr:eq(5)').find('td:eq(1)').html().replace(/[^\d+]/g, '');
 						}
 						catch(e) {
 							throw 'Konnte Planetenwerte nicht ermitteln ('+i+')';
 						}
 						
 						// Inhaber
-						p = /setter\(\'(.+)\',[\r\n\s]*\'(\d+)\',\'.*\',\'(.*)\',\'(.*)\'\);/;
+						p = /setter\(\'(.+)\',[&#10;\r\n\s]*\'(\d+)\',\'.*\',\'(.*)\',\'(.*)\'\);/;
 						data = p.exec($(this).find('tr:first-child a').attr('onmouseover'));
 						if(data == null) throw 'Konnte Inhaber nicht ermitteln! ('+i+')';
 						else {
@@ -1332,10 +1333,11 @@ header('Content-Type: text/javascript; charset=utf-8');
 				// Planet existiert und hat Inhaber
 				if(typeof(data['pl'][i]) == 'object' && data['pl'][i]['inhaber'] > 0) {
 					
-					p = 'setter\\(\\\'(.+)\\\',[\\r\\n\\s]*\\\''+data['pl'][i]['inhaber']+'\\\',\\\'(.*)\\\',\\\'(?:.*)\\\',\\\'(?:.*)\\\'\\);';
+					p = 'setter\\(\\\'(.+)\\\',[&#10;\\r\\n\\s]*\\\''+data['pl'][i]['inhaber']+'\\\',\\\'(.*)\\\',\\\'(?:.*)\\\',\\\'(?:.*)\\\'\\);';
 					
 					p = new RegExp(p);
 					var data2 = p.exec(input);
+					
 					if(data2 != null) {
 						// HTML dekodieren und komische Symbole anzeigbar machen
 						data['pl'][i]['username'] = oddbtool.str_replace(oddbtool.charmap_search, oddbtool.charmap_replace, data2[1]);
