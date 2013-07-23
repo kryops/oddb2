@@ -817,7 +817,7 @@ $(\'#content\').html(\'<div class="center">Der Import wurde erfolgreich abgeschl
 		else {
 			
 			// Gültige Welt und Version
-			if(!isset($data['world'], $data['version'], $data['galaxien']) OR $data['world'] != ODWORLD OR $data['version'] != 1) {
+			if(!isset($data['world'], $data['version'], $data['galaxien']) OR $data['world'] != ODWORLD OR $data['version'] != GRUNDDATEN_VERSION) {
 				$tmpl->error = 'Ungültige Datei! (Falsche Version oder OD-Welt)';
 			}
 			else {
@@ -924,7 +924,7 @@ $(\'#content\').html(\'<div class="center">Der Import wurde erfolgreich abgeschl
 						<p>
 							Der Grunddaten-Import wurde erfolgreich abgeschlossen.
 							<br /><br />
-							'.$gcount.' Galaxien mit '.$scount.' Systemen und '.$pcount.' Planeten wurden eingetragen.
+							'.$gcount.' Galaxie'.($gcount != 1 ? 'n' : '').' mit '.$scount.' Systemen und '.$pcount.' Planeten wurde'.($gcount != 1 ? 'n' : '').' eingetragen.
 						</p>
 					</div>
 				';

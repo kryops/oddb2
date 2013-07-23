@@ -28,6 +28,7 @@ define('ODWORLD', 'int11');
 define('DOWNTIME', false);
 // Abgleich-Version
 define('ABGLEICH_VERSION', 3);
+define('GRUNDDATEN_VERSION', 1);
 // ODDB Tool-Version
 define('ODDBTOOL', '2.3.3');
 define('ODDBTOOLPATH', 'oddbtool-2_3_3.xpi');
