@@ -829,6 +829,7 @@ $(\'#content\').html(\'<div class="center">Der Import wurde erfolgreich abgeschl
 				$pcount = 0;
 				
 				$galaxien = array();
+				$galaxienImported = array();
 				
 				// eingetragene Galaxien auslesen
 				$query = query("
@@ -854,6 +855,7 @@ $(\'#content\').html(\'<div class="center">Der Import wurde erfolgreich abgeschl
 					}
 					
 					$gcount++;
+					$galaxienImported[] = $gala;
 					
 					// Galaxie eintragen
 					query("
@@ -923,8 +925,49 @@ $(\'#content\').html(\'<div class="center">Der Import wurde erfolgreich abgeschl
 					<div id="content" class="center">
 						<p>
 							Der Grunddaten-Import wurde erfolgreich abgeschlossen.
-							<br /><br />
-							'.$gcount.' Galaxie'.($gcount != 1 ? 'n' : '').' mit '.$scount.' Systemen und '.$pcount.' Planeten wurde'.($gcount != 1 ? 'n' : '').' eingetragen.
+							<br /><br />';
+				
+				if($gcount == 1) {
+					$tmpl->content .= 'Galaxie '.$galaxienImported[0];
+				}
+				// mehrere Galaxien als "a-b, c-d" formatieren
+				else {
+					$galaxienImportedFormat = array();
+					$firstGala = false;
+					$currentGala = false;
+					
+					foreach($galaxienImported as $gala) {
+						if($firstGala === false) {
+							$firstGala = $gala;
+							$currentGala = $gala;
+						}
+						else {
+							if($gala != $currentGala+1) {
+								if($firstGala == $currentGala) {
+									$galaxienImportedFormat[] = $firstGala;
+								}
+								else {
+									$galaxienImportedFormat[] = $firstGala.'-'.$currentGala;
+								}
+								
+								$firstGala = $gala;
+							}
+							
+							$currentGala = $gala;
+						}
+					}
+					
+					if($firstGala == $currentGala) {
+						$galaxienImportedFormat[] = $firstGala;
+					}
+					else {
+						$galaxienImportedFormat[] = $firstGala.'-'.$currentGala;
+					}
+					
+					$tmpl->content .= 'Die Galaxien '.implode(', ', $galaxienImportedFormat);
+				}
+				
+				$tmpl->content .= ' mit '.$scount.' Systemen und '.$pcount.' Planeten wurde'.($gcount != 1 ? 'n' : '').' eingetragen.
 						</p>
 					</div>
 				';
