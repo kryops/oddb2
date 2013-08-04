@@ -148,6 +148,12 @@ class Search {
 		<span style="cursor:pointer" onclick="$(this).siblings(\'.searchpltyplist\').slideToggle(250)">Typ</span> &nbsp;
 		<input type="hidden" name="t" value="'.(isset($filter['t']) ? h($filter['t']) : '').'" />
 		<span class="searchpltyp" onclick="$(this).siblings(\'.searchpltyplist\').slideToggle(250)">'.(isset($filter['t']) ? '<img src="img/planeten/'.(int)$filter['t'].'.jpg" alt="" />' : '<i>alle</i>').'</span> &nbsp; &nbsp;
+		Pool 
+		<select name="pool" size="1">
+			<option value="">alle Planeten</option>
+			<option value="1"'.((isset($filter['pool']) AND $filter['pool'] == 1) ? ' selected="selected"' : '').'>normale Planeten</option>
+			<option value="2"'.((isset($filter['pool']) AND $filter['pool'] == 2) ? ' selected="selected"' : '').'>Genesis-Planeten</option>
+		</select>  &nbsp; &nbsp;
 		Scan 
 		<select name="sc" size="1" onchange="if(this.value>=3){$(this).siblings(\'.sct\').show().select();}else{$(this).siblings(\'.sct\').hide();}">
 			<option value="">egal</option>
@@ -163,15 +169,15 @@ class Search {
 			<option value=""></option>
 			<option value="0"'.((isset($filter['k']) AND $filter['k'] == 0) ? ' selected="selected"' : '').'>nicht kategorisiert</option>
 			<option value="13"'.((isset($filter['k']) AND $filter['k'] == 13) ? ' selected="selected"' : '').'>Werft</option>
-			<option value="15"'.((isset($filter['k']) AND $filter['k'] == 15) ? ' selected="selected"' : '').'>- Ressplanis und Werften -</option>
-			<option value="14"'.((isset($filter['k']) AND $filter['k'] == 14) ? ' selected="selected"' : '').'>- alle Ressplaneten -</option>
+			<option value="15"'.((isset($filter['k']) AND $filter['k'] == 15) ? ' selected="selected"' : '').'>- Ressplanis + Werften -</option>
+			<option value="14"'.((isset($filter['k']) AND $filter['k'] == 14) ? ' selected="selected"' : '').'>- Ressplaneten -</option>
 			<option value="1"'.((isset($filter['k']) AND $filter['k'] == 1) ? ' selected="selected"' : '').'>Erz</option>
 			<option value="2"'.((isset($filter['k']) AND $filter['k'] == 2) ? ' selected="selected"' : '').'>Metall</option>
 			<option value="3"'.((isset($filter['k']) AND $filter['k'] == 3) ? ' selected="selected"' : '').'>Wolfram</option>
 			<option value="4"'.((isset($filter['k']) AND $filter['k'] == 4) ? ' selected="selected"' : '').'>Kristall</option>
 			<option value="5"'.((isset($filter['k']) AND $filter['k'] == 5) ? ' selected="selected"' : '').'>Fluor</option>
 			<option value="12"'.((isset($filter['k']) AND $filter['k'] == 12) ? ' selected="selected"' : '').'>Umsatzfabriken</option>
-			<option value="16"'.((isset($filter['k']) AND $filter['k'] == 16) ? ' selected="selected"' : '').'>- alle  Forschungsplaneten -</option>
+			<option value="16"'.((isset($filter['k']) AND $filter['k'] == 16) ? ' selected="selected"' : '').'>- Forschungsplaneten -</option>
 			<option value="6"'.((isset($filter['k']) AND $filter['k'] == 6) ? ' selected="selected"' : '').'>Forschungseinrichtungen</option>
 			<option value="7"'.((isset($filter['k']) AND $filter['k'] == 7) ? ' selected="selected"' : '').'>UNI-Labore</option>
 			<option value="8"'.((isset($filter['k']) AND $filter['k'] == 8) ? ' selected="selected"' : '').'>Forschungszentren</option>
@@ -573,6 +579,21 @@ class Search {
 		if(isset($filter['t'])) {
 			$filter['t'] = (int)$filter['t'];
 			$conds[] = 'planetenTyp = '.$filter['t'];
+		}
+		// Planeten-Pool
+		if(isset($filter['pool'])) {
+			global $planeten_genesis;
+			
+			// normale Planeten
+			if($filter['pool'] == 1) {
+				$conds[] = 'planetenTyp NOT IN('.implode(',', $planeten_genesis).')';
+			}
+			// Genesis-Planeten
+			else {
+				// Gala 128 rausnehmen, weil sie nur Genesis-Typen enthält
+				$conds[] = 'systeme_galaxienID != 128';
+				$conds[] = 'planetenTyp IN('.implode(',', $planeten_genesis).')';
+			}
 		}
 		// Planeten-Scan (Oberfläche)
 		if(isset($filter['sc'])) {
@@ -1515,6 +1536,15 @@ class Search {
 		if(isset($filter['t'])) {
 			$filter['t'] = (int)$filter['t'];
 			$desc[] = 'Planetentyp <img src="img/planeten/'.$filter['t'].'.jpg" alt="" class="icon" />';
+		}
+		// Planeten-Pool
+		if(isset($filter['pool'])) {
+			if($filter['pool'] == 1) {
+				$desc[] = 'nur normale (nicht Genesis-) Planeten';
+			}
+			else {
+				$desc[] = 'nur Genesis-Planeten';
+			}
 		}
 		// Planeten-Scan (Oberfläche)
 		if(isset($filter['sc'])) {
