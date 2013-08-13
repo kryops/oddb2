@@ -346,20 +346,30 @@ if($data['playerName'] != NULL) {
 	}
 }
 // Größe und Bevölkerung
-$tmpl->content .= ' <br />
-					<b>Gr&ouml;&szlig;e</b>: '.($data['planetenGroesse'] ? $data['planetenGroesse'] : '<span class="red">unbewohnbar</span>').'
+$tmpl->content .= ' <br />';
+
+if($data['planetenGroesse']) {
+	$tmpl->content .= '
+					<b>Gr&ouml;&szlig;e</b>: '.$data['planetenGroesse'].'
 					<br />
 					<b>Bev&ouml;lkerung</b>: '.ressmenge($data['planetenBevoelkerung']);
-if($data['planetenUpdate']) {
-	$tmpl->content .= '
+	if($data['planetenUpdate']) {
+		$tmpl->content .= '
 					<br />
 					<b>Forschung</b>: '.ressmenge($data['planetenForschung']).'
 					<br />
 					<b>Industrie</b>: '.ressmenge($data['planetenIndustrie']);
-}
-$tmpl->content .= '
+	}
+	$tmpl->content .= '
 					<br />
-					<b>Planetenpunkte</b>: '.ressmenge(imppunkte($data)).'
+					<b>Planetenpunkte</b>: '.ressmenge(imppunkte($data));
+}
+else {
+	$tmpl->content .= '<b>Gr&ouml;&szlig;e</b>: <span class="red">unbewohnbar</span>';
+}
+
+					
+$tmpl->content .= '
 				</td>
 				<td style="width:20%;height:112px">
 					<img src="img/layout/leer.gif" alt="Erz" class="ress erz" /> &nbsp; '.$data['planetenRWErz'].'%

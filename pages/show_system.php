@@ -473,7 +473,7 @@ else if($_GET['sp'] == '') {
 					$r = Rechte::getRechteShowPlanet($pl);
 					
 					// Tooltip erzeugen
-					$tt = '&lt;span style=&quot;line-height:18px&quot;&gt; &lt;b&gt;Gr&amp;ouml;&amp;szlig;e&lt;/b&gt;: '.($pl['planetenGroesse'] ? $pl['planetenGroesse'] : '&lt;span class=&quot;red&quot;&gt;unbewohnbar&lt;/span&gt;').' &lt;br /&gt; &lt;b&gt;Bev&amp;ouml;lkerung&lt;/b&gt;: '.ressmenge($pl['planetenBevoelkerung']).' &lt;/span&gt;&lt;br /&gt;&lt;br /&gt;';
+					$tt = '&lt;span style=&quot;line-height:18px&quot;&gt; &lt;b&gt;Gr&amp;ouml;&amp;szlig;e&lt;/b&gt;: '.($pl['planetenGroesse'] ? $pl['planetenGroesse'].'&lt;br /&gt; &lt;b&gt;Bev&amp;ouml;lkerung&lt;/b&gt;: '.ressmenge($pl['planetenBevoelkerung']).' &lt;/span&gt;' : '&lt;span class=&quot;red&quot;&gt;unbewohnbar&lt;/span&gt;').' &lt;br /&gt;';
 					// geraidet oder getoxxt?
 					if($user->rechte['toxxraid'] AND ($pl['planetenGeraidet'] > $lastweek OR $pl['planetenGetoxxt'] > time())) {
 						$tt .= '&lt;div class=&quot;showsysttadd&quot;&gt;';
