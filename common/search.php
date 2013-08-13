@@ -246,6 +246,15 @@ class Search {
 			<option value="2"'.((isset($filter['na_']) AND $filter['na_'] == 2) ? ' selected="selected"' : '').'>&lt;</option>
 		</select> 
 		<input type="text" class="smalltext" name="na" value="'.(isset($filter['na']) ? htmlspecialchars($filter['na'], ENT_COMPAT, 'UTF-8') : '').'" />
+		&nbsp; &nbsp;
+		
+		terraformbar
+		<select name="tfb" size="1">
+			<option value="">egal</option>
+			<option value="1"'.((isset($filter['tfb']) AND $filter['tfb'] == 1) ? ' selected="selected"' : '').'>ja</option>
+			<option value="2"'.((isset($filter['tfb']) AND $filter['tfb'] == 2) ? ' selected="selected"' : '').'>nein</option>
+		</select>
+				
 		<br />
 		
 		<div class="searchgeblist fcbox" style="display:none">';
@@ -708,6 +717,18 @@ class Search {
 				// Planeten mit 0 Natives ausblenden
 				$conds[] = 'planetenNatives > 0';
 			}
+		}
+		// terraformbar
+		if(isset($filter['tfb'])) {
+			global $planeten_bevoelkerung, $planeten_bevoelkerung_offset;
+			
+			$val = array();
+			
+			foreach($planeten_bevoelkerung as $pl=>$bev) {
+				$val[] = '(planetenTyp = '.$pl.' AND planetenBevoelkerung '.($filter['tfb'] == 1 ? '<' : '>=').' '.($bev+$planeten_bevoelkerung_offset).')';
+			}
+			
+			$conds[] = '('.implode(' OR ', $val).')';
 		}
 		// Bevölkerung
 		if(isset($filter['bev'])) {
@@ -1492,8 +1513,9 @@ class Search {
 			if(!is_array($val)) $filter[$key] = h($val);
 		}
 		
-		// Gebäude-Filter
+		// Gebäude- und Planetentyp-Filter
 		$searchgeb = self::getGebaeudeFilter($filter);
+		$searchpl = self::getTypFilter($filter);
 		
 		
 		
@@ -1571,8 +1593,13 @@ class Search {
 		}
 		// Planeten-Typ
 		if(isset($filter['t'])) {
-			$filter['t'] = (int)$filter['t'];
-			$desc[] = 'Planetentyp <img src="img/planeten/'.$filter['t'].'.jpg" alt="" class="icon" />';
+			$c = 'Planetentyp ';
+				
+			foreach($searchpl as $pl) {
+				$c .= '<img src="img/planeten/'.$pl.'.jpg" class="icon" alt="" />';
+			}
+				
+			$desc[] = $c;
 		}
 		// Planeten-Pool
 		if(isset($filter['pool'])) {
@@ -1681,6 +1708,15 @@ class Search {
 			}
 			$filter['na'] = (int)$filter['na'];
 			$desc[] = 'Natives '.$val.' '.$filter['na'];
+		}
+		// terraformbar
+		if(isset($filter['tfb'])) {
+			if($filter['tfb'] == 1) {
+				$desc[] = 'Planet terraformbar';
+			}
+			else {
+				$desc[] = 'Planet nicht mehr terraformbar';
+			}
 		}
 		// Bevölkerung
 		if(isset($filter['bev'])) {
