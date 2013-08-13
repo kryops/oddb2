@@ -632,12 +632,29 @@ $(document).ready(function(){
 	// Suche
 	// Planetentypfilter
 	$document.on('click', '.searchpltyplist > img', function() {
-		var id = $(this).attr('src');
-		id = id.replace(/[^\d]/g, '');
-		var f = $(this).parents('form');
-		f.find('input[name="t"]').val(id);
-		f.find('.searchpltyp').html('<img src="img/planeten/'+id+'.jpg" alt="" />');
-		$(this.parentNode).slideUp(250);
+		$(this).toggleClass('active');
+		
+		// Feld aktualisieren
+		var f = $(this).parents('form'),
+			o = f.find('.searchpltyp');
+		o.html('');
+		
+		var filter = [];
+		$(this.parentNode).children('.active').each(function() {
+			var src = $(this).attr('src');
+			
+			filter.push(src.replace(/[^\d]/g, ''));
+			o.append('<img src="'+src+'" alt="" />');
+		});
+		
+		// zusammenfügen und ins Formular
+		filter = filter.join("-");
+		f.find('input[name=t]').val(filter);
+		
+		// Filter deaktiviert
+		if(filter == "") {
+			o.html('<i>alle</i>');
+		}
 	});
 	
 	// Gebäudefilter

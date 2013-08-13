@@ -1336,6 +1336,15 @@ hr {
 	cursor:pointer;
 }
 
+.searchpltyplist > img.active {
+	border:1px solid #aaaaaa;
+	margin:-1px;
+}
+
+.searchpltyplist > img.active:hover {
+	margin:-11px;
+}
+
 .searchpltyplist, .searchgeblist {
 	margin-left:-90px;
 	background-color:#181919;

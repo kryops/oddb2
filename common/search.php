@@ -80,20 +80,16 @@ class Search {
 	 */
 	public static function createSearchForm($filter, $additional='', $action=self::DEFAULT_ACTION, $button='Suche starten') {
 		
-		global $user, $rassen, $gebaeude, $status, $status_meta, $status_freund, $status_feind;
-		
-		
-		// Planeten-Typen
-		$pltypen = 93;
-		$pltypnot = array();
+		global $user, $rassen, $gebaeude, $status, $status_meta, $status_freund, $status_feind, $pltypen, $pltypnot;
 		
 		// Planetentyp validieren
 		if(isset($filter['t']) AND ((int)$filter['t'] < 1 OR (int)$filter['t'] > $pltypen OR in_array((int)$filter['t'], $pltypnot))) {
 			unset($filter['t']);
 		}
 		
-		// Gebäude-Filter
+		// Gebäude- und Typ-Filter
 		$searchgeb = self::getGebaeudeFilter($filter);
+		$searchpl = self::getTypFilter($filter);
 		
 		
 		$content = '
@@ -145,10 +141,25 @@ class Search {
 		</select> 
 		<input type="text" class="smalltext" name="gr" value="'.(isset($filter['gr']) ? htmlspecialchars($filter['gr'], ENT_COMPAT, 'UTF-8') : '').'" />
 		<br />
+		
 		<span style="cursor:pointer" onclick="$(this).siblings(\'.searchpltyplist\').slideToggle(250)">Typ</span> &nbsp;
 		<input type="hidden" name="t" value="'.(isset($filter['t']) ? h($filter['t']) : '').'" />
-		<span class="searchpltyp" onclick="$(this).siblings(\'.searchpltyplist\').slideToggle(250)">'.(isset($filter['t']) ? '<img src="img/planeten/'.(int)$filter['t'].'.jpg" alt="" />' : '<i>alle</i>').'</span> &nbsp; &nbsp;
-		Pool 
+		<span class="searchpltyp" onclick="$(this).siblings(\'.searchpltyplist\').slideToggle(250)">';
+		
+		if(!count($searchpl)) {
+			$content .= '<i>alle</i>';
+		}
+		else {
+			// ausgewählte Planeten anzeigen
+			foreach($searchpl as $pl) {
+				$content .= '<img src="img/planeten/'.$pl.'.jpg" alt="" />';
+			}
+		}
+		
+		$content .= '</span> &nbsp; &nbsp;
+				
+				
+				Pool 
 		<select name="pool" size="1">
 			<option value="">alle Planeten</option>
 			<option value="1"'.((isset($filter['pool']) AND $filter['pool'] == 1) ? ' selected="selected"' : '').'>normale Planeten</option>
@@ -192,11 +203,11 @@ class Search {
 		// Planetentypen ausgeben
 		for($i=1; $i <= $pltypen; $i++) {
 			if(!in_array($i, $pltypnot)) {
-				$content .= '<img src="img/planeten/'.$i.'.jpg" alt="" /> ';
+				$content .= '<img src="img/planeten/'.$i.'.jpg" alt=""'.(in_array($i, $searchpl) ? ' class="active"' : '').' /> ';
 			}
 		}
 		
-		$content .= ' <a onclick="$(this).parents(\'form\').find(\'input[name=t]\').val(\'\').siblings(\'.searchpltyp\').html(\'&lt;i&gt;alle&lt;/i&gt;\');$(this.parentNode).slideUp(250);" style="font-style:italic"> [alle]</a>
+		$content .= ' <a onclick="$(this).parents(\'form\').find(\'input[name=t]\').val(\'\').siblings(\'.searchpltyp\').html(\'&lt;i&gt;alle&lt;/i&gt;\');$(this).siblings(\'.active\').removeClass(\'active\');" style="font-style:italic"> [alle]</a>
 		</div>
 		
 		<span style="cursor:pointer" onclick="$(this).siblings(\'.searchgeblist\').slideToggle(250)">Geb&auml;ude-Filter</span> &nbsp;
@@ -209,7 +220,7 @@ class Search {
 		else {
 			// ausgewählte Gebäude anzeigen
 			foreach($searchgeb as $geb) {
-				$content .= '<img src="img/gebaeude/'.$gebaeude[$geb].'" alt="" /> ';
+				$content .= '<img src="img/gebaeude/'.$gebaeude[$geb].'" alt="" />';
 			}
 		}
 		
@@ -487,6 +498,7 @@ class Search {
 		
 		// Gebäude-Filter
 		$searchgeb = self::getGebaeudeFilter($filter);
+		$searchpl = self::getTypFilter($filter);
 		
 		
 		
@@ -576,9 +588,8 @@ class Search {
 			$conds[] = 'planetenGroesse '.$val.' '.$filter['gr'];
 		}
 		// Planeten-Typ
-		if(isset($filter['t'])) {
-			$filter['t'] = (int)$filter['t'];
-			$conds[] = 'planetenTyp = '.$filter['t'];
+		if(isset($filter['t']) AND count($searchpl)) {
+			$conds[] = 'planetenTyp IN('.implode(',', $searchpl).')';
 		}
 		// Planeten-Pool
 		if(isset($filter['pool'])) {
@@ -1199,6 +1210,32 @@ class Search {
 		
 		return $searchgeb;
 		
+	}
+	
+	/**
+	 * Planetentyp-Filter erzeugen
+	 * @param array $filter
+	 * @returns array Planetentypen, nach denen gesucht werden soll
+	 */
+	public static function getTypFilter($filter) {
+		
+		global $pltypen, $pltypnot;
+	
+		if(isset($filter['t'])) {
+			$searchpl = explode('-', $filter['t']);
+			// validieren
+			foreach($searchpl as $key=>$val) {
+				if($val <= 0 OR $val > $pltypen OR in_array($val, $pltypnot)) {
+					unset($searchpl[$key]);
+				}
+			}
+		}
+		else {
+			$searchpl = array();
+		}
+	
+		return $searchpl;
+	
 	}
 	
 	
