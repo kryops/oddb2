@@ -44,7 +44,6 @@ $sql = "
 		playerPlaneten,
 		playerImppunkte,
 		playerUmod,
-		playerFA,
 		playerDeleted,
 		playerGesinnung,
 		playerActivity,
@@ -305,10 +304,6 @@ else {
 }
 $tmpl->content .= '
 			<br />';
-// FA
-if($data['playerFA']) {
-	$tmpl->content .= 'Dieser Spieler hat FA';
-}
 // Planetendaten
 if(!$data['playerPlaneten']) {
 	$pl1 = 0;

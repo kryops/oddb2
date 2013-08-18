@@ -79,7 +79,6 @@ $globtables_add = array(
   `playerQuestpunkte` mediumint(8) unsigned NOT NULL DEFAULT 0,
   `playerHandelspunkte` mediumint(8) unsigned NOT NULL DEFAULT 0,
   `playerUmod` tinyint(1) unsigned NOT NULL DEFAULT 0,
-  `playerFA` tinyint(1) unsigned NOT NULL DEFAULT 0,
   `playerDeleted` tinyint(1) unsigned NOT NULL DEFAULT 0,
   `playerGesinnung` mediumint(9) DEFAULT NULL,
   `playerActivity` int(10) unsigned NOT NULL DEFAULT 0,
