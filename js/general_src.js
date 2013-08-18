@@ -120,7 +120,9 @@ $(document).ready(function(){
 	// Größe des Startmenüs aktualisieren
 	sm_updatesize();
 	
-	$(document).bind('click', function(e){
+	var $document = $(document);
+	
+	$document.bind('click', function(e){
 		// Dokument-Klick
 		// Kontextmenü schließen
 		cm_close();
@@ -257,7 +259,7 @@ $(document).ready(function(){
 	});
 	
 	// Links klickbar machen
-	$(document).on('click', '.link', function(e) {
+	$document.on('click', '.link', function(e) {
 		// Rechtsklick abfangen
 		if(e.which == 3) return true;
 		
@@ -317,7 +319,7 @@ $(document).ready(function(){
 	});
 	
 	// Contentswitch klickbar machen
-	$(document).on('click', '.cswlink', function(e) {
+	$document.on('click', '.cswlink', function(e) {
 		// Rechtsklick abfangen
 		if(e.which == 3) return true;
 		
@@ -343,7 +345,7 @@ $(document).ready(function(){
 	});
 	
 	// Kontextmenü initialisieren
-	$(document).on('contextmenu touchcontextmenu', '.contextmenu, .cswlink', function(e){
+	$document.on('contextmenu touchcontextmenu', '.contextmenu, .cswlink', function(e){
 		// ohne passendes Link-Attribut kein Kontextmenü
 		if(typeof($(this).data('link')) == 'undefined') {
 			if($(this).attr('link') != null) {
@@ -360,7 +362,7 @@ $(document).ready(function(){
 	});
 	
 	// Tooltips initialisieren
-	$(document).on('mouseover touchmousedown', '.tooltip', function(e) {
+	$document.on('mouseover touchmousedown', '.tooltip', function(e) {
 		// Planeten-Screen erzeugen
 		if($(this).hasClass('plscreen') && typeof($(this).data('tooltip')) == 'undefined') {
 			var data = $(this).data('plscreen').split('_');
@@ -405,7 +407,7 @@ $(document).ready(function(){
 	});
 	
 	// Touch-Tooltips wieder verschwinden lassen
-	$(document).on('touchstart', function(e) {
+	$document.on('touchstart', function(e) {
 		if(!$(e.target).hasClass('tooltip')) {
 			$('#tooltip').stop(true, true).hide();
 			tooltip = false;
@@ -455,7 +457,7 @@ $(document).ready(function(){
 	});
 	
 	// Fenster klickbar machen
-	$(document).on('mousedown touchstart', '.fenster', function(){
+	$document.on('mousedown touchstart', '.fenster', function(){
 		wbar_click($(this), 1);
 	}).on('mousedown touchstart', '.fhl1', function(e) {
 		
@@ -528,7 +530,7 @@ $(document).ready(function(){
 	});
 	
 	// GUI tabben
-	$(document).on('keypress', function(e) {
+	$document.on('keypress', function(e) {
 		if(e.altKey && e.ctrlKey && e.which == 116) {
 			tab_next();
 		}
@@ -553,14 +555,14 @@ $(document).ready(function(){
 	  dataType: 'xml'
 	});
 	// AJAX-Handler initialisieren
-	$(document).ajaxStart(function(){
+	$document.ajaxStart(function(){
 	   $('#ajax').show();
 	}).ajaxComplete(function() {
 		$('#ajax').hide();
 	});
 	
 	// Checkboxen beim Klick auf das Label togglen
-	$(document).on('click', '.togglecheckbox', function() {
+	$document.on('click', '.togglecheckbox', function() {
 		var name = $(this).data('name');
 		if(name == null) return false;
 		var cb = $(this).parents('form').find('input[name="'+name+'"], .'+name);
@@ -570,7 +572,7 @@ $(document).ready(function(){
 	});
 	
 	// Allianzfilter
-	$(document).on('click', '.allyfilter input, .allyfilter a', function() {
+	$document.on('click', '.allyfilter input, .allyfilter a', function() {
 		var p = this.parentNode.parentNode;
 		var t = $(p).siblings('.allyfiltert');
 		var ally = this.name;
@@ -616,7 +618,7 @@ $(document).ready(function(){
 	});
 	
 	// Routenmarker
-	$(document).on('mouseenter', '.routemarker', function() {
+	$document.on('mouseenter', '.routemarker', function() {
 		$('.routemarker').html('');
 		$(this).html('<img src="img/layout/leer.gif" class="hoverbutton" style="background-position:-1060px -91px" title="Marker setzen" onclick="route_marker(this)" />');
 	}).on('mouseleave', '.routemarker', function() {
@@ -629,17 +631,34 @@ $(document).ready(function(){
 	
 	// Suche
 	// Planetentypfilter
-	$(document).on('click', '.searchpltyplist > img', function() {
-		var id = $(this).attr('src');
-		id = id.replace(/[^\d]/g, '');
-		var f = $(this).parents('form');
-		f.find('input[name="t"]').val(id);
-		f.find('.searchpltyp').html('<img src="img/planeten/'+id+'.jpg" alt="" />');
-		$(this.parentNode).slideUp(250);
+	$document.on('click', '.searchpltyplist > img', function() {
+		$(this).toggleClass('active');
+		
+		// Feld aktualisieren
+		var f = $(this).parents('form'),
+			o = f.find('.searchpltyp');
+		o.html('');
+		
+		var filter = [];
+		$(this.parentNode).children('.active').each(function() {
+			var src = $(this).attr('src');
+			
+			filter.push(src.replace(/[^\d]/g, ''));
+			o.append('<img src="'+src+'" alt="" />');
+		});
+		
+		// zusammenfügen und ins Formular
+		filter = filter.join("-");
+		f.find('input[name=t]').val(filter);
+		
+		// Filter deaktiviert
+		if(filter == "") {
+			o.html('<i>alle</i>');
+		}
 	});
 	
 	// Gebäudefilter
-	$(document).on('click', '.searchgeblist > img', function() {
+	$document.on('click', '.searchgeblist > img', function() {
 		$(this).toggleClass('active');
 		
 		// Feld aktualisieren
@@ -664,7 +683,7 @@ $(document).ready(function(){
 	});
 	
 	// Planetenkommentare durch Doppelklick löschen
-	$(document).on('dblclick', '.kommentar.searchicon', function() {
+	$document.on('dblclick', '.kommentar.searchicon', function() {
 		if(window.confirm('Soll der Kommentar wirklich gelöscht werden?')) {
 			var idClass = this.className.match(/plkommentar(\d+) /);
 			
@@ -675,9 +694,23 @@ $(document).ready(function(){
 	});
 	
 	// Forschungsübersicht filtern
-	$(document).on('click', '.icon_forschung_filter', function() {
+	$document.on('click', '.icon_forschung_filter', function() {
 		$(this).toggleClass('icon_forschung_filter_active');
 		forschungPage.filter(this);
+	});
+	
+	// in OD Öffnen-Sammellinks
+	$document.on('click', '.openinod-link', function(e) {
+		var $links = $(this.parentNode).siblings('table').find('a[data-sys]');
+				
+		if($links.length && window.confirm('Diese Operation öffnet '+$links.length+' neue Tabs/Fenster auf einmal. Fortfahren?')) {
+			$links.each(function() {
+				window.open(ODServer + '/game/index.php?op=system&sys='+$(this).data('sys'));
+			});
+		}
+		
+		e.preventDefault();
+		return false;
 	});
 	
 	// evtl gleich andere Seite laden (#-Anker)

@@ -267,10 +267,24 @@ oddbtool.fow = function(page, data) {
 						// unbewohnbar
 						if(data['pl'][i]['groesse'] == 0) {
 							data['pl'][i]['groesse'] = '<span style="color:red">unbewohnbar</span>';
+							data['pl'][i]['bev'] = "0";
 						}
 						
-						tooltip += '<table style="border:0;padding:0;margin:0;width:auto"><tr><td><img src="http://static.omega-day.com/img/research/ress_ore_small.gif"></td><td style="padding-left:10px;white-space:nowrap">'+data['pl'][i]['erz']+' %</td><td style="padding-left:10px">'+data['pl'][i]['erzmenge']+'</td></tr><tr><td><img src="http://static.omega-day.com/img/research/ress_steel_small.gif"></td><td style="padding-left:10px;white-space:nowrap">'+data['pl'][i]['erz']+' %</td><td style="padding-left:10px">'+data['pl'][i]['metallmenge']+'</td></tr><tr><td><img src="http://static.omega-day.com/img/research/ress_wolfram_small.gif"></td><td style="padding-left:10px;white-space:nowrap">'+data['pl'][i]['wolfram']+' %</td><td style="padding-left:10px">'+data['pl'][i]['wolframmenge']+'</td></tr><tr><td><img src="http://static.omega-day.com/img/research/ress_crystal_small.gif"></td><td style="padding-left:10px;white-space:nowrap">'+data['pl'][i]['kristall']+' %</td><td style="padding-left:10px">'+data['pl'][i]['kristallmenge']+'</td></tr><tr><td><img src="http://static.omega-day.com/img/research/ress_fluor_small.gif"></td><td style="padding-left:10px;white-space:nowrap">'+data['pl'][i]['fluor']+' %</td><td style="padding-left:10px">'+data['pl'][i]['fluormenge']+'</td></tr></table>'+(data['pl'][i]['bev'] && data['pl'][i]['bev'] != '0' ? '<br>Bev&ouml;lkerung: '+data['pl'][i]['bev'] : '')+'<br>Gr&ouml;&szlig;e: '+data['pl'][i]['groesse']+(data['pl'][i]['orbiter'] && data['pl'][i]['orbiter'] > 0 ? '<br>Orbiter-Angriff: '+data['pl'][i]['orbiter'] : '')+'<br><br>'+data['pl'][i]['additional'];
-							
+						tooltip += '<table style="border:0;padding:0;margin:0;width:auto"><tr><td><img src="http://static.omega-day.com/img/research/ress_ore_small.gif"></td>' +
+									'<td style="padding-left:10px;white-space:nowrap">'+data['pl'][i]['erz']+' %</td><td style="padding-left:10px">'+data['pl'][i]['erzmenge']+'</td></tr>' +
+									'<tr><td><img src="http://static.omega-day.com/img/research/ress_steel_small.gif"></td><td style="padding-left:10px;white-space:nowrap">'+data['pl'][i]['erz']+' %</td>' +
+									'<td style="padding-left:10px">'+data['pl'][i]['metallmenge']+'</td></tr>' +
+									' <tr><td><img src="http://static.omega-day.com/img/research/ress_wolfram_small.gif"></td><td style="padding-left:10px;white-space:nowrap">'+data['pl'][i]['wolfram']+' %</td>' +
+									'<td style="padding-left:10px">'+data['pl'][i]['wolframmenge']+'</td></tr>' +
+									'<tr><td><img src="http://static.omega-day.com/img/research/ress_crystal_small.gif"></td><td style="padding-left:10px;white-space:nowrap">'+data['pl'][i]['kristall']+' %</td>' +
+									'<td style="padding-left:10px">'+data['pl'][i]['kristallmenge']+'</td></tr>' +
+									'<tr><td><img src="http://static.omega-day.com/img/research/ress_fluor_small.gif"></td><td style="padding-left:10px;white-space:nowrap">'+data['pl'][i]['fluor']+' %</td>' +
+									'<td style="padding-left:10px">'+data['pl'][i]['fluormenge']+'</td></tr></table>' + 
+									(data['pl'][i]['bev'] && data['pl'][i]['bev'] != '0' ? '<br>Bev&ouml;lkerung: '+data['pl'][i]['bev'] : '') + 
+									'<br>Gr&ouml;&szlig;e: '+data['pl'][i]['groesse'] + 
+									(data['pl'][i]['orbiter'] && data['pl'][i]['orbiter'] > 0 ? '<br>Orbiter-Angriff: '+data['pl'][i]['orbiter'] : '') + 
+									'<br><br>'+data['pl'][i]['additional'];
+						
 						data['pl'][i]['name'] = oddbtool.str_replace(oddbtool.charmap_search, oddbtool.charmap_replace, data['pl'][i]['name']);
 						tooltip = tooltip.replace(/'/g, "\\'");
 						tooltip = tooltip.replace(/"/g, '&quot;');

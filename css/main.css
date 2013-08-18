@@ -871,6 +871,16 @@ hr {
 	overflow:auto;
 }
 
+.openinod-container {
+	text-align:center;
+	margin-top:1em;
+	font-size:90%;
+}
+
+.openinod-link {
+	font-style:italic;
+}
+
 /* Balken */
 .balken {
 	border:1px solid #bbbbbb;
@@ -1324,6 +1334,15 @@ hr {
 
 .searchpltyp, .searchpltyplist > img, .searchgeb, .searchgeblist > img {
 	cursor:pointer;
+}
+
+.searchpltyplist > img.active {
+	border:1px solid #aaaaaa;
+	margin:-1px;
+}
+
+.searchpltyplist > img.active:hover {
+	margin:-11px;
 }
 
 .searchpltyplist, .searchgeblist {

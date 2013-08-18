@@ -81,20 +81,16 @@ class Search {
 	 */
 	public static function createSearchForm($filter, $additional='', $action=self::DEFAULT_ACTION, $button='Suche starten') {
 		
-		global $user, $rassen, $gebaeude, $status, $status_meta, $status_freund, $status_feind;
-		
-		
-		// Planeten-Typen
-		$pltypen = 93;
-		$pltypnot = array();
+		global $user, $rassen, $gebaeude, $status, $status_meta, $status_freund, $status_feind, $pltypen, $pltypnot;
 		
 		// Planetentyp validieren
 		if(isset($filter['t']) AND ((int)$filter['t'] < 1 OR (int)$filter['t'] > $pltypen OR in_array((int)$filter['t'], $pltypnot))) {
 			unset($filter['t']);
 		}
 		
-		// Gebäude-Filter
+		// Gebäude- und Typ-Filter
 		$searchgeb = self::getGebaeudeFilter($filter);
+		$searchpl = self::getTypFilter($filter);
 		
 		
 		$content = '
@@ -146,9 +142,30 @@ class Search {
 		</select> 
 		<input type="text" class="smalltext" name="gr" value="'.(isset($filter['gr']) ? htmlspecialchars($filter['gr'], ENT_COMPAT, 'UTF-8') : '').'" />
 		<br />
+		
 		<span style="cursor:pointer" onclick="$(this).siblings(\'.searchpltyplist\').slideToggle(250)">Typ</span> &nbsp;
 		<input type="hidden" name="t" value="'.(isset($filter['t']) ? h($filter['t']) : '').'" />
-		<span class="searchpltyp" onclick="$(this).siblings(\'.searchpltyplist\').slideToggle(250)">'.(isset($filter['t']) ? '<img src="img/planeten/'.(int)$filter['t'].'.jpg" alt="" />' : '<i>alle</i>').'</span> &nbsp; &nbsp;
+		<span class="searchpltyp" onclick="$(this).siblings(\'.searchpltyplist\').slideToggle(250)">';
+		
+		if(!count($searchpl)) {
+			$content .= '<i>alle</i>';
+		}
+		else {
+			// ausgewählte Planeten anzeigen
+			foreach($searchpl as $pl) {
+				$content .= '<img src="img/planeten/'.$pl.'.jpg" alt="" />';
+			}
+		}
+		
+		$content .= '</span> &nbsp; &nbsp;
+				
+				
+				Pool 
+		<select name="pool" size="1">
+			<option value="">alle Planeten</option>
+			<option value="1"'.((isset($filter['pool']) AND $filter['pool'] == 1) ? ' selected="selected"' : '').'>normale Planeten</option>
+			<option value="2"'.((isset($filter['pool']) AND $filter['pool'] == 2) ? ' selected="selected"' : '').'>Genesis-Planeten</option>
+		</select>  &nbsp; &nbsp;
 		Scan 
 		<select name="sc" size="1" onchange="if(this.value>=3){$(this).siblings(\'.sct\').show().select();}else{$(this).siblings(\'.sct\').hide();}">
 			<option value="">egal</option>
@@ -164,15 +181,15 @@ class Search {
 			<option value=""></option>
 			<option value="0"'.((isset($filter['k']) AND $filter['k'] == 0) ? ' selected="selected"' : '').'>nicht kategorisiert</option>
 			<option value="13"'.((isset($filter['k']) AND $filter['k'] == 13) ? ' selected="selected"' : '').'>Werft</option>
-			<option value="15"'.((isset($filter['k']) AND $filter['k'] == 15) ? ' selected="selected"' : '').'>- Ressplanis und Werften -</option>
-			<option value="14"'.((isset($filter['k']) AND $filter['k'] == 14) ? ' selected="selected"' : '').'>- alle Ressplaneten -</option>
+			<option value="15"'.((isset($filter['k']) AND $filter['k'] == 15) ? ' selected="selected"' : '').'>- Ressplanis + Werften -</option>
+			<option value="14"'.((isset($filter['k']) AND $filter['k'] == 14) ? ' selected="selected"' : '').'>- Ressplaneten -</option>
 			<option value="1"'.((isset($filter['k']) AND $filter['k'] == 1) ? ' selected="selected"' : '').'>Erz</option>
 			<option value="2"'.((isset($filter['k']) AND $filter['k'] == 2) ? ' selected="selected"' : '').'>Metall</option>
 			<option value="3"'.((isset($filter['k']) AND $filter['k'] == 3) ? ' selected="selected"' : '').'>Wolfram</option>
 			<option value="4"'.((isset($filter['k']) AND $filter['k'] == 4) ? ' selected="selected"' : '').'>Kristall</option>
 			<option value="5"'.((isset($filter['k']) AND $filter['k'] == 5) ? ' selected="selected"' : '').'>Fluor</option>
 			<option value="12"'.((isset($filter['k']) AND $filter['k'] == 12) ? ' selected="selected"' : '').'>Umsatzfabriken</option>
-			<option value="16"'.((isset($filter['k']) AND $filter['k'] == 16) ? ' selected="selected"' : '').'>- alle  Forschungsplaneten -</option>
+			<option value="16"'.((isset($filter['k']) AND $filter['k'] == 16) ? ' selected="selected"' : '').'>- Forschungsplaneten -</option>
 			<option value="6"'.((isset($filter['k']) AND $filter['k'] == 6) ? ' selected="selected"' : '').'>Forschungseinrichtungen</option>
 			<option value="7"'.((isset($filter['k']) AND $filter['k'] == 7) ? ' selected="selected"' : '').'>UNI-Labore</option>
 			<option value="8"'.((isset($filter['k']) AND $filter['k'] == 8) ? ' selected="selected"' : '').'>Forschungszentren</option>
@@ -187,11 +204,11 @@ class Search {
 		// Planetentypen ausgeben
 		for($i=1; $i <= $pltypen; $i++) {
 			if(!in_array($i, $pltypnot)) {
-				$content .= '<img src="img/planeten/'.$i.'.jpg" alt="" /> ';
+				$content .= '<img src="img/planeten/'.$i.'.jpg" alt=""'.(in_array($i, $searchpl) ? ' class="active"' : '').' /> ';
 			}
 		}
 		
-		$content .= ' <a onclick="$(this).parents(\'form\').find(\'input[name=t]\').val(\'\').siblings(\'.searchpltyp\').html(\'&lt;i&gt;alle&lt;/i&gt;\');$(this.parentNode).slideUp(250);" style="font-style:italic"> [alle]</a>
+		$content .= ' <a onclick="$(this).parents(\'form\').find(\'input[name=t]\').val(\'\').siblings(\'.searchpltyp\').html(\'&lt;i&gt;alle&lt;/i&gt;\');$(this).siblings(\'.active\').removeClass(\'active\');" style="font-style:italic"> [alle]</a>
 		</div>
 		
 		<span style="cursor:pointer" onclick="$(this).siblings(\'.searchgeblist\').slideToggle(250)">Geb&auml;ude-Filter</span> &nbsp;
@@ -204,7 +221,7 @@ class Search {
 		else {
 			// ausgewählte Gebäude anzeigen
 			foreach($searchgeb as $geb) {
-				$content .= '<img src="img/gebaeude/'.$gebaeude[$geb].'" alt="" /> ';
+				$content .= '<img src="img/gebaeude/'.$gebaeude[$geb].'" alt="" />';
 			}
 		}
 		
@@ -228,6 +245,15 @@ class Search {
 			<option value="2"'.((isset($filter['na_']) AND $filter['na_'] == 2) ? ' selected="selected"' : '').'>&lt;</option>
 		</select> 
 		<input type="text" class="smalltext" name="na" value="'.(isset($filter['na']) ? htmlspecialchars($filter['na'], ENT_COMPAT, 'UTF-8') : '').'" />
+		&nbsp; &nbsp;
+		
+		terraformbar
+		<select name="tfb" size="1">
+			<option value="">egal</option>
+			<option value="1"'.((isset($filter['tfb']) AND $filter['tfb'] == 1) ? ' selected="selected"' : '').'>ja</option>
+			<option value="2"'.((isset($filter['tfb']) AND $filter['tfb'] == 2) ? ' selected="selected"' : '').'>nein</option>
+		</select>
+				
 		<br />
 		
 		<div class="searchgeblist fcbox" style="display:none">';
@@ -480,6 +506,7 @@ class Search {
 		
 		// Gebäude-Filter
 		$searchgeb = self::getGebaeudeFilter($filter);
+		$searchpl = self::getTypFilter($filter);
 		
 		
 		
@@ -569,9 +596,23 @@ class Search {
 			$conds[] = 'planetenGroesse '.$val.' '.$filter['gr'];
 		}
 		// Planeten-Typ
-		if(isset($filter['t'])) {
-			$filter['t'] = (int)$filter['t'];
-			$conds[] = 'planetenTyp = '.$filter['t'];
+		if(isset($filter['t']) AND count($searchpl)) {
+			$conds[] = 'planetenTyp IN('.implode(',', $searchpl).')';
+		}
+		// Planeten-Pool
+		if(isset($filter['pool'])) {
+			global $planeten_genesis;
+			
+			// normale Planeten
+			if($filter['pool'] == 1) {
+				$conds[] = 'planetenTyp NOT IN('.implode(',', $planeten_genesis).')';
+			}
+			// Genesis-Planeten
+			else {
+				// Gala 128 rausnehmen, weil sie nur Genesis-Typen enthält
+				$conds[] = 'systeme_galaxienID != 128';
+				$conds[] = 'planetenTyp IN('.implode(',', $planeten_genesis).')';
+			}
 		}
 		// Planeten-Scan (Oberfläche)
 		if(isset($filter['sc'])) {
@@ -672,6 +713,18 @@ class Search {
 				// Planeten mit 0 Natives ausblenden
 				$conds[] = 'planetenNatives > 0';
 			}
+		}
+		// terraformbar
+		if(isset($filter['tfb'])) {
+			global $planeten_bevoelkerung, $planeten_bevoelkerung_offset;
+			
+			$val = array();
+			
+			foreach($planeten_bevoelkerung as $pl=>$bev) {
+				$val[] = '(planetenTyp = '.$pl.' AND planetenBevoelkerung '.($filter['tfb'] == 1 ? '<' : '>=').' '.($bev+$planeten_bevoelkerung_offset).')';
+			}
+			
+			$conds[] = '('.implode(' OR ', $val).')';
 		}
 		// Bevölkerung
 		if(isset($filter['bev'])) {
@@ -1176,6 +1229,32 @@ class Search {
 		
 	}
 	
+	/**
+	 * Planetentyp-Filter erzeugen
+	 * @param array $filter
+	 * @returns array Planetentypen, nach denen gesucht werden soll
+	 */
+	public static function getTypFilter($filter) {
+		
+		global $pltypen, $pltypnot;
+	
+		if(isset($filter['t'])) {
+			$searchpl = explode('-', $filter['t']);
+			// validieren
+			foreach($searchpl as $key=>$val) {
+				if($val <= 0 OR $val > $pltypen OR in_array($val, $pltypnot)) {
+					unset($searchpl[$key]);
+				}
+			}
+		}
+		else {
+			$searchpl = array();
+		}
+	
+		return $searchpl;
+	
+	}
+	
 	
 	/**
 	 * Sortierung der Suchergebnisse ermitteln
@@ -1431,8 +1510,9 @@ class Search {
 			if(!is_array($val)) $filter[$key] = h($val);
 		}
 		
-		// Gebäude-Filter
+		// Gebäude- und Planetentyp-Filter
 		$searchgeb = self::getGebaeudeFilter($filter);
+		$searchpl = self::getTypFilter($filter);
 		
 		
 		
@@ -1510,8 +1590,22 @@ class Search {
 		}
 		// Planeten-Typ
 		if(isset($filter['t'])) {
-			$filter['t'] = (int)$filter['t'];
-			$desc[] = 'Planetentyp <img src="img/planeten/'.$filter['t'].'.jpg" alt="" class="icon" />';
+			$c = 'Planetentyp ';
+				
+			foreach($searchpl as $pl) {
+				$c .= '<img src="img/planeten/'.$pl.'.jpg" class="icon" alt="" />';
+			}
+				
+			$desc[] = $c;
+		}
+		// Planeten-Pool
+		if(isset($filter['pool'])) {
+			if($filter['pool'] == 1) {
+				$desc[] = 'nur normale (nicht Genesis-) Planeten';
+			}
+			else {
+				$desc[] = 'nur Genesis-Planeten';
+			}
 		}
 		// Planeten-Scan (Oberfläche)
 		if(isset($filter['sc'])) {
@@ -1605,6 +1699,15 @@ class Search {
 			}
 			$filter['na'] = (int)$filter['na'];
 			$desc[] = 'Natives '.$val.' '.$filter['na'];
+		}
+		// terraformbar
+		if(isset($filter['tfb'])) {
+			if($filter['tfb'] == 1) {
+				$desc[] = 'Planet terraformbar';
+			}
+			else {
+				$desc[] = 'Planet nicht mehr terraformbar';
+			}
 		}
 		// Bevölkerung
 		if(isset($filter['bev'])) {

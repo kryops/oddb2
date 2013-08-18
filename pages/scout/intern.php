@@ -84,7 +84,7 @@ else if($user->allianz) {
 				<td>'.datatable::galaxie($row['systeme_galaxienID'], $row['systemeX'], $row['systemeZ']).'</td>
 				<td>'.datatable::system($row['systemeID'], $t).'</td>
 					<td>'.datatable::scan($row['systemeUpdate'], $config['scan_veraltet_ally']).'</td>
-				<td><a href="'.($user->odServer != '' ? $user->odServer : 'http://www.omega-day.com').'/game/index.php?op=system&amp;sys='.$row['systemeID'].'" target="_blank">[in OD &ouml;ffnen]</a></td>
+				<td><a href="'.($user->odServer != '' ? $user->odServer : 'http://www.omega-day.com').'/game/index.php?op=system&amp;sys='.$row['systemeID'].'" target="_blank" data-sys="'.$row['systemeID'].'">[in OD &ouml;ffnen]</a></td>
 			</tr>';
 			
 			$sids[] = $row['systemeID'];
@@ -94,6 +94,12 @@ else if($user->allianz) {
 		
 		// Ergebnis-Navigation
 		$content .= '<input type="hidden" id="sysnav'.$t.'" value="'.implode('-', $sids).'" />';
+		
+		// Sammel-Öffnen-Link
+		$content .= '
+			<div class="openinod-container">
+				<a class="openinod-link">[alle in OD &ouml;ffnen]</a>
+			</div>';
 	}
 	// alle Allysysteme aktuell
 	else {
@@ -167,7 +173,7 @@ if($user->allianz) {
 				<td>'.datatable::galaxie($row['systeme_galaxienID'], $row['systemeX'], $row['systemeZ']).'</td>
 				<td>'.datatable::system($row['systemeID'], $t).'</td>
 					<td>'.datatable::scan($row['systemeUpdate'], $config['scan_veraltet_ally']).'</td>
-				<td><a href="'.($user->odServer != '' ? $user->odServer : 'http://www.omega-day.com').'/game/index.php?op=system&amp;sys='.$row['systemeID'].'" target="_blank">[in OD &ouml;ffnen]</a></td>
+				<td><a href="'.($user->odServer != '' ? $user->odServer : 'http://www.omega-day.com').'/game/index.php?op=system&amp;sys='.$row['systemeID'].'" target="_blank" data-sys="'.$row['systemeID'].'">[in OD &ouml;ffnen]</a></td>
 			</tr>';
 			
 			$sids[] = $row['systemeID'];
@@ -177,6 +183,12 @@ if($user->allianz) {
 		
 		// Ergebnis-Navigation
 		$content .= '<input type="hidden" id="sysnav'.$t.'" value="'.implode('-', $sids).'" />';
+		
+		// Sammel-Öffnen-Link
+		$content .= '
+			<div class="openinod-container">
+				<a class="openinod-link">[alle in OD &ouml;ffnen]</a>
+			</div>';
 	}
 	else {
 		$content .= '

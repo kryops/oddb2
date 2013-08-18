@@ -347,25 +347,35 @@ if($data['playerName'] != NULL) {
 	}
 }
 // Größe und Bevölkerung
-$tmpl->content .= ' <br />
-					<b>Gr&ouml;&szlig;e</b>: '.($data['planetenGroesse'] ? $data['planetenGroesse'] : '<span class="red">unbewohnbar</span>').'
+$tmpl->content .= ' <br />';
+
+if($data['planetenGroesse']) {
+	$tmpl->content .= '
+					<b>Gr&ouml;&szlig;e</b>: '.$data['planetenGroesse'].'
 					<br />
 					<b>Bev&ouml;lkerung</b>: '.ressmenge($data['planetenBevoelkerung']);
-if($data['planetenUpdate']) {
-	$tmpl->content .= '
+	if($data['planetenUpdate']) {
+		$tmpl->content .= '
 					<br />
 					<b>Forschung</b>: '.ressmenge($data['planetenForschung']).'
 					<br />
 					<b>Industrie</b>: '.ressmenge($data['planetenIndustrie']);
-}
-$tmpl->content .= '
-					<br />
-					<b>Planetenpunkte</b>: '.ressmenge(imppunkte($data));
-if($data['planetenUpdateOverview']) {
+	}
 	$tmpl->content .= '
 					<br />
-					<b>Orbiter-Angriff</b>: '.ressmenge($data['planetenOrbiter']);
+					<b>Planetenpunkte</b>: '.ressmenge(imppunkte($data));
+
+	if($data['planetenUpdateOverview']) {
+		$tmpl->content .= '
+						<br />
+						<b>Orbiter-Angriff</b>: '.ressmenge($data['planetenOrbiter']);
+	}
+
 }
+else {
+	$tmpl->content .= '<b>Gr&ouml;&szlig;e</b>: <span class="red">unbewohnbar</span>';
+}
+
 $tmpl->content .= '
 				</td>
 				<td style="width:20%;height:112px">

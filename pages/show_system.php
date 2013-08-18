@@ -485,6 +485,7 @@ else if($_GET['sp'] == '') {
 					}
 					
 					$tt .= '&lt;br /&gt;&lt;br /&gt;';
+
 					// geraidet oder getoxxt?
 					if($user->rechte['toxxraid'] AND ($pl['planetenGeraidet'] > $lastweek OR $pl['planetenGetoxxt'] > time())) {
 						$tt .= '&lt;div class=&quot;showsysttadd&quot;&gt;';
