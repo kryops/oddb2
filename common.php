@@ -20,7 +20,7 @@ if(!defined('ODDB')) die('unerlaubter Zugriff!');
 // Hauptversion
 define('VERSION', '2.3.3');
 // Patch-Version
-define('PATCH_VERSION', 4);
+define('PATCH_VERSION', 5);
 // Datei-Zusatz (css und js)
 define('FILESTAMP', '?24');
 // OD-Runde

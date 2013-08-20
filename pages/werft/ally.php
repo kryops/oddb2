@@ -225,6 +225,8 @@ $query = query("
 		planetenKommentar,
 		planetenWerftFinish,
 		planetenWerftBedarf,
+		planetenBelieferer,
+		planetenBeliefererTime,
 		
 		systemeX,
 		systemeZ,
@@ -239,6 +241,8 @@ $query = query("
 		
 		allianzenTag,
 		
+		user_playerName,
+		
 		statusStatus
 	FROM
 		".PREFIX."planeten
@@ -251,6 +255,8 @@ $query = query("
 		LEFT JOIN ".PREFIX."allianzen_status
 			ON statusDBAllianz = ".$user->allianz."
 			AND status_allianzenID = allianzenID
+		LEFT JOIN ".PREFIX."user
+			ON user_playerID = planetenBelieferer
 	WHERE
 		".implode(" AND ", $conds)."
 	ORDER BY
@@ -296,6 +302,7 @@ if(mysql_num_rows($query)) {
 	<th>Bedarf</th>
 	<th>&nbsp;</th>
 	<th>&nbsp;</th>
+	<th>&nbsp;</th>
 	<th>&nbsp;</th>';
 	if($user->rechte['routen'] OR $rechte_bedarf) {
 		$content .= '
@@ -307,6 +314,7 @@ if(mysql_num_rows($query)) {
 	$bedarf_list = array();
 	
 	$heute = strtotime('today');
+	$t_belieferer = time()-43200; // 12 Stunden
 	
 	while($row = mysql_fetch_assoc($query)) {
 		// Bedarf ausrechnen
@@ -427,7 +435,32 @@ if(mysql_num_rows($query)) {
 		$content .= '</td>
 	<td>'.datatable::screenshot($row, $config['scan_veraltet']).'</td>
 	<td>'.datatable::kategorie($row['planetenKategorie'], $row['planetenUpdateOverview'], $row).'</td>
-	<td>'.datatable::kommentar($row['planetenKommentar'], $row['planetenID']).'</td>';
+	<td>'.datatable::kommentar($row['planetenKommentar'], $row['planetenID']).'</td>
+	<td>';
+		
+		// Belieferer eingetragen
+		if($bedarf AND $row['planetenBelieferer'] AND $row['planetenBeliefererTime'] > $t_belieferer) {
+			if($row['planetenBelieferer'] == $user->id) {
+				$content .= '<b>';
+			}
+			
+			$content .= datatable::inhaber($row['planetenBelieferer'], $row['user_playerName']);
+			
+			if($row['planetenBelieferer'] == $user->id) {
+				$content .= '</b>
+					&nbsp; <a onclick="ajaxcall(\'index.php?p=werft&amp;sp=beliefern_del&amp;id='.$row['planetenID'].'\', this.parentNode)" class="red bold" title="als Belieferer austragen">X</a>';
+			}
+		}
+		// kein Belieferer
+		else if($bedarf) {
+			$content .= '<a onclick="ajaxcall(\'index.php?p=werft&amp;sp=beliefern&amp;id='.$row['planetenID'].'\', this.parentNode)"><i>beliefern</i></a>';
+		}
+		else {
+			$content .= '&nbsp;';
+		}
+		
+		$content .= '</td>';
+		
 		if($user->rechte['routen'] OR $rechte_bedarf) {
 			$content .= '<td><input type="checkbox" name="'.$row['planetenID'].'" /></td>';
 		}

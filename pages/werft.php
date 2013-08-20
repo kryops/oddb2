@@ -32,7 +32,9 @@ $pages = array(
 	'edit_all_ally'=>true,
 	'del'=>true,
 	
-	'ally'=>true
+	'ally'=>true,
+	'beliefern'=>true,
+	'beliefern_del'=>true
 );
 
 
@@ -87,6 +89,16 @@ else if($_GET['sp'] == 'edit_all_ally') {
 
 // Werft entfernen
 else if($_GET['sp'] == 'del') {
+	include './pages/werft/actions.php';
+}
+
+// Werft beliefern
+else if($_GET['sp'] == 'beliefern') {
+	include './pages/werft/actions.php';
+}
+
+// Werftbelieferung entfernen
+else if($_GET['sp'] == 'beliefern_del') {
 	include './pages/werft/actions.php';
 }
 
