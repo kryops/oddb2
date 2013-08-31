@@ -3,7 +3,7 @@ __devel
 yuicompressor*
 .settings
 Thumbs.db
-config/*.php
+config/*
 .project
 .buildpath
 admin/cache/*
