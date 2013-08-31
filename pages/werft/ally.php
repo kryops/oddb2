@@ -319,6 +319,9 @@ if(mysql_num_rows($query)) {
 	while($row = mysql_fetch_assoc($query)) {
 		// Bedarf ausrechnen
 		$bedarf = false;
+		$bedarfUnknown = false;
+		$bedarfNotNull = false;
+		
 		if($row['planetenWerftBedarf'] != '') {
 			$b = json_decode($row['planetenWerftBedarf'], true);
 			if($row['planetenRMErz'] < $b[0] OR $row['planetenRMMetall'] < $b[1] OR $row['planetenRMWolfram'] < $b[2] OR $row['planetenRMKristall'] < $b[3] OR $row['planetenRMFluor'] < $b[4]) {
@@ -329,6 +332,10 @@ if(mysql_num_rows($query)) {
 			$b2 = $b;
 			foreach($b2 as $key=>$val) {
 				$b2[$key] = ressmenge2($val);
+				
+				if($val > 0) {
+					$bedarfNotNull = true;
+				}
 			}
 			
 			$bedarf_list[implode('-', $b)] = implode(' - ', $b2);
@@ -380,6 +387,7 @@ if(mysql_num_rows($query)) {
 		// unbekannt
 		if($row['planetenWerftBedarf'] == '' OR $row['planetenUpdateOverview'] == 0) {
 			$content .= '<span class="yellow" style="font-style:italic">unbekannt</span>';
+			$bedarfUnknown = true;
 		}
 		else {
 			// Bedarf ausrechnen
@@ -416,7 +424,11 @@ if(mysql_num_rows($query)) {
 			}
 			
 			// Label erzeugen
-			if($row['planetenUpdateOverview'] < $t_scan) {
+			if(!$bedarfNotNull) {
+				$color = 'green';
+				$label = 'nein';
+			}
+			else if($row['planetenUpdateOverview'] < $t_scan) {
 				$color = 'yellow italic';
 				$label = 'Scan veraltet';
 			}
@@ -439,7 +451,9 @@ if(mysql_num_rows($query)) {
 	<td>';
 		
 		// Belieferer eingetragen
-		if($bedarf AND $row['planetenBelieferer'] AND $row['planetenBeliefererTime'] > $t_belieferer) {
+		$showBelieferer = $bedarfNotNull AND ($bedarf OR $bedarfUnknown);
+		
+		if($showBelieferer AND $row['planetenBelieferer'] AND $row['planetenBeliefererTime'] > $t_belieferer) {
 			if($row['planetenBelieferer'] == $user->id) {
 				$content .= '<b>';
 			}
@@ -452,7 +466,7 @@ if(mysql_num_rows($query)) {
 			}
 		}
 		// kein Belieferer
-		else if($bedarf) {
+		else if($showBelieferer) {
 			$content .= '<a onclick="ajaxcall(\'index.php?p=werft&amp;sp=beliefern&amp;id='.$row['planetenID'].'\', this.parentNode)"><i>beliefern</i></a>';
 		}
 		else {
