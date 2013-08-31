@@ -5,8 +5,8 @@
     </description>
 	
 	<!-- relevante Pfade und Dateinamen -->
-	<property name="oddbPath" value="C:\xampp\htdocs\oddb2" />
-	<property name="chromePath" value="C:\Program Files (x86)\Google\Chrome\Application\chrome.exe" />
+	<property name="oddbPath" value="/home/michael/git/oddb2" />
+	<property name="chromePath" value="/usr/bin/chromium-browser" />
 	<property name="yuicompressor" value="build-tools/yuicompressor-2.4.7.jar" />
 	
 	<!-- alte und neue Version des ODDB Tools JEDES MAL HIER ÄNDERN -->
@@ -93,8 +93,8 @@
 		<delete file="plugin/oddbtool-chrome-${oldVersionSuffix}.crx" />
 		
 		<exec executable="${chromePath}">
-            <arg value="--pack-extension=${oddbPath}\plugin_src\oddbtool-chrome" />
-            <arg value="--pack-extension-key=${oddbPath}\plugin_src\oddbtool-chrome.pem" />
+            <arg value="--pack-extension=${oddbPath}/plugin_src/oddbtool-chrome" />
+            <arg value="--pack-extension-key=${oddbPath}/plugin_src/oddbtool-chrome.pem" />
         </exec>
 		
 		<move file="plugin_src/oddbtool-chrome.crx" tofile="plugin/oddbtool-chrome-${newVersionSuffix}.crx" />

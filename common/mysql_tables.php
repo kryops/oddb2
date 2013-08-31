@@ -270,6 +270,8 @@ $tables_add = array(
   `planetenMasseninva` int(10) unsigned NOT NULL DEFAULT 0,
   `planetenNatives` tinyint(3) unsigned NOT NULL DEFAULT 0,
   `planetenReserv` int(10) unsigned NOT NULL DEFAULT 0,
+  `planetenBelieferer` int(10) unsigned NOT NULL DEFAULT 0,
+  `planetenBeliefererTime` int(10) unsigned NOT NULL DEFAULT 0,
   PRIMARY KEY (`planetenID`),
   KEY `planeten_systemeID` (`planeten_systemeID`),
   KEY `planeten_playerID` (`planeten_playerID`)
