@@ -45,7 +45,13 @@ class General {
 	 */
 	public static function encryptPassword($pass, $key='') {
 		
-		$hash = crypt($pass, '$2a$10'.$key.'$');
+		if(strlen($key) < 22) {
+			for($i=strlen($key); $i<22; $i++) {
+				$key .= 'a';
+			}
+		}
+		
+		$hash = crypt($pass, '$2a$11$'.$key.'$');
 		
 		return substr($hash, -32, 32);
 		

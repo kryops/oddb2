@@ -34,7 +34,7 @@ $pages = array(
  * @return string Key
  */
 function generate_key() {
-	return substr(md5(time()), rand(0,14), rand(12,16));
+	return substr(md5(time()), 0, rand(21,24));
 }
 
 
