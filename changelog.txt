@@ -1,4 +1,15 @@
-﻿07.07.2013 - V2.3.3
+﻿31.08.2013 - V2.3.4
+-------------------
+* Verbündete Werften: Als Belieferer eintragen
+* Erweiterungen der Suche
+  - Suchfilter "terraformbar"
+  - Suchfilter "Planetenpool" (alle, normal, Genesis)
+  - Planetentyp Mehrfachauswahl
+* Scouten: Link "alle in OD öffnen"
+
+
+
+07.07.2013 - V2.3.3
 -------------------
 * Hotfixes durch OD 11.3
 * neue Genesis-Grafik übernommen

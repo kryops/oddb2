@@ -225,6 +225,8 @@ $query = query("
 		planetenKommentar,
 		planetenWerftFinish,
 		planetenWerftBedarf,
+		planetenBelieferer,
+		planetenBeliefererTime,
 		
 		systemeX,
 		systemeZ,
@@ -239,6 +241,8 @@ $query = query("
 		
 		allianzenTag,
 		
+		user_playerName,
+		
 		statusStatus
 	FROM
 		".PREFIX."planeten
@@ -251,6 +255,8 @@ $query = query("
 		LEFT JOIN ".PREFIX."allianzen_status
 			ON statusDBAllianz = ".$user->allianz."
 			AND status_allianzenID = allianzenID
+		LEFT JOIN ".PREFIX."user
+			ON user_playerID = planetenBelieferer
 	WHERE
 		".implode(" AND ", $conds)."
 	ORDER BY
@@ -296,6 +302,7 @@ if(mysql_num_rows($query)) {
 	<th>Bedarf</th>
 	<th>&nbsp;</th>
 	<th>&nbsp;</th>
+	<th>&nbsp;</th>
 	<th>&nbsp;</th>';
 	if($user->rechte['routen'] OR $rechte_bedarf) {
 		$content .= '
@@ -307,10 +314,14 @@ if(mysql_num_rows($query)) {
 	$bedarf_list = array();
 	
 	$heute = strtotime('today');
+	$t_belieferer = time()-43200; // 12 Stunden
 	
 	while($row = mysql_fetch_assoc($query)) {
 		// Bedarf ausrechnen
 		$bedarf = false;
+		$bedarfUnknown = false;
+		$bedarfNotNull = false;
+		
 		if($row['planetenWerftBedarf'] != '') {
 			$b = json_decode($row['planetenWerftBedarf'], true);
 			if($row['planetenRMErz'] < $b[0] OR $row['planetenRMMetall'] < $b[1] OR $row['planetenRMWolfram'] < $b[2] OR $row['planetenRMKristall'] < $b[3] OR $row['planetenRMFluor'] < $b[4]) {
@@ -321,10 +332,19 @@ if(mysql_num_rows($query)) {
 			$b2 = $b;
 			foreach($b2 as $key=>$val) {
 				$b2[$key] = ressmenge2($val);
+				
+				if($val > 0) {
+					$bedarfNotNull = true;
+				}
 			}
 			
 			$bedarf_list[implode('-', $b)] = implode(' - ', $b2);
 		}
+		else {
+			$bedarfNotNull = true;
+			$bedarfUnknown = true;
+		}
+		
 		// Suchfilter Ressbedarf
 		if(isset($_GET['bed']) AND !$bedarf) {
 			continue;
@@ -372,6 +392,7 @@ if(mysql_num_rows($query)) {
 		// unbekannt
 		if($row['planetenWerftBedarf'] == '' OR $row['planetenUpdateOverview'] == 0) {
 			$content .= '<span class="yellow" style="font-style:italic">unbekannt</span>';
+			$bedarfUnknown = true;
 		}
 		else {
 			// Bedarf ausrechnen
@@ -408,7 +429,11 @@ if(mysql_num_rows($query)) {
 			}
 			
 			// Label erzeugen
-			if($row['planetenUpdateOverview'] < $t_scan) {
+			if(!$bedarfNotNull) {
+				$color = 'green';
+				$label = 'nein';
+			}
+			else if($row['planetenUpdateOverview'] < $t_scan) {
 				$color = 'yellow italic';
 				$label = 'Scan veraltet';
 			}
@@ -427,7 +452,34 @@ if(mysql_num_rows($query)) {
 		$content .= '</td>
 	<td>'.datatable::screenshot($row, $config['scan_veraltet']).'</td>
 	<td>'.datatable::kategorie($row['planetenKategorie'], $row['planetenUpdateOverview'], $row).'</td>
-	<td>'.datatable::kommentar($row['planetenKommentar'], $row['planetenID']).'</td>';
+	<td>'.datatable::kommentar($row['planetenKommentar'], $row['planetenID']).'</td>
+	<td>';
+		
+		// Belieferer eingetragen
+		$showBelieferer = $bedarfNotNull AND ($bedarf OR $bedarfUnknown);
+		
+		if($showBelieferer AND $row['planetenBelieferer'] AND $row['planetenBeliefererTime'] > $t_belieferer) {
+			if($row['planetenBelieferer'] == $user->id) {
+				$content .= '<b>';
+			}
+			
+			$content .= datatable::inhaber($row['planetenBelieferer'], $row['user_playerName']);
+			
+			if($row['planetenBelieferer'] == $user->id) {
+				$content .= '</b>
+					&nbsp; <a onclick="ajaxcall(\'index.php?p=werft&amp;sp=beliefern_del&amp;id='.$row['planetenID'].'\', this.parentNode)" class="red bold" title="als Belieferer austragen">X</a>';
+			}
+		}
+		// kein Belieferer
+		else if($showBelieferer) {
+			$content .= '<a onclick="ajaxcall(\'index.php?p=werft&amp;sp=beliefern&amp;id='.$row['planetenID'].'\', this.parentNode)"><i>beliefern</i></a>';
+		}
+		else {
+			$content .= '&nbsp;';
+		}
+		
+		$content .= '</td>';
+		
 		if($user->rechte['routen'] OR $rechte_bedarf) {
 			$content .= '<td><input type="checkbox" name="'.$row['planetenID'].'" /></td>';
 		}

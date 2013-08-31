@@ -18,11 +18,11 @@ if(!defined('ODDB')) die('unerlaubter Zugriff!');
 //
 
 // Hauptversion
-define('VERSION', '2.3.3');
+define('VERSION', '2.3.4');
 // Patch-Version
-define('PATCH_VERSION', 4);
+define('PATCH_VERSION', 5);
 // Datei-Zusatz (css und js)
-define('FILESTAMP', '?24');
+define('FILESTAMP', '?25');
 // OD-Runde
 define('ODWORLD', 'int11');
 define('DOWNTIME', false);
@@ -30,9 +30,9 @@ define('DOWNTIME', false);
 define('ABGLEICH_VERSION', 3);
 define('GRUNDDATEN_VERSION', 1);
 // ODDB Tool-Version
-define('ODDBTOOL', '2.3.3');
-define('ODDBTOOLPATH', 'oddbtool-2_3_3.xpi');
-define('ODDBTOOLPATH_CHROME', 'oddbtool-chrome-2_3_3.crx');
+define('ODDBTOOL', '2.3.4');
+define('ODDBTOOLPATH', 'oddbtool-2_3_4.xpi');
+define('ODDBTOOLPATH_CHROME', 'oddbtool-chrome-2_3_4.crx');
 
 // Debug-Modus
 define('DEBUG', false);

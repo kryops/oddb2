@@ -494,6 +494,86 @@ else if($_GET['sp'] == 'del') {
 	}
 }
 
+// Werft beliefern
+else if($_GET['sp'] == 'beliefern') {
+	// Daten überprüfen
+	if(!isset($_GET['id'])) {
+		$tmpl->error = 'Daten unvollständig!';
+	}
+	else if(!(int)$_GET['id']) {
+		$tmpl->error = 'Daten ungültig!';
+	}
+	else {
+		// Daten sichern
+		$_GET['id'] = (int)$_GET['id'];
+		
+		// Tabellenklasse laden
+		if(!class_exists('datatable')) {
+			include './common/datatable.php';
+		}
+		
+		// speicehrn
+		query("
+			UPDATE ".PREFIX."planeten
+			SET
+				planetenBelieferer = ".$user->id.",
+				planetenBeliefererTime = ".time()."
+			WHERE
+				planetenID = ".$_GET['id']."
+		") OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
+
+		// Anzeige aktualisieren
+		$tmpl->content = '<b>'.datatable::inhaber($user->id, $user->name).'</b>
+				&nbsp; <a onclick="ajaxcall(\'index.php?p=werft&amp;sp=beliefern_del&amp;id='.$_GET['id'].'\', this.parentNode)" class="red bold" title="als Belieferer austragen">X</a>';
+		$tmpl->output();
+
+		// Logfile-Eintrag
+		if($config['logging'] >= 2) {
+			insertlog(12, 'Trägt sich als Werft-Belieferer ein: '.$_GET['id']);
+		}
+	}
+}
+
+// als Werft-Belieferer austragen
+else if($_GET['sp'] == 'beliefern_del') {
+	// Daten überprüfen
+	if(!isset($_GET['id'])) {
+		$tmpl->error = 'Daten unvollständig!';
+	}
+	else if(!(int)$_GET['id']) {
+		$tmpl->error = 'Daten ungültig!';
+	}
+	else {
+		// Daten sichern
+		$_GET['id'] = (int)$_GET['id'];
+
+		// Tabellenklasse laden
+		if(!class_exists('datatable')) {
+			include './common/datatable.php';
+		}
+
+		// speicehrn
+		query("
+			UPDATE ".PREFIX."planeten
+			SET
+				planetenBelieferer = 0,
+				planetenBeliefererTime = 0
+			WHERE
+				planetenID = ".$_GET['id']."
+				AND planetenBelieferer = ".$user->id."
+		") OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
+
+		// Anzeige aktualisieren
+		$tmpl->content = '<a onclick="ajaxcall(\'index.php?p=werft&amp;sp=beliefern&amp;id='.$_GET['id'].'\', this.parentNode)"><i>beliefern</i></a>';
+		$tmpl->output();
+		
+		// Logfile-Eintrag
+		if($config['logging'] >= 2) {
+			insertlog(12, 'Trägt sich als Werft-Belieferer aus: '.$_GET['id']);
+		}
+	}
+}
+
 
 
 ?>

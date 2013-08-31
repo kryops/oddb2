@@ -146,7 +146,9 @@ if($plids == '') {
 $query = query("
 	SELECT
 		planetenID,
-		planeten_playerID
+		planeten_playerID,
+		planetenBelieferer,
+		planetenWerftBedarf
 	FROM ".PREFIX."planeten
 	WHERE
 		planetenID IN (".$plids.")
@@ -156,7 +158,7 @@ $query = query("
 $pl = array();
 
 while($row = mysql_fetch_assoc($query)) {
-	$pl[$row['planetenID']] = $row['planeten_playerID'];
+	$pl[$row['planetenID']] = $row;
 }
 
 // Ist der Spieler in der DB angemeldet?
@@ -231,15 +233,37 @@ foreach($_POST['pl'] as $data) {
 			}
 		}
 		
+		// Werftbelieferer entfernen, wenn Bedarf gedeckt
+		$werftBelieferer = "";
+		
+		if($pl[$data['id']]['planetenBelieferer'] AND $pl[$data['id']]['planetenWerftBedarf'] != '') {
+			$b = json_decode($pl[$data['id']]['planetenWerftBedarf'], true);
+			
+			$bedarf = false;
+			
+			for($i=0; $i<=4; $i++) {
+				if($b[$i] > $data['rv'][$i]) {
+					$bedarf = true;
+				}
+			}
+			
+			if(!$bedarf) {
+				$werftBelieferer = "
+					planetenBelieferer = 0,
+					planetenBeliefererTime = 0,
+				";
+			}
+		}
+		
 		// Inhaberwechsel
-		if($pl[$data['id']] != $_POST['uid']) {
+		if($pl[$data['id']]['planeten_playerID'] != $_POST['uid']) {
 			// History-Eintrag
 			query("
 				INSERT INTO ".PREFIX."planeten_history
 				SET
 					history_planetenID = ".$data['id'].",
 					history_playerID = ".$_POST['uid'].",
-					historyLast = ".$pl[$data['id']].",
+					historyLast = ".$pl[$data['id']]['planeten_playerID'].",
 					historyTime = ".time()."
 			") OR dieTransaction("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
 			
@@ -280,6 +304,7 @@ foreach($_POST['pl'] as $data) {
 				planetenGebOrbit = '".$data['gor']."',
 				planetenOrbiter = ".$orb.",
 				".$his."
+				".$werftBelieferer."
 				planetenKategorie = ".$cat."
 				".$schiff."
 			WHERE

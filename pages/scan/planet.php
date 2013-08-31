@@ -114,12 +114,16 @@ if(isset($_POST['schiff'])) {
 	
 }
 
+$werftBelieferer = "";
+
 
 // Existenz überprüfen
 $query = query("
 	SELECT
 		planetenUpdate,
-		planeten_playerID
+		planeten_playerID,
+		planetenWerftBedarf,
+		planetenBelieferer
 	FROM ".PREFIX."planeten
 	WHERE
 		planetenID = ".$_POST['id']."
@@ -209,6 +213,18 @@ else {
 		}
 	}
 	
+	// Werftbelieferer entfernen, wenn Bedarf gedeckt
+	if($data['planetenBelieferer'] AND $data['planetenWerftBedarf'] != '') {
+		$b = json_decode($data['planetenWerftBedarf'], true);
+		if($_POST['erzm'] >= $b[0] AND $_POST['metallm'] >= $b[1] AND $_POST['wolframm'] >= $b[2] AND $_POST['kristallm'] >= $b[3] AND $_POST['fluorm'] >= $b[4]) {
+			$werftBelieferer = "
+				planetenBelieferer = 0,
+				planetenBeliefererTime = 0,	
+			";
+		}
+	}
+		
+	
 	// Planet aktualisieren
 	query("
 		UPDATE ".PREFIX."planeten
@@ -242,6 +258,7 @@ else {
 			planetenOrbiter = ".$orb.",
 			".$getoxxt."
 			".$inhaber."
+			".$werftBelieferer."
 			planetenKategorie = ".$cat.",
 			planetenWerftFinish = ".$werftfinish."
 		WHERE
