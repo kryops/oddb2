@@ -340,6 +340,11 @@ if(mysql_num_rows($query)) {
 			
 			$bedarf_list[implode('-', $b)] = implode(' - ', $b2);
 		}
+		else {
+			$bedarfNotNull = true;
+			$bedarfUnknown = true;
+		}
+		
 		// Suchfilter Ressbedarf
 		if(isset($_GET['bed']) AND !$bedarf) {
 			continue;
