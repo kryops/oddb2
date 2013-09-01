@@ -15,6 +15,8 @@ if($user->rechte['verwaltung_galaxien']) {
 	Hier kannst du neue Galaxien eintragen, indem du ihren HTML-Mainscreen einscannst. Du kannst auch den Quelltext von verschmolzenen Galaxien einscannen, wenn noch nicht alle Systeme der vorherigen Galaxien in der Datenbank eingetragen waren.
 	<br />
 	Galaxien werden nicht automatisch verschmolzen. Wenn du den Mainscreen einer verschmolzenen Galaxie einscannst, werden dir aber die Galaxien angezeigt, die wahrscheinlich verschmolzen wurden.
+	<br /><br />
+	<b>Hinweis: Administratoren k&ouml;nnen seit R12 auch komplette Galaxien von OD importieren. Es ist dann nicht mehr n&ouml;tig, alle Systeme durchzuklicken. Der Import funktioniert nur, wenn die entsprechenden Mainscreens noch nicht eingescannt wurden!</b>
 </div>';
 	
 	$max_input_vars = (int) @ini_get('max_input_vars');

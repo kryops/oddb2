@@ -4469,6 +4469,21 @@ var forschungPage = {
 	
 };
 
+/**
+ * Funktionen für den Verwaltungs-Bereich
+ */
+var adminPage = {
+	
+	/**
+	 * DB-Exportformular abschicken
+	 * @param {DOM} form
+	 */
+	backupExport: function(form) {
+		document.location.href = 'index.php?p=admin&sp=backup_export&' + $(form).serialize();
+		return false;
+	}
+	
+}
 
 /**
  * Touch-Event-Abstraktionen
@@ -4522,3 +4537,15 @@ var contextmenuTriggered = false;
 	});
 	
 })();
+
+
+var formHelpers = {
+	toggleElement: function(el, toggle) {
+		if(toggle) {
+			el.show().focus();
+		}
+		else {
+			el.hide();
+		}
+	}
+}

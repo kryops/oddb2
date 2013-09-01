@@ -14,7 +14,7 @@ $content =& $csw->data['backup']['content'];
 $content = '
 <div class="hl2">Import / Export</div>
 <div class="icontent">
-	Dieser Bereich dient dazu, Datenbank-Instanzen abzugleichen oder umzuziehen.
+	Dieser Bereich dient dazu, Datenbank-Instanzen erstmals zu bef&uuml;llen, abzugleichen oder umzuziehen.
 	<br /><br />
 	<b>Die hier erzeugten Exporte beinhalten lediglich die Daten aus System- und Planetenscans, ein komplettes Backup der Instanz ist nur &uuml;ber die MySQL-Datenbank m&ouml;glich!</b>
 	<br />
@@ -40,15 +40,65 @@ $content = '
 	
 	<table style="width:100%">
 	<tr>
-	<td style="width:50%;font-weight:bold" class="center">
-		<a href="index.php?p=admin&amp;sp=backup_export" onclick="$(this.parentNode).html(\'<img src=&quot;img/layout/ajax.gif&quot; style=&quot;width:24px;height:24px&quot; class=&quot;backupload&quot; />\');window.setTimeout(function(){$(\'.backupload\').fadeOut(500);},2000)">Daten dieser Instanz exportieren und herunterladen</a>
+	<td style="width:50%" class="center hl2">
+		Export
 	</td>
-	<td style="width:50%;font-weight:bold" class="center">
-		<a href="index.php?p=admin&amp;sp=backup_import" onclick="window.open(this.href, \'oddbimport\', \'width=500,height=300\'); return false">Daten in diese Instanz importieren</a>
+	<td style="width:50%" class="center hl2">
+		Import
+	</td>
+	<tr>
+	<td class="center">
+		<form onsubmit="return adminPage.backupExport(this)">
+			
+			<p>Der Export enth&auml;lt:</p>
+			<p>
+				<select name="mode_gala" size="1" onchange="formHelpers.toggleElement($(this).next(), ($(this).val() > 0))">
+					<option value="0">alle Galaxien</option>
+					<option value="1">nur bestimmte Galaxien</option>
+					<option value="2">alle Galaxien au&szlig;er</option>
+				</select>
+				
+				<input type="text" class="text" name="gala" style="display:none" />
+			</p>
+			<p>
+				<select name="mode_sys" size="1" onchange="formHelpers.toggleElement($(this).next(), ($(this).val() > 0))">
+					<option value="0">alle System-Scans</option>
+					<option value="1">nur System-Scans der Allianzen</option>
+					<option value="2">alle System-Scans au&szlig;er den Allianzen</option>
+				</select>
+				
+				<input type="text" class="text" name="sys" style="display:none" />
+			</p>
+			<p>
+				<select name="mode_plani" size="1" onchange="formHelpers.toggleElement($(this).next(), ($(this).val() > 1))">
+					<option value="0">alle Planeten-Scans</option>
+					<option value="1">keine Planeten-Scans</option>
+					<option value="2">nur Planeten-Scans der Allianzen</option>
+					<option value="3">alle Planeten-Scans au&szlig;er den Allianzen</option>
+				</select>
+				
+				<input type="text" class="text" name="plani" style="display:none" />
+			</p>
+		
+			<p class="small hint">
+				Jeweils IDs mit Komma getrennt
+				<br />
+				Bei Galaxien sind auch Bereichsangaben m&ouml;glich, z.B. <i>2-5</i>
+				<br />
+				f&uuml;r nicht enthaltene Systeme werden auch keine Planeten-Scans exportiert
+			</p>
+			
+			<p>
+				<input type="submit" class="button" value="Export erzeugen" />
+			</p>
+			
+		</form>
+	</td>
+	<td style="font-weight:bold" class="center">
+		<a href="index.php?p=admin&amp;sp=backup_import" onclick="window.open(this.href, \'oddbimport\', \'width=500,height=300\'); return false">Import-Fenster &ouml;ffnen</a>
 	</td>
 	</tr>
 	</table>
-	<br /><br />
 </div>
 
 <br /><br />
