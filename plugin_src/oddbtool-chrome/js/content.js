@@ -3,7 +3,7 @@
 	/**
 	 * Version
 	 */
-	version: '2.3.4',
+	version: '2.3.4.1',
 	odworld: 'int11',
 	
 	

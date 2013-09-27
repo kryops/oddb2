@@ -984,7 +984,7 @@ oddbtool.parsePage = function(page, manual) {
 					path = $this.attr('src');
 				
 				// Lokale Grafikpakete abfangen
-				if(path.indexOf('http://static.omega-day.com/img/') == -1) {
+				if(path.indexOf('/static/img/') == -1) {
 					throw 'Grafikpfade ungültig!';
 				}
 				
