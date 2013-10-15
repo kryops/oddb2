@@ -8,54 +8,858 @@
 if(!defined('ODDB')) die('unerlaubter Zugriff!');
 
 
-/**
- * gibt "ID Inhaber Ally" für ein Myrigate aus
- * @param $id int Plani-ID des Myrigates
- *
- * @return string HTML-Content
- */
-function mgateoutput($id) {
-	global $mgdata;
+
+class SchnellsterWeg {
 	
-	// ungültige ID -> nichts zurückgeben
-	if(!is_numeric($id) OR !isset($mgdata[$id])) return '';
+	const depth = 4;
 	
-	$data =& $mgdata[$id];
+	private $start;
+	private $ziel;
+	private $sameGala;
 	
-	$content = '<a class="link winlink contextmenu" data-link="index.php?p=show_planet&amp;id='.$id.'">'.$id.'</a> &nbsp;(';
-	// Inhaber
-	if($data['playerName'] != NULL) {
-		$content .= '<a class="link winlink contextmenu" data-link="index.php?p=show_player&amp;id='.$data['planeten_playerID'].'&amp;ajax">'.htmlspecialchars($data['playerName'], ENT_COMPAT, 'UTF-8').'</a>';
-	}
-	// frei, Lux oder Altrasse
-	else if($data['planeten_playerID'] == 0) $content .= '<i>frei</i>';
-	else if($data['planeten_playerID'] == -2) $content .= '<i>Lux</i>';
-	else if($data['planeten_playerID'] == -3) $content .= '<i>Altrasse</i>';
-	// unbekannter Inhaber
-	else {
-		$content .= '<i>unbekannt</i>';
-	}
-	$content .= ' <span class="small">';
-	// Allianz anzeigen, wenn Spieler bekannt
-	if($data['playerName'] != NULL) {
-		// hat Allianz
-		if($data['allianzenTag'] != NULL) {
-			$content .= '<a class="link winlink contextmenu" data-link="index.php?p=show_ally&amp;id='.$data['player_allianzenID'].'&amp;ajax">'.htmlspecialchars($data['allianzenTag'], ENT_COMPAT, 'UTF-8').'</a>';
+	private $gates = array();
+	private $myrigates = array();
+	private $sprunggen = array();
+	
+	private $mgdata = array();
+	
+	private $entf_direct;
+	private $entf_shortest;
+	
+	/**
+	 * Gefundene Routen
+	 */
+	private $routes = array();
+	private $routeQueue = array();
+	
+	public $error;
+	public $content;
+	
+	
+	public function compute() {
+		
+		// Daten validieren, konvertieren und laden
+		$this->validate();
+		$this->loadRouteData();
+		$this->loadMyrigateData();
+		
+		if($this->error) {
+			return;
 		}
-		// allianzlos
-		else if(!$data['player_allianzenID']) {
-			$content .= '<i>allianzlos</i>';
+		
+		/*
+		 * Direkte Entfernung berechnen
+		 */
+		if($this->start['g'] === $this->ziel['g']) {
+			$this->sameGala = true;
+			
+			$this->entf_direct = $this->entf($this->start, $this->ziel);
+			
 		}
-		// unbekannte Allianz
 		else {
-			$content .= '<i>Allianz unbekannt</i>';
+			$this->sameGala = false;
+			
+			$this->entf_direct = $this->start['gate'] + $this->ziel['gate'];
 		}
+		
+		$this->entf_shortest = $this->entf_direct;
+		
+		
+		/*
+		 * Routen-Queue durchgehen
+		 */
+		
+		$this->routeQueue[0] = array(
+			
+			/**
+			 * [[Typ, ID (optional; bei Typ 2 = Galaxie)], ...]
+			 * Typen:
+			 * 1 - zum Ziel
+			 * 2 - zum Gate
+			 * 3 - zum Myrigate
+			 * 4 - zum Sprunggenerator
+			 */
+			'steps' => array(),
+			'entf' => 0,
+			'wasAtGate' => false,
+			'currentPosition' => $this->start,
+			'usedMyrigates' => array()
+		);
+		
+		$i = 0;
+		
+		while(isset($this->routeQueue[$i])) {
+			
+			$this->iterate($this->routeQueue[$i]);
+			
+			$i++;
+		}
+		
+		/*
+		 * Ergebnis rendern
+		 */
+		
+		$this->content = '<br />
+					direkter Weg'.($this->sameGala ? '' : ' &uuml;ber das Gate').': <b>'.flugdauer($this->entf_direct, $_POST['antrieb']).'</b> bei A'.$_POST['antrieb'].'
+					<br /><br />';
+		
+		if(count($this->routes)) {
+			$i = 0;
+			
+			while(count($this->routes) AND $i < 20) {
+				
+				$this->content .= $this->renderRoute(array_pop($this->routes));
+				
+				$i++;
+			}
+			
+		}
+		else {
+			$this->content .= '<b>keinen k&uuml;rzeren Weg gefunden</b>';
+		}
+		
 	}
-	$content .= '</span>)';
 	
-	// HTML zurückgeben
-	return $content;
+	/**
+	 * Arbeitet eine Teil-Route ab
+	 * Speichert fertige Routen oder hängt neue Teilrouten an die Queue an
+	 * @param array $route
+	 * - steps: [Typ, ID/Gala]
+	 * - entf
+	 * - currentPosition
+	 * - wasAtGate
+	 * - usedMyrigates
+	 */
+	private function iterate($route) {
+		
+		$depth = count($route['steps']);
+		
+		/*
+		 * Direktflug zum Ziel
+		 * - am Gate oder in der Ziel-Galaxie
+		 */
+		
+		if($route['currentPosition']['atGate'] OR $route['currentPosition']['g'] == $this->ziel['g']) {
+			
+			// Entfernung zum Ziel berechnen
+			if($route['currentPosition']['atGate']) {
+				$entf = $this->ziel['gate'];
+			}
+			else {
+				$entf = $this->entf($route['currentPosition'], $this->ziel);
+			}
+			
+			
+			// kürzerer Weg gefunden
+			if($route['entf'] + $entf < $this->entf_shortest) {
+				
+				$newRoute = $route;
+				$newRoute['entf'] += $entf;
+				$newRoute['steps'][] = array(1, false);
+				
+				$this->routes[] = $newRoute;
+				$this->entf_shortest = $newRoute['entf'];
+				
+			}
+			
+		}
+		
+		/*
+		 * Flug zum Gate
+		 * - nicht am Gate
+		 * - war noch nicht am Gate
+		 * - nicht letzte Iteration
+		 */
+		if(!$route['currentPosition']['atGate']
+			AND !$route['wasAtGate']
+			AND $depth < SchnellsterWeg::depth
+			AND $route['entf'] + $route['currentPosition']['gate'] < $this->entf_shortest) {
+			
+			$newRoute = $route;
+			$newRoute['entf'] += $route['currentPosition']['gate'];
+			$newRoute['currentPosition']['atGate'] = true;
+			$newRoute['wasAtGate'] = true;
+			$newRoute['steps'][] = array(2, $route['currentPosition']['g']);
+			
+			$this->routeQueue[] = $newRoute;
+			
+		}
+		
+		
+		/*
+		 * Nächsten Sprunggenerator benutzen
+		* - nicht am Gate
+		* - war noch nicht am Gate
+		* - nicht letzte Iteration
+		*/
+		
+		if(!$route['currentPosition']['atGate']
+			AND !$route['wasAtGate']
+			AND $depth < SchnellsterWeg::depth
+			AND ($sprung = $this->findNextSprunggenerator($route['currentPosition'])) !== false
+			AND $route['entf'] + $sprung[1] < $this->entf_shortest) {
+				
+			$newRoute = $route;
+			$newRoute['entf'] += $sprung[1];
+			$newRoute['currentPosition']['atGate'] = true;
+			$newRoute['wasAtGate'] = true;
+			$newRoute['steps'][] = array(4, $sprung[0]);
+			
+			$this->routeQueue[] = $newRoute;
+				
+		}
+		
+		/*
+		 * Myrigate benutzen
+		 * - Myrigate noch nicht benutzt
+		 * - nicht letzte Iteration
+		 * - vorletzte Iteration: nur Myrigates mit Riss in Ziel-Galaxien
+		 */
+		
+		if($depth < SchnellsterWeg::depth) {
+			
+			foreach($this->myrigates as $id=>$data) {
+					
+				// nicht am Gate: Auf Myrigates der Galaxie beschränken
+				if(!$route['currentPosition']['atGate'] AND $data['g'] != $route['currentPosition']['g']) {
+					continue;
+				}
+					
+				// Myrigate noch nicht benutzt
+				if(in_array($id, $route['usedMyrigates'])) {
+					continue;
+				}
+				
+				// vorletzte Iteration: nur Myrigates mit Riss in Ziel-Galaxie
+				if($depth === SchnellsterWeg::depth-1 AND $data['riss']['g']) {
+					continue;
+				}
+				
+				// Entfernung zum Myrigate berechnen
+				if($route['currentPosition']['atGate']) {
+					$entf = $data['gate'];
+				}
+				else {
+					$entf = $this->entf($route['currentPosition'], $data);
+				}
+				
+				
+				// an die Queue anhängen
+				if($route['entf'] + $entf < $this->entf_shortest) {
+					
+					$newRoute = $route;
+					$newRoute['entf'] += $entf;
+					$newRoute['steps'][] = array(3, $id);
+					$newRoute['currentPosition'] = $data['riss'];
+					$newRoute['usedMyrigates'][] = $id;
+					
+					$this->routeQueue[] = $newRoute;
+					
+				}
+					
+			}
+			
+		}
+		
+	}
+	
+	/**
+	 * Berechtigung und übermittelte Daten überprüfen
+	 */
+	private function validate() {
+		global $user;
+		
+		/*
+		 * Berechtigung
+		 */
+		
+		if(!$user->rechte['strecken_weg']) {
+			$this->error = 'Du hast keine Berechtigung!';
+		}
+		
+		/*
+		 * Daten validieren und konvertieren
+		 */
+		
+		// Daten unvollständig
+		else if(!isset($_POST['start'], $_POST['dest'], $_POST['antrieb'], $_POST['nap'], $_POST['napmanuell'])) {
+			$this->error = 'Daten unvollständig!';
+		}
+		
+		// Antrieb ungültig
+		else if((int)$_POST['antrieb'] < 1) {
+			$this->error = 'Ung&uuml;ltiger Antrieb eingegeben!';
+		}
+		
+		// Daten sichern
+		$_POST['antrieb'] = (int)$_POST['antrieb'];
+		$_POST['nap'] = (int)$_POST['nap'];
+		$_POST['napmanuell'] = preg_replace('/[^\d,]/Uis', '', $_POST['napmanuell']);
+		
+	}
+	
+	/**
+	 * Eingaben für Start und Ziel übernehmen und in Koordinaten umrechnen
+	 * Überprüfung auf offene Galaxie
+	 * @param string $start
+	 * @param string $ziel
+	 */
+	private function loadRouteData() {
+		global $user;
+		
+		if($this->error) {
+			return;
+		}
+		
+		// Startpunkt und Zielpunkt in Koordinaten umwandeln
+		$points = array($_POST['start'], $_POST['dest']);
+		
+		foreach($points as $key=>$val) {
+			$name = $key ? 'Zielpunkt' : 'Startpunkt';
+		
+			// Daten in Koordinaten umwandeln
+			$val = flug_point($val);
+			$points[$key] = $val;
+		
+			// Fehler
+			if(!is_array($val) AND !$tmpl->error) {
+				if($val == 'coords') {
+					$this->error = 'Ung&uuml;ltige Koordinaten beim '.$name.' eingegeben!';
+				}
+				else if($val == 'data') {
+					$this->error = 'Ung&uuml;ltige Daten beim '.$name.' eingegeben!';
+				}
+				else {
+					$this->error = $name.' nicht gefunden!';
+				}
+			}
+		}
+		
+		
+		// kein Zugriff auf die Galaxie
+		if(!$this->error AND $user->protectedGalas AND (in_array($points[0][0], $user->protectedGalas) OR in_array($points[1][0], $user->protectedGalas))) {
+			if($points[0][0] == $points[1][0]) {
+				$this->error = 'Deine Allianz hat keinen Zugriff diese Galaxie!';
+			}
+			else {
+				$this->error = 'Deine Allianz hat keinen Zugriff auf eine der Galaxien!';
+			}
+		}
+		
+		if($this->error) {
+			return;
+		}
+		
+		/*
+		 * Daten aufbereiten
+		*/
+		
+		$this->start = array(
+				'g' => $points[0][0],
+				'x' => $points[0][1],
+				'y' => $points[0][2],
+				'z' => $points[0][3],
+				'pos' => $points[0][4],
+				'atGate' => false
+		);
+		
+		$this->ziel = array(
+				'g' => $points[1][0],
+				'x' => $points[1][1],
+				'y' => $points[1][2],
+				'z' => $points[1][3],
+				'pos' => $points[1][4],
+				'atGate' => false
+		);
+		
+		/*
+		 * Gate-Entfernung berechnen
+		 */
+		$query = query("
+			SELECT
+				galaxienID,
+				galaxienGateX,
+				galaxienGateY,
+				galaxienGateZ,
+				galaxienGatePos
+			FROM
+				".PREFIX."galaxien
+			WHERE
+				galaxienGate > 0
+				AND galaxienID IN(".$points[0][0].", ".$points[1][0].")
+		") OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
+		
+		while($row = mysql_fetch_assoc($query)) {
+			
+			// Galaxie des Startpunktes
+			if($row['galaxienID'] == $points[0][0]) {
+				$this->start['gate'] = entf(
+					$points[0][1],
+					$points[0][2],
+					$points[0][3],
+					$points[0][4],
+					$row['galaxienGateX'],
+					$row['galaxienGateY'],
+					$row['galaxienGateZ'],
+					$row['galaxienGatePos']
+				);
+			}
+			
+			// Galaxie des Zielpunkts
+			if($row['galaxienID'] == $points[1][0]) {
+				$this->ziel['gate'] = entf(
+						$points[1][1],
+						$points[1][2],
+						$points[1][3],
+						$points[1][4],
+						$row['galaxienGateX'],
+						$row['galaxienGateY'],
+						$row['galaxienGateZ'],
+						$row['galaxienGatePos']
+				);
+			}
+			
+		}
+		
+		// nicht alle Gates eingescannt
+		if(!isset($this->start['gate'], $this->ziel['gate'])) {
+			$this->error = 'Alle Gates der beteilgten Galaxien m&uuml;ssen eingescannt sein, um die Suche zu starten!';
+		}
+		
+	}
+	
+	/**
+	 * Myrigates und Sprunggeneratoren laden
+	 */
+	private function loadMyrigateData() {
+		global $status_freund, $user;
+		
+		if($this->error) {
+			return;
+		}
+		
+		/*
+		 * implodierten NAP-String erzeugen
+		 */
+		
+		$nap = array();
+		
+		// NAPs einer DB-Allianz
+		if(trim($_POST['napmanuell']) == '') {
+			$query = query("
+				SELECT
+					status_allianzenID
+				FROM
+					".PREFIX."allianzen_status
+				WHERE
+					statusDBAllianz = ".$_POST['nap']."
+					AND statusStatus IN(".implode(', ', $status_freund).")
+			") OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
+			
+			while($row = mysql_fetch_assoc($query)) {
+				$nap[] = $row['status_allianzenID'];
+			}
+			
+			$nap = implode(', ', $nap);
+	
+			// keine NAPs eingetragen
+			if($nap == '') {
+				$this->error = 'F&uuml;r die Allianz sind keine NAPs eingetragen!';
+			}
+		}
+		
+		// NAPs manuell eingetragen
+		else {
+			$_POST['napmanuell'] = explode(',', $_POST['napmanuell']);
+			
+			foreach($_POST['napmanuell'] as $key=>$val) {
+				$val = (int)trim($val);
+				
+				if($val) {
+					$nap[] = $val;
+				}
+			}
+			$nap = implode(', ', $nap);
+	
+			// keine NAPs eingetragen
+			if($nap == '') {
+				$this->error = 'Eingabe der NAPs ung&uuml;ltig!';
+			}
+		}
+		
+		if($this->error) {
+			return;
+		}
+		
+		/*
+		 * Gates laden
+		 */
+		$query = query("
+			SELECT
+				galaxienID,
+				galaxienGate
+			FROM
+				".PREFIX."galaxien
+			WHERE
+				galaxienGate > 0
+		") OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
+		
+		while($row = mysql_fetch_assoc($query)) {
+			$this->gates[$row['galaxienID']] = $row['galaxienGate'];
+		}
+		
+		
+		/*
+		 * Myrigates laden
+		 */
+		
+		$query = query("
+			SELECT
+				myrigates_galaxienID,
+				
+				p.planetenID,
+				p.planetenPosition,
+				p.planetenGateEntf,
+		
+				s.systemeX,
+				s.systemeY,
+				s.systemeZ,
+				
+				p.planeten_playerID,
+				playerName,
+				player_allianzenID,
+		
+				allianzenTag,
+				
+				
+				p2.planetenID AS riss_planetenID,
+				p2.planetenPosition AS riss_planetenPosition,
+				p2.planetenGateEntf AS riss_planetenGateEntf,
+				
+				s2.systeme_galaxienID AS riss_systeme_galaxienID,
+				s2.systemeX AS riss_systemeX,
+				s2.systemeY AS riss_systemeY,
+				s2.systemeZ AS riss_systemeZ
+				
+			FROM
+				".PREFIX."myrigates
+				LEFT JOIN ".PREFIX."planeten p
+					ON myrigates_planetenID = p.planetenID
+				LEFT JOIN ".PREFIX."systeme s
+					ON p.planeten_systemeID = s.systemeID
+				LEFT JOIN ".GLOBPREFIX."player
+					ON planeten_playerID = playerID
+				LEFT JOIN ".GLOBPREFIX."allianzen
+					ON allianzenID = player_allianzenID
+				LEFT JOIN ".PREFIX."planeten p2
+					ON p.planetenMyrigate = p2.planetenID
+				LEFT JOIN ".PREFIX."systeme s2
+					ON p2.planeten_systemeID = s2.systemeID
+				
+			WHERE
+				player_allianzenID IN (".$nap.")
+				AND myrigatesSprung = 0
+				AND p.planetenGateEntf IS NOT NULL
+				AND p2.planetenGateEntf IS NOT NULL
+				AND p.planetenID IS NOT NULL
+				AND p2.planetenID IS NOT NULL
+				".($user->protectedGalas ? "AND s.systeme_galaxienID NOT IN(".implode(",", $user->protectedGalas).") AND s2.systeme_galaxienID NOT IN(".implode(",", $user->protectedGalas).")" : "")."
+				
+		") OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
+			
+		while($row = mysql_fetch_assoc($query)) {
+			
+			// Myrigate-Datensatz aufbereiten und speichern
+			$this->myrigates[$row['planetenID']] = array(
+				'g' => $row['myrigates_galaxienID'],
+				'x' => $row['systemeX'],
+				'y' => $row['systemeY'],
+				'z' => $row['systemeZ'],
+				'pos' => $row['planetenPosition'],
+				'gate' => $row['planetenGateEntf'],
+				'atGate' => false,
+				
+				'riss' => array(
+					'g' => $row['riss_systeme_galaxienID'],
+					'x' => $row['riss_systemeX'],
+					'y' => $row['riss_systemeY'],
+					'z' => $row['riss_systemeZ'],
+					'pos' => $row['riss_planetenPosition'],
+					'gate' => $row['riss_planetenGateEntf'],
+					'atGate' => false
+				)
+			);
+			
+			// Inhaberdaten speichern
+			$this->mgdata[$row['planetenID']] = array(
+				'myrigates_galaxienID' => $row['myrigates_galaxienID'],
+				'planeten_playerID' => $row['planeten_playerID'],
+				'playerName' => $row['playerName'],
+				'player_allianzenID' => $row['player_allianzenID'],
+				'allianzenTag' => $row['allianzenTag']
+			);
+		}
+		
+		
+		/*
+		 * Sprunggeneratoren laden
+		 */
+		
+		$query = query("
+			SELECT
+				myrigates_galaxienID,
+		
+				planetenID,
+				planetenPosition,
+				planetenGateEntf,
+		
+				systemeX,
+				systemeY,
+				systemeZ,
+		
+				planeten_playerID,
+				playerName,
+				player_allianzenID,
+		
+				allianzenTag
+				
+			FROM
+				".PREFIX."myrigates
+				LEFT JOIN ".PREFIX."planeten
+					ON myrigates_planetenID = planetenID
+				LEFT JOIN ".PREFIX."systeme
+					ON planeten_systemeID = systemeID
+				LEFT JOIN ".GLOBPREFIX."player
+					ON planeten_playerID = playerID
+				LEFT JOIN ".GLOBPREFIX."allianzen
+					ON allianzenID = player_allianzenID
+			
+			WHERE
+				myrigatesSprung > 0
+				AND myrigatesSprungFeind = 0
+				AND planetenGateEntf IS NOT NULL
+				".($user->protectedGalas ? "AND systeme_galaxienID NOT IN(".implode(",", $user->protectedGalas).")" : "")."
+		
+		") OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
+			
+		while($row = mysql_fetch_assoc($query)) {
+				
+			// Sprunggenerator-Datensatz aufbereiten und speichern
+			$this->sprunggen[$row['planetenID']] = array(
+				'g' => $row['myrigates_galaxienID'],
+				'x' => $row['systemeX'],
+				'y' => $row['systemeY'],
+				'z' => $row['systemeZ'],
+				'pos' => $row['planetenPosition'],
+				'gate' => $row['planetenGateEntf'],
+				'atGate' => false
+			);
+				
+			// Inhaberdaten speichern
+			$this->mgdata[$row['planetenID']] = array(
+				'myrigates_galaxienID' => $row['myrigates_galaxienID'],
+				'planeten_playerID' => $row['planeten_playerID'],
+				'playerName' => $row['playerName'],
+				'player_allianzenID' => $row['player_allianzenID'],
+				'allianzenTag' => $row['allianzenTag']
+			);
+		}
+		
+	}
+	
+	/**
+	 * Shortcut für die Entfernungsberechnung mit Arrays (Schlüssel: x, y, z, pos)
+	 * @param array $source
+	 * @param array $dest
+	 * @return Entfernung
+	 */
+	private function entf($source, $dest) {
+		return entf(
+			$source['x'],
+			$source['y'],
+			$source['z'],
+			$source['pos'],
+			$dest['x'],
+			$dest['y'],
+			$dest['z'],
+			$dest['pos']
+		);
+	}
+	
+	/**
+	 * Nächsten Sprunggenerator ermitteln
+	 * @param array $point
+	 * @return array|false [ID, Entfernung]
+	 */
+	private function findNextSprunggenerator($point) {
+		
+		$nextId = false;
+		$nextEntf = false;
+		$entf = false;
+		
+		// vom Gate aus nicht nach Sprunggeneratoren suchen
+		if($point['atGate']) {
+			return false;
+		}
+		
+		foreach($this->sprunggen as $id=>$data) {
+			
+			if($data['g'] == $point['g']) {
+				
+				if($nextId === false OR ($entf = $this->entf($point, $data)) < $nextEntf) {
+					
+					if($nextId === false) {
+						$nextEntf = $this->entf($point, $data);
+					}
+					else {
+						$nextEntf = $entf;
+					}
+					
+					$nextId = $id;
+				}
+				
+			}
+			
+		}
+		
+		if(!$nextId) {
+			return false;
+		}
+		else {
+			return array($nextId, $nextEntf);
+		}
+		
+	}
+	
+	/**
+	 * Route rendern
+	 * @param array $route
+	 * @return string HTML
+	 */
+	private function renderRoute($route) {
+		
+		$content = '';
+		
+		
+		// Routenpunkte durchgehen
+		
+		foreach($route['steps'] as $step) {
+			$type = $step[0];
+			$id = $step[1];
+			
+			switch($type) {
+				
+				/*
+				 * zum Ziel
+				 */
+				case 1:
+					
+					$content .= 'danach zum Ziel';
+					
+					break;
+				
+				/*
+				 * zum Gate
+				 */
+				case 2:
+					
+					$content .= 'Gate &nbsp;
+								<b>G'.$id.' &nbsp;
+								<a class="link winlink contextmenu" data-link="index.php?p=show_planet&amp;id='.$this->gates[$id].'">'.$this->gates[$id].'</a></b>';
+					
+					break;
+					
+				/*
+				 * Myrigate / Sprunggenerator
+				 */
+				case 3:
+				case 4:
+					
+					if(is_numeric($id) AND isset($this->mgdata[$id])) {
+					
+						$data = $this->mgdata[$id];
+						
+						if($type == 3) {
+							$content .= 'Myrigate';
+						}
+						else {
+							$content .= 'Sprunggenerator';
+						}
+						
+						$content .= ' &nbsp;
+									<b>G'.$data['myrigates_galaxienID'].' &nbsp; 
+									<a class="link winlink contextmenu" data-link="index.php?p=show_planet&amp;id='.$id.'">'.$id.'</a> &nbsp;
+									(';
+						
+						// Inhaber
+						if($data['playerName'] != NULL) {
+							$content .= '<a class="link winlink contextmenu" data-link="index.php?p=show_player&amp;id='.$data['planeten_playerID'].'&amp;ajax">'.htmlspecialchars($data['playerName'], ENT_COMPAT, 'UTF-8').'</a>';
+						}
+						// frei, Lux oder Altrasse
+						else if($data['planeten_playerID'] == 0) {
+							$content .= '<i>frei</i>';
+						}
+						else if($data['planeten_playerID'] == -2) {
+							$content .= '<i>Lux</i>';
+						}
+						else if($data['planeten_playerID'] == -3) {
+							$content .= '<i>Altrasse</i>';
+						}
+						// unbekannter Inhaber
+						else {
+							$content .= '<i>unbekannt</i>';
+						}
+						
+						$content .= ' <span class="small">';
+						
+						// Allianz anzeigen, wenn Spieler bekannt
+						if($data['playerName'] != NULL) {
+							// hat Allianz
+							if($data['allianzenTag'] != NULL) {
+								$content .= '<a class="link winlink contextmenu" data-link="index.php?p=show_ally&amp;id='.$data['player_allianzenID'].'&amp;ajax">'.htmlspecialchars($data['allianzenTag'], ENT_COMPAT, 'UTF-8').'</a>';
+							}
+							// allianzlos
+							else if(!$data['player_allianzenID']) {
+								$content .= '<i>allianzlos</i>';
+							}
+							// unbekannte Allianz
+							else {
+								$content .= '<i>Allianz unbekannt</i>';
+							}
+						}
+						
+						$content .= '</span>)</b> ';
+						
+						
+						if($type == 3) {
+							$content .= '&rarr; Riss';
+						}
+						else {
+							$content .= '&rarr; Gate';
+						}
+					
+					}
+					
+					break;
+			}
+			
+			$content .= '<br />';
+			
+		}
+		
+		// Entfernung
+		$content .= '&rarr; <b>'.flugdauer($route['entf'], $_POST['antrieb']).'</b>
+					<br /><br />';
+		
+		return $content;
+		
+	}
+	
 }
+
+
+
+
 
 
 
@@ -90,15 +894,15 @@ if($_GET['sp'] == 'weg') {
 	</div>
 	
 	<div class="icontent">
-		Diese Funktion berechnet verschiedene M&ouml;glichkeiten, die Flugdauer innerhalb einer Galaxie zu verk&uuml;rzen:
+		Diese Funktion berechnet die k&uuml;rzeste Verbindung zwischen zwei Punkten im OD-Universum. Sie rechnet folgende Verbindungen mit ein:
 		<ul>
-			<li>Myrigate &rarr; Riss &rarr; Ziel</li>
-			<li>Myrigate &rarr; Riss &rarr; anderes Myrigate &rarr; Riss &rarr; Ziel</li>
-			<li>Myrigate &rarr; Gate &rarr; Ziel</li>
-			<li>Myrigate &rarr; Gate &rarr; anderes Myrigate &rarr; Riss &rarr; Ziel</li>
+			<li>Direkter Weg zum Ziel in dessen Galaxie</li>
+			<li>Direkter Weg zum Gate</li>
+			<li>Myrigate &rarr; Riss</li>
+			<li>Sprunggenerator &rarr; Gate</li>
 		</ul>
 		<br />
-		Man kann nur bei den Myrigates zum Riss springen, mit deren Inhaber man einen NAP hat.
+		Man kann nur die Myrigates benutzen, mit deren Inhaber man einen NAP hat. Es werden nur als benutzbar eingetragene Sprunggeneratoren ber&uuml;cksichtigt.
 		<br /><br /><br />
 		
 		<form action="#" name="strecken_weg" onsubmit="return form_send(this, \'index.php?p=strecken&amp;sp=weg_send&amp;ajax\', $(this).siblings(\'.ajax\'))">
@@ -113,12 +917,12 @@ if($_GET['sp'] == 'weg') {
 			</div>
 			<div style="text-align:left;margin:0px 0px 15px 110px">
 				NAPs der Allianz 
-				&nbsp;<select name="hak" size="1">
+				&nbsp;<select name="nap" size="1">
 					'.$allyopt.'
 				</select>&nbsp; 
 				benutzen
 				<br />
-				oder manuell eintragen: <input type="text" class="text center" name="hakmanuell" /> 
+				oder manuell eintragen: <input type="text" class="text center" name="napmanuell" /> 
 				&nbsp; <span class="small hint">(IDs mit Komma getrennt)</span>
 			</div>
 			<input type="submit" class="button" value="schnellsten Weg berechnen" />
@@ -131,538 +935,23 @@ if($_GET['sp'] == 'weg') {
 
 // abschicken
 else if($_GET['sp'] == 'weg_send') {
-	// keine Berechtigung
-	if(!$user->rechte['strecken_weg']) $tmpl->error = 'Du hast keine Berechtigung!';
-	// Daten unvollständig
-	else if(!isset($_POST['start'], $_POST['dest'], $_POST['antrieb'], $_POST['hak'], $_POST['hakmanuell'])) {
-		$tmpl->error = 'Daten unvollständig!';
-	}
-	// Antrieb ungültig
-	else if((int)$_POST['antrieb'] < 1) {
-		$tmpl->error = 'Ung&uuml;ltiger Antrieb eingegeben!';
-	}
-	// Berechtigung
-	else {
-		// Daten sichern
-		$_POST['antrieb'] = (int)$_POST['antrieb'];
-		$_POST['hak'] = (int)$_POST['hak'];
-		$_POST['hakmanuell'] = preg_replace('/[^\d,]/Uis', '', $_POST['hakmanuell']);
-		
-		// Startpunkt und Zielpunkt in Koordinaten umwandeln
-		$points = array($_POST['start'], $_POST['dest']);
-		
-		foreach($points as $key=>$val) {
-			$name = $key ? 'Zielpunkt' : 'Startpunkt';
-			
-			// Daten in Koordinaten umwandeln
-			$val = flug_point($val);
-			$points[$key] = $val;
-			
-			// Fehler
-			if(!is_array($val) AND !$tmpl->error) {
-				if($val == 'coords') $tmpl->error = 'Ung&uuml;ltige Koordinaten beim '.$name.' eingegeben!';
-				else if($val == 'data') $tmpl->error = 'Ung&uuml;ltige Daten beim '.$name.' eingegeben!';
-				else $tmpl->error = $name.' nicht gefunden!';
-			}
-		}
-		
-		if(!$tmpl->error) {
-			// unterschiedliche Galaxie
-			if($points[0][0] != $points[1][0]) {
-					$tmpl->error = 'Start- und Zielpunkt sind in einer unterschiedlichen Galaxie!';
-			}
-			// kein Zugriff auf die Galaxie
-			else if($user->protectedGalas AND in_array($points[0][0], $user->protectedGalas)) {
-				$tmpl->error = 'Deine Allianz hat keinen Zugriff auf diese Galaxie!';
-			}
-		
-			$start =& $points[0];
-			$ziel =& $points[1];
-			$gala =& $points[0][0];
-		}
-		
-		// implodierten HAK-String erzeugen
-		if(!$tmpl->error) {
-			// HAKs einer DB-Allianz
-			if(trim($_POST['hakmanuell']) == '') {
-				$query = query("
-					SELECT
-						status_allianzenID
-					FROM 
-						".PREFIX."allianzen_status
-					WHERE
-						statusDBAllianz = ".$_POST['hak']."
-						AND statusStatus IN(".implode(', ', $status_freund).")
-				") OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
-				
-				$hak = array();
-				while($row = mysql_fetch_assoc($query)) {
-					$hak[] = $row['status_allianzenID'];
-				}
-				$hak = implode(', ', $hak);
-				
-				// keine HAKs eingetragen
-				if($hak == '') $tmpl->error = 'F&uuml;r die Allianz sind keine NAPs eingetragen!';
-			}
-			// HAKs manuell eingetragen
-			else {
-				$hak = array();
-				$_POST['hakmanuell'] = explode(',', $_POST['hakmanuell']);
-				foreach($_POST['hakmanuell'] as $key=>$val) {
-					$val = (int)trim($val);
-					if($val) $hak[] = $val;
-				}
-				$hak = implode(', ', $hak);
-				
-				// keine HAKs eingetragen
-				if($hak == '') $tmpl->error = 'Eingabe der NAPs ung&uuml;ltig!';
-			}
-		}
-		
-		if(!$tmpl->error) {
-			// Gate-Position ermitteln
-			$query = query("
-				SELECT
-					galaxienGate,
-					galaxienGateX,
-					galaxienGateY,
-					galaxienGateZ,
-					galaxienGatePos
-				FROM
-					".PREFIX."galaxien
-				WHERE
-					galaxienID = ".$gala."
-			") OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
-			
-			$gate = false;
-			
-			if(mysql_num_rows($query)) {
-				$row = mysql_fetch_assoc($query);
-				// Gate erfasst
-				if($row['galaxienGate']) {
-					$gate = array(
-						$row['galaxienGateX'],
-						$row['galaxienGateY'],
-						$row['galaxienGateZ'],
-						$row['galaxienGatePos']
-					);
-				}
-			}
-			
-			// nächstes Myrigate ermitteln
-			$nextmg = false;
-			$nextmgdata = false;
-			$entf_nextmg = false;
-			$sprung = array();
-			
-			$query = query("
-				SELECT
-					myrigatesSprung,
-					
-					planetenID,
-					planetenPosition,
-					planetenMyrigate,
-					".entf_mysql("systemeX", "systemeY", "systemeZ", "planetenPosition", $start[1], $start[2], $start[3], $start[4])." as planetenEntfernung,
-					
-					systemeX,
-					systemeY,
-					systemeZ,
-					
-					planeten_playerID,
-					playerName,
-					player_allianzenID,
-					
-					allianzenTag
-				FROM 
-					".PREFIX."myrigates
-					LEFT JOIN ".PREFIX."planeten
-						ON myrigates_planetenID = planetenID
-					LEFT JOIN ".PREFIX."systeme
-						ON planeten_systemeID = systemeID
-					LEFT JOIN ".GLOBPREFIX."player
-						ON planeten_playerID = playerID
-					LEFT JOIN ".GLOBPREFIX."allianzen
-						ON allianzenID = player_allianzenID
-				WHERE
-					myrigates_galaxienID = ".$gala."
-					AND (player_allianzenID IN (".$hak.") OR (planeten_playerID = 0 AND myrigatesSprung > 0))
-				ORDER BY
-					planetenEntfernung ASC
-				LIMIT 1
-			") OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
-			
-			if(mysql_num_rows($query)) {
-				$row = mysql_fetch_assoc($query);
-				$nextmg = $row['planetenID'];
-				$nextmgdata = $row;
-				$entf_nextmg = $row['planetenEntfernung'];
-				if($row['myrigatesSprung']) {
-					$sprung[$row['planetenID']] = $row['myrigatesSprung'];
-				}
-			}
-			
-			// alle anderen Myrigates ermitteln
-			$mgates = array();
-			$mgdata = array();
-			
-			$query = query("
-				SELECT
-					myrigatesSprung,
-					planetenID,
-					planetenPosition,
-					planetenMyrigate,
-					
-					systemeX,
-					systemeY,
-					systemeZ,
-					
-					planeten_playerID,
-					playerName,
-					player_allianzenID,
-					
-					allianzenTag
-				FROM 
-					".PREFIX."myrigates
-					LEFT JOIN ".PREFIX."planeten
-						ON myrigates_planetenID = planetenID
-					LEFT JOIN ".PREFIX."systeme
-						ON planeten_systemeID = systemeID
-					LEFT JOIN ".GLOBPREFIX."player
-						ON planeten_playerID = playerID
-					LEFT JOIN ".GLOBPREFIX."allianzen
-						ON allianzenID = player_allianzenID
-				WHERE
-					myrigates_galaxienID = ".$gala."
-					AND player_allianzenID IN (".$hak.")
-					AND myrigatesSprung = 0
-			") OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
-			
-			$risse = array();
-			
-			while($row = mysql_fetch_assoc($query)) {
-				
-				// Position speichern
-				$mgates[$row['planetenID']] = array(
-					$row['systemeX'],
-					$row['systemeY'],
-					$row['systemeZ'],
-					$row['planetenPosition']
-				);
-				
-				// Myrigate -> Riss
-				$risse[] = $row['planetenMyrigate'];
-				
-				// Inhaberdaten speichern
-				$mgdata[$row['planetenID']] = array(
-					'planeten_playerID'=>$row['planeten_playerID'],
-					'playerName'=>$row['playerName'],
-					'player_allianzenID'=>$row['player_allianzenID'],
-					'allianzenTag'=>$row['allianzenTag']
-				);
-			}
-			
-			// keine Myrigates gefunden
-			if(!count($risse)) {
-				$risse = array(0);
-			}
-			
-			// Risse ermitteln
-			$query = query("
-				SELECT
-					planetenID,
-					planetenRiss,
-					planetenPosition,
-					systemeX,
-					systemeY,
-					systemeZ
-				FROM 
-					".PREFIX."planeten
-					LEFT JOIN  ".PREFIX."systeme
-						ON systemeID = planeten_systemeID
-				WHERE
-					systeme_galaxienID = ".$gala."
-					AND planetenID IN (".implode(', ', $risse).")
-			") OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
-			
-			while($row = mysql_fetch_assoc($query)) {
-				// Riss-Daten an die Myrigates anhängen
-				if(isset($mgates[$row['planetenRiss']])) {
-					array_push(
-						$mgates[$row['planetenRiss']],
-						$row['systemeX'],
-						$row['systemeY'],
-						$row['systemeZ'],
-						$row['planetenPosition']
-					);
-				}
-			}
-			
-			// ungültige Myrigates aufräumen
-			foreach($mgates as $key=>$data) {
-				if(count($data) != 8) {
-					unset($mgates[$key]);
-				}
-			}
-			
-			// direkte Entfernung berechnen
-			$entf_direkt = entf(
-				$start[1],
-				$start[2],
-				$start[3],
-				$start[4],
-				$ziel[1],
-				$ziel[2],
-				$ziel[3],
-				$ziel[4]
-			);
-			
-			// gibt es einen schnelleren Weg?
-			$schneller = false;
-			
-			// nur weitermachen, wenn Myrigates eingetragen sind
-			if(count($mgates) OR $nextmg) {
-				// Wenn Gate eingetragen, Start-MGate-Gate-Ziel und Start-Mgate-Gate-MGate-Riss-Ziel berechnen
-				$entf_gate = false;
-				$gate2 = false;
-				$entf_gate2 = false;
-				
-				// Gate eingetragen
-				if($gate) {
-					// nächstes Myrigate ermitteln
-					//$nextmg = false;
-					//$entf_nextmg = false;
-					
-					if(!$nextmg) {
-						foreach($mgates as $key=>$data) {
-							$entf = entf(
-								$start[1],
-								$start[2],
-								$start[3],
-								$start[4],
-								$data[0],
-								$data[1],
-								$data[2],
-								$data[3]
-							);
-							
-							if($nextmg === false OR $entf < $entf_nextmg) {
-								$nextmg = $key;
-								$entf_nextmg = $entf;
-							}
-						}
-					}
-					
-					// Start-MGate-Gate-Ziel berechnen
-					$entf_gate = $entf_nextmg +
-								entf(
-									$gate[0],
-									$gate[1],
-									$gate[2],
-									$gate[3],
-									$ziel[1],
-									$ziel[2],
-									$ziel[3],
-									$ziel[4]
-								);
-					
-					// übers Gate schneller als direkter Weg
-					if($entf_gate < $entf_direkt) $schneller = true;
-					
-					// Start-Mgate-Gate-MGate-Riss-Ziel berechnen
-					foreach($mgates as $key=>$data) {
-						$entf = $entf_nextmg +
-								entf(
-									$gate[0],
-									$gate[1],
-									$gate[2],
-									$gate[3],
-									$data[0],
-									$data[1],
-									$data[2],
-									$data[3]
-								) + 
-								entf(
-									$data[4],
-									$data[5],
-									$data[6],
-									$data[7],
-									$ziel[1],
-									$ziel[2],
-									$ziel[3],
-									$ziel[4]
-								);
-						
-						if($gate2 === false OR $entf < $entf_gate2) {
-							$gate2 = $key;
-							$entf_gate2 = $entf;
-						}
-					}
-					
-					// Gate+Myrigate kürzer als direkter Weg
-					if($entf_gate2 < $entf_direkt) $schneller = true;
-				}
-				
-				// Entfernung über Myrigate / 2 Myrigates
-				$mgate2 = false;
-				$entf_mgate = array();
-				$entf_mgatemin = false;
-				$entf_mgate2 = false;
-				
-				foreach($mgates as $key=>$data) {
-					// Entfernung Start-Myrigate berechnen
-					$entf1 = entf(
-								$start[1],
-								$start[2],
-								$start[3],
-								$start[4],
-								$data[0],
-								$data[1],
-								$data[2],
-								$data[3]
-							);
-					
-					// Entfernung über 2. Myrigate berechnen
-					foreach($mgates as $key2=>$data2) {
-						if($key2 != $key) {
-							// Start-Mgate1-Riss1-Mgate2-Riss2-Ziel
-							$entf = $entf1 + 
-									entf(
-										$data[4],
-										$data[5],
-										$data[6],
-										$data[7],
-										$data2[0],
-										$data2[1],
-										$data2[2],
-										$data2[3]
-									) +
-									entf(
-										$data2[4],
-										$data2[5],
-										$data2[6],
-										$data2[7],
-										$ziel[1],
-										$ziel[2],
-										$ziel[3],
-										$ziel[4]
-									);
-							
-							if($mgate2 === false OR $entf < $entf_gate2) {
-								$mgate2 = array($key, $key2);
-								$entf_mgate2 = $entf;
-								// über 2 Myrigates schneller als direkter Weg
-								if($entf < $entf_direkt) $schneller = true;
-							}
-						}
-					}
-					
-					// normale Entfernung Start-Mgate-Riss-Ziel berechnen
-					$entf = $entf1 + 
-							entf(
-								$data[4],
-								$data[5],
-								$data[6],
-								$data[7],
-								$ziel[1],
-								$ziel[2],
-								$ziel[3],
-								$ziel[4]
-							);
-					
-					if($entf_mgatemin === false OR $entf < $entf_mgatemin) {
-						$entf_mgatemin = $entf;
-					}
-					
-					// zur Liste hinzufügen, wenn kürzer als direkter Weg
-					if($entf < $entf_direkt) {
-						$entf_mgate[$key] = $entf;
-					}
-				}
-				
-				// über 1 Myrigate schneller als direkter Weg
-				if($entf_mgatemin !== false AND $entf_mgatemin < $entf_direkt) $schneller = true;
-			}
-			
-			// nächstes nicht-HAK-MG ins Array übernehmen
-			if($nextmgdata AND !isset($mgates[$nextmg])) {
-				// Position speichern
-				$mgates[$nextmgdata['planetenID']] = array(
-					$nextmgdata['systemeX'],
-					$nextmgdata['systemeY'],
-					$nextmgdata['systemeZ'],
-					$nextmgdata['planetenPosition']
-				);
-				
-				// Inhaberdaten speichern
-				$mgdata[$nextmgdata['planetenID']] = array(
-					'planeten_playerID'=>$nextmgdata['planeten_playerID'],
-					'playerName'=>$nextmgdata['playerName'],
-					'player_allianzenID'=>$nextmgdata['player_allianzenID'],
-					'allianzenTag'=>$nextmgdata['allianzenTag']
-				);
-			}
-			
-			
-			// kein schnellerer Weg gefunden
-			if(!$schneller) {
-				$tmpl->content = '
-					<br />
-					Der direkte Weg ist der schnellste: <b>'.flugdauer($entf_direkt, $_POST['antrieb']).'</b> bei A'.$_POST['antrieb'];
-			}
-			// es gibt einen schnelleren Weg
-			else {
-				$tmpl->content .= '
-					<br />
-					direkter Weg: <b>'.flugdauer($entf_direkt, $_POST['antrieb']).'</b> bei A'.$_POST['antrieb'].'
-					<br /><br />';
-				// Entfernung über Gate+Myrigate
-				if($entf_gate2 !== false AND $entf_gate2 < $entf_direkt AND ($entf_mgatemin === false OR $entf_gate2 < $entf_mgatemin)) {
-					$tmpl->content .= '
-					vom '.(isset($sprung[$nextmg]) ? 'Sprunggenerator' : 'Myrigate').' &nbsp; <b>'.mgateoutput($nextmg).'</b> &nbsp; zum Gate springen,
-					<br />
-					dann &uuml;ber '.(isset($sprung[$gate2]) ? 'Sprunggenerator' : 'Myrigate').' &nbsp; <b>'.mgateoutput($gate2).'</b> &nbsp; &rarr; &nbsp; <b>'.flugdauer($entf_gate2, $_POST['antrieb']).'</b>
-					<br /><br />';
-				}
-				// Entfernung über Gate
-				if($entf_gate !== false AND $entf_gate < $entf_direkt AND ($entf_mgatemin === false OR $entf_gate < $entf_mgatemin)) {
-					$tmpl->content .= '
-					vom '.(isset($sprung[$nextmg]) ? 'Sprunggenerator' : 'Myrigate').' &nbsp; <b>'.mgateoutput($nextmg).'</b> &nbsp; zum Gate springen,
-					<br />
-					danach direkt zum Ziel &nbsp; &rarr; &nbsp; <b>'.flugdauer($entf_gate, $_POST['antrieb']).'</b>
-					<br /><br />';
-				}
-				// Entfernung über 2 Myrigates
-				if($entf_mgate2 !== false AND $entf_mgate2 < $entf_direkt AND ($entf_mgatemin === false OR $entf_mgate2 < $entf_mgatemin)) {
-					$tmpl->content .= '
-					&uuml;ber '.(isset($sprung[$mgate2[0]]) ? 'Sprunggenerator' : 'Myrigate').' &nbsp; <b>'.mgateoutput($mgate2[0]).'</b>,
-					<br />
-					danach &uuml;ber '.(isset($sprung[$mgate2[1]]) ? 'Sprunggenerator' : 'Myrigate').' &nbsp; <b>'.mgateoutput($mgate2[1]).'</b> &nbsp; &rarr; &nbsp; <b>'.flugdauer($entf_mgate2, $_POST['antrieb']).'</b>
-					<br /><br />';
-				}
-				
-				// Entfernung über einfache Myrigates
-				asort($entf_mgate);
-				
-				$i = 1;
-				foreach($entf_mgate as $key=>$entf) {
-					// maximal 5 ausgeben
-					if($i > 5) break;
-					
-					$tmpl->content .= '
-					&uuml;ber '.(isset($sprung[$key]) ? 'Sprunggenerator' : 'Myrigate').' &nbsp; <b>'.mgateoutput($key).'</b> &nbsp; &rarr; &nbsp; <b>'.flugdauer($entf, $_POST['antrieb']).'</b>
-					<br />';
-					$i++;
-				}
-			}
-			
-			// Log-Eintrag
-			if($config['logging'] >= 2) {
-				insertlog(7, 'berechnet den schnellsten Weg von '.$_POST['start'].' nach '.$_POST['dest']);
-			}
-		}
-	}
+	
+	$weg = new SchnellsterWeg();
+	$weg->compute();
+	
 	// Ausgabe
-	if($tmpl->error) $tmpl->error = '<br />'.$tmpl->error;
+	if($weg->error) {
+		$tmpl->error = '<br />'.$weg->error;
+	}
+	else {
+		$tmpl->content = $weg->content;
+		
+		// Log-Eintrag
+		if($config['logging'] >= 2) {
+			insertlog(7, 'berechnet den schnellsten Weg von '.$_POST['start'].' nach '.$_POST['dest']);
+		}
+	}
+	
 	$tmpl->output();
 }
 
