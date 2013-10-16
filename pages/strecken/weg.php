@@ -322,7 +322,7 @@ class SchnellsterWeg {
 			$points[$key] = $val;
 		
 			// Fehler
-			if(!is_array($val) AND !$tmpl->error) {
+			if(!is_array($val) AND !$this->error) {
 				if($val == 'coords') {
 					$this->error = 'Ung&uuml;ltige Koordinaten beim '.$name.' eingegeben!';
 				}
