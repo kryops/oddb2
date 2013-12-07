@@ -1,10 +1,11 @@
-﻿/*
+/*
  * Gespeicherte Einstellungen ins Formular übernehmen
  */
 $(document).ready(function() {
 	
 	var prefs = {
 		"url": "http://oddb.kryops.de/",
+        "pid": "",
 		"fow": true,
 		"auto_poview": true,
 		"auto_planet": true,
@@ -28,6 +29,7 @@ $(document).ready(function() {
 			$('#'+i).prop('checked', true);
 		}
 	}
+    $('#pid').val(prefs.pid);
 	
 	
 	/*
@@ -48,6 +50,8 @@ $(document).ready(function() {
 		if(newprefs['url'].indexOf('://') == -1) {
 			newprefs['url'] = 'http://'+newprefs['url'];
 		}
+        
+        newprefs['pid'] = $('#pid').val();
 		
 		// Checkbox-Einstellungen übernehmen
 		var boolprefs = [

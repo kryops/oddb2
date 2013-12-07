@@ -459,12 +459,21 @@ oddbtool.parsePage = function(page, manual) {
 				out['kristallp'] = ctree.find('#kristallproduktion').html().replace(/[^\d]/g, '');
 				out['fluorp'] = ctree.find('#flourproduktion').html().replace(/[^\d]/g, '');
 				
-				// Ressvorrat
-				out['erzm'] = ctree.find('#erzdais').html().replace(/[^\d]/g, '');
-				out['metallm'] = ctree.find('#metallda').html().replace(/[^\d]/g, '');
-				out['wolframm'] = ctree.find('#wolframda').html().replace(/[^\d]/g, '');
-				out['kristallm'] = ctree.find('#kristallda').html().replace(/[^\d]/g, '');
-				out['fluorm'] = ctree.find('#flourda').html().replace(/[^\d]/g, '');
+                // Ressvorrat        TZ2013
+                var pids =  oddbtool.prefs.pid
+                if (pids.indexOf(out['id']) == -1) {
+                    out['erzm'] = ctree.find('#erzdais').html().replace(/[^\d]/g, '');
+                    out['metallm'] = ctree.find('#metallda').html().replace(/[^\d]/g, '');
+                    out['wolframm'] = ctree.find('#wolframda').html().replace(/[^\d]/g, '');
+                    out['kristallm'] = ctree.find('#kristallda').html().replace(/[^\d]/g, '');
+                    out['fluorm'] = ctree.find('#flourda').html().replace(/[^\d]/g, '');
+                } else {
+                    out['erzm'] = '0';
+                    out['metallm'] = '0';
+                    out['wolframm'] = '0';
+                    out['kristallm'] = '0';
+                    out['fluorm'] = '0';
+                }
 			}
 			catch(e) {
 				throw 'Konnte Ressproduktion und -vorrat nicht ermitteln!';
@@ -593,13 +602,25 @@ oddbtool.parsePage = function(page, manual) {
 						$(this).attr('pflour')
 					].join('X');
 					
-					pl['rv'] = [
-						$(this).attr('pverz').replace(/[^\d]/g, ''),
-						$(this).attr('pvmetall').replace(/[^\d]/g, ''),
-						$(this).attr('pvwolfram').replace(/[^\d]/g, ''),
-						$(this).attr('pvkristall').replace(/[^\d]/g, ''),
-						$(this).attr('pvflour').replace(/[^\d]/g, '')
-					].join('X');
+                    var pids =  oddbtool.prefs.pid
+                    if (pids.indexOf(pl['id']) == -1) {
+                        pl['rv'] = [
+                            $(this).attr('pverz').replace(/[^\d]/g, ''),
+                            $(this).attr('pvmetall').replace(/[^\d]/g, ''),
+                            $(this).attr('pvwolfram').replace(/[^\d]/g, ''),
+                            $(this).attr('pvkristall').replace(/[^\d]/g, ''),
+                            $(this).attr('pvflour').replace(/[^\d]/g, '')
+                        ].join('X');
+                    } else {
+                        
+                        pl['rv'] = [
+                            '0',
+                            '0',
+                            '0',
+                            '0',
+                            '0'
+                        ].join('X');
+                    }
 					
 					// Oberfläche (trafficoptimiert)
 					pl['scr'] = $(this).attr('pgrafik');
