@@ -47,6 +47,7 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
 	// Default-Einstellungen
 	var prefs = {
 		"url": "http://oddb.kryops.de/",
+        "pid": "",
 		"fow": true,
 		"auto_poview": true,
 		"auto_planet": true,
