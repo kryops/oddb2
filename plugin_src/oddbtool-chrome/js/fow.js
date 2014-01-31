@@ -269,18 +269,7 @@ oddbtool.fow = function(page, data) {
 							data['pl'][i]['groesse'] = '<span style="color:red">unbewohnbar</span>';
 							data['pl'][i]['bev'] = "0";
 						}
-                        
-                        // Punkte berechnen
-                        var plpunkte = 0;
-                        var maxresswert = parseFloat(data['pl'][i]['erz']);
-                        if (parseFloat(data['pl'][i]['wolfram']) > maxresswert) { maxresswert = parseFloat(data['pl'][i]['wolfram']); }
-                        if (parseFloat(data['pl'][i]['kristall']) > maxresswert) { maxresswert = parseFloat(data['pl'][i]['kristall']); }
-                        if (parseFloat(data['pl'][i]['fluor']) <= maxresswert) {
-                            plpunkte = parseFloat(data['pl'][i]['groesse'] * data['pl'][i]['bev'].replace('.','').replace('.','') / 100000) + parseFloat(maxresswert) + parseFloat(data['pl'][i]['fluor']);    
-                        } else {
-                            plpunkte = parseFloat(data['pl'][i]['groesse'] * data['pl'][i]['bev'].replace('.','').replace('.','') / 100000) + (2 * parseFloat(data['pl'][i]['fluor']));
-                        }
-                  
+						
 						tooltip += '<table style="border:0;padding:0;margin:0;width:auto"><tr><td><img src="http://static.omega-day.com/img/research/ress_ore_small.gif"></td>' +
 									'<td style="padding-left:10px;white-space:nowrap">'+data['pl'][i]['erz']+' %</td><td style="padding-left:10px">'+data['pl'][i]['erzmenge']+'</td></tr>' +
 									'<tr><td><img src="http://static.omega-day.com/img/research/ress_steel_small.gif"></td><td style="padding-left:10px;white-space:nowrap">'+data['pl'][i]['erz']+' %</td>' +
@@ -294,10 +283,10 @@ oddbtool.fow = function(page, data) {
 									(data['pl'][i]['bev'] && data['pl'][i]['bev'] != '0' ? '<br>Bev&ouml;lkerung: '+data['pl'][i]['bev'] : '') + 
 									'<br>Gr&ouml;&szlig;e: '+data['pl'][i]['groesse'] + 
 									(data['pl'][i]['orbiter'] && data['pl'][i]['orbiter'] > 0 ? '<br>Orbiter-Angriff: '+data['pl'][i]['orbiter'] : '') + 
-									'<br><br>'+data['pl'][i]['additional']+'<br>Punkte: ' + plpunkte;
+									'<br><br>'+data['pl'][i]['additional'];
 						
 						data['pl'][i]['name'] = oddbtool.str_replace(oddbtool.charmap_search, oddbtool.charmap_replace, data['pl'][i]['name']);
-						tooltip = tooltip.replace(/'/g, "\\'");                                                                          
+						tooltip = tooltip.replace(/'/g, "\\'");
 						tooltip = tooltip.replace(/"/g, '&quot;');
 						
 						// Kommentar?
