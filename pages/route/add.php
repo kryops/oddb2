@@ -431,6 +431,8 @@ else if($_GET['sp'] == 'add') {
 									ON systemeID = planeten_systemeID" : "")."
 								LEFT JOIN ".GLOBPREFIX."player
 									ON playerID = planeten_playerID
+								LEFT JOIN ".GLOBPREFIX."allianzen
+									ON allianzenID = player_allianzenID
 							WHERE
 								".implode(" AND ", $conds)."
 							LIMIT 4000
