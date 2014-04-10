@@ -1,6 +1,6 @@
 {
   "name": "ODDB Tool",
-  "version": "2.3.4.2",
+  "version": "2.3.5",
   "manifest_version": 2,
   "description": "Das Chrome-Addon für die ODDB V2",
   "homepage_url": "http://www.kryops.de",
@@ -47,6 +47,7 @@
   
   "web_accessible_resources": [
 		"img/fowsprite32.png",
-		"img/gebaeude_small.png"
+		"img/gebaeude_small.png",
+		"options.html"
   ]
 }

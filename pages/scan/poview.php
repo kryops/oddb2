@@ -80,6 +80,7 @@ foreach($_POST['pl'] as $key=>$data) {
 	$_POST['pl'][$key]['typ'] = (int)$data['typ'];
 	$_POST['pl'][$key]['gpl'] = array();
 	$_POST['pl'][$key]['gor'] = array();
+	$_POST['pl'][$key]['gspec'] = array();
 
 	for($i=1; $i<=36; $i++) {
 		if(!isset($data['s'.$i])) {
@@ -96,9 +97,18 @@ foreach($_POST['pl'] as $key=>$data) {
 		
 		$_POST['pl'][$key]['gor'][] = $data['s'.$i];
 	}
+	
+	for($i=49; $i<=58; $i++) {
+		if(!isset($data['s'.$i])) {
+			break;
+		}
+	
+		$_POST['pl'][$key]['gspec'][] = $data['s'.$i];
+	}
 
 	$_POST['pl'][$key]['gpl'] = implode('+', $_POST['pl'][$key]['gpl']);
 	$_POST['pl'][$key]['gor'] = implode('+', $_POST['pl'][$key]['gor']);
+	$_POST['pl'][$key]['gspec'] = implode('+', $_POST['pl'][$key]['gspec']);
 	
 	
 	// laufende Aktionen mappen
@@ -222,16 +232,11 @@ foreach($_POST['pl'] as $data) {
 		
 		// Kategorie ermitteln
 		$gor = explode('+', $data['gor']);
-		$cat = categorize(explode('+', $data['gpl']), $gor, $data['gr']);
+		$gspec = explode('+', $data['gspec']);
+		$cat = categorize(explode('+', $data['gpl']), $gor, $gspec, $data['gr']);
 		
 		// Orbiter
-		$orb = 0;
-		
-		foreach($gor as $geb) {
-			if(isset($orbiter[$geb])) {
-				$orb += $orbiter[$geb];
-			}
-		}
+		$orb = orbitAngriff($gor, $gspec);
 		
 		// Werftbelieferer entfernen, wenn Bedarf gedeckt
 		$werftBelieferer = "";
@@ -302,6 +307,7 @@ foreach($_POST['pl'] as $data) {
 				planetenRMGesamt = ".array_sum($data['rv']).",
 				planetenGebPlanet = '".$data['gpl']."',
 				planetenGebOrbit = '".$data['gor']."',
+				planetenGebSpezial = '".$data['gspec']."',
 				planetenOrbiter = ".$orb.",
 				".$his."
 				".$werftBelieferer."

@@ -266,9 +266,10 @@ class ODDBApi {
 					'kommentar' => $row['planetenKommentar'],
 					
 					'scan' => (($row['planetenUpdateOverview'] AND Rechte::getRechteShowPlanet($row)) ? array(
-						'url' => odscreen($row['planetenTyp'], $row['planetenGebPlanet'], $row['planetenGebOrbit']),
+						'url' => odscreen($row['planetenTyp'], $row['planetenGebPlanet'], $row['planetenGebOrbit'], $row['planetenGebSpezial']),
 						'planet' => $row['planetenGebPlanet'],
 						'orbit' => $row['planetenGebOrbit'],
+						'spezial' => $row['planetenGebSpezial'],
 						'orbiter' => $row['planetenOrbiter']
 					) : false),
 					

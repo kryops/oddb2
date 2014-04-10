@@ -77,13 +77,10 @@ for($i=1;$i<=36;$i++) {
 	if($_POST['g'.$i] != '') {
 		$geb = array_search($_POST['g'.$i], $gebaeude);
 		if($geb !== false) $gpl[] = $geb;
-		else $gpl[] = '-4';
+		else $gpl[] = '-5';
 	}
 	//else $gpl[] = '';  --> Platz sparen
 }
-
-// Orbiter
-$orb = 0;
 
 // Gebäude im Orbit
 $gor = array();
@@ -92,14 +89,24 @@ for($i=1;$i<=12;$i++) {
 		$geb = array_search($_POST['o'.$i], $gebaeude);
 		if($geb !== false) {
 			$gor[] = $geb;
-			// Orbiter-Angriff
-			if(isset($orbiter[$geb])) {
-				$orb += $orbiter[$geb];
-			}
 		}
-		else $gor[] = '-4';
+		else $gor[] = '-5';
 	}
 }
+
+// Spezialgebäude
+$gspec = array();
+for($i=1;$i<=10;$i++) {
+	if($_POST['s'.$i] != '') {
+		$geb = array_search($_POST['s'.$i], $gebaeude);
+		if($geb !== false) {
+			$gspec[] = $geb;
+		}
+		else $gspec[] = '-5';
+	}
+}
+
+$orb = orbitAngriff($gor, $gspec);
 
 // Schiffbau
 $werftfinish = 0;
@@ -147,7 +154,7 @@ else {
 	}
 	
 	// Kategorie ermitteln
-	$cat = categorize($gpl, $gor, $_POST['groesse']);
+	$cat = categorize($gpl, $gor, $gspec, $_POST['groesse']);
 	
 	// gesamte Ressproduktion und Ressmenge berechnen
 	$rp = $_POST['erzp']+$_POST['metallp']+$_POST['wolframp']+$_POST['kristallp']+$_POST['fluorp'];
@@ -255,6 +262,7 @@ else {
 			planetenRMGesamt = ".$rm.",
 			planetenGebPlanet = '".implode('+', $gpl)."',
 			planetenGebOrbit = '".implode('+', $gor)."',
+			planetenGebSpezial = '".implode('+', $gspec)."',
 			planetenOrbiter = ".$orb.",
 			".$getoxxt."
 			".$inhaber."

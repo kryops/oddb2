@@ -292,6 +292,10 @@ else if($_GET['sp'] == 'api') {
 			<td>String, der die Geb&auml;ude-IDs des Orbits enth&auml;lt; durch + getrennt</td>
 		</tr>
 		<tr>
+			<td>spezial</td>
+			<td>String, der die Geb&auml;ude-IDs der Spezialgeb&auml;ude enth&auml;lt; durch + getrennt</td>
+		</tr>
+		<tr>
 			<td>orbiter</td>
 			<td>Summierter Orbiter-Angriff</td>
 		</tr>

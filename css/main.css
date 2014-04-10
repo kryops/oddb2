@@ -1082,7 +1082,7 @@ hr {
 
 .sysshowplgebt {
 	width:100px;
-	padding:8px 0px;
+	padding:0 0 8px 0;
 	margin:auto;
 	background-position:3px 3px;
 	background-repeat:no-repeat;
@@ -1091,6 +1091,10 @@ hr {
 .sysshoworgebt {
 	width:100px;
 	margin:auto;
+}
+
+.sysshoworgebt.special {
+	width:160px;
 }
 
 .sysshoworgebt2{
@@ -1160,15 +1164,15 @@ hr {
 
 .plshowc {
 	position:relative;
-	width:400px;
-	height:285px;
+	width:500px;
+	height:335px;
 	padding:4px;
 	margin:auto;
 }
 
 .plshowp {
 	position:absolute;
-	top:4px;
+	top:54px;
 	left:104px;
 	width:300px;
 	height:270px;
@@ -1187,6 +1191,10 @@ hr {
 	width:50px;
 	height:45px;
 	padding:0px;
+}
+
+.plshowt.special {
+	width:500px;
 }
 
 /* Suche */
@@ -1281,7 +1289,7 @@ hr {
 }
 
 .plscreentt {
-	width:135px;
+	width:160px;
 	padding:0px 5px 5px 5px;
 	background-image:url(../img/layout/bg.gif);
 }
@@ -1389,12 +1397,12 @@ hr {
 
 .fowsearch1 {
 	float:left;
-	width:225px;
+	width:235px;
 }
 
 .fowsearch2 {
 	text-align:center;
-	margin-left:235px;
+	margin-left:240px;
 	margin-right:40px;
 	padding:0.5em 0;
 	line-height:2em;

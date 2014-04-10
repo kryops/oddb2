@@ -166,6 +166,7 @@ $query = query("
 		planetenUpdate,
 		planetenGebPlanet,
 		planetenGebOrbit,
+		planetenGebSpezial,
 		planetenKommentar,
 		
 		systemeX,

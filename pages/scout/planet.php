@@ -166,6 +166,7 @@ else {
 					planetenUnscannbar,
 					planetenGebPlanet,
 					planetenGebOrbit,
+					planetenGebSpezial,
 					planetenKategorie,
 					planetenRMErz,
 					planetenRMMetall,

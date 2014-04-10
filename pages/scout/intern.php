@@ -84,7 +84,7 @@ else if($user->allianz) {
 				<td>'.datatable::galaxie($row['systeme_galaxienID'], $row['systemeX'], $row['systemeZ']).'</td>
 				<td>'.datatable::system($row['systemeID'], $t).'</td>
 					<td>'.datatable::scan($row['systemeUpdate'], $config['scan_veraltet_ally']).'</td>
-				<td><a href="'.($user->odServer != '' ? $user->odServer : 'http://www.omega-day.com').'/game/index.php?op=system&amp;sys='.$row['systemeID'].'" target="_blank" data-sys="'.$row['systemeID'].'">[in OD &ouml;ffnen]</a></td>
+				<td><a href="'.($user->odServer != '' ? $user->odServer : 'http://www.omega-day.com').'/game/?op=system&amp;sys='.$row['systemeID'].'" target="_blank" data-sys="'.$row['systemeID'].'">[in OD &ouml;ffnen]</a></td>
 			</tr>';
 			
 			$sids[] = $row['systemeID'];
@@ -173,7 +173,7 @@ if($user->allianz) {
 				<td>'.datatable::galaxie($row['systeme_galaxienID'], $row['systemeX'], $row['systemeZ']).'</td>
 				<td>'.datatable::system($row['systemeID'], $t).'</td>
 					<td>'.datatable::scan($row['systemeUpdate'], $config['scan_veraltet_ally']).'</td>
-				<td><a href="'.($user->odServer != '' ? $user->odServer : 'http://www.omega-day.com').'/game/index.php?op=system&amp;sys='.$row['systemeID'].'" target="_blank" data-sys="'.$row['systemeID'].'">[in OD &ouml;ffnen]</a></td>
+				<td><a href="'.($user->odServer != '' ? $user->odServer : 'http://www.omega-day.com').'/game/?op=system&amp;sys='.$row['systemeID'].'" target="_blank" data-sys="'.$row['systemeID'].'">[in OD &ouml;ffnen]</a></td>
 			</tr>';
 			
 			$sids[] = $row['systemeID'];

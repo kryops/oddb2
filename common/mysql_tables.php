@@ -232,6 +232,7 @@ $tables_add = array(
   `planetenKategorie` smallint(5) unsigned NOT NULL DEFAULT 0,
   `planetenGebPlanet` varchar(255) NOT NULL,
   `planetenGebOrbit` varchar(100) NOT NULL,
+  `planetenGebSpezial` varchar(100) NOT NULL,
   `planetenOrbiter` tinyint(3) unsigned NOT NULL DEFAULT 0,
   `planetenMyrigate` int(10) unsigned NOT NULL DEFAULT 0,
   `planetenRiss` int(10) unsigned NOT NULL DEFAULT 0,

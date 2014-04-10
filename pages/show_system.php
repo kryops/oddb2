@@ -149,6 +149,7 @@ else if($_GET['sp'] == '') {
 				planetenBevoelkerung,
 				planetenGebPlanet,
 				planetenGebOrbit,
+				planetenGebSpezial,
 				planetenMyrigate,
 				planetenRiss,
 				planetenRWErz,
@@ -499,13 +500,13 @@ else if($_GET['sp'] == '') {
 						}
 						$tt .= '&lt;/div&gt;';
 					}
-					$tt .= '&lt;table class=&quot;showsysresst&quot;&gt; &lt;tr&gt; &lt;td&gt;&lt;div class=&quot;ress erz&quot;&gt;&lt;/div&gt;&lt;/td&gt; &lt;td&gt;'.$pl['planetenRWErz'].'%&lt;/td&gt; &lt;td&gt;'.($pl['planetenUpdateOverview'] ? ressmenge($pl['planetenRMErz']) : '').'&lt;/td&gt; &lt;/tr&gt; &lt;tr&gt; &lt;td&gt;&lt;div class=&quot;ress metall&quot;&gt;&lt;/div&gt;&lt;/td&gt; &lt;td&gt;'.$pl['planetenRWErz'].'%&lt;/td&gt; &lt;td&gt;'.($pl['planetenUpdateOverview'] ? ressmenge($pl['planetenRMMetall']) : '').'&lt;/td&gt; &lt;/tr&gt; &lt;tr&gt; &lt;td&gt;&lt;div class=&quot;ress wolfram&quot;&gt;&lt;/div&gt;&lt;/td&gt; &lt;td&gt;'.$pl['planetenRWWolfram'].'%&lt;/td&gt; &lt;td&gt;'.($pl['planetenUpdateOverview'] ? ressmenge($pl['planetenRMWolfram']) : '').'&lt;/td&gt; &lt;/tr&gt; &lt;tr&gt; &lt;td&gt;&lt;div class=&quot;ress kristall&quot;&gt;&lt;/div&gt;&lt;/td&gt; &lt;td&gt;'.$pl['planetenRWKristall'].'%&lt;/td&gt; &lt;td&gt;'.($pl['planetenUpdateOverview'] ? ressmenge($pl['planetenRMKristall']) : '').'&lt;/td&gt; &lt;/tr&gt; &lt;tr&gt; &lt;td&gt;&lt;div class=&quot;ress fluor&quot;&gt;&lt;/div&gt;&lt;/td&gt; &lt;td&gt;'.$pl['planetenRWFluor'].'%&lt;/td&gt; &lt;td&gt;'.($pl['planetenUpdateOverview'] ? ressmenge($pl['planetenRMFluor']) : '').'&lt;/td&gt; &lt;/tr&gt; &lt;/table&gt; '.(trim($pl['planetenKommentar']) != '' ? '&lt;br /&gt;&lt;br /&gt; Kommentar: '.htmlspecialchars(nl2br(htmlspecialchars($pl['planetenKommentar'], ENT_QUOTES, 'UTF-8')), ENT_QUOTES, 'UTF-8') : '').($pl['planetenNatives'] ? '&lt;br /&gt;&lt;br /&gt; &lt;b&gt;'.$pl['planetenNatives'].' Natives&lt;/b&gt;' : '');
+					$tt .= '&lt;table class=&quot;showsysresst&quot;&gt; &lt;tr&gt; &lt;td&gt;&lt;div class=&quot;ress erz&quot;&gt;&lt;/div&gt;&lt;/td&gt; &lt;td&gt;'.$pl['planetenRWErz'].'%&lt;/td&gt; &lt;td&gt;'.($pl['planetenUpdateOverview'] ? ressmenge($pl['planetenRMErz']) : '').'&lt;/td&gt; &lt;/tr&gt; &lt;tr&gt; &lt;td&gt;&lt;div class=&quot;ress metall&quot;&gt;&lt;/div&gt;&lt;/td&gt; &lt;td&gt;100%&lt;/td&gt; &lt;td&gt;'.($pl['planetenUpdateOverview'] ? ressmenge($pl['planetenRMMetall']) : '').'&lt;/td&gt; &lt;/tr&gt; &lt;tr&gt; &lt;td&gt;&lt;div class=&quot;ress wolfram&quot;&gt;&lt;/div&gt;&lt;/td&gt; &lt;td&gt;'.$pl['planetenRWWolfram'].'%&lt;/td&gt; &lt;td&gt;'.($pl['planetenUpdateOverview'] ? ressmenge($pl['planetenRMWolfram']) : '').'&lt;/td&gt; &lt;/tr&gt; &lt;tr&gt; &lt;td&gt;&lt;div class=&quot;ress kristall&quot;&gt;&lt;/div&gt;&lt;/td&gt; &lt;td&gt;'.$pl['planetenRWKristall'].'%&lt;/td&gt; &lt;td&gt;'.($pl['planetenUpdateOverview'] ? ressmenge($pl['planetenRMKristall']) : '').'&lt;/td&gt; &lt;/tr&gt; &lt;tr&gt; &lt;td&gt;&lt;div class=&quot;ress fluor&quot;&gt;&lt;/div&gt;&lt;/td&gt; &lt;td&gt;'.$pl['planetenRWFluor'].'%&lt;/td&gt; &lt;td&gt;'.($pl['planetenUpdateOverview'] ? ressmenge($pl['planetenRMFluor']) : '').'&lt;/td&gt; &lt;/tr&gt; &lt;/table&gt; '.(trim($pl['planetenKommentar']) != '' ? '&lt;br /&gt;&lt;br /&gt; Kommentar: '.htmlspecialchars(nl2br(htmlspecialchars($pl['planetenKommentar'], ENT_QUOTES, 'UTF-8')), ENT_QUOTES, 'UTF-8') : '').($pl['planetenNatives'] ? '&lt;br /&gt;&lt;br /&gt; &lt;b&gt;'.$pl['planetenNatives'].' Natives&lt;/b&gt;' : '');
 					
 					// keine Berechtigung
 					if(!$r) {
 						$tmpl->content .= '
 					<td'.($pl['playerDeleted'] ? ' style="opacity:0.5;filter:alpha(opacity=50)"' : '').'>
-						<div style="height:27px"></div>
+						<div style="height:54px"></div>
 						<img src="img/planeten/'.$pl['planetenTyp'].'.jpg" width="100" height="100" alt="" />
 						<span class="red">keine Berechtigung</span>';
 					}
@@ -513,7 +514,7 @@ else if($_GET['sp'] == '') {
 					else if(!$pl['planetenUpdateOverview']) {
 						$tmpl->content .= '
 					<td'.($pl['playerDeleted'] ? ' style="opacity:0.5;filter:alpha(opacity=50)"' : '').'>
-						<div style="height:27px"></div>
+						<div style="height:54px"></div>
 						<img src="img/planeten/'.$pl['planetenTyp'].'.jpg" width="100" height="100" alt="" class="link winlink contextmenu tooltip" data-link="index.php?p=show_planet&amp;id='.$pl['planetenID'].'&amp;ajax" data-tooltip="'.$tt.'" />';
 						// Kommentar-Icon
 						if(trim($pl['planetenKommentar']) != '') {
@@ -532,6 +533,7 @@ else if($_GET['sp'] == '') {
 						// Gebäude-Positionen ermitteln
 						$gpl = gebaeude($pl['planetenGebPlanet'], $pl['planetenGroesse'], true);
 						$gor = gebaeude($pl['planetenGebOrbit'], false, true);
+						$gspec = gebaeude($pl['planetenGebSpezial'], false, true);
 						
 						// Scan-Farbe
 						$tmpl->content .= '
@@ -556,6 +558,24 @@ else if($_GET['sp'] == '') {
 							<td style="background-position:-'.$gor[10].'px 0px"></td>
 							<td style="background-position:-'.$gor[11].'px 0px"></td>
 							<td style="background-position:-'.$gor[12].'px 0px"></td>
+						</tr>
+						</table>
+						<table class="sysshoworgebt">
+						<tr>
+							<td style="background-position:-'.$gspec[1].'px 0px"></td>
+							<td style="background-position:-'.$gspec[2].'px 0px"></td>
+							<td style="background-position:-'.$gspec[3].'px 0px"></td>
+							<td style="background-position:-'.$gspec[4].'px 0px"></td>
+							<td style="background-position:-'.$gspec[5].'px 0px"></td>
+							<td style="background-position:-'.$gspec[6].'px 0px"></td>
+						</tr>
+						<tr>
+							<td style="background-position:-'.$gspec[7].'px 0px"></td>
+							<td style="background-position:-'.$gspec[8].'px 0px"></td>
+							<td style="background-position:-'.$gspec[9].'px 0px"></td>
+							<td style="background-position:-'.$gspec[10].'px 0px"></td>
+							<td></td>
+							<td></td>
 						</tr>
 						</table>
 						<table class="sysshowplgebt" style="background-image:url(img/planeten/'.$pl['planetenTyp'].'.jpg)">
@@ -1239,7 +1259,7 @@ else if($_GET['sp'] == '') {
 	// in OD öffnen
 	$tmpl->content .= '
 	<div>
-		<a href="'.($user->odServer != '' ? $user->odServer : 'http://www.omega-day.com').'/game/index.php?op=system&amp;sys='.$_GET['id'].'" target="_blank">System in OD &ouml;ffnen</a>
+		<a href="'.($user->odServer != '' ? $user->odServer : 'http://www.omega-day.com').'/game/?op=system&amp;sys='.$_GET['id'].'" target="_blank">System in OD &ouml;ffnen</a>
 	</div>';
 	// auf Karte anzeigen
 	if($user->rechte['karte']) {

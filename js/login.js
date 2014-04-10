@@ -71,8 +71,10 @@ function login() {
 				}
 			},
 			error: function(e, msg) {
+				var content = e.responseText.replace(/<\?xml([.\s]*)$/, '');
+				
 				// Fehlermeldung ausgeben
-				$('#loginerror').html('Es ist ein Fehler aufgetreten!<br /><br />Fehlermeldung: '+msg+' '+e.status+'<br /><br />');
+				$('#loginerror').html('Es ist ein Fehler aufgetreten!<br /><br />Fehlermeldung: '+msg+' '+e.status+'<br /><br />' + content);
 				
 				// Formular-Buttons reaktivieren
 				$('input[type=button], input[type=submit]', f).removeAttr('disabled');

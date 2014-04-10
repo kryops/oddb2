@@ -54,8 +54,7 @@ class Search {
 		36=>'systemeUpdate',
 		37=>'FLOOR(
 				(planetenBevoelkerung/100000) * planetenGroesse
-				+ GREATEST(planetenRWErz, planetenRWWolfram, planetenRWKristall, planetenRWFluor)
-				+ planetenRWFluor
+				+ GREATEST(planetenRWErz, planetenRWWolfram, planetenRWKristall, planetenRWFluor, 100)
 			)',
 		38=>'planetenOrbiter'
 	);
@@ -306,7 +305,7 @@ class Search {
 		<tr>
 			<td>Werte</td>
 			<td><input type="text" class="smalltext" name="rwe" value="'.(isset($filter['rwe']) ? htmlspecialchars($filter['rwe'], ENT_COMPAT, 'UTF-8') : '').'" /></td>
-			<td class="small hint center" style="white-space:nowrap">(= Erz-Wert)</td>
+			<td class="small hint center" style="white-space:nowrap">(= 100)</td>
 			<td><input type="text" class="smalltext" name="rww" value="'.(isset($filter['rww']) ? htmlspecialchars($filter['rww'], ENT_COMPAT, 'UTF-8') : '').'" /></td>
 			<td><input type="text" class="smalltext" name="rwk" value="'.(isset($filter['rwk']) ? htmlspecialchars($filter['rwk'], ENT_COMPAT, 'UTF-8') : '').'" /></td>
 			<td><input type="text" class="smalltext" name="rwf" value="'.(isset($filter['rwf']) ? htmlspecialchars($filter['rwf'], ENT_COMPAT, 'UTF-8') : '').'" /></td>
@@ -662,7 +661,7 @@ class Search {
 		// Gebäude
 		if(count($searchgeb)) {
 			foreach($searchgeb as $geb) {
-				$conds[] = "(planetenGebPlanet LIKE '%".$geb."%' OR planetenGebOrbit LIKE '%".$geb."%')";
+				$conds[] = "(planetenGebPlanet LIKE '%".$geb."%' OR planetenGebOrbit LIKE '%".$geb."%' OR planetenGebSpezial LIKE '%".$geb."%')";
 			}
 		}
 		// Myrigate
@@ -1398,6 +1397,7 @@ class Search {
 				planetenKategorie,
 				planetenGebPlanet,
 				planetenGebOrbit,
+				planetenGebSpezial,
 				planetenMyrigate,
 				planetenRiss,
 				planetenGateEntf,

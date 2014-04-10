@@ -207,6 +207,7 @@ $query = query("
 		planetenUnscannbar,
 		planetenGebPlanet,
 		planetenGebOrbit,
+		planetenGebSpezial,
 		planetenKommentar,
 		
 		systemeX,

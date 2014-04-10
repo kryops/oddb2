@@ -151,6 +151,7 @@ else {
 			planetenKategorie,
 			planetenGebPlanet,
 			planetenGebOrbit,
+			planetenGebSpezial,
 			planetenOrbiter,
 			
 			planetenRMErz,
@@ -227,26 +228,27 @@ else {
 							(int)$row['planetenKategorie'], 	// 14
 							$row['planetenGebPlanet'], 			// 15
 							$row['planetenGebOrbit'], 			// 16
-							(int)$row['planetenOrbiter'], 		// 17
+							$row['planetenGebSpezial'], 		// 17
+							(int)$row['planetenOrbiter'], 		// 18
 								
-							(int)$row['planetenRMErz'], 		// 18
-							(int)$row['planetenRMMetall'], 		// 19
-							(int)$row['planetenRMWolfram'], 	// 20
-							(int)$row['planetenRMKristall'], 	// 21
-							(int)$row['planetenRMFluor'] 		// 22
+							(int)$row['planetenRMErz'], 		// 19
+							(int)$row['planetenRMMetall'], 		// 20
+							(int)$row['planetenRMWolfram'], 	// 21
+							(int)$row['planetenRMKristall'], 	// 22
+							(int)$row['planetenRMFluor'] 		// 23
 					));
 				}
 					
 				if($row['planetenUpdate']) {
 					$o = array_merge($o, array(
-							(int)$row['planetenForschung'], 	// 23
-							(int)$row['planetenIndustrie'], 	// 24
+							(int)$row['planetenForschung'], 	// 24
+							(int)$row['planetenIndustrie'], 	// 25
 								
-							(int)$row['planetenRPErz'], 		// 25
-							(int)$row['planetenRPMetall'], 		// 26
-							(int)$row['planetenRPWolfram'], 	// 27
-							(int)$row['planetenRPKristall'], 	// 28
-							(int)$row['planetenRPFluor'], 		// 29
+							(int)$row['planetenRPErz'], 		// 26
+							(int)$row['planetenRPMetall'], 		// 27
+							(int)$row['planetenRPWolfram'], 	// 28
+							(int)$row['planetenRPKristall'], 	// 29
+							(int)$row['planetenRPFluor'] 		// 30
 					));
 				}
 				

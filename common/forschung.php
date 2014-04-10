@@ -11,7 +11,7 @@ class Forschung {
 	/**
 	 * Grafikpfad-Wurzel
 	 */
-	public static $baseUrl = 'http://static.omega-day.com/img/';
+	public static $baseUrl = 'http://omega-day.com/static/img/';
 	
 	public static $kategorien = array(
 		1 => 'Gebäude',

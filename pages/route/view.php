@@ -243,6 +243,7 @@ else {
 				planetenUnscannbar,
 				planetenGebPlanet,
 				planetenGebOrbit,
+				planetenGebSpezial,
 				planetenKategorie,
 				planetenGeraidet,
 				planetenGetoxxt,

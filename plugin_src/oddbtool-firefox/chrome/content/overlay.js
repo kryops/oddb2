@@ -7,8 +7,8 @@ var oddbtool = {
 	/**
 	 * Version
 	 */
-	version: '2.3.4.1',
-	odworld: 'int11',
+	version: '2.3.5',
+	odworld: 'int12',
 	
 	
 	jqueryload: false,
@@ -41,7 +41,7 @@ var oddbtool = {
 		'-1':16,
 		'-2':32,
 		'-3':48,
-		'-4':64,
+		'-5':64,
 		1000:80,
 		1001:96,
 		1002:112,
@@ -99,7 +99,34 @@ var oddbtool = {
 		1054:928,
 		1055:976,
 		1056:960,
-		1057:768
+		1057:768,
+		
+		1200:992,
+		1201:1008,
+		1202:1024,
+		1203:1040,
+		1205:1056,
+		1206:1072,
+		1207:1088,
+		1208:1104,
+		1210:1120,
+		1211:1136,
+		1216:1152,
+		1217:1168,
+		1218:1184,
+		1220:1200,
+		1221:1216,
+		1223:1232,
+		1224:1248,
+		1225:1264,
+		1230:1280,
+		1234:1296,
+		
+		1500:1312,
+		1501:1328,
+		1502:1344,
+		
+		'-4':1360
 	},
 	
 	// Rassen-Suchmuster und Klassennamen
@@ -406,6 +433,8 @@ var oddbtool = {
 		'#oddbtoolfowtbl th{background-color:rgba(255,255,255,0.1); text-align:left; font-weight:bold;}',
 		'#oddbtoolfowtbl td:first-child{font-weight:bold; padding-left:8px;}',
 		'#oddbtooliframe {display:none}',
+		
+		'@media screen and (max-width:1024px) {#oddbtoolfowtbl {left:50px; top:550px;}}',
 		
 		'.oddbtoolplanet {position:absolute; width:100px; background-position:3px -3px; background-repeat:no-repeat; font-size:11px}',
 		'.oddbtoolorbit {position:relative;background-color:rgba(0,0,0,0.5);top:-72px;left:0px;text-align:center;font-size:11px !important}',

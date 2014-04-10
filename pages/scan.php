@@ -21,11 +21,12 @@ if(!defined('ODDB')) die('unerlaubter Zugriff!');
  * Planeten anhand der Bebauung kategorisieren
  * @param $gpl string/array Gebäude auf dem Planet
  * @param $gor string/array Gebäude im Orbit
+ * @param $gspec string/array Spezialgebäude
  * @param $gr int Planetengröße
  *
  * @return int Kategorie des Planeten
  */
-function categorize($gpl, $gor, $gr) {
+function categorize($gpl, $gor, $gspec, $gr) {
 	
 	/*
 	 * Kategorien
@@ -58,19 +59,20 @@ function categorize($gpl, $gor, $gr) {
 	// Werten
 	$werft = array(1004, 1052);
 	// Rohstoff-Gebäude
-	$erz = array(1003, 1016, 1017, 1058, 1062, 1067, 1072);
-	$metall = array(1005, 1006, 1025, 1059, 1063, 1068, 1070);
-	$wolfram = array(1008, 1018, 1019, 1055, 1061, 1064, 1069);
-	$kristall = array(1007, 1031, 1060, 1065, 1073);
-	$fluor = array(1042, 1044, 1057, 1066, 1071, 1074);
+	$erz = array(1003, 1016, 1017);
+	$metall = array(1005, 1006, 1025);
+	$wolfram = array(1008, 1018, 1019);
+	$kristall = array(1007, 1031);
+	$fluor = array(1042, 1044, 1057, 1225);
 	// Umsatzfabrik
-	$umsf = 1045;
+	// bringt so nix mehr, da sie Credits produzieren
+	$umsf = -10;
 	// Fabrikgebäude
-	$fabgeb = array(1002, 1009, 1010, 1022, 1023, 1035, 1037, 1051, 1053, 1054);
+	$fabgeb = array(1002, 1009, 1010, 1022, 1023, 1035, 1037, 1051, 1052, 1053, 1054, 1055, 1208);
 	// orbitale Fabrikgebäude
-	$ofabgeb = array(1027, 1028, 1049);
+	$ofabgeb = array(1027, 1028);
 	// Credit-Gebäude
-	$creditgeb = array(1014, 1043);
+	$creditgeb = array(1014, 1043, 1045, 1502);
 	
 	// Gebäude-Zähler initialisieren
 	$countfg = 0;
@@ -103,14 +105,7 @@ function categorize($gpl, $gor, $gr) {
 		}
 		else if(in_array($geb, $fabgeb)) $countfab++;
 		else if(in_array($geb, $erz)) $counterz++;
-		else if(in_array($geb, $metall)) {
-			if($geb != 1005) {
-				$countmetall += 3;
-			}
-			else {
-				$countmetall++;
-			}
-		}
+		else if(in_array($geb, $metall)) $countmetall++;
 		else if(in_array($geb, $wolfram)) $countwolfram++;
 		else if(in_array($geb, $kristall)) $countkristall++;
 		else if(in_array($geb, $fluor)) $countfluor++;
@@ -126,6 +121,18 @@ function categorize($gpl, $gor, $gr) {
 		else if(in_array($geb, $werft)) $countwerft++;
 		else if($geb == $umsf) $countums++;
 		else if(in_array($geb, $creditgeb)) $countcredit++;
+	}
+	
+	// Spezialgebäude
+	foreach($gspec as $geb) {
+		if(in_array($geb, $fabgeb)) $countfab++;
+		else if(in_array($geb, $erz)) $counterz++;
+		else if(in_array($geb, $metall)) $countmetall++;
+		else if(in_array($geb, $wolfram)) $countwolfram++;
+		else if(in_array($geb, $kristall)) $countkristall++;
+		else if(in_array($geb, $fluor)) $countfluor++;
+		else if(in_array($geb, $creditgeb)) $countcredit++;
+		else if(in_array($geb, $werft)) $countwerft++;
 	}
 	
 	// Forschungsgebäude-Array sortieren
@@ -226,6 +233,40 @@ function categorize($gpl, $gor, $gr) {
 	if($countfab/$gr >= 0.25 AND $countwerft) return 13;
 	
 	return 0;
+}
+
+/**
+ * Orbiter-Angriff anhand der Gebäude berechnen
+ * @param array $gor Orbit-Gebäude
+ * @param array $gspec Spezial-Gebäude
+ * @return number
+ */
+function orbitAngriff($gor, $gspec) {
+	global $orbiter, $orbiter_modify;
+	
+	$orb = 0;
+	$percent = 100;
+	
+	foreach($gor as $geb) {
+		if(isset($orbiter[$geb])) {
+			$orb += $orbiter[$geb];
+		}
+	}
+
+	if($gspec) {
+		foreach($gspec as $geb) {
+			if(isset($orbiter[$geb])) {
+				$orb += $orbiter[$geb];
+			}
+			if(isset($orbiter_modify[$geb])) {
+				$percent += $orbiter_modify[$geb];
+			}
+		}
+	}
+
+	$orb *= $percent/100;
+	
+	return round($orb);
 }
 
 /**

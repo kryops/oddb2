@@ -25,6 +25,7 @@ $sql = "
 		planetenGroesse,
 		planetenGebPlanet,
 		planetenGebOrbit,
+		planetenGebSpezial,
 		planetenGateEntf,
 		planetenRWErz,
 		planetenRWWolfram,
@@ -142,6 +143,7 @@ if($config['logging'] >= 3) {
 // Gebäude-Arrays erzeugen
 $gpl = gebaeude($data['planetenGebPlanet'], $data['planetenGroesse'], false);
 $gor = gebaeude($data['planetenGebOrbit'], false, false);
+$gspec = gebaeude($data['planetenGebSpezial'], false, false);
 
 // anzeigen
 $tmpl->name = 'G'.$data['systeme_galaxienID'].' '.$data['planetenID'].' ('.htmlspecialchars($data['planetenName'], ENT_COMPAT, 'UTF-8').')';
@@ -381,7 +383,7 @@ $tmpl->content .= '
 				<td style="width:20%;height:112px">
 					<img src="img/layout/leer.gif" alt="Erz" class="ress erz" /> &nbsp; '.$data['planetenRWErz'].'%
 					<br />
-					<img src="img/layout/leer.gif" alt="Metall" class="ress metall" /> &nbsp; '.$data['planetenRWErz'].'%
+					<img src="img/layout/leer.gif" alt="Metall" class="ress metall" /> &nbsp; 100%
 					<br />
 					<img src="img/layout/leer.gif" alt="Wolfram" class="ress wolfram" /> &nbsp; '.$data['planetenRWWolfram'].'%
 					<br />
@@ -621,6 +623,22 @@ $tmpl->content .= '
 				<img src="img/planeten/'.$data['planetenTyp'].'_big.jpg" alt="" />
 			</div>
 			<div style="position:absolute">
+						
+				<table class="plshowt special">
+				<tr>
+					<td>'.$gspec[1].'</td>
+					<td>'.$gspec[2].'</td>
+					<td>'.$gspec[3].'</td>
+					<td>'.$gspec[4].'</td>
+					<td>'.$gspec[5].'</td>
+					<td>'.$gspec[6].'</td>
+					<td>'.$gspec[7].'</td>
+					<td>'.$gspec[8].'</td>
+					<td>'.$gspec[9].'</td>
+					<td>'.$gspec[10].'</td>
+				</tr>		
+				</table>
+						
 				<table class="plshowt">
 					<tr>
 						<td>'.$gor[7].'</td>
@@ -723,9 +741,9 @@ if($user->rechte['routen'] OR $user->rechte['strecken_flug'] OR ($user->rechte['
 	}
 	$tmpl->content .= '
 		<div>
-			<a href="'.($user->odServer != '' ? $user->odServer : 'http://www.omega-day.com').'/game/index.php?op=orbit&amp;index='.$data['planetenID'].'" target="_blank">Orbit in OD &ouml;ffnen</a>
+			<a href="'.($user->odServer != '' ? $user->odServer : 'http://www.omega-day.com').'/game/?op=orbit&amp;index='.$data['planetenID'].'" target="_blank">Orbit in OD &ouml;ffnen</a>
 			&nbsp;
-			<a href="'.($user->odServer != '' ? $user->odServer : 'http://www.omega-day.com').'/game/index.php?op=fleet&amp;pre_pid_set='.$data['planetenID'].'" target="_blank">Schiffe hierher schicken</a>
+			<a href="'.($user->odServer != '' ? $user->odServer : 'http://www.omega-day.com').'/game/?op=fleet&amp;pre_pid_set='.$data['planetenID'].'" target="_blank">Schiffe hierher schicken</a>
 		</div>
 	</div>';
 }

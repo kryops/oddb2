@@ -111,6 +111,11 @@ if(@include('./config/global.php')) {
 // nicht installiert
 else {
 	define('INSTALLED', false);
+	
+	if($_GET['p'] === 'scan' OR $_GET['p'] === 'fow') {
+		die('Die ODDB wurde noch nicht installiert!');
+	}
+	
 	header('Location: install/');
 	die();
 }

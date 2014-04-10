@@ -18,21 +18,21 @@ if(!defined('ODDB')) die('unerlaubter Zugriff!');
 //
 
 // Hauptversion
-define('VERSION', '2.3.4.2');
+define('VERSION', '2.3.5');
 // Patch-Version
 define('PATCH_VERSION', 5);
 // Datei-Zusatz (css und js)
-define('FILESTAMP', '?26');
+define('FILESTAMP', '?27');
 // OD-Runde
-define('ODWORLD', 'int11');
+define('ODWORLD', 'int12');
 define('DOWNTIME', false);
 // Abgleich-Version
-define('ABGLEICH_VERSION', 3);
+define('ABGLEICH_VERSION', 4);
 define('GRUNDDATEN_VERSION', 1);
 // ODDB Tool-Version
-define('ODDBTOOL', '2.3.4.2');
-define('ODDBTOOLPATH', 'oddbtool-2_3_4_2.xpi');
-define('ODDBTOOLPATH_CHROME', 'oddbtool-chrome-2_3_4_2.crx');
+define('ODDBTOOL', '2.3.5');
+define('ODDBTOOLPATH', 'oddbtool-2_3_5.xpi');
+define('ODDBTOOLPATH_CHROME', 'oddbtool-chrome-2_3_5.crx');
 
 // Debug-Modus
 define('DEBUG', false);
@@ -244,7 +244,8 @@ $gebaeude = array(
 	-1=>'under_construction.gif',
 	-2=>'pod_ground.gif',
 	-3=>'pod_space.gif',
-	-4=>'unbekannt.png',
+	-4=>'pod_special.gif',
+	-5=>'unbekannt.png',
 	1000=>'basiscamp.gif',
 	1001=>'forschungscamp.gif',
 	1002=>'fabrik.gif',
@@ -302,7 +303,32 @@ $gebaeude = array(
 	1054=>'fabrikIII-1.gif',
 	1055=>'ratshalle_mod.gif',
 	1056=>'arcbro3.gif',
-	1057=>'bio-gas-raff_mkii.gif'
+	1057=>'bio-gas-raff_mkii.gif',
+	
+	1200=>'dome.gif',
+	1201=>'mine.gif',
+	1202=>'militarybase.gif',
+	1203=>'roundthing.gif',
+	1205=>'solarplant.gif',
+	1206=>'prototype-x.gif',
+	1207=>'orbitalring.gif',
+	1208=>'spacestation.gif',
+	1210=>'honeycombs.gif',
+	1211=>'gemtower.gif',
+	1216=>'sphere.gif',
+	1217=>'spaceship.gif',
+	1218=>'pyramid02.gif',
+	1220=>'tradingstation_s.gif',
+	1221=>'station01.gif',
+	1223=>'station02.gif',
+	1224=>'hangar.gif',
+	1225=>'base.gif',
+	1230=>'pyramid.gif',
+	1234=>'factory02.gif',
+	
+	1500=>'arcology2.gif',
+	1501=>'arcology1.gif',
+	1502=>'arcology3.gif'
 );
 
 // Gebaeude-Positionen auf dem Sprite (Pixel nach rechts)
@@ -311,7 +337,7 @@ $gebaeudepos = array(
 	-1=>16,
 	-2=>32,
 	-3=>48,
-	-4=>64,
+	-5=>64,
 	1000=>80,
 	1001=>96,
 	1002=>112,
@@ -369,69 +395,108 @@ $gebaeudepos = array(
 	1054=>928,
 	1055=>976,
 	1056=>960,
-	1057=>768
+	1057=>768,
+		
+	1200=>992,
+	1201=>1008,
+	1202=>1024,
+	1203=>1040,
+	1205=>1056,
+	1206=>1072,
+	1207=>1088,
+	1208=>1104,
+	1210=>1120,
+	1211=>1136,
+	1216=>1152,
+	1217=>1168,
+	1218=>1184,
+	1220=>1200,
+	1221=>1216,
+	1223=>1232,
+	1224=>1248,
+	1225=>1264,
+	1230=>1280,
+	1234=>1296,
+	
+	1500=>1312,
+	1501=>1328,
+	1502=>1344,
+	
+	-4=>1360
 );
 
 // Orbiter (Gebäude-ID=>Angriff)
 $orbiter = array(
-	1013=>5,
-	1012=>1,
-	1020=>30,
-	1030=>100,
-	1048=>100,
+	1012=>10,
+	1013=>10,
+	1020=>100,
 	1029=>100,
-	1040=>100,
-	1024=>20,
-	1041=>1,
-	1039=>2,
 	1050=>1000,
-	1049=>24
+	1048=>500,
+	1039=>30,
+	1041=>1,
+	1030=>1,
+	1040=>300
+);
+
+$orbiter_modify = array(
+	1048=>30,
+	1233=>10,
+	1234=>40
 );
 
 // Genesis-Planetentypen
-$planeten_genesis = array(70,71,88,89,6,50,69,72,80,82,85,91,67,68,74,79,81,83,9,25,10,17,12,28,78,90,22,37,38,76,45,87,73,40,84,86,36,21,34,39);
+$planeten_genesis = array(25,70,71,89,6,50,69,72,80,82,85,91,17,67,68,79,81,83,63,64,47,12,74,48,22,90,78,65,88,76,37,45,38,87,73,40,84,86,36,21,34,39);
 
 // Standardbevölkerung pro Planetentyp zur Berechnung der Terraformbarkeit
 $planeten_bevoelkerung = array(
 	58=>4000000,
 	3=>3200000,
 	4=>3200000,
-	8=>3900000,
+	8=>3000000,
 	31=>3700000,
-	43=>3200000,
+	43=>3700000,
 	44=>3500000,
-	23=>3400000,
+	23=>4300000,
 	24=>3500000,
 	42=>3300000,
 	16=>3200000,
-	19=>3000000,
+	19=>3200000,
 	15=>3600000,
 	41=>3700000,
 	27=>3200000,
+	96=>3800000,
+	98=>3800000,
 	20=>3400000,
+	95=>3700000,
+	97=>3700000,
 	29=>3100000,
 	13=>3400000,
+	94=>3600000,
 	11=>3900000,
+	99=>4100000,
 	5=>3200000,
 	32=>3900000,
 	35=>3100000,
 	26=>3100000,
-	1=>3300000,
 	14=>3100000,
-	30=>3700000,
-	9=>4200000,
-	25=>4200000,
-	10=>4200000,
-	17=>4400000,
+	30=>3500000,
+	1=>3700000,
+	63=>4200000,
+	64=>4200000,
+	47=>4500000,
 	12=>4100000,
-	28=>4500000,
-	78=>4000000,
-	90=>4500000,
+	74=>5400000,
+	48=>4700000,
 	22=>5500000,
-	37=>4500000,
-	38=>6000000,
+	90=>4500000,
+	78=>4000000,
+	65=>5200000,
+	88=>4200000,
 	76=>5000000,
+	37=>4500000,
 	45=>4500000,
+	38=>6000000,
 	87=>4500000,
 	73=>4500000,
 	40=>4700000,
@@ -443,10 +508,11 @@ $planeten_bevoelkerung = array(
 	39=>5500000
 );
 
+// um wie viel kann die Standard-Bevölkerung durch Terraforming erhöht werden?
 $planeten_bevoelkerung_offset = 3000000;
 
 // Planeten-Typen: Anzahl und Lücken
-$pltypen = 93;
+$pltypen = 100;
 $pltypnot = array();
 
 
@@ -1974,7 +2040,13 @@ function imppunkte($data) {
 		$maxress = $data['planetenRWFluor'];
 	}
 	
-	return floor(($data['planetenBevoelkerung']/100000) * $data['planetenGroesse'] + $maxress + $data['planetenRWFluor']);
+	// TODO zählt der mit?
+	// Metallwert konstant bei 100
+	if($maxress < 100) {
+		$maxress = 100;
+	}
+	
+	return floor(($data['planetenBevoelkerung']/100000) * $data['planetenGroesse'] + $maxress);
 }
 
 /**
@@ -1983,8 +2055,7 @@ function imppunkte($data) {
 function imppunkte_mysql() {
 	return 'FLOOR(
 			(planetenBevoelkerung/100000) * planetenGroesse
-			+ GREATEST(planetenRWErz, planetenRWWolfram, planetenRWKristall, planetenRWFluor)
-			+ planetenRWFluor
+			+ GREATEST(planetenRWErz, planetenRWWolfram, planetenRWKristall, planetenRWFluor, 100)
 		)';
 }
 
@@ -2078,10 +2149,11 @@ function sysallianzen($id, $return=false) {
  * @param $typ int Planeten-Typ
  * @param $gpl string Gebäude auf dem Planeten
  * @param $gor string Gebäude im Orbit
+ * @param $gspec string Spezialgebäude
  *
  * @return string Pfad zum Thumbnail
  */
-function odscreen($typ, $gpl, $gor) {
+function odscreen($typ, $gpl, $gor, $gspec=false) {
 	// Gebäude-Strngs in Arrays umwandeln
 	$gpl = explode('+', $gpl);
 	$gor = explode('+', $gor);
@@ -2101,6 +2173,16 @@ function odscreen($typ, $gpl, $gor) {
 			$addr .= '&s'.($i+36).'='.$gor[$i-1];
 		}
 	}
+	
+	// Spezialgebäude
+	if($gspec) {
+		for($i=1;$i<=10;$i++) {
+			if(isset($gspec[$i-1])) {
+				$addr .= '&s'.($i+48).'='.$gspec[$i-1];
+			}
+		}
+	}
+	
 	// Pfad zurückgeben
 	return $addr;
 }

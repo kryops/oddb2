@@ -189,6 +189,7 @@ if(isset($config['masseninva'])) {
 			planetenUnscannbar,
 			planetenGebPlanet,
 			planetenGebOrbit,
+			planetenGebSpezial,
 			planetenKommentar,
 			planetenGateEntf,
 			
@@ -421,6 +422,7 @@ Bev&ouml;lkerung
 				planetenUnscannbar,
 				planetenGebPlanet,
 				planetenGebOrbit,
+				planetenGebSpezial,
 				planetenKommentar,
 				planetenGateEntf,
 				planetenMasseninva,

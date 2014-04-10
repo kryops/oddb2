@@ -93,7 +93,8 @@ else {
 			UPDATE ".PREFIX."planeten
 			SET
 				planeten_playerID = ".$_POST['inhaber'].",
-				planetenHistory = planetenHistory+1
+				planetenHistory = planetenHistory+1,
+				planetenGebSpezial = ''
 			WHERE
 				planetenID = ".$_POST['id']."
 		") OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());

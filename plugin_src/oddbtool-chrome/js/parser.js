@@ -460,8 +460,8 @@ oddbtool.parsePage = function(page, manual) {
 				out['fluorp'] = ctree.find('#flourproduktion').html().replace(/[^\d]/g, '');
 				
                 // Ressvorrat        TZ2013
-                var pids =  oddbtool.prefs.pid
-                if (pids.indexOf(out['id']) == -1) {
+                var pids =  oddbtool.prefs.pid;
+                if (!pids || pids.indexOf(out['id']) == -1) {
                     out['erzm'] = ctree.find('#erzdais').html().replace(/[^\d]/g, '');
                     out['metallm'] = ctree.find('#metallda').html().replace(/[^\d]/g, '');
                     out['wolframm'] = ctree.find('#wolframda').html().replace(/[^\d]/g, '');
@@ -499,6 +499,12 @@ oddbtool.parsePage = function(page, manual) {
 				data = data.prev();
 				for(i=1; i<=12; i++) {
 					out['o'+i] = data.find('img[name="wpod'+i+'"]').attr('src').replace(/^.*\/img\/(?:buildings\/|misc\/)*/, '');
+				}
+				
+				// Spezialgebäude
+				data = ctree.find('td[colspan="8"] table');
+				for(i=1; i<=10; i++) {
+					out['s'+i] = data.find('img[name="spod'+i+'"]').attr('src').replace(/^.*\/img\/(?:buildings\/|misc\/)*/, '');
 				}
 			}
 			catch(e) {
@@ -603,7 +609,7 @@ oddbtool.parsePage = function(page, manual) {
 					].join('X');
 					
                     var pids =  oddbtool.prefs.pid
-                    if (pids.indexOf(pl['id']) == -1) {
+                    if (!pids || pids.indexOf(pl['id']) == -1) {
                         pl['rv'] = [
                             $(this).attr('pverz').replace(/[^\d]/g, ''),
                             $(this).attr('pvmetall').replace(/[^\d]/g, ''),
@@ -650,7 +656,7 @@ oddbtool.parsePage = function(page, manual) {
 		//
 		// Orbit
 		//
-		else if(ctree.find('#jumpGateDialog').length) {
+		else if(ctree.find('#jumpDialog').length) {
 			out['typ'] = 'orbit';
 			
 			var data;

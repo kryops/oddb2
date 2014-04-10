@@ -1,4 +1,18 @@
-﻿31.08.2013 - V2.3.4
+﻿10.04.2014 - V2.4 [R12]
+-----------------------
+* Anpassungen an die Änderungen in OD
+  - Spezialgebäude
+  - Myrigates können zwischen Galaxien springen, aber nur noch zum Riss
+  - Änderung der Planetenpunkte-Berechnung
+  - Metallwert fix 100%
+* Grunddaten-Import von OD
+* Partielle Abgleiche
+* Überarbeitete Schnellster-Weg-Funktion
+* Berechnung des Gesamt-Orbiter-Angriffs
+
+
+
+31.08.2013 - V2.3.4
 -------------------
 * Verbündete Werften: Als Belieferer eintragen
 * Erweiterungen der Suche

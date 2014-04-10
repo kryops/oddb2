@@ -50,6 +50,7 @@ $query = query("
 		planetenUpdate,
 		planetenGebPlanet,
 		planetenGebOrbit,
+		planetenGebSpezial,
 		planetenKommentar,
 		planetenWerftFinish,
 		planetenWerftBedarf,

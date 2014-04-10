@@ -33,6 +33,8 @@ class template_import {
 Daten-Archiv: 
 <input type="file" name="import" style="background:#161616" />
 <br /><br />
+oder URL: <input type="text" class="text" name="url" style="width:300px" />
+<br /><br />
 <input type="submit" class="button" value="importieren" style="width:120px;margin:20px 0px" onclick="this.style.display=\'none\';document.getElementById(\'importajax\').style.display=\'inline\';" />
 <img src="img/layout/ajax.gif" style="width:24px;height:24px;display:none" id="importajax" />
 </form>';
@@ -101,22 +103,46 @@ class BackupImport {
 		// max_input_vars-Problem
 		@ini_set('max_input_vars', 65536);
 		
+		$isUrl = false;
+		$fileUrl = trim($_POST['url']);
+		
 		// Fehler beim Upload
 		if($_FILES['import']['error']) {
-			$tmpl->error = 'Fehler beim Upload!';
-			$tmpl->output();
-			die();
+			if($fileUrl === '') {
+				$tmpl->error = 'Fehler beim Upload!';
+				$tmpl->output();
+				die();				
+			}
+			// Datei von URL
+			else {
+				if(substr($fileUrl, 0, 7) !== 'http://') {
+					$tmpl->error = 'Ungültige URL! (muss mit http:// beginnen)';
+				}
+				else if(($data = @file_get_contents($fileUrl)) === false) {
+					$tmpl->error = 'Ungültige URL! (konnte Datei nicht laden)';
+				}
+				else {
+					$isUrl = true;
+				}
+				
+				if($tmpl->error) {
+					$tmpl->output();
+					die();
+				}
+			}
 		}
 		
 		// 1 Minute Mindestabstand
 		else if($cache->get('oddb_import') !== false) {
-			$tmpl->error = 'Du kannst maximal 1x pro Minute Daten importieren!';
+			$tmpl->error = 'Du kannst maximal alle 30 Sekunden Daten importieren!';
 			$tmpl->output();
 			die();
 		}
 		
 		// Dateiinhalt auslesen
-		$data = file_get_contents($_FILES['import']['tmp_name']);
+		if(!$isUrl) {
+			$data = file_get_contents($_FILES['import']['tmp_name']);
+		}
 		
 		// dekomprimieren
 		if(($data = @gzuncompress($data)) === false) {
@@ -175,7 +201,7 @@ class BackupImport {
 		
 		
 		// Cache setzen
-		$cache->set('oddb_import', 1, 60);
+		$cache->set('oddb_import', 1, 30);
 		
 		// Log-Eintrag
 		if($config['logging'] >= 1) {
@@ -510,7 +536,7 @@ window.setTimeout(function() {
 					else if($planetExists) {
 						
 						$updateOverview = ($pl[$id][1] < $row[6] AND $rowCount >= 23);
-						$updateFull = ($pl[$id][2] < $row[7] AND $rowCount >= 30);
+						$updateFull = ($pl[$id][2] < $row[7] AND $rowCount >= 31);
 						
 						if($updateSystem OR $updateOverview OR $updateFull) {
 							
@@ -650,15 +676,15 @@ $(\'#content\').html(\'<div class="center">Der Import wurde erfolgreich abgeschl
 			planetenKategorie = ".(int)$row[14].",
 			planetenGebPlanet = '".escape($row[15])."',
 			planetenGebOrbit = '".escape($row[16])."',
-			planetenOrbiter = ".(int)$row[17].",
+			planetenOrbiter = ".(int)$row[18].",
 
-			planetenRMErz = ".(int)$row[18].",
-			planetenRMMetall = ".(int)$row[19].",
-			planetenRMWolfram = ".(int)$row[20].",
-			planetenRMKristall = ".(int)$row[21].",
-			planetenRMFluor = ".(int)$row[22].",
+			planetenRMErz = ".(int)$row[19].",
+			planetenRMMetall = ".(int)$row[20].",
+			planetenRMWolfram = ".(int)$row[21].",
+			planetenRMKristall = ".(int)$row[22].",
+			planetenRMFluor = ".(int)$row[23].",
 			
-			planetenRMGesamt = ".(int)($row[18]+$row[19]+$row[20]+$row[21]+$row[22])."
+			planetenRMGesamt = ".(int)($row[19]+$row[20]+$row[21]+$row[22]+$row[23])."
 		";
 	}
 
@@ -671,16 +697,16 @@ $(\'#content\').html(\'<div class="center">Der Import wurde erfolgreich abgeschl
 		return "
 			planetenUpdate = ".(int)$row[7].",
 			
-			planetenForschung = ".(int)$row[23].",
-			planetenIndustrie = ".(int)$row[24].",
+			planetenForschung = ".(int)$row[24].",
+			planetenIndustrie = ".(int)$row[25].",
 
-			planetenRPErz = ".(int)$row[25].",
-			planetenRPMetall = ".(int)$row[26].",
-			planetenRPWolfram = ".(int)$row[27].",
-			planetenRPKristall = ".(int)$row[28].",
-			planetenRPFluor = ".(int)$row[29].",
+			planetenRPErz = ".(int)$row[26].",
+			planetenRPMetall = ".(int)$row[27].",
+			planetenRPWolfram = ".(int)$row[28].",
+			planetenRPKristall = ".(int)$row[29].",
+			planetenRPFluor = ".(int)$row[30].",
 					
-			planetenRPGesamt = ".(int)($row[25]+$row[26]+$row[27]+$row[28]+$row[29])."
+			planetenRPGesamt = ".(int)($row[26]+$row[27]+$row[28]+$row[29]+$row[30])."
 		";
 	}
 	
@@ -808,7 +834,6 @@ $(\'#content\').html(\'<div class="center">Der Import wurde erfolgreich abgeschl
 	public static function importBasicData($data) {
 		
 		$tmpl = new template_import();
-		$tmpl->form = false;
 		
 		// Dateiinhalt parsen
 		if(!($data = @json_decode($data, true))) {
@@ -816,9 +841,16 @@ $(\'#content\').html(\'<div class="center">Der Import wurde erfolgreich abgeschl
 		}
 		else {
 			
+			// workaround for OD generated NULL value
+			// TODO remove in R13
+			$data['world'] = ODWORLD;
+			
 			// Gültige Welt und Version
-			if(!isset($data['world'], $data['version'], $data['galaxien']) OR $data['world'] != ODWORLD OR $data['version'] != GRUNDDATEN_VERSION) {
-				$tmpl->error = 'Ungültige Datei! (Falsche Version oder OD-Welt)';
+			if(!isset($data['world'], $data['version'], $data['galaxien']) OR $data['version'] != GRUNDDATEN_VERSION) {
+				$tmpl->error = 'Ungültige Datei! (Falsche Version)';
+			}
+			else if($data['world'] != ODWORLD) {
+				$tmpl->error = 'Ungültige Datei! (Falsche OD-Welt)';
 			}
 			else {
 				
@@ -885,6 +917,11 @@ $(\'#content\').html(\'<div class="center">Der Import wurde erfolgreich abgeschl
 						$scount++;
 						
 						foreach($sdata['planeten'] as $planet=>$pdata) {
+							
+							// unbewohnbar-Filter
+							if((int)$pdata['groesse'] <= 3) {
+								$pdata['groesse'] = 0;
+							}
 							
 							// Planet eintragen
 							query("

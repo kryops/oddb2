@@ -499,6 +499,12 @@ oddbtool.parsePage = function(page, manual) {
 				for(i=1; i<=12; i++) {
 					out['o'+i] = data.find('img[name="wpod'+i+'"]').attr('src').replace(/^.*\/img\/(?:buildings\/|misc\/)*/, '');
 				}
+				
+				// Spezialgebäude
+				data = ctree.find('td[colspan="8"] table');
+				for(i=1; i<=10; i++) {
+					out['s'+i] = data.find('img[name="spod'+i+'"]').attr('src').replace(/^.*\/img\/(?:buildings\/|misc\/)*/, '');
+				}
 			}
 			catch(e) {
 				throw 'Konnte Gebäude nicht ermitteln!';
@@ -637,7 +643,7 @@ oddbtool.parsePage = function(page, manual) {
 		//
 		// Orbit
 		//
-		else if(ctree.find('#jumpGateDialog').length) {
+		else if(ctree.find('#jumpDialog').length) {
 			out['typ'] = 'orbit';
 			
 			var data;

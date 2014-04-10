@@ -28,7 +28,7 @@ var geb = {
 	'-1':16,
 	'-2':32,
 	'-3':48,
-	'-4':64,
+	'-5':64,
 	1000:80,
 	1001:96,
 	1002:112,
@@ -86,7 +86,34 @@ var geb = {
 	1054:928,
 	1055:976,
 	1056:960,
-	1057:768
+	1057:768,
+	
+	1200:992,
+	1201:1008,
+	1202:1024,
+	1203:1040,
+	1205:1056,
+	1206:1072,
+	1207:1088,
+	1208:1104,
+	1210:1120,
+	1211:1136,
+	1216:1152,
+	1217:1168,
+	1218:1184,
+	1220:1200,
+	1221:1216,
+	1223:1232,
+	1224:1248,
+	1225:1264,
+	1230:1280,
+	1234:1296,
+	
+	1500:1312,
+	1501:1328,
+	1502:1344,
+	
+	'-4':1360
 };
 
 /**
@@ -368,6 +395,7 @@ $(document).ready(function(){
 			var data = $(this).data('plscreen').split('_');
 			var gpl = data[1].split('+');
 			var gor = data[2].split('+');
+			var gspec = data[3].split('+');
 			
 			// mit leeren Werten füllen
 			for(var i=1;i<=36;i++) {
@@ -380,9 +408,14 @@ $(document).ready(function(){
 					gor[i] = 0;
 				}
 			}
+			for(var i=1;i<=10;i++) {
+				if(typeof(gspec[i]) == 'undefined') {
+					gspec[i] = 0;
+				}
+			}
 			
 			// Tooltip erzeugen
-			var tt = '<div class="plscreentt"><table cellpadding="0" cellspacing="0" class="sysshoworgebt2"><tr><td style="background-position:-'+geb[gor[7]]+'px 0px"></td><td style="background-position:-'+geb[gor[1]]+'px 0px"></td></tr><tr><td style="background-position:-'+geb[gor[8]]+'px 0px"></td><td style="background-position:-'+geb[gor[2]]+'px 0px"></td></tr><tr><td style="background-position:-'+geb[gor[9]]+'px 0px"></td><td style="background-position:-'+geb[gor[3]]+'px 0px"></td></tr><tr><td style="background-position:-'+geb[gor[10]]+'px 0px"></td><td style="background-position:-'+geb[gor[4]]+'px 0px"></td></tr><tr><td style="background-position:-'+geb[gor[11]]+'px 0px"></td><td style="background-position:-'+geb[gor[5]]+'px 0px"></td></tr><tr><td style="background-position:-'+geb[gor[12]]+'px 0px"></td><td style="background-position:-'+geb[gor[6]]+'px 0px"></td></tr></table><table cellpadding="0" cellspacing="0" class="sysshowplgebt" style="background-image:url(img/planeten/'+data[0]+'.jpg)"><tr><td style="background-position:-'+geb[gpl[36]]+'px 0px"></td><td style="background-position:-'+geb[gpl[35]]+'px 0px"></td><td style="background-position:-'+geb[gpl[29]]+'px 0px"></td><td style="background-position:-'+geb[gpl[23]]+'px 0px"></td><td style="background-position:-'+geb[gpl[30]]+'px 0px"></td><td style="background-position:-'+geb[gpl[34]]+'px 0px"></td></tr><tr><td style="background-position:-'+geb[gpl[32]]+'px 0px"></td><td style="background-position:-'+geb[gpl[24]]+'px 0px"></td><td style="background-position:-'+geb[gpl[18]]+'px 0px"></td><td style="background-position:-'+geb[gpl[10]]+'px 0px"></td><td style="background-position:-'+geb[gpl[19]]+'px 0px"></td><td style="background-position:-'+geb[gpl[25]]+'px 0px"></td></tr><tr><td style="background-position:-'+geb[gpl[28]]+'px 0px"></td><td style="background-position:-'+geb[gpl[14]]+'px 0px"></td><td style="background-position:-'+geb[gpl[6]]+'px 0px"></td><td style="background-position:-'+geb[gpl[2]]+'px 0px"></td><td style="background-position:-'+geb[gpl[7]]+'px 0px"></td><td style="background-position:-'+geb[gpl[15]]+'px 0px"></td></tr><tr><td style="background-position:-'+geb[gpl[22]]+'px 0px"></td><td style="background-position:-'+geb[gpl[13]]+'px 0px"></td><td style="background-position:-'+geb[gpl[5]]+'px 0px"></td><td style="background-position:-'+geb[gpl[1]]+'px 0px"></td><td style="background-position:-'+geb[gpl[3]]+'px 0px"></td><td style="background-position:-'+geb[gpl[11]]+'px 0px"></td></tr><tr><td style="background-position:-'+geb[gpl[31]]+'px 0px"></td><td style="background-position:-'+geb[gpl[17]]+'px 0px"></td><td style="background-position:-'+geb[gpl[9]]+'px 0px"></td><td style="background-position:-'+geb[gpl[4]]+'px 0px"></td><td style="background-position:-'+geb[gpl[8]]+'px 0px"></td><td style="background-position:-'+geb[gpl[16]]+'px 0px"></td></tr><tr><td style="background-position:-'+geb[gpl[33]]+'px 0px"></td><td style="background-position:-'+geb[gpl[27]]+'px 0px"></td><td style="background-position:-'+geb[gpl[21]]+'px 0px"></td><td style="background-position:-'+geb[gpl[12]]+'px 0px"></td><td style="background-position:-'+geb[gpl[20]]+'px 0px"></td><td style="background-position:-'+geb[gpl[26]]+'px 0px"></td></tr></table><br />'+data[3]+'</div>';
+			var tt = '<div class="plscreentt"><table cellpadding="0" cellspacing="0" class="sysshoworgebt special"><tr><td style="background-position:-'+geb[gspec[1]]+'px 0px"></td><td style="background-position:-'+geb[gspec[2]]+'px 0px"></td><td style="background-position:-'+geb[gspec[3]]+'px 0px"></td><td style="background-position:-'+geb[gspec[4]]+'px 0px"></td><td style="background-position:-'+geb[gspec[5]]+'px 0px"></td><td style="background-position:-'+geb[gspec[6]]+'px 0px"></td><td style="background-position:-'+geb[gspec[7]]+'px 0px"></td><td style="background-position:-'+geb[gspec[8]]+'px 0px"></td><td style="background-position:-'+geb[gspec[9]]+'px 0px"></td><td style="background-position:-'+geb[gspec[10]]+'px 0px"></td></tr></table><table cellpadding="0" cellspacing="0" class="sysshoworgebt2"><tr><td style="background-position:-'+geb[gor[7]]+'px 0px"></td><td style="background-position:-'+geb[gor[1]]+'px 0px"></td></tr><tr><td style="background-position:-'+geb[gor[8]]+'px 0px"></td><td style="background-position:-'+geb[gor[2]]+'px 0px"></td></tr><tr><td style="background-position:-'+geb[gor[9]]+'px 0px"></td><td style="background-position:-'+geb[gor[3]]+'px 0px"></td></tr><tr><td style="background-position:-'+geb[gor[10]]+'px 0px"></td><td style="background-position:-'+geb[gor[4]]+'px 0px"></td></tr><tr><td style="background-position:-'+geb[gor[11]]+'px 0px"></td><td style="background-position:-'+geb[gor[5]]+'px 0px"></td></tr><tr><td style="background-position:-'+geb[gor[12]]+'px 0px"></td><td style="background-position:-'+geb[gor[6]]+'px 0px"></td></tr></table><table cellpadding="0" cellspacing="0" class="sysshowplgebt" style="background-image:url(img/planeten/'+data[0]+'.jpg)"><tr><td style="background-position:-'+geb[gpl[36]]+'px 0px"></td><td style="background-position:-'+geb[gpl[35]]+'px 0px"></td><td style="background-position:-'+geb[gpl[29]]+'px 0px"></td><td style="background-position:-'+geb[gpl[23]]+'px 0px"></td><td style="background-position:-'+geb[gpl[30]]+'px 0px"></td><td style="background-position:-'+geb[gpl[34]]+'px 0px"></td></tr><tr><td style="background-position:-'+geb[gpl[32]]+'px 0px"></td><td style="background-position:-'+geb[gpl[24]]+'px 0px"></td><td style="background-position:-'+geb[gpl[18]]+'px 0px"></td><td style="background-position:-'+geb[gpl[10]]+'px 0px"></td><td style="background-position:-'+geb[gpl[19]]+'px 0px"></td><td style="background-position:-'+geb[gpl[25]]+'px 0px"></td></tr><tr><td style="background-position:-'+geb[gpl[28]]+'px 0px"></td><td style="background-position:-'+geb[gpl[14]]+'px 0px"></td><td style="background-position:-'+geb[gpl[6]]+'px 0px"></td><td style="background-position:-'+geb[gpl[2]]+'px 0px"></td><td style="background-position:-'+geb[gpl[7]]+'px 0px"></td><td style="background-position:-'+geb[gpl[15]]+'px 0px"></td></tr><tr><td style="background-position:-'+geb[gpl[22]]+'px 0px"></td><td style="background-position:-'+geb[gpl[13]]+'px 0px"></td><td style="background-position:-'+geb[gpl[5]]+'px 0px"></td><td style="background-position:-'+geb[gpl[1]]+'px 0px"></td><td style="background-position:-'+geb[gpl[3]]+'px 0px"></td><td style="background-position:-'+geb[gpl[11]]+'px 0px"></td></tr><tr><td style="background-position:-'+geb[gpl[31]]+'px 0px"></td><td style="background-position:-'+geb[gpl[17]]+'px 0px"></td><td style="background-position:-'+geb[gpl[9]]+'px 0px"></td><td style="background-position:-'+geb[gpl[4]]+'px 0px"></td><td style="background-position:-'+geb[gpl[8]]+'px 0px"></td><td style="background-position:-'+geb[gpl[16]]+'px 0px"></td></tr><tr><td style="background-position:-'+geb[gpl[33]]+'px 0px"></td><td style="background-position:-'+geb[gpl[27]]+'px 0px"></td><td style="background-position:-'+geb[gpl[21]]+'px 0px"></td><td style="background-position:-'+geb[gpl[12]]+'px 0px"></td><td style="background-position:-'+geb[gpl[20]]+'px 0px"></td><td style="background-position:-'+geb[gpl[26]]+'px 0px"></td></tr></table><br />'+data[4]+'</div>';
 			$(this).data('tooltip', tt);
 		}
 		
@@ -705,7 +738,7 @@ $(document).ready(function(){
 				
 		if($links.length && window.confirm('Diese Operation öffnet '+$links.length+' neue Tabs/Fenster auf einmal. Fortfahren?')) {
 			$links.each(function() {
-				window.open(ODServer + '/game/index.php?op=system&sys='+$(this).data('sys'));
+				window.open(ODServer + '/game/?op=system&sys='+$(this).data('sys'));
 			});
 		}
 		
@@ -806,6 +839,8 @@ function ajaxcall(addr, r, post, errorout) {
 			}
 			
 			if(error) {
+				console.log(error);
+				
 				if(errorout && r) {
 					$(r).html('<div class="error">'+error+'</div>');
 				}
@@ -832,12 +867,16 @@ function ajaxcall(addr, r, post, errorout) {
 				var content = e.responseText.replace(/<\?xml([.\s]*)$/, '');
 				
 				if(errorout && r) {
-					$(r).html('Es ist ein Fehler aufgetreten!<br /><br />Fehlermeldung: '+msg+' '+e.status+'<br /><br />Adresse: '+addr+'<br /><br />'+content);
+					var error = 'Es ist ein Fehler aufgetreten!<br /><br />Fehlermeldung: '+msg+' '+e.status+'<br /><br />Adresse: '+addr+'<br /><br />'+content;
+					console.log(error);
+					$(r).html(error);
 				}
 				else {
 					content = content.replace(/<br \/>/g, "\n");
 					content = content.replace(/<(|\/)b>/g, '');
-					alert("Es ist ein Fehler aufgetreten!\n\nFehlermeldung: "+msg+' '+e.status+"\n\nAdresse: "+addr+"\n\n"+content);
+					var error = "Es ist ein Fehler aufgetreten!\n\nFehlermeldung: "+msg+' '+e.status+"\n\nAdresse: "+addr+"\n\n"+content;
+					console.log(error);
+					alert(error);
 				}
 			}
 		}
@@ -2395,14 +2434,14 @@ function cm_open(e, type, value) {
 		
 		// Planeten-Link
 		if(el.hasClass('link_planet') && el.data('id')) {
-			content += '<a href="' + ODServer + '/game/index.php?op=orbit&amp;index='+el.data('id')+'" target="_blank">Orbit in OD &ouml;ffnen</a>';
-			content += '<a href="' + ODServer + '/game/index.php?op=fleet&amp;pre_pid_set='+el.data('id')+'" target="_blank">Schiffe hierher schicken</a>';
+			content += '<a href="' + ODServer + '/game/?op=orbit&amp;index='+el.data('id')+'" target="_blank">Orbit in OD &ouml;ffnen</a>';
+			content += '<a href="' + ODServer + '/game/?op=fleet&amp;pre_pid_set='+el.data('id')+'" target="_blank">Schiffe hierher schicken</a>';
 			lcount += 2;
 		}
 		
 		// System-Link
 		else if(el.hasClass('link_system') && el.data('id')) {
-			content += '<a href="' + ODServer + '/game/index.php?op=system&amp;sys='+el.data('id')+'" target="_blank">System in OD &ouml;ffnen</a>';
+			content += '<a href="' + ODServer + '/game/?op=system&amp;sys='+el.data('id')+'" target="_blank">System in OD &ouml;ffnen</a>';
 			lcount += 1;
 		}
 	}
@@ -3379,6 +3418,12 @@ function quelltext(f, r) {
 				for(i=1; i<=12; i++) {
 					out['o'+i] = data.find('img[name="wpod'+i+'"]').attr('src').replace(/^.*\/img\/(?:buildings\/|misc\/)*/, '');
 				}
+				
+				// Spezialgebäude
+				data = ctree.find('td[colspan="8"] table');
+				for(i=1; i<=10; i++) {
+					out['s'+i] = data.find('img[name="spod'+i+'"]').attr('src').replace(/^.*\/img\/(?:buildings\/|misc\/)*/, '');
+				}
 			}
 			catch(e) {
 				throw 'Konnte Gebäude nicht ermitteln!';
@@ -3505,7 +3550,7 @@ function quelltext(f, r) {
 		//
 		// Orbit
 		//
-		else if(ctree.find('#jumpGateDialog').length) {
+		else if(ctree.find('#jumpDialog').length) {
 			out['typ'] = 'orbit';
 			
 			var data;

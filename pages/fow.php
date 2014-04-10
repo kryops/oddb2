@@ -301,6 +301,7 @@ if($data['systemeUpdateHidden']) {
 			planetenBevoelkerung,
 			planetenGebPlanet,
 			planetenGebOrbit,
+			planetenGebSpezial,
 			planetenMyrigate,
 			planetenRWErz,
 			planetenRWWolfram,
@@ -658,7 +659,7 @@ if($showr) {
 		<scanDateFull current="'.(($pl['planetenUpdate'] > time()-$config['scan_veraltet']*86400) ? '1' : '2').'"><![CDATA['.($pl['planetenUpdate'] > $heute ? 'heute' : strftime('%d.%m.%y', $pl['planetenUpdate'])).']]></scanDateFull>
 		<scanOview>'.$pl['planetenUpdateOverview'].'</scanOview>
 		<scanFailed>'.$pl['planetenUnscannbar'].'</scanFailed>
-		<scanImg><![CDATA['.($oddb ? '' : odscreen($pl['planetenTyp'], $pl['planetenGebPlanet'], $pl['planetenGebOrbit'])).']]></scanImg>';
+		<scanImg><![CDATA['.($oddb ? '' : odscreen($pl['planetenTyp'], $pl['planetenGebPlanet'], $pl['planetenGebOrbit'], $pl['planetenGebSpezial'])).']]></scanImg>';
 				}
 				
 				// Orbit
@@ -765,6 +766,7 @@ if($showr) {
 				$planeten .= '
 		<gebplanet><![CDATA['.($r ? $pl['planetenGebPlanet'] : '').']]></gebplanet>
 		<geborbit><![CDATA['.($r ? $pl['planetenGebOrbit'] : '').']]></geborbit>
+		<gebspezial><![CDATA['.($r ? $pl['planetenGebSpezial'] : '').']]></gebspezial>
 		<orbiter><![CDATA['.($r ? $pl['planetenOrbiter'] : '0').']]></orbiter>
 		<erzmenge><![CDATA['.ressmenge($pl['planetenRMErz']).']]></erzmenge>
 		<metallmenge><![CDATA['.ressmenge($pl['planetenRMMetall']).']]></metallmenge>
@@ -902,14 +904,14 @@ if(count($fow) OR !$showr) {
 			$sysinfo .= '
 	<tr>
 		'.fowcell('Gate G'.$data['systeme_galaxienID']).'
-		'.fowcell($data['galaxienGateSys'], false, 0, 'index.php?op=system&amp;sys='.$data['galaxienGateSys']).'
+		'.fowcell($data['galaxienGateSys'], false, 0, '?op=system&amp;sys='.$data['galaxienGateSys']).'
 		'.fowcell($data['galaxienGate']).'
 		'.fowcell('X').'
 		<td></td>
 		'.fowcell(flugdauer($data['systemeGateEntf'], $user->settings['antrieb'])).'
 		<td></td>
 		<td></td>
-		'.fowcell('[&raquo;]', false, 0, 'index.php?op=fleet&pre_pid_set='.$data['galaxienGate'], 'Schiffe zum Gate schicken').'
+		'.fowcell('[&raquo;]', false, 0, '?op=fleet&pre_pid_set='.$data['galaxienGate'], 'Schiffe zum Gate schicken').'
 	</tr>';
 		}
 		// kein Gate
@@ -1006,14 +1008,14 @@ if(count($fow) OR !$showr) {
 			$sysinfo .= '
 	<tr>
 		'.fowcell('nächstes Myrigate').'
-		'.fowcell($mg['planeten_systemeID'], false, 0, 'index.php?op=system&amp;sys='.$mg['planeten_systemeID']).'
+		'.fowcell($mg['planeten_systemeID'], false, 0, '?op=system&amp;sys='.$mg['planeten_systemeID']).'
 		'.fowcell($mg['planetenID']).'
-		'.fowcell(htmlspecialchars($mg['playerName'], ENT_COMPAT, $charset), false, 0, 'index.php?op=usershow&amp;welch='.$mg['planeten_playerID']).'
-		'.($mg['player_allianzenID'] ? fowcell(htmlspecialchars($mg['allianzenTag'], ENT_COMPAT, $charset), false, 0, 'index.php?op=allyshow&amp;welch='.$mg['player_allianzenID']) : fowcell('')).'
+		'.fowcell(htmlspecialchars($mg['playerName'], ENT_COMPAT, $charset), false, 0, '?op=usershow&amp;welch='.$mg['planeten_playerID']).'
+		'.($mg['player_allianzenID'] ? fowcell(htmlspecialchars($mg['allianzenTag'], ENT_COMPAT, $charset), false, 0, '?op=allyshow&amp;welch='.$mg['player_allianzenID']) : fowcell('')).'
 		'.fowcell(flugdauer($mg['planetenEntfernung'], $user->settings['antrieb'])).'
 		'.fowcell(($oddb ? '<span style="color:'.$scc.'">'.$sc.'</span>' : $sc)).'
 		'.fowcell('[weitere]', false, 0, ADDR.'index.php?p=search&amp;s=1&amp;g='.$data['systeme_galaxienID'].'&amp;mg=on&amp;as2[0]=1&amp;as2[1]=1&amp;as2[2]=1&amp;as2[4]=1&amp;as2[5]=1&amp;sortt=1&amp;entf=sys'.$_GET['id'].'&amp;hide&amp;title='.urlencode('Myrigates von '.$_GET['id'].' aus')).'
-		'.fowcell('[&raquo;]', false, 0, 'index.php?op=fleet&pre_pid_set='.$mg['planetenID'], 'Schiffe hierher schicken').'
+		'.fowcell('[&raquo;]', false, 0, '?op=fleet&pre_pid_set='.$mg['planetenID'], 'Schiffe hierher schicken').'
 	</tr>';
 		}
 		// kein Myrigate gefunden
@@ -1056,7 +1058,7 @@ if(count($fow) OR !$showr) {
 				$sysinfo .= '
 	<tr>
 		'.fowcell('nicht erfasst').'
-		'.fowcell($row['systemeID'], false, 0, 'index.php?op=system&amp;sys='.$row['systemeID']).'
+		'.fowcell($row['systemeID'], false, 0, '?op=system&amp;sys='.$row['systemeID']).'
 		'.fowcell('bitte einscannen, damit die DB die Planeten erfassen kann', false, 6).'
 	</tr>';
 			}
@@ -1100,7 +1102,7 @@ if(count($fow) OR !$showr) {
 					$sysinfo .= '
 	<tr>
 		'.fowcell('veraltetes Ally-System').'
-		'.fowcell($row['systemeID'], false, 0, 'index.php?op=system&amp;sys='.$row['systemeID']).'
+		'.fowcell($row['systemeID'], false, 0, '?op=system&amp;sys='.$row['systemeID']).'
 		'.fowcell('').'
 		'.fowcell('').'
 		'.fowcell('').'
@@ -1173,7 +1175,7 @@ if(count($fow) OR !$showr) {
 				
 				// Planet besetzt
 				if($row['playerName'] != NULL) {
-					$inhaber = fowcell(htmlspecialchars($row['playerName'], ENT_COMPAT, $charset), false, 0, 'index.php?op=usershow&amp;welch='.$row['planeten_playerID']);
+					$inhaber = fowcell(htmlspecialchars($row['playerName'], ENT_COMPAT, $charset), false, 0, '?op=usershow&amp;welch='.$row['planeten_playerID']);
 				}
 				// Planet frei
 				else if($row['planeten_playerID'] === "0") {
@@ -1195,14 +1197,14 @@ if(count($fow) OR !$showr) {
 				$sysinfo .= '
 	<tr>
 		'.fowcell($first ? 'Scoutziel' : '').'
-		'.fowcell($row['systemeID'], false, 0, 'index.php?op=system&amp;sys='.$row['systemeID']).'
+		'.fowcell($row['systemeID'], false, 0, '?op=system&amp;sys='.$row['systemeID']).'
 		'.fowcell($row['planetenID']).'
 		'.$inhaber.'
-		'.($row['player_allianzenID'] ? fowcell(htmlspecialchars($row['allianzenTag'], ENT_COMPAT, $charset), false, 0, 'index.php?op=allyshow&amp;welch='.$row['player_allianzenID']) : fowcell('')).'
+		'.($row['player_allianzenID'] ? fowcell(htmlspecialchars($row['allianzenTag'], ENT_COMPAT, $charset), false, 0, '?op=allyshow&amp;welch='.$row['player_allianzenID']) : fowcell('')).'
 		'.fowcell(flugdauer($row['systemeEntfernung'], $user->settings['antrieb'])).'
 		'.fowcell(($oddb ? '<span style="color:'.$scc.'">'.$sc.'</span>' : $sc)).'
 		'.fowcell($oddb ? '<a href="javascript:void(0)" onclick="document.getElementById(\'oddbtooliframe\').src = \''.ADDR.'index.php?p=ajax_general&amp;sp=reserve&amp;sys='.$row['systemeID'].'&amp;ajax&amp;plugin\';this.parentNode.innerHTML = \'<i>reserviert</i>\'"><i>reservieren</i></a>' : '').'
-		'.fowcell('[&raquo;]', false, 0, 'index.php?op=fleet&pre_pid_set='.$row['planetenID'], 'Schiffe hierher schicken').'
+		'.fowcell('[&raquo;]', false, 0, '?op=fleet&pre_pid_set='.$row['planetenID'], 'Schiffe hierher schicken').'
 	</tr>';
 				
 				$first = false;
@@ -1265,7 +1267,7 @@ if(count($fow) OR !$showr) {
 			
 			// Planet besetzt
 			if($row['playerName'] != NULL) {
-				$inhaber = fowcell(htmlspecialchars($row['playerName'], ENT_COMPAT, $charset), false, 0, 'index.php?op=usershow&amp;welch='.$row['planeten_playerID']);
+				$inhaber = fowcell(htmlspecialchars($row['playerName'], ENT_COMPAT, $charset), false, 0, '?op=usershow&amp;welch='.$row['planeten_playerID']);
 			}
 			// Planet frei
 			else if($row['planeten_playerID'] === "0") {
@@ -1293,14 +1295,14 @@ if(count($fow) OR !$showr) {
 			$sysinfo .= '
 	<tr>
 		'.fowcell($first ? 'nächstes System' : '').'
-		'.fowcell($row['systemeID'], false, 0, 'index.php?op=system&amp;sys='.$row['systemeID']).'
+		'.fowcell($row['systemeID'], false, 0, '?op=system&amp;sys='.$row['systemeID']).'
 		'.fowcell($row['planetenID']).'
 		'.$inhaber.'
-		'.($row['player_allianzenID'] ? fowcell(htmlspecialchars($row['allianzenTag'], ENT_COMPAT, $charset), false, 0, 'index.php?op=allyshow&amp;welch='.$row['player_allianzenID']) : fowcell('')).'
+		'.($row['player_allianzenID'] ? fowcell(htmlspecialchars($row['allianzenTag'], ENT_COMPAT, $charset), false, 0, '?op=allyshow&amp;welch='.$row['player_allianzenID']) : fowcell('')).'
 		'.fowcell(flugdauer($row['systemeEntfernung'], $user->settings['antrieb'])).'
 		'.fowcell(($oddb ? '<span style="color:'.$scc.'">'.$sc.'</span>' : $sc)).'
 		'.$link.'
-		'.fowcell('[&raquo;]', false, 0, 'index.php?op=fleet&pre_pid_set='.$row['planetenID'], 'Schiffe hierher schicken').'
+		'.fowcell('[&raquo;]', false, 0, '?op=fleet&pre_pid_set='.$row['planetenID'], 'Schiffe hierher schicken').'
 	</tr>';
 			
 			$first = false;
@@ -1445,7 +1447,7 @@ if(count($fow) OR !$showr) {
 						
 						// Planet besetzt
 						if($row['playerName'] != NULL) {
-							$inhaber = fowcell(htmlspecialchars($row['playerName'], ENT_COMPAT, $charset), false, 0, 'index.php?op=usershow&amp;welch='.$row['planeten_playerID']);
+							$inhaber = fowcell(htmlspecialchars($row['playerName'], ENT_COMPAT, $charset), false, 0, '?op=usershow&amp;welch='.$row['planeten_playerID']);
 						}
 						// Planet frei
 						else if($row['planeten_playerID'] === "0") {
@@ -1478,14 +1480,14 @@ if(count($fow) OR !$showr) {
 						$sysinfo .= '
 	<tr>
 		'.fowcell($first ? htmlspecialchars($routen[$id]['routenName'], ENT_COMPAT, $charset) : '').'
-		'.fowcell($row['systemeID'], false, 0, 'index.php?op=system&amp;sys='.$row['systemeID']).'
+		'.fowcell($row['systemeID'], false, 0, '?op=system&amp;sys='.$row['systemeID']).'
 		'.fowcell($row['planetenID']).'
 		'.$inhaber.'
-		'.($row['player_allianzenID'] ? fowcell(htmlspecialchars($row['allianzenTag'], ENT_COMPAT, $charset), false, 0, 'index.php?op=allyshow&amp;welch='.$row['player_allianzenID']) : fowcell('')).'
+		'.($row['player_allianzenID'] ? fowcell(htmlspecialchars($row['allianzenTag'], ENT_COMPAT, $charset), false, 0, '?op=allyshow&amp;welch='.$row['player_allianzenID']) : fowcell('')).'
 		'.fowcell(flugdauer($row['planetenEntfernung'], ($routen[$id]['routenAntrieb'] ? $routen[$id]['routenAntrieb'] : $user->settings['antrieb']))).'
 		'.fowcell(($oddb ? '<span style="color:'.$scc.'">'.$sc.'</span>' : $sc)).'
 		'.$link.'
-		'.fowcell('[&raquo;]', false, 0, 'index.php?op=fleet&pre_pid_set='.$row['planetenID'], 'Schiffe hierher schicken').'
+		'.fowcell('[&raquo;]', false, 0, '?op=fleet&pre_pid_set='.$row['planetenID'], 'Schiffe hierher schicken').'
 	</tr>';
 						
 						$first = false;
@@ -1555,7 +1557,7 @@ if(count($fow) OR !$showr) {
 					
 					// Planet besetzt
 					if($row['playerName'] != NULL) {
-						$inhaber = fowcell(htmlspecialchars($row['playerName'], ENT_COMPAT, $charset), false, 0, 'index.php?op=usershow&amp;welch='.$row['planeten_playerID']);
+						$inhaber = fowcell(htmlspecialchars($row['playerName'], ENT_COMPAT, $charset), false, 0, '?op=usershow&amp;welch='.$row['planeten_playerID']);
 					}
 					// Planet frei
 					else if($row['planeten_playerID'] === "0") {
@@ -1577,14 +1579,14 @@ if(count($fow) OR !$showr) {
 					$sysinfo .= '
 	<tr>
 		'.fowcell($first ? htmlspecialchars($val[0], ENT_COMPAT, $charset): '').'
-		'.fowcell($row['systemeID'], false, 0, 'index.php?op=system&amp;sys='.$row['systemeID']).'
+		'.fowcell($row['systemeID'], false, 0, '?op=system&amp;sys='.$row['systemeID']).'
 		'.fowcell($row['planetenID']).'
 		'.$inhaber.'
-		'.($row['player_allianzenID'] ? fowcell(htmlspecialchars($row['allianzenTag'], ENT_COMPAT, $charset), false, 0, 'index.php?op=allyshow&amp;welch='.$row['player_allianzenID']) : fowcell('')).'
+		'.($row['player_allianzenID'] ? fowcell(htmlspecialchars($row['allianzenTag'], ENT_COMPAT, $charset), false, 0, '?op=allyshow&amp;welch='.$row['player_allianzenID']) : fowcell('')).'
 		'.fowcell(flugdauer($row['planetenEntfernung'], $user->settings['antrieb'])).'
 		'.fowcell(($oddb ? '<span style="color:'.$scc.'">'.$sc.'</span>' : $sc)).'
 		'.($first ? fowcell('[weitere]', false, 0, ADDR.'index.php?p=search&amp;sp=planet&amp;s=1&amp;hide&amp;'.htmlspecialchars($val[3], ENT_COMPAT, $charset).'&amp;g='.$data['systeme_galaxienID'].'&amp;sortt=1&amp;entf=sys'.$_GET['id'].($val[2] ? '&amp;sorto3=1' : '')) : fowcell('')).'
-		'.fowcell('[&raquo;]', false, 0, 'index.php?op=fleet&pre_pid_set='.$row['planetenID'], 'Schiffe hierher schicken').'
+		'.fowcell('[&raquo;]', false, 0, '?op=fleet&pre_pid_set='.$row['planetenID'], 'Schiffe hierher schicken').'
 	</tr>';
 					
 					$first = false;

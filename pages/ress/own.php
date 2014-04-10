@@ -110,6 +110,7 @@ else if($_GET['sp'] == 'own') {
 			planetenUpdate,
 			planetenGebPlanet,
 			planetenGebOrbit,
+			planetenGebSpezial,
 			planetenRessplani,
 			planetenKommentar,
 			

@@ -992,7 +992,7 @@ else {
 								$unscannbar = '';
 							}
 							
-							$spv[13] = '<div class="searchicon tooltip plscreen" style="width:18px;height:18px;background-position:-336px -54px" data-plscreen="'.$row['planetenTyp'].'_0+'.$row['planetenGebPlanet'].'_0+'.$row['planetenGebOrbit'].'_&lt;div class=&quot;'.$color.' center&quot;&gt;Scan: '.$scan.'&lt;/div&gt;'.$unscannbar.'"></div>';
+							$spv[13] = '<div class="searchicon tooltip plscreen" style="width:18px;height:18px;background-position:-336px -54px" data-plscreen="'.$row['planetenTyp'].'_0+'.$row['planetenGebPlanet'].'_0+'.$row['planetenGebOrbit'].'_0+'.$row['planetenGebSpezial'].'_&lt;div class=&quot;'.$color.' center&quot;&gt;Scan: '.$scan.'&lt;/div&gt;'.$unscannbar.'"></div>';
 						}
 						else $spv[13] = '&nbsp;';
 					}

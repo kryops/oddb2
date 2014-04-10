@@ -323,6 +323,7 @@ else if($_GET['sp'] == 'send') {
 						planetenUnscannbar,
 						planetenGebPlanet,
 						planetenGebOrbit,
+						planetenGebSpezial,
 						planetenKategorie,
 						planetenKommentar,
 						planetenGeraidet,

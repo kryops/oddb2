@@ -141,6 +141,14 @@ oddbtool.fow = function(page, data) {
 			var xadd = 110;
 			var yadd = 17;
 			
+			var smallWindow = $(window).width() <= 1024;
+			
+			// Anpassung an responsive layout
+			if(smallWindow) {
+				ybase = 225;
+				xbase = 104;
+			}
+			
 			var x = 0;
 			var y = 0;
 			var content = '';
@@ -165,6 +173,7 @@ oddbtool.fow = function(page, data) {
 						data['pl'][i]['unscannbar'] = $(pl).find('scanFailed').text();
 						data['pl'][i]['gpl'] = $(pl).find('gebplanet').text();
 						data['pl'][i]['gor'] = $(pl).find('geborbit').text();
+						data['pl'][i]['gspec'] = $(pl).find('gebspezial').text();
 						data['pl'][i]['orbiter'] = $(pl).find('orbiter').text();
 						data['pl'][i]['erzmenge'] = $(pl).find('erzmenge').text();
 						data['pl'][i]['metallmenge'] = $(pl).find('metallmenge').text();
@@ -219,7 +228,7 @@ oddbtool.fow = function(page, data) {
 								x = xbase + i*xadd;
 								y = ybase + i*yadd + 100;
 								
-								content += '<div class="oddbtoolplanet" style="left:'+x+'px; top:'+y+'px; background-image:url('+oddbtool.prefs.url+'img/layout/bg.gif)"><a href="index.php?op=orbit&index='+data['pl'][i]['id']+'" onmouseover="dlt(\'Eigene Schiffe: 0\', \''+data['pl'][i]['name']+' Orbit:\')" onmouseout="nd()">'+o+'</a></div>';
+								content += '<div class="oddbtoolplanet" style="left:'+x+'px; top:'+y+'px; background-image:url('+oddbtool.prefs.url+'img/layout/bg.gif)"><a href="?op=orbit&index='+data['pl'][i]['id']+'" onmouseover="dlt(\'Eigene Schiffe: 0\', \''+data['pl'][i]['name']+' Orbit:\')" onmouseout="nd()">'+o+'</a></div>';
 							}
 						}
 						// Planet verschleiert und in der DB bekannt
@@ -275,26 +284,27 @@ oddbtool.fow = function(page, data) {
                         var maxresswert = parseFloat(data['pl'][i]['erz']);
                         if (parseFloat(data['pl'][i]['wolfram']) > maxresswert) { maxresswert = parseFloat(data['pl'][i]['wolfram']); }
                         if (parseFloat(data['pl'][i]['kristall']) > maxresswert) { maxresswert = parseFloat(data['pl'][i]['kristall']); }
-                        if (parseFloat(data['pl'][i]['fluor']) <= maxresswert) {
-                            plpunkte = parseFloat(data['pl'][i]['groesse'] * data['pl'][i]['bev'].replace('.','').replace('.','') / 100000) + parseFloat(maxresswert) + parseFloat(data['pl'][i]['fluor']);    
-                        } else {
-                            plpunkte = parseFloat(data['pl'][i]['groesse'] * data['pl'][i]['bev'].replace('.','').replace('.','') / 100000) + (2 * parseFloat(data['pl'][i]['fluor']));
+                        if (parseFloat(data['pl'][i]['fluor']) > maxresswert) { maxresswert = parseFloat(data['pl'][i]['fluor']); }
+                        if(maxresswert < 100) {
+                        	maxresswert = 100;
                         }
+                        
+                        plpunkte = parseFloat(data['pl'][i]['groesse'] * data['pl'][i]['bev'].replace('.','').replace('.','') / 100000) + maxresswert;
                   
-						tooltip += '<table style="border:0;padding:0;margin:0;width:auto"><tr><td><img src="http://static.omega-day.com/img/research/ress_ore_small.gif"></td>' +
+						tooltip += '<table style="border:0;padding:0;margin:0;width:auto"><tr><td><img src="/static/img/research/ress_ore_small.gif"></td>' +
 									'<td style="padding-left:10px;white-space:nowrap">'+data['pl'][i]['erz']+' %</td><td style="padding-left:10px">'+data['pl'][i]['erzmenge']+'</td></tr>' +
-									'<tr><td><img src="http://static.omega-day.com/img/research/ress_steel_small.gif"></td><td style="padding-left:10px;white-space:nowrap">'+data['pl'][i]['erz']+' %</td>' +
+									'<tr><td><img src="/static/img/research/ress_steel_small.gif"></td><td style="padding-left:10px;white-space:nowrap">100 %</td>' +
 									'<td style="padding-left:10px">'+data['pl'][i]['metallmenge']+'</td></tr>' +
-									' <tr><td><img src="http://static.omega-day.com/img/research/ress_wolfram_small.gif"></td><td style="padding-left:10px;white-space:nowrap">'+data['pl'][i]['wolfram']+' %</td>' +
+									' <tr><td><img src="/static/img/research/ress_wolfram_small.gif"></td><td style="padding-left:10px;white-space:nowrap">'+data['pl'][i]['wolfram']+' %</td>' +
 									'<td style="padding-left:10px">'+data['pl'][i]['wolframmenge']+'</td></tr>' +
-									'<tr><td><img src="http://static.omega-day.com/img/research/ress_crystal_small.gif"></td><td style="padding-left:10px;white-space:nowrap">'+data['pl'][i]['kristall']+' %</td>' +
+									'<tr><td><img src="/static/img/research/ress_crystal_small.gif"></td><td style="padding-left:10px;white-space:nowrap">'+data['pl'][i]['kristall']+' %</td>' +
 									'<td style="padding-left:10px">'+data['pl'][i]['kristallmenge']+'</td></tr>' +
-									'<tr><td><img src="http://static.omega-day.com/img/research/ress_fluor_small.gif"></td><td style="padding-left:10px;white-space:nowrap">'+data['pl'][i]['fluor']+' %</td>' +
+									'<tr><td><img src="/static/img/research/ress_fluor_small.gif"></td><td style="padding-left:10px;white-space:nowrap">'+data['pl'][i]['fluor']+' %</td>' +
 									'<td style="padding-left:10px">'+data['pl'][i]['fluormenge']+'</td></tr></table>' + 
 									(data['pl'][i]['bev'] && data['pl'][i]['bev'] != '0' ? '<br>Bev&ouml;lkerung: '+data['pl'][i]['bev'] : '') + 
 									'<br>Gr&ouml;&szlig;e: '+data['pl'][i]['groesse'] + 
 									(data['pl'][i]['orbiter'] && data['pl'][i]['orbiter'] > 0 ? '<br>Orbiter-Angriff: '+data['pl'][i]['orbiter'] : '') + 
-									'<br><br>'+data['pl'][i]['additional']+'<br>Punkte: ' + plpunkte;
+									'<br><br>'+data['pl'][i]['additional'] + (!isNaN(plpunkte) ? '<br>Punkte: ' + plpunkte : '');
 						
 						data['pl'][i]['name'] = oddbtool.str_replace(oddbtool.charmap_search, oddbtool.charmap_replace, data['pl'][i]['name']);
 						tooltip = tooltip.replace(/'/g, "\\'");                                                                          
@@ -315,8 +325,10 @@ oddbtool.fow = function(page, data) {
 							// Gebäude aufbereiten
 							data['pl'][i]['gpl'] = '0+'+data['pl'][i]['gpl'];
 							data['pl'][i]['gor'] = '0+'+data['pl'][i]['gor'];
+							data['pl'][i]['gspec'] = '0+'+data['pl'][i]['gspec'];
 							var gpl = data['pl'][i]['gpl'].split('+');
 							var gor = data['pl'][i]['gor'].split('+');
+							var gspec = data['pl'][i]['gspec'].split('+');
 							
 							// mit leeren Werten füllen
 							for(var k=1;k<=36;k++) {
@@ -327,6 +339,11 @@ oddbtool.fow = function(page, data) {
 							for(var k=1;k<=12;k++) {
 								if(typeof(gor[k]) == 'undefined') {
 									gor[k] = 0;
+								}
+							}
+							for(var k=1;k<=10;k++) {
+								if(typeof(gspec[k]) == 'undefined') {
+									gspec[k] = 0;
 								}
 							}
 							
@@ -356,16 +373,20 @@ oddbtool.fow = function(page, data) {
 							}
 							
 							// Gebäude auf dem Planet
-							content += '<a class="oddbtoollink" href="index.php?op=planet&index='+data['pl'][i]['id']+'" onmouseover="dlt(\''+tooltip+'\', \''+data['pl'][i]['name']+' ('+data['pl'][i]['id']+'):\')" onmouseout="nd()"><table border="0 cellpadding="0" cellspacing="0" class="oddbtoolplanet" style="cursor:pointer;left:'+x+'px;top:'+y+'px"><tr><td style="background-position:-'+oddbtool.geb[gpl[36]]+'px 0px"></td><td style="background-position:-'+oddbtool.geb[gpl[35]]+'px 0px"></td><td style="background-position:-'+oddbtool.geb[gpl[29]]+'px 0px"></td><td style="background-position:-'+oddbtool.geb[gpl[23]]+'px 0px"></td><td style="background-position:-'+oddbtool.geb[gpl[30]]+'px 0px"></td><td style="background-position:-'+oddbtool.geb[gpl[34]]+'px 0px"></td></tr><tr><td style="background-position:-'+oddbtool.geb[gpl[32]]+'px 0px"></td><td style="background-position:-'+oddbtool.geb[gpl[24]]+'px 0px"></td><td style="background-position:-'+oddbtool.geb[gpl[18]]+'px 0px"></td><td style="background-position:-'+oddbtool.geb[gpl[10]]+'px 0px"></td><td style="background-position:-'+oddbtool.geb[gpl[19]]+'px 0px"></td><td style="background-position:-'+oddbtool.geb[gpl[25]]+'px 0px"></td></tr><tr><td style="background-position:-'+oddbtool.geb[gpl[28]]+'px 0px"></td><td style="background-position:-'+oddbtool.geb[gpl[14]]+'px 0px"></td><td style="background-position:-'+oddbtool.geb[gpl[6]]+'px 0px"></td><td style="background-position:-'+oddbtool.geb[gpl[2]]+'px 0px"></td><td style="background-position:-'+oddbtool.geb[gpl[7]]+'px 0px"></td><td style="background-position:-'+oddbtool.geb[gpl[15]]+'px 0px"></td></tr><tr><td style="background-position:-'+oddbtool.geb[gpl[22]]+'px 0px"></td><td style="background-position:-'+oddbtool.geb[gpl[13]]+'px 0px"></td><td style="background-position:-'+oddbtool.geb[gpl[5]]+'px 0px"></td><td style="background-position:-'+oddbtool.geb[gpl[1]]+'px 0px"></td><td style="background-position:-'+oddbtool.geb[gpl[3]]+'px 0px"></td><td style="background-position:-'+oddbtool.geb[gpl[11]]+'px 0px"></td></tr><tr><td style="background-position:-'+oddbtool.geb[gpl[31]]+'px 0px"></td><td style="background-position:-'+oddbtool.geb[gpl[17]]+'px 0px"></td><td style="background-position:-'+oddbtool.geb[gpl[9]]+'px 0px"></td><td style="background-position:-'+oddbtool.geb[gpl[4]]+'px 0px"></td><td style="background-position:-'+oddbtool.geb[gpl[8]]+'px 0px"></td><td style="background-position:-'+oddbtool.geb[gpl[16]]+'px 0px"></td></tr><tr><td style="background-position:-'+oddbtool.geb[gpl[33]]+'px 0px"></td><td style="background-position:-'+oddbtool.geb[gpl[27]]+'px 0px"></td><td style="background-position:-'+oddbtool.geb[gpl[21]]+'px 0px"></td><td style="background-position:-'+oddbtool.geb[gpl[12]]+'px 0px"></td><td style="background-position:-'+oddbtool.geb[gpl[20]]+'px 0px"></td><td style="background-position:-'+oddbtool.geb[gpl[26]]+'px 0px"></td></tr><tr><td colspan="6" style="background-image:none;text-align:center;font-size:11px;padding-bottom:3px;padding-top:3px">'+data['pl'][i]['scan']+data['pl'][i]['comment']+'</td></tr></table></a>';
+							content += '<a class="oddbtoollink" href="?op=planet&index='+data['pl'][i]['id']+'" onmouseover="dlt(\''+tooltip+'\', \''+data['pl'][i]['name']+' ('+data['pl'][i]['id']+'):\')" onmouseout="nd()"><table border="0 cellpadding="0" cellspacing="0" class="oddbtoolplanet" style="cursor:pointer;left:'+x+'px;top:'+y+'px"><tr><td style="background-position:-'+oddbtool.geb[gpl[36]]+'px 0px"></td><td style="background-position:-'+oddbtool.geb[gpl[35]]+'px 0px"></td><td style="background-position:-'+oddbtool.geb[gpl[29]]+'px 0px"></td><td style="background-position:-'+oddbtool.geb[gpl[23]]+'px 0px"></td><td style="background-position:-'+oddbtool.geb[gpl[30]]+'px 0px"></td><td style="background-position:-'+oddbtool.geb[gpl[34]]+'px 0px"></td></tr><tr><td style="background-position:-'+oddbtool.geb[gpl[32]]+'px 0px"></td><td style="background-position:-'+oddbtool.geb[gpl[24]]+'px 0px"></td><td style="background-position:-'+oddbtool.geb[gpl[18]]+'px 0px"></td><td style="background-position:-'+oddbtool.geb[gpl[10]]+'px 0px"></td><td style="background-position:-'+oddbtool.geb[gpl[19]]+'px 0px"></td><td style="background-position:-'+oddbtool.geb[gpl[25]]+'px 0px"></td></tr><tr><td style="background-position:-'+oddbtool.geb[gpl[28]]+'px 0px"></td><td style="background-position:-'+oddbtool.geb[gpl[14]]+'px 0px"></td><td style="background-position:-'+oddbtool.geb[gpl[6]]+'px 0px"></td><td style="background-position:-'+oddbtool.geb[gpl[2]]+'px 0px"></td><td style="background-position:-'+oddbtool.geb[gpl[7]]+'px 0px"></td><td style="background-position:-'+oddbtool.geb[gpl[15]]+'px 0px"></td></tr><tr><td style="background-position:-'+oddbtool.geb[gpl[22]]+'px 0px"></td><td style="background-position:-'+oddbtool.geb[gpl[13]]+'px 0px"></td><td style="background-position:-'+oddbtool.geb[gpl[5]]+'px 0px"></td><td style="background-position:-'+oddbtool.geb[gpl[1]]+'px 0px"></td><td style="background-position:-'+oddbtool.geb[gpl[3]]+'px 0px"></td><td style="background-position:-'+oddbtool.geb[gpl[11]]+'px 0px"></td></tr><tr><td style="background-position:-'+oddbtool.geb[gpl[31]]+'px 0px"></td><td style="background-position:-'+oddbtool.geb[gpl[17]]+'px 0px"></td><td style="background-position:-'+oddbtool.geb[gpl[9]]+'px 0px"></td><td style="background-position:-'+oddbtool.geb[gpl[4]]+'px 0px"></td><td style="background-position:-'+oddbtool.geb[gpl[8]]+'px 0px"></td><td style="background-position:-'+oddbtool.geb[gpl[16]]+'px 0px"></td></tr><tr><td style="background-position:-'+oddbtool.geb[gpl[33]]+'px 0px"></td><td style="background-position:-'+oddbtool.geb[gpl[27]]+'px 0px"></td><td style="background-position:-'+oddbtool.geb[gpl[21]]+'px 0px"></td><td style="background-position:-'+oddbtool.geb[gpl[12]]+'px 0px"></td><td style="background-position:-'+oddbtool.geb[gpl[20]]+'px 0px"></td><td style="background-position:-'+oddbtool.geb[gpl[26]]+'px 0px"></td></tr><tr><td colspan="6" style="background-image:none;text-align:center;font-size:11px;padding-bottom:3px;padding-top:3px">'+data['pl'][i]['scan']+data['pl'][i]['comment']+'</td></tr></table></a>';
+							
+							// Spezialgebäude
+							y -= 28;
+							content += '<table border="0 cellpadding="0" cellspacing="0" class="oddbtoolplanet" style="left:'+x+'px;top:'+y+'px"><tr><td style="background-position:-'+oddbtool.geb[gspec[1]]+'px 0px"></td><td style="background-position:-'+oddbtool.geb[gspec[2]]+'px 0px"></td><td style="background-position:-'+oddbtool.geb[gspec[3]]+'px 0px"></td><td style="background-position:-'+oddbtool.geb[gspec[4]]+'px 0px"></td><td style="background-position:-'+oddbtool.geb[gspec[5]]+'px 0px"></td><td style="background-position:-'+oddbtool.geb[gspec[6]]+'px 0px"></td></tr><tr><td style="background-position:-'+oddbtool.geb[gspec[7]]+'px 0px"></td><td style="background-position:-'+oddbtool.geb[gspec[8]]+'px 0px"></td><td style="background-position:-'+oddbtool.geb[gspec[9]]+'px 0px"></td><td style="background-position:-'+oddbtool.geb[gspec[10]]+'px 0px"></td><td></td><td></td></tr></table>';
 							
 							// Gebäude im Orbit
-							y -= 32;
+							y -= 28;
 							
 							content += '<table border="0 cellpadding="0" cellspacing="0" class="oddbtoolplanet" style="left:'+x+'px;top:'+y+'px"><tr><td style="background-position:-'+oddbtool.geb[gor[1]]+'px 0px"></td><td style="background-position:-'+oddbtool.geb[gor[2]]+'px 0px"></td><td style="background-position:-'+oddbtool.geb[gor[3]]+'px 0px"></td><td style="background-position:-'+oddbtool.geb[gor[4]]+'px 0px"></td><td style="background-position:-'+oddbtool.geb[gor[5]]+'px 0px"></td><td style="background-position:-'+oddbtool.geb[gor[6]]+'px 0px"></td></tr><tr><td style="background-position:-'+oddbtool.geb[gor[7]]+'px 0px"></td><td style="background-position:-'+oddbtool.geb[gor[8]]+'px 0px"></td><td style="background-position:-'+oddbtool.geb[gor[9]]+'px 0px"></td><td style="background-position:-'+oddbtool.geb[gor[10]]+'px 0px"></td><td style="background-position:-'+oddbtool.geb[gor[11]]+'px 0px"></td><td style="background-position:-'+oddbtool.geb[gor[12]]+'px 0px"></td></tr></table>';
 						}
 						else {
 							// Planet-Overlay ohne Scan
-							content += '<a class="oddbtoollink" href="index.php?op=planet&index='+data['pl'][i]['id']+'" onmouseover="dlt(\''+tooltip+'\', \''+data['pl'][i]['name']+' ('+data['pl'][i]['id']+'):\')" onmouseout="nd()"><table border="0 cellpadding="0" cellspacing="0" class="oddbtoolplanet" style="cursor:pointer;left:'+x+'px;top:'+y+'px"><tr><td style="height:90px;background-image:none"></td></tr><tr><td style="background-image:none;text-align:center;font-size:11px;padding-bottom:3px">'+data['pl'][i]['comment']+'</td></tr></table></a>';
+							content += '<a class="oddbtoollink" href="?op=planet&index='+data['pl'][i]['id']+'" onmouseover="dlt(\''+tooltip+'\', \''+data['pl'][i]['name']+' ('+data['pl'][i]['id']+'):\')" onmouseout="nd()"><table border="0 cellpadding="0" cellspacing="0" class="oddbtoolplanet" style="cursor:pointer;left:'+x+'px;top:'+y+'px"><tr><td style="height:90px;background-image:none"></td></tr><tr><td style="background-image:none;text-align:center;font-size:11px;padding-bottom:3px">'+data['pl'][i]['comment']+'</td></tr></table></a>';
 						}
 					}
 					// Planet nicht in DB
@@ -386,7 +407,7 @@ oddbtool.fow = function(page, data) {
 					// Inhaber-Overlay
 					if(data['typ'] == 'system' || $(result).find('systemUpdate').text() > 0 || ($(pl).text() != '' && $(pl).find('userid').text() != -1)) {
 						x = xbase + i*xadd;
-						y = ybase + i*yadd - 75;
+						y = ybase + i*yadd - 103;
 						
 						content += '<div class="oddbtoolplanet" style="line-height:15px;text-align:center;left:'+x+'px;top:'+y+'px">';
 						if(data['pl'][i]['inhaber'] > 0) {
@@ -401,9 +422,9 @@ oddbtool.fow = function(page, data) {
 								}
 							}
 							
-							content += '<img src="http://static.omega-day.com/img/misc/blank.gif" alt="" class="oddbtoolrasse oddbtoolr'+data['pl'][i]['rasse']+'"><a href="index.php?op=usershow&welch='+data['pl'][i]['inhaber']+'">'+data['pl'][i]['username']+'</a>';
+							content += '<img src="/static/img/misc/blank.gif" alt="" class="oddbtoolrasse oddbtoolr'+data['pl'][i]['rasse']+'"><a href="?op=usershow&welch='+data['pl'][i]['inhaber']+'">'+data['pl'][i]['username']+'</a>';
 							if(data['pl'][i]['allianz'] > 0) {
-								content += '<br><a href="index.php?op=allyshow&welch='+data['pl'][i]['allianz']+'" style="font-size:10px">'+data['pl'][i]['allytag']+'</a>';
+								content += '<br><a href="?op=allyshow&welch='+data['pl'][i]['allianz']+'" style="font-size:10px">'+data['pl'][i]['allytag']+'</a>';
 								var status = $(result).find('status'+data['pl'][i]['allianz']).text();
 								if(status != '') {
 									content += '<br><span style="font-size:10px;color:#888888">'+status+'</span>';

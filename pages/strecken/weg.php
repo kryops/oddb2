@@ -282,13 +282,18 @@ class SchnellsterWeg {
 		 */
 		
 		// Daten unvollständig
-		else if(!isset($_POST['start'], $_POST['dest'], $_POST['antrieb'], $_POST['nap'], $_POST['napmanuell'])) {
+		else if(!isset($_POST['start'], $_POST['dest'], $_POST['antrieb'], $_POST['napmanuell'])) {
 			$this->error = 'Daten unvollständig!';
 		}
 		
 		// Antrieb ungültig
 		else if((int)$_POST['antrieb'] < 1) {
 			$this->error = 'Ung&uuml;ltiger Antrieb eingegeben!';
+		}
+		
+		// allianzlos
+		if(!isset($_POST['nap'])) {
+			$_POST['nap'] = 0;
 		}
 		
 		// Daten sichern
