@@ -55,7 +55,7 @@ header('Content-Type: text/javascript; charset=utf-8');
 		version: '<?php echo ODDBTOOL; ?>',
 		odworld: '<?php echo ODWORLD; ?>',
 		
-		betaserver: <?php echo DEBUG; ?>,
+		betaserver: <?php echo DEBUG ? 'true' : 'false'; ?>,
 		
 		prefs: {
 			url: '<?php echo ADDR; ?>'
@@ -791,19 +791,19 @@ header('Content-Type: text/javascript; charset=utf-8');
 					// Planetengebäude
 					data = ctree.find('td[width="600"][background]');
 					for(var i=1; i<=36; i++) {
-						out['g'+i] = data.find('img[name="pod'+i+'"]').attr('src').replace(/^.*\/spielgrafik\/(?:buildings\/|misc\/)*/, '').replace(/blank.gif/, '');
+						out['g'+i] = data.find('img[name="pod'+i+'"]').attr('src').replace(/^.*\/img\/(?:buildings\/|misc\/)*/, '').replace(/blank.gif/, '');
 					}
 					
 					// Orbitgebäude
 					data = data.prev();
 					for(i=1; i<=12; i++) {
-						out['o'+i] = data.find('img[name="wpod'+i+'"]').attr('src').replace(/^.*\/spielgrafik\/(?:buildings\/|misc\/)*/, '');
+						out['o'+i] = data.find('img[name="wpod'+i+'"]').attr('src').replace(/^.*\/img\/(?:buildings\/|misc\/)*/, '');
 					}
 					
 					// Spezialgebäude
 					data = ctree.find('td[colspan="8"] table');
 					for(i=1; i<=10; i++) {
-						out['s'+i] = data.find('img[name="spod'+i+'"]').attr('src').replace(/^.*\/spielgrafik\/(?:buildings\/|misc\/)*/, '');
+						out['s'+i] = data.find('img[name="spod'+i+'"]').attr('src').replace(/^.*\/img\/(?:buildings\/|misc\/)*/, '');
 					}
 				}
 				catch(e) {
@@ -1290,7 +1290,7 @@ header('Content-Type: text/javascript; charset=utf-8');
 					
 					// Lokale Grafikpakete abfangen
 					/*
-					if(path.indexOf('/spielgrafik/') == -1) {
+					if(path.indexOf('/static/img') == -1) {
 						throw 'Grafikpfade ungültig!';
 					}
 					*/
@@ -1304,7 +1304,7 @@ header('Content-Type: text/javascript; charset=utf-8');
 						}
 					}
 					
-					out['f'].push(path.replace(/^.*\/spielgrafik\//, ''));
+					out['f'].push(path.replace(/^.*\/img\//, ''));
 					out['fn'].push($this.attr('titel'));
 					out['ff'].push($this.hasClass('opacity2') ? 1 : 0);
 				});
@@ -1317,7 +1317,7 @@ header('Content-Type: text/javascript; charset=utf-8');
 				var current = ctree.find('.tabletranslight .box td:first-child img');
 				
 				if(current.length) {
-					out['current'] = current.attr('src').replace(/^.*\/spielgrafik\//, '');
+					out['current'] = current.attr('src').replace(/^.*\/img\//, '');
 					out['current_end'] = ctree.find('#returntim').siblings('b').html();
 				}
 			}
@@ -1642,15 +1642,15 @@ header('Content-Type: text/javascript; charset=utf-8');
 	                        	maxresswert = 100;
 	                        }
 							
-							tooltip += '<table style="border:0;padding:0;margin:0;width:auto"><tr><td><img src="/spielgrafik/research/ress_ore_small.gif"></td>' +
+							tooltip += '<table style="border:0;padding:0;margin:0;width:auto"><tr><td><img src="/static/img/research/ress_ore_small.gif"></td>' +
 										'<td style="padding-left:10px;white-space:nowrap">'+data['pl'][i]['erz']+' %</td><td style="padding-left:10px">'+data['pl'][i]['erzmenge']+'</td></tr>' +
-										'<tr><td><img src="/spielgrafik/research/ress_steel_small.gif"></td><td style="padding-left:10px;white-space:nowrap">100 %</td>' +
+										'<tr><td><img src="/static/img/research/ress_steel_small.gif"></td><td style="padding-left:10px;white-space:nowrap">100 %</td>' +
 										'<td style="padding-left:10px">'+data['pl'][i]['metallmenge']+'</td></tr>' +
-										' <tr><td><img src="/spielgrafik/research/ress_wolfram_small.gif"></td><td style="padding-left:10px;white-space:nowrap">'+data['pl'][i]['wolfram']+' %</td>' +
+										' <tr><td><img src="/static/img/research/ress_wolfram_small.gif"></td><td style="padding-left:10px;white-space:nowrap">'+data['pl'][i]['wolfram']+' %</td>' +
 										'<td style="padding-left:10px">'+data['pl'][i]['wolframmenge']+'</td></tr>' +
-										'<tr><td><img src="/spielgrafik/research/ress_crystal_small.gif"></td><td style="padding-left:10px;white-space:nowrap">'+data['pl'][i]['kristall']+' %</td>' +
+										'<tr><td><img src="/static/img/research/ress_crystal_small.gif"></td><td style="padding-left:10px;white-space:nowrap">'+data['pl'][i]['kristall']+' %</td>' +
 										'<td style="padding-left:10px">'+data['pl'][i]['kristallmenge']+'</td></tr>' +
-										'<tr><td><img src="/spielgrafik/research/ress_fluor_small.gif"></td><td style="padding-left:10px;white-space:nowrap">'+data['pl'][i]['fluor']+' %</td>' +
+										'<tr><td><img src="/static/img/research/ress_fluor_small.gif"></td><td style="padding-left:10px;white-space:nowrap">'+data['pl'][i]['fluor']+' %</td>' +
 										'<td style="padding-left:10px">'+data['pl'][i]['fluormenge']+'</td></tr></table>' + 
 										(data['pl'][i]['bev'] && data['pl'][i]['bev'] != '0' ? '<br>Bev&ouml;lkerung: '+data['pl'][i]['bev'] : '') + 
 										'<br>Gr&ouml;&szlig;e: '+data['pl'][i]['groesse'] + 
@@ -1773,7 +1773,7 @@ header('Content-Type: text/javascript; charset=utf-8');
 									}
 								}
 								
-								content += '<img src="/spielgrafik/misc/blank.gif" alt="" class="oddbtoolrasse oddbtoolr'+data['pl'][i]['rasse']+'"><a href="?op=usershow&welch='+data['pl'][i]['inhaber']+'">'+data['pl'][i]['username']+'</a>';
+								content += '<img src="/static/img/misc/blank.gif" alt="" class="oddbtoolrasse oddbtoolr'+data['pl'][i]['rasse']+'"><a href="?op=usershow&welch='+data['pl'][i]['inhaber']+'">'+data['pl'][i]['username']+'</a>';
 								if(data['pl'][i]['allianz'] > 0) {
 									content += '<br><a href="/alliances/view/'+data['pl'][i]['allianz']+'" style="font-size:10px">'+data['pl'][i]['allytag']+'</a>';
 									var status = $(result).find('status'+data['pl'][i]['allianz']).text();
