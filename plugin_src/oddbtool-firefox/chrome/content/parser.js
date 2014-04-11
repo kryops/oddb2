@@ -491,19 +491,19 @@ oddbtool.parsePage = function(page, manual) {
 				// Planetengebäude
 				data = ctree.find('td[width="600"][background]');
 				for(var i=1; i<=36; i++) {
-					out['g'+i] = data.find('img[name="pod'+i+'"]').attr('src').replace(/^.*\/img\/(?:buildings\/|misc\/)*/, '').replace(/blank.gif/, '');
+					out['g'+i] = data.find('img[name="pod'+i+'"]').attr('src').replace(/^.*\/spielgrafik\/(?:buildings\/|misc\/)*/, '').replace(/blank.gif/, '');
 				}
 				
 				// Orbitgebäude
 				data = data.prev();
 				for(i=1; i<=12; i++) {
-					out['o'+i] = data.find('img[name="wpod'+i+'"]').attr('src').replace(/^.*\/img\/(?:buildings\/|misc\/)*/, '');
+					out['o'+i] = data.find('img[name="wpod'+i+'"]').attr('src').replace(/^.*\/spielgrafik\/(?:buildings\/|misc\/)*/, '');
 				}
 				
 				// Spezialgebäude
 				data = ctree.find('td[colspan="8"] table');
 				for(i=1; i<=10; i++) {
-					out['s'+i] = data.find('img[name="spod'+i+'"]').attr('src').replace(/^.*\/img\/(?:buildings\/|misc\/)*/, '');
+					out['s'+i] = data.find('img[name="spod'+i+'"]').attr('src').replace(/^.*\/spielgrafik\/(?:buildings\/|misc\/)*/, '');
 				}
 			}
 			catch(e) {
@@ -990,9 +990,11 @@ oddbtool.parsePage = function(page, manual) {
 					path = $this.attr('src');
 				
 				// Lokale Grafikpakete abfangen
-				if(path.indexOf('/static/img/') == -1) {
+				/*
+				if(path.indexOf('/spielgrafik/') == -1) {
 					throw 'Grafikpfade ungültig!';
 				}
+				*/
 				
 				if(out['kategorie'] == 0) {
 					for(var i in kategorien) {
@@ -1003,7 +1005,7 @@ oddbtool.parsePage = function(page, manual) {
 					}
 				}
 				
-				out['f'].push(path.replace(/^.*\/img\//, ''));
+				out['f'].push(path.replace(/^.*\/spielgrafik\//, ''));
 				out['fn'].push($this.attr('titel'));
 				out['ff'].push($this.hasClass('opacity2') ? 1 : 0);
 			});
@@ -1016,7 +1018,7 @@ oddbtool.parsePage = function(page, manual) {
 			var current = ctree.find('.tabletranslight .box td:first-child img');
 			
 			if(current.length) {
-				out['current'] = current.attr('src').replace(/^.*\/img\//, '');
+				out['current'] = current.attr('src').replace(/^.*\/spielgrafik\//, '');
 				out['current_end'] = ctree.find('#returntim').siblings('b').html();
 			}
 		}
