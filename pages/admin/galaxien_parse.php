@@ -359,6 +359,10 @@ else {
 		// Cache-Eintrag löschen
 		$cache->remove('fow_erfasst');
 		
+		for($i=1; $i<=100; $i++) {
+			$cache->remove('stats'.$i);
+		}
+		
 		// Log-Eintrag
 		if($config['logging'] >= 1) {
 			insertlog(14, 'trägt die Galaxie '.$_POST['gala'].' ein');
