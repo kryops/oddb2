@@ -689,10 +689,10 @@ playeratm=775&userid=1100059&name=Kryops&points=43415&titel=&warpoints=11465&ges
 		$cache->setglobal('odrequest_lag', 1, 60);
 	}
 	
-	// HTML und CP1252 dekodieren und alles in UTF-8 enkodieren
+	// HTML dekodieren
 	foreach($oddata as $key=>$val) {
 		if(!is_numeric($val) AND $val != '') {
-			$oddata[$key] = html_entity_decode(mb_convert_encoding($val, 'UTF-8', 'cp1252'), ENT_QUOTES, 'UTF-8');
+			$oddata[$key] = html_entity_decode($val, ENT_QUOTES, 'UTF-8');
 		}
 	}
 	
@@ -721,6 +721,7 @@ playeratm=775&userid=1100059&name=Kryops&points=43415&titel=&warpoints=11465&ges
 			query("
 				UPDATE ".$config['mysql_globprefix']."player
 				SET
+					playerName = '".escape($oddata['name'])."',
 					player_allianzenID = ".$oddata['allianz_id'].",
 					playerPlaneten = ".$oddata['plcount'].",
 					playerImppunkte = ".$oddata['points'].",
