@@ -1641,6 +1641,8 @@ header('Content-Type: text/javascript; charset=utf-8');
 	                        if(maxresswert < 100) {
 	                        	maxresswert = 100;
 	                        }
+	                        
+	                        plpunkte = parseFloat(data['pl'][i]['groesse'] * data['pl'][i]['bev'].replace('.','').replace('.','') / 100000) + maxresswert;
 							
 							tooltip += '<table style="border:0;padding:0;margin:0;width:auto"><tr><td><img src="/static/img/research/ress_ore_small.gif"></td>' +
 										'<td style="padding-left:10px;white-space:nowrap">'+data['pl'][i]['erz']+' %</td><td style="padding-left:10px">'+data['pl'][i]['erzmenge']+'</td></tr>' +
