@@ -1,4 +1,15 @@
-﻿10.04.2014 - V2.4 [R12]
+﻿22.07.2014 - V2.4.0.2
+---------------------
+* Anderes Packen des Chrome-Plugins, da es von Google nun komplett blockiert wird
+* Fix beim Zurücksetzen der Spezialgeäude bei Inhaberwechsel
+* Fix: Beim DB-Import werden nun auch Spezialgebäude richtig übernommen
+* Planetenpunkte werden nun auch im Firefox-Plugin richtig angezeigt
+* Terraformercap auf 5 Mio erhöht
+
+
+
+
+10.04.2014 - V2.4 [R12]
 -----------------------
 * Anpassungen an die Änderungen in OD
   - Spezialgebäude

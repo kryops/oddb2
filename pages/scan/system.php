@@ -692,7 +692,7 @@ else {
 						") OR dieTransaction("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());
 						
 						$his = "planetenHistory = planetenHistory+1,
-								planetenGebSpezial = '',";
+								planetenGebSpezial = '".GEBAEUDE_EMPTYSPEZIAL."',";
 					}
 					else $his = '';
 					

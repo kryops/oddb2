@@ -18,7 +18,7 @@ if(!defined('ODDB')) die('unerlaubter Zugriff!');
 //
 
 // Hauptversion
-define('VERSION', '2.4.0.1');
+define('VERSION', '2.4.0.2');
 // Patch-Version
 define('PATCH_VERSION', 5);
 // Datei-Zusatz (css und js)
@@ -30,9 +30,9 @@ define('DOWNTIME', false);
 define('ABGLEICH_VERSION', 4);
 define('GRUNDDATEN_VERSION', 1);
 // ODDB Tool-Version
-define('ODDBTOOL', '2.4.0.1');
-define('ODDBTOOLPATH', 'oddbtool-2_4_0_1.xpi');
-define('ODDBTOOLPATH_CHROME', 'oddbtool-chrome-2_4_0_1.crx');
+define('ODDBTOOL', '2.4.0.2');
+define('ODDBTOOLPATH', 'oddbtool-2_4_0_2.xpi');
+define('ODDBTOOLPATH_CHROME', 'oddbtool-chrome-2_4_0_2.zip');
 
 // Debug-Modus
 define('DEBUG', false);
@@ -237,6 +237,9 @@ $rassen2 = array(
 	10=>'lux',
 	11=>'revisker'
 );
+
+define('GEBAEUDE_UNKNOWN', '-5');
+define('GEBAEUDE_EMPTYSPEZIAL', '-5+-5+-5+-5+-5+-5+-5+-5+-5+-5');
 
 // Gebaeude-Pfade
 $gebaeude = array(
@@ -509,7 +512,7 @@ $planeten_bevoelkerung = array(
 );
 
 // um wie viel kann die Standard-Bevölkerung durch Terraforming erhöht werden?
-$planeten_bevoelkerung_offset = 3000000;
+$planeten_bevoelkerung_offset = 5000000;
 
 // Planeten-Typen: Anzahl und Lücken
 $pltypen = 100;
@@ -1956,7 +1959,7 @@ function gebaeude($string, $groesse, $thumb) {
 				$arr[$i] = '';
 			}
 			// den Rest mit Unbekannt füllen
-			else $arr[$i] = '<img src="img/gebaeude/unbekannt.png" alt="" />';
+			else $arr[$i] = $thumb ? $gebaeudepos[GEBAEUDE_UNKNOWN] : '<img src="img/gebaeude/unbekannt.png" alt="" />';
 		}
 	}
 	// gescannt
@@ -1983,7 +1986,7 @@ function gebaeude($string, $groesse, $thumb) {
 					}
 					// unbekanntes Gebäude
 					else {
-						$arr[$i] = 64;
+						$arr[$i] = $gebaeudepos[GEBAEUDE_UNKNOWN];
 					}
 				}
 				// große Anzeige

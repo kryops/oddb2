@@ -571,18 +571,19 @@ else {
 		$tmpl->content .= '
 			<a href="plugin/'.ODDBTOOLPATH_CHROME.'" style="font-weight:bold;color:#03d2ff">
 				<img src="img/tools/chrome.png" alt="" style="width:48px;height:48px;vertical-align:middle;margin-right:5px" />
-				Installation ODDB Tool V'.ODDBTOOL.' f&uuml;r Google Chrome
+				Download ODDB Tool V'.ODDBTOOL.' f&uuml;r Google Chrome
 			</a>
 			
 			<br /><br />
 			
-			<b>Bitte beachte: Chrome blockiert die Installation von Erweiterungen, die nicht aus dem Google Chrome Webstore stammen.<br />
+			<b>Bitte beachte: Chrome blockiert alle Erweiterungen, die nicht aus dem Google Chrome Webstore stammen.<br />
 			Um das ODDB Tool zu installieren, musst du
 		
 			<ul>
-			<li>die .crx-Datei herunterladen (Rechtsklick &rarr; Link speichern unter)</li>
+			<li>die .zip-Datei herunterladen und entpacken</li>
 			<li>in Chrome die Erweiterungsseite &ouml;ffnen <i>(Einstellungen &rarr; Tools &rarr; Erweiterungen)</i></li>
-			<li>die heruntergeladene Datei in Chrome hineinziehen</li>
+			<li>den Entwicklermodus aktivieren</li>
+			<li>auf "Entpackte Erweiterung laden..." klicken und den Ordner ausw&auml;hlen, wo du die .zip-Datei entpackt hast</li>
 			</ul>
 			</b>';
 	}

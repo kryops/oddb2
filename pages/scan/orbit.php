@@ -94,7 +94,7 @@ else {
 			SET
 				planeten_playerID = ".$_POST['inhaber'].",
 				planetenHistory = planetenHistory+1,
-				planetenGebSpezial = ''
+				planetenGebSpezial = '".GEBAEUDE_EMPTYSPEZIAL."'
 			WHERE
 				planetenID = ".$_POST['id']."
 		") OR die("Fehler in ".__FILE__." Zeile ".__LINE__.": ".mysql_error());

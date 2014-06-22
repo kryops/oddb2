@@ -676,6 +676,7 @@ $(\'#content\').html(\'<div class="center">Der Import wurde erfolgreich abgeschl
 			planetenKategorie = ".(int)$row[14].",
 			planetenGebPlanet = '".escape($row[15])."',
 			planetenGebOrbit = '".escape($row[16])."',
+			planetenGebSpezial = '".escape($row[17])."',
 			planetenOrbiter = ".(int)$row[18].",
 
 			planetenRMErz = ".(int)$row[19].",
@@ -840,11 +841,6 @@ $(\'#content\').html(\'<div class="center">Der Import wurde erfolgreich abgeschl
 			$tmpl->error = 'Fehler beim Parsen der Datei! (kein gültiges JSON)';
 		}
 		else {
-			
-			// workaround for OD generated NULL value
-			// TODO remove in R13
-			$data['world'] = ODWORLD;
-			
 			// Gültige Welt und Version
 			if(!isset($data['world'], $data['version'], $data['galaxien']) OR $data['version'] != GRUNDDATEN_VERSION) {
 				$tmpl->error = 'Ungültige Datei! (Falsche Version)';

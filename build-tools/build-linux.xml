@@ -5,16 +5,14 @@
     </description>
 	
 	<!-- relevante Pfade und Dateinamen -->
-	<property name="oddbPath" value="/home/michael/git/oddb2" />
-	<property name="chromePath" value="/usr/bin/chromium-browser" />
-	<property name="yuicompressor" value="build-tools/yuicompressor-2.4.7.jar" />
+	<property name="oddbPath" value="/srv/http/oddb2" />
+	<property name="yuicompressor" value="build-tools/yuicompressor-2.4.8.jar" />
 	
 	<!-- alte und neue Version des ODDB Tools JEDES MAL HIER ÄNDERN -->
-	<property name="oldVersion" value="2.4" />
-	<property name="oldVersionSuffix" value="2_4" />
-	<property name="newVersion" value="2.4.0.1" />
-	<property name="newVersionSuffix" value="2_4_0_1" />
-	
+	<property name="oldVersion" value="2.4.0.1" />
+	<property name="oldVersionSuffix" value="2_4_0_1" />
+	<property name="newVersion" value="2.4.0.2" />
+	<property name="newVersionSuffix" value="2_4_0_2" />
 	
 	<target name="build">
 		
@@ -25,7 +23,7 @@
 	
 	
 	<!-- general_src zu general.js minifien -->
-	<!-- dazu muss der YUI Compressor heruntergeladen werden (https://github.com/yui/yuicompressor/tree/master/build) -->
+	<!-- dazu muss der YUI Compressor heruntergeladen werden (https://github.com/yui/yuicompressor/releases) -->
 	<target name="minify-js">
 		
 		<condition property="compressorAvailable">
@@ -33,7 +31,7 @@
                 <available file="${yuicompressor}" type="file"/>
             </and>
         </condition>
-        <fail message="Pfad zum YUI Compressor inkorrekt! (${yuicompressor}) Download unter https://github.com/yui/yuicompressor/tree/master/build" unless="compressorAvailable" />
+        <fail message="Pfad zum YUI Compressor inkorrekt! (${yuicompressor}) Download unter https://github.com/yui/yuicompressor/releases" unless="compressorAvailable" />
 		
 		<java jar="${yuicompressor}" fork="true">
 			<arg value="js/general_src.js" />
@@ -59,7 +57,7 @@
 			<replacefilter token="define('VERSION', '${oldVersion}');" value="define('VERSION', '${newVersion}');" />
 			<replacefilter token="define('ODDBTOOL', '${oldVersion}');" value="define('ODDBTOOL', '${newVersion}');" />
 			<replacefilter token="define('ODDBTOOLPATH', 'oddbtool-${oldVersionSuffix}.xpi');" value="define('ODDBTOOLPATH', 'oddbtool-${newVersionSuffix}.xpi');" />
-			<replacefilter token="define('ODDBTOOLPATH_CHROME', 'oddbtool-chrome-${oldVersionSuffix}.crx');" value="define('ODDBTOOLPATH_CHROME', 'oddbtool-chrome-${newVersionSuffix}.crx');" />
+			<replacefilter token="define('ODDBTOOLPATH_CHROME', 'oddbtool-chrome-${oldVersionSuffix}.zip');" value="define('ODDBTOOLPATH_CHROME', 'oddbtool-chrome-${newVersionSuffix}.zip');" />
 		</replace>
 		
 		<replace file="plugin_src/oddbtool-chrome/manifest.json" token="&quot;version&quot;: &quot;${oldVersion}&quot;" value="&quot;version&quot;: &quot;${newVersion}&quot;" />
@@ -83,21 +81,9 @@
 	<!-- ODDB Tool Chrome packen -->
 	<target name="pack-chrome" depends="check-paths">
 		
-		<condition property="chromeAvailable">
-            <and>
-                <available file="${chromePath}" type="file"/>
-            </and>
-        </condition>
-        <fail message="Pfad zu Google Chrome inkorrekt! (${chromePath})" unless="chromeAvailable" />
-		
-		<delete file="plugin/oddbtool-chrome-${oldVersionSuffix}.crx" />
-		
-		<exec executable="${chromePath}">
-            <arg value="--pack-extension=${oddbPath}/plugin_src/oddbtool-chrome" />
-            <arg value="--pack-extension-key=${oddbPath}/plugin_src/oddbtool-chrome.pem" />
-        </exec>
-		
-		<move file="plugin_src/oddbtool-chrome.crx" tofile="plugin/oddbtool-chrome-${newVersionSuffix}.crx" />
+		<delete file="plugin/oddbtool-chrome-${oldVersionSuffix}.zip" />
+				
+		<zip destfile="plugin/oddbtool-chrome-${newVersionSuffix}.zip" basedir="plugin_src/oddbtool-chrome" />
 		
 	</target>
 	
