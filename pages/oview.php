@@ -155,7 +155,7 @@ else {
 	//
 	
 	// in den Cache laden
-	if($config['caching'] AND ($userBanned = $cache->get('userbanned')) === false) {
+	if(!$config['caching'] OR ($userBanned = $cache->get('userbanned')) === false) {
 		$query = query("
 			SELECT
 				COUNT(*) AS userCount
@@ -168,8 +168,8 @@ else {
 	
 		$data = mysql_fetch_assoc($query);
 		
-		$userBanned = $data['userCount'];
-		$cache->set('userbanned', $data['userCount'], 60);
+		$userBanned = (int) $data['userCount'];
+		$cache->set('userbanned', $userBanned, 60);
 	}
 	
 	if($user->rechte['verwaltung_user_register'] OR ($user->rechte['verwaltung_userally'] AND $user->allianz) AND $userBanned !== 0) {
