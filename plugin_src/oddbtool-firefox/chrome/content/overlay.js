@@ -7,7 +7,7 @@ var oddbtool = {
 	/**
 	 * Version
 	 */
-	version: '2.4.0.2',
+	version: '2.4.0.3',
 	odworld: 'int12',
 	
 	
@@ -425,16 +425,16 @@ var oddbtool = {
 		'#oddbtoolwin a {font-family:Arial,Sans; font-size:9px}',
 		'#oddbtoollogo {position:absolute; top:1px; left:200px; width:32px; height:32px; background-image:url('+oddbtool.prefs.url+'img/layout/fowsprite32.png); cursor:pointer; z-index:2}',
 		
-		'#oddbtoolheadline{position:absolute; top:85px; left:450px; width:650px; text-align:center;}',
+		'#oddbtoolheadline{position:absolute; top:85px; left:50%; margin-left:-235px; width:650px; text-align:center;}',
 		
-		'#oddbtoolfowtbl{position:absolute; top:575px; left:300px; width:700px; background-color:rgba(255,255,255,0.15); padding:10px; -moz-border-radius:12px; border-radius:12px; font-family:Arial,Sans; font-size:12px; color:white; z-index:1;}',
+		'#oddbtoolfowtbl{position:absolute; top:575px; left:50%; margin-left:-300px; width:700px; background-color:rgba(255,255,255,0.15); padding:10px; -moz-border-radius:12px; border-radius:12px; font-family:Arial,Sans; font-size:12px; color:white; z-index:1;}',
 		'#oddbtoolfowtbl table{width:100%}',
 		'#oddbtoolfowtbl th, #oddbtoolfowtbl td, #oddbtoolfowtbl a {font-size:9pt;padding:5px}',
 		'#oddbtoolfowtbl th{background-color:rgba(255,255,255,0.1); text-align:left; font-weight:bold;}',
 		'#oddbtoolfowtbl td:first-child{font-weight:bold; padding-left:8px;}',
 		'#oddbtooliframe {display:none}',
 		
-		'@media screen and (max-width:1024px) {#oddbtoolfowtbl {left:50px; top:550px;}}',
+		'@media screen and (max-width:1024px) {#oddbtoolfowtbl {left:250px; margin-left:0; }}',
 		
 		'.oddbtoolplanet {position:absolute; width:100px; background-position:3px -3px; background-repeat:no-repeat; font-size:11px}',
 		'.oddbtoolorbit {position:relative;background-color:rgba(0,0,0,0.5);top:-72px;left:0px;text-align:center;font-size:11px !important}',

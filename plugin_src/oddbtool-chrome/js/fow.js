@@ -132,22 +132,14 @@ oddbtool.fow = function(page, data) {
 			$('#oddbtoolfow',page).append('<span style="color:#00ff00">erfolgreich!</span>');
 			
 			// Tabellenbreite richtig setzen
-			$('#layout-main table[width=800] td[valign=top] table[width=100]',page).css('width', '110px');
+			$('#layout-main table[style="margin: auto;"] td[valign=top] table[width=100]',page).css('width', '110px');
 			
 			
 			// Positionen
-			var xbase = 304;
+			var xbase = 100 + $('#layout-main table[style="margin: auto;"]').offset().left;
 			var ybase = 263;
 			var xadd = 110;
 			var yadd = 17;
-			
-			var smallWindow = $(window).width() <= 1024;
-			
-			// Anpassung an responsive layout
-			if(smallWindow) {
-				ybase = 225;
-				xbase = 104;
-			}
 			
 			var x = 0;
 			var y = 0;
@@ -500,13 +492,6 @@ oddbtool.fow = function(page, data) {
 			$('table[width="100"] tr:first-child td').css('background-position', '2px -2px');
 			
 			
-			// Headline zentrieren
-			var offset = $('#layout-main table[width=600]',page).offset();
-			if(offset) {
-				offset = parseInt(offset.left);
-				offset -= 25;
-				$('#oddbtoolheadline',page).css('left',offset+'px');
-			}
 			
 			// systemInfo-Tabelle
 			if($(result).find('systemInfo').text() != '') {

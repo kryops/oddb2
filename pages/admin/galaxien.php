@@ -21,8 +21,8 @@ if($user->rechte['verwaltung_galaxien']) {
 	
 	$max_input_vars = (int) @ini_get('max_input_vars');
 	
-	if($max_input_vars != 0 AND $max_input_vars < 2000) {
-		$csw->data['galaxien']['content'] .= '<br /><div class="bold red center">Die PHP-Einstellung max_input_vars sollte auf mindestens 2000 gestellt werden, da sonst neue Galaixen nicht komplett eingetragen werden k&ouml;nnen!</div>';
+	if($max_input_vars != 0 AND $max_input_vars < 10000) {
+		$csw->data['galaxien']['content'] .= '<br /><div class="bold red center">Die PHP-Einstellung max_input_vars sollte auf mindestens 10000 gestellt werden, da sonst neue Galaixen nicht komplett eingetragen werden k&ouml;nnen!</div>';
 	}
 	
 	

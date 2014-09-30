@@ -468,11 +468,11 @@ header('Content-Type: text/javascript; charset=utf-8');
 				var pl = [];
 				var data;
 				
-				if(ctree.find('table[width="800"] td[valign="top"] > table').length != 7) {
+				if(ctree.find('table[style="margin: auto;"] td[valign="top"] > table').length != 7) {
 					throw 'Konnte nicht alle Planeten ermitteln!';
 				}
 				
-				ctree.find('table[width="800"] td[valign="top"] > table').each(function(i) {
+				ctree.find('table[style="margin: auto;"] td[valign="top"] > table').each(function(i) {
 					// Planet vorhanden
 					if($(this).find('td').length) {
 						pl[i] = {};
@@ -545,11 +545,11 @@ header('Content-Type: text/javascript; charset=utf-8');
 				var pl = [];
 				var data, p;
 				
-				if(ctree.find('table[width="800"] td[valign="top"] > table').length != 7) {
+				if(ctree.find('table[style="margin: auto;"] td[valign="top"] > table').length != 7) {
 					throw 'Konnte nicht alle Planeten ermitteln!';
 				}
 				
-				ctree.find('table[width="800"] td[valign="top"] > table').each(function(i) {
+				ctree.find('table[style="margin: auto;"] td[valign="top"] > table').each(function(i) {
 					// Planet vorhanden
 					if($(this).find('td').length) {
 						pl[i] = {};
@@ -1485,22 +1485,14 @@ header('Content-Type: text/javascript; charset=utf-8');
 				$('#oddbtoolfow',page).append('<span style="color:#00ff00">erfolgreich!</span>');
 				
 				// Tabellenbreite richtig setzen
-				$('#layout-main table[width=800] td[valign=top] table[width=100]',page).css('width', '110px');
+				$('#layout-main table[style="margin: auto;"] td[valign=top] table[width=100]',page).css('width', '110px');
 				
 				
 				// Positionen
-				var xbase = 304;
+				var xbase = 100 + $('#layout-main table[style="margin: auto;"]').offset().left;
 				var ybase = 263;
 				var xadd = 110;
 				var yadd = 17;
-				
-				var smallWindow = $(window).width() <= 1024;
-			
-				// Anpassung an responsive layout
-				if(smallWindow) {
-					ybase = 225;
-					xbase = 104;
-				}
 				
 				var x = 0;
 				var y = 0;
@@ -1852,15 +1844,6 @@ header('Content-Type: text/javascript; charset=utf-8');
 				// Planetengrafiken verschieben
 				$('table[width="100"] tr:first-child td').css('background-position', '2px -2px');
 				
-				
-				// Headline zentrieren
-				var offset = $('#layout-main table[width=600]',page).offset();
-				if(offset) {
-					offset = parseInt(offset.left);
-					offset -= 25;
-					$('#oddbtoolheadline',page).css('left',offset+'px');
-				}
-				
 				// systemInfo-Tabelle
 				if($(result).find('systemInfo').text() != '') {
 					$('body',page).append('<div id="oddbtoolfowtbl">'+$(result).find('systemInfo').text()+'</div>');
@@ -1938,16 +1921,16 @@ if(preg_match('/MSIE/', $_SERVER['HTTP_USER_AGENT'])) {
 		'#oddbtoolwin a {font-family:Arial,Sans; font-size:9px}',
 		'#oddbtoollogo {position:absolute; top:1px; left:200px; width:32px; height:32px; background-image:url('+oddbtool.prefs.url+'img/layout/fowsprite32.png); cursor:pointer; z-index:2}',
 		
-		'#oddbtoolheadline{position:absolute; top:85px; left:450px; width:650px; text-align:center;}',
+		'#oddbtoolheadline{position:absolute; top:85px; left:50%; margin-left:-235px; width:650px; text-align:center;}',
 		
-		'#oddbtoolfowtbl{position:absolute; top:575px; left:275px; width:700px; background-color:rgba(255,255,255,0.15); padding:10px; -moz-border-radius:12px; border-radius:12px; font-family:Arial,Sans; font-size:12px; color:white; z-index:1;}',
+		'#oddbtoolfowtbl{position:absolute; top:575px; left:50%; margin-left:-300px; width:700px; background-color:rgba(255,255,255,0.15); padding:10px; -moz-border-radius:12px; border-radius:12px; font-family:Arial,Sans; font-size:12px; color:white; z-index:1;}',
 		'#oddbtoolfowtbl table{width:100%}',
 		'#oddbtoolfowtbl th, #oddbtoolfowtbl td, #oddbtoolfowtbl a {font-size:9pt;padding:5px}',
 		'#oddbtoolfowtbl th{background-color:rgba(255,255,255,0.1); text-align:left; font-weight:bold;}',
 		'#oddbtoolfowtbl td:first-child{font-weight:bold; padding-left:8px;}',
 		'#oddbtooliframe {display:none}',
 		
-		'@media screen and (max-width:1024px) {#oddbtoolfowtbl {left:50px; top:550px;}}',
+		'@media screen and (max-width:1024px) {#oddbtoolfowtbl {left:250px; margin-left:0;}}',
 		
 		'.oddbtoolplanet {position:absolute; width:100px; background-position:3px -3px; background-repeat:no-repeat; font-size:11px}',
 		'.oddbtoolorbit {position:relative;background-color:rgba(0,0,0,0.5);top:-72px;left:0px;text-align:center;font-size:11px !important}',

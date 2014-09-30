@@ -1,4 +1,11 @@
-﻿22.07.2014 - V2.4.0.2
+﻿30.09.2014 - V2.4.0.3
+---------------------
+* Fix der Systemansicht nach dem OD-Update
+* Empfehlung für PHP-Variable max_input_vars auf mindestens 10000 erhöht
+
+
+
+22.07.2014 - V2.4.0.2
 ---------------------
 * Anderes Packen des Chrome-Plugins, da es von Google nun komplett blockiert wird
 * Fix beim Zurücksetzen der Spezialgeäude bei Inhaberwechsel

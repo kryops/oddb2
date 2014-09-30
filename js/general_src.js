@@ -3091,11 +3091,11 @@ function quelltext(f, r) {
 			var pl = [];
 			var data;
 			
-			if(ctree.find('table[width="800"] td[valign="top"] > table').length != 7) {
+			if(ctree.find('table[style="margin: auto;"] td[valign="top"] > table').length != 7) {
 				throw 'Konnte nicht alle Planeten ermitteln!';
 			}
 			
-			ctree.find('table[width="800"] td[valign="top"] > table').each(function(i) {
+			ctree.find('table[style="margin: auto;"] td[valign="top"] > table').each(function(i) {
 				// Planet vorhanden
 				if($(this).find('td').length) {
 					pl[i] = {};
@@ -3168,11 +3168,11 @@ function quelltext(f, r) {
 			var pl = [];
 			var data, p;
 			
-			if(ctree.find('table[width="800"] td[valign="top"] > table').length != 7) {
+			if(ctree.find('table[style="margin: auto;"] td[valign="top"] > table').length != 7) {
 				throw 'Konnte nicht alle Planeten ermitteln!';
 			}
 			
-			ctree.find('table[width="800"] td[valign="top"] > table').each(function(i) {
+			ctree.find('table[style="margin: auto;"] td[valign="top"] > table').each(function(i) {
 				// Planet vorhanden
 				if($(this).find('td').length) {
 					pl[i] = {};
